@@ -1,0 +1,28 @@
+@use "../../../variables.scss" as *;
+
+:host {
+  width: 100%;
+  height: 100%;
+}
+
+.single-card {
+  height: 100%;
+}
+.loadingimgform {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.535); /* Optional: Add a semi-transparent background */
+  z-index: 9999; /* Ensure it appears above other content */
+}
+
+.custom-indicator {
+  width: 100px;
+  height: 100px;
+  background-color: rgba(240, 248, 255, 0.228);
+}

@@ -1,0 +1,59 @@
+.FullBody {
+  height: 80vh;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.BorderBox {
+  position: relative;
+  margin-top: 10px;
+  border-radius: 10px;
+  // border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  padding:16px 24px;
+  border: var(--card-bg);
+  height: 35vh;
+  display: flex;
+  flex-direction: column;
+}
+.MFABorderBox {
+  position: relative;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  border: var(--card-bg);
+  height: 35vh;
+  display: flex;
+  flex-direction: column;
+}
+.OthersBorderBox {
+  position: relative;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--card-bg);
+  background-color: var(--card-bg);
+  height: 30vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-header {
+  font-size: 22px;
+}
+.col-md-6 {
+  width: 48%;
+}
+.topDiv {
+  background-color: var(--card-bg);
+  position: sticky;
+  top:0;
+  border: var(--card-bg);
+  padding:30px;
+  // margin-bottom: 10px;
+  margin-top: 10px;
+  border-style: none !important;
+  border-radius: 8px;
+  z-index: 1020;
+  height: 3.5rem;
+}

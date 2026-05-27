@@ -1,0 +1,106 @@
+<!-- <h6>Login To Your Account</h6> -->
+<form class="login-form" (submit)="onSubmit($event)">
+  <dx-form
+    [formData]="formData"
+    [disabled]="loading"
+    title="Login To Your Account"
+    [showColonAfterLabel]="true"
+    [showRequiredMark]="false"
+  >
+    <dxi-item
+      dataField="username"
+      editorType="dxTextBox"
+      [editorOptions]="{
+        placeholder: 'User Name',
+        stylingMode: 'filled',
+        buttons:[ {
+        name: 'search',
+        location: 'before',
+        options: {
+          icon: 'fas fa-user',
+          stylingMode: 'text',
+          disabled: true
+        }
+      }],
+      }"
+    >
+      <dxi-validation-rule
+        type="required"
+        message="Username is required"
+      ></dxi-validation-rule>
+      <dxo-label [visible]="false"></dxo-label>
+    </dxi-item>
+
+    <dxi-item
+      dataField="password"
+      editorType="dxTextBox"
+      [editorOptions]="{
+        placeholder: 'Password',
+        stylingMode: 'filled',
+        mode: isPasswordVisible ? 'text' : 'password',
+        buttons: [
+          {
+            name: 'search',
+            location: 'before',
+            options: {
+              icon: 'fas fa-lock',
+              stylingMode: 'text',
+              disabled: true
+            }
+          },
+          {
+            name: 'passwordToggle',
+            location: 'after',
+            options: {
+              icon: isPasswordVisible ? 'fas fa-eye' : 'fas fa-eye-slash',
+              onClick: togglePasswordVisibility,
+              stylingMode: 'text',
+              hoverable: 'false'
+            }
+          }
+        ]
+      }"
+    >
+      <dxi-validation-rule
+        type="required"
+        message="Password is required"
+      ></dxi-validation-rule>
+      <dxo-label [visible]="false"></dxo-label>
+    </dxi-item>
+      <dxi-item>
+      <div class="reset-link">
+  <a href="" (click)="onForgotPasswordClick($event)" style="text-decoration: none; font-size: 18px;">
+    Forgot password?
+  </a>
+</div>
+  </dxi-item>
+
+    <dxi-item itemType="button" class="mt-3">
+      <dxo-button-options
+        width="100%"
+        [height]="'44px'"
+        type="default"
+        cssClass="btn-sign-in"
+        [useSubmitBehavior]="true"
+        [template]="'signInTemplate'"
+      >
+      </dxo-button-options>
+    </dxi-item>
+
+
+    <ng-container *dxTemplate="let item of 'signInTemplate'">
+      <span class="dx-button-text">
+        <ng-container *ngIf="loading; else notLoading">
+          <dx-load-indicator
+            width="24px"
+            height="24px"
+            [visible]="true"
+          ></dx-load-indicator>
+        </ng-container>
+        <ng-template #notLoading>Sign In</ng-template>
+      </span>
+    </ng-container>
+  </dx-form>
+
+
+</form>

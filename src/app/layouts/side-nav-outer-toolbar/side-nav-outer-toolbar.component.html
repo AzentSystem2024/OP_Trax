@@ -1,0 +1,75 @@
+<app-header
+  class="layout-header"
+  [menuToggleEnabled]="true"
+  (menuToggle)="menuOpened = !menuOpened"
+  [title]="appInfo.title"
+></app-header>
+
+<dx-drawer
+  class="layout-body"
+  position="before"
+  [closeOnOutsideClick]="shaderEnabled"
+  [openedStateMode]="menuMode"
+  [revealMode]="menuRevealMode"
+  [minSize]="minMenuSize"
+  [shading]="shaderEnabled"
+  [(opened)]="menuOpened"
+>
+  <side-navigation-menu
+    [compactMode]="menuOpened"
+    [selectedItem]="selectedRoute"
+    class="dx-swatch-additional"
+    *dxTemplate="let dataMenu of 'panel'"
+    (selectedItemChanged)="navigationChanged($event)"
+    (openMenu)="navigationClick()"
+  >
+  </side-navigation-menu>
+  <!-- Content Area -->
+  <div class="content m-0 p-0">
+    <dx-sortable
+      class="custom-tab"
+      filter=".dx-tab"
+      [data]="tabs"
+      itemOrientation="horizontal"
+      dragDirection="horizontal"
+      (onDragStart)="onTabDragStart($event)"
+    >
+      <dx-tab-panel
+        class="tabPanelDiv m-0 p-0"
+        [dataSource]="tabs"
+        noDataText=" "
+        itemTitleTemplate="title"
+        itemTemplate="item"
+        [animationEnabled]="true"
+        [deferRendering]="false"
+        [showNavButtons]="true"
+        [repaintChangesOnly]="true"
+        [selectedIndex]="selectedIndex"
+      >
+      
+        <div
+          class="tabItems m-0"
+          height="100%"
+          *dxTemplate="let tab of 'title'"
+          (click)="TabItemClick(tab)"
+        >
+          <span class="tabSubItems ms-2" [title]="tab.title">{{
+            tab.title
+          }}</span>
+          <i
+            *ngIf="showCloseButton()"
+            class="dx-icon-close close-icon"
+            (click)="closeButtonHandler(tab)"
+          ></i>
+        </div>
+      </dx-tab-panel>
+      <div
+      class="fillColor"
+      [style.backgroundColor]="selectedIndex !== null ? 'var(--tab-selected-bg-color)' : 'transparent'"
+    ></div>
+      <div>
+        <router-outlet></router-outlet>
+      </div>
+    </dx-sortable>
+  </div>
+</dx-drawer>

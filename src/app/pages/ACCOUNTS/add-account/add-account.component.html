@@ -1,0 +1,558 @@
+<!-- Full-page flex container -->
+<div class="single-column-form d-flex flex-column px-3 pt-3">
+  <!-- Top: Form Fields -->
+  <div>
+    <dx-validation-group #validationGroup>
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <dx-select-box
+            [(value)]="selectedMainGroupId"
+            [dataSource]="mainGroupList"
+            displayExpr="GROUP_NAME"
+            valueExpr="GROUP_ID"
+            label="Main Group"
+            labelMode="floating"
+            stylingMode="outlined"
+            [searchEnabled]="true"
+            (onValueChanged)="onMainGroupChange($event)"
+            class="w-100"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="Main Group is required"
+              >
+              </dxi-validation-rule>
+            </dx-validator>
+          </dx-select-box>
+        </div>
+
+        <div class="col-md-4 d-flex align-items-center">
+          <dx-select-box
+            [(value)]="selectedSubGroup"
+            [dataSource]="subGroupList"
+            displayExpr="GROUP_NAME"
+            valueExpr="GROUP_ID"
+            label="Sub Group"
+            labelMode="floating"
+            stylingMode="outlined"
+            [searchEnabled]="true"
+            (onValueChanged)="onSubGroupChange($event)"
+            class="flex-grow-1 me-2"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="Sub Group is required"
+              >
+              </dxi-validation-rule>
+            </dx-validator>
+          </dx-select-box>
+          <dx-button
+            class="mt-2"
+            icon="plus"
+            class="add-row"
+            type="default"
+            stylingMode="contained"
+            (onClick)="onAddSubField()"
+          ></dx-button>
+        </div>
+
+        <div class="col-md-4 d-flex align-items-center">
+          <dx-select-box
+            [(value)]="selectedCategoryId"
+            [dataSource]="categoryList"
+            displayExpr="GROUP_NAME"
+            valueExpr="GROUP_ID"
+            label="Category"
+            labelMode="floating"
+            stylingMode="outlined"
+            [searchEnabled]="true"
+            (onValueChanged)="onCategoryChange($event)"
+            class="flex-grow-1 me-2"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="Category is required"
+              >
+              </dxi-validation-rule>
+            </dx-validator>
+          </dx-select-box>
+          <dx-button
+            class="mt-2"
+            icon="plus"
+            class="add-row"
+            type="default"
+            stylingMode="contained"
+            (onClick)="onAddCategory()"
+          ></dx-button>
+        </div>
+      </div>
+
+      <div class="row gap-0 mb-3">
+        <div class="col-md-2">
+          <dx-text-box
+            [(value)]="HeadCode"
+            label="Code"
+            labelMode="floating"
+            placeholder="Code"
+            stylingMode="outlined"
+            class="headcode-box"
+          ></dx-text-box>
+        </div>
+
+        <div class="col-md-4">
+          <dx-text-box
+            [(value)]="HEAD_NAME"
+            label="Ledger"
+            labelMode="floating"
+            placeholder="Ledger"
+            stylingMode="outlined"
+            class="w-100"
+          >
+            <dx-validator>
+              <dxi-validation-rule type="required" message="Ledger is required">
+              </dxi-validation-rule>
+            </dx-validator>
+          </dx-text-box>
+        </div>
+
+        <div [ngClass]="isEditing ? 'col-md-2' : 'col-md-4'">
+          <dx-select-box
+            [(value)]="CostTypeValue"
+            [dataSource]="CostTypeDataSource"
+            displayExpr="DESCRIPTION"
+            valueExpr="ID"
+            label="Cost Type"
+            labelMode="floating"
+            stylingMode="outlined"
+            [searchEnabled]="true"
+            class="w-100"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="Cost Type is required"
+              >
+              </dxi-validation-rule>
+            </dx-validator>
+          </dx-select-box>
+        </div>
+
+        <!-- <div class="col-md-2">
+          <dx-select-box
+            [visible]="showExpenseType"
+            [(value)]="expenseTypeValue"
+            [dataSource]="ExpenseTypeDataSource"
+            displayExpr="DESCRIPTION"
+            valueExpr="ID"
+            label="Expense Type"
+            labelMode="floating"
+            stylingMode="outlined"
+            class="w-100"
+          >
+          </dx-select-box>
+        </div> -->
+
+        <div *ngIf="isEditing" class="col-md-2 mt-3">
+          <dx-check-box text="Inactive" [(value)]="IsinActive"></dx-check-box>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+          <dx-check-box
+            text="Ledger can be grouped in costing"
+            [(value)]="CanBeGroupedInCosting"
+            class="me-3"
+          ></dx-check-box>
+        </div>
+
+        <div class="col-md-4">
+          <dx-select-box
+            [(value)]="CostingGroupID"
+            [dataSource]="ledgerGroupList"
+            displayExpr="DESCRIPTION"
+            valueExpr="ID"
+            label="Ledger Group"
+            labelMode="floating"
+            stylingMode="outlined"
+            [searchEnabled]="true"
+            class="w-100"
+            [readOnly]="!CanBeGroupedInCosting"
+            [showClearButton]="true"
+          >
+            <!-- <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="Please select a default option"
+              >
+              </dxi-validation-rule>
+            </dx-validator> -->
+          </dx-select-box>
+        </div>
+
+        <div class="col-md-4 d-flex align-items-center">
+          <dx-check-box
+            text="Costing Based on Quantity Weightage"
+            [(value)]="IsQtyWeight"
+            class="ms-3"
+          ></dx-check-box>
+        </div>
+      </div>
+    </dx-validation-group>
+
+    <hr class="my-3" />
+  </div>
+
+  <!-- Middle: DataGrid grows to fill remaining space -->
+  <div class="flex-grow-1 overflow-hidden border border-secondary rounded p-2">
+    <dx-data-grid
+      [dataSource]="GridDataSource"
+      [showBorders]="true"
+      [columnAutoWidth]="true"
+      [rowAlternationEnabled]="true"
+      [height]="'58vh'"
+      [rowHeight]="40"
+      [showBorders]="true"
+      [columnAutoWidth]="true"
+      (onRowValidating)="onRowValidating($event)"
+      (onRowInserted)="onRowInserted($event)"
+      (onEditorPreparing)="onEditorPreparing($event)"
+      (onCellValueChanged)="onCellValueChanged($event)"
+    >
+      <!-- Toolbar -->
+      <dxo-toolbar>
+        <!-- Title on the left -->
+        <dxi-item location="before">
+          <div class="d-flex align-items-center h-100">
+            <h6 class="mb-0">Cost Allocation</h6>
+          </div>
+        </dxi-item>
+
+        <!-- DropDownBox vertically centered -->
+        <dxi-item class="mt-0 me-2" location="after">
+          <div class="d-flex align-items-center h-100 mt-0">
+            <dx-drop-down-box
+              class="mt-0"
+              labelMode="floating"
+              labelLocation="left"
+              label="Select Facility"
+              [(value)]="Facility_Value"
+              valueExpr="FacilityLicense"
+              displayExpr="FacilityName"
+              [showClearButton]="true"
+              [dataSource]="Facility_DataSource"
+              [width]="'500'"
+              (onValueChanged)="onFacilityChange($event)"
+            >
+              <dx-validator #facilityValidator>
+                <dxi-validation-rule
+                  type="required"
+                  message="Facility selection is required."
+                ></dxi-validation-rule>
+              </dx-validator>
+              <div *dxTemplate="let data of 'content'">
+                <dx-data-grid
+                  #facilityGrid
+                  [dataSource]="Facility_DataSource"
+                  keyExpr="FacilityLicense"
+                  [columns]="[
+                    { dataField: 'FacilityLicense', caption: 'License' },
+                    { dataField: 'FacilityName', caption: 'Name' }
+                  ]"
+                  [selection]="{ mode: 'single' }"
+                  [hoverStateEnabled]="true"
+                  [paging]="{ enabled: true, pageSize: 10 }"
+                  [filterRow]="{ visible: true }"
+                  [headerFilter]="{ visible: true }"
+                  [scrolling]="{ mode: 'virtual' }"
+                  [height]="'auto'"
+                  [(selectedRowKeys)]="Facility_Value"
+                  (onRowPrepared)="onFacilityRowPrepared($event)"
+                ></dx-data-grid>
+              </div>
+            </dx-drop-down-box>
+          </div>
+        </dxi-item>
+
+        <!-- Built-in Add button on the right -->
+        <dxi-item
+          class="mt-4"
+          location="after"
+          widget="dxButton"
+          [options]="{
+            text: '',
+            icon:'bi bi-plus-circle-fill',
+            hint:'Add Row',
+            elementAttr: { class: 'add-row' },
+            type: 'default',
+            stylingMode: 'contained',
+            onClick: onAddRowClick,
+
+          }"
+        ></dxi-item>
+      </dxo-toolbar>
+
+      <dxo-editing
+        mode="cell"
+        [allowUpdating]="true"
+        [allowAdding]="true"
+        [allowDeleting]="true"
+        newRowPosition="last"
+      >
+        ></dxo-editing
+      >
+
+      <dxi-column dataField="Department" caption="Department/Cost Centre">
+        <dxo-lookup
+          [dataSource]="departmentDataSource"
+          valueExpr="ID"
+          displayExpr="Description"
+        ></dxo-lookup>
+
+        <dxi-validation-rule
+          type="custom"
+          [validationCallback]="validateDepartment"
+          message="Department is required."
+        ></dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="CPT Department"
+        caption="Sub Department"
+        [width]="180"
+        [calculateDisplayValue]="calculateSubDepartmentDisplayValue"
+      >
+      </dxi-column>
+
+      <dxi-column
+        dataField="CPT Code"
+        caption="CPT Code"
+        [width]="150"
+        [calculateDisplayValue]="calculateCptCodeDisplayValue"
+      >
+      </dxi-column>
+
+      <dxi-column
+        dataField="Clinician"
+        caption="Clinician"
+        [width]="180"
+        [calculateDisplayValue]="calculateClinicianDisplayValue"
+      >
+      </dxi-column>
+
+      <dxi-column dataField="AllocationType" caption="Cost Type" [width]="150">
+        <dxo-lookup
+          [dataSource]="[
+            { ID: 1, Name: 'Fixed Amount' },
+            { ID: 2, Name: 'Percentage' },
+            { ID: 3, Name: 'Activity Value' }
+          ]"
+          valueExpr="ID"
+          displayExpr="Name"
+        ></dxo-lookup>
+      </dxi-column>
+
+      <!-- Cost Column -->
+      <dxi-column caption="Cost" alignment="center">
+        <!-- Child column: Amount -->
+        <dxi-column
+          dataField="Amount"
+          caption="Amount"
+          dataType="number"
+          [format]="{ formatter: formatIndianAmount }"
+        >
+          <dxi-validation-rule
+            type="custom"
+            [validationCallback]="amountValidation"
+            message="Amount Required"
+          ></dxi-validation-rule>
+        </dxi-column>
+        <!-- Child column: Percentage -->
+        <dxi-column
+          dataField="Percentage"
+          caption="Percentage"
+          dataType="number"
+          [format]="customPercentageFormat"
+        >
+          <dxo-editor-options
+            [min]="0"
+            [max]="100"
+            [showSpinButtons]="false"
+          ></dxo-editor-options>
+
+          <dxi-validation-rule
+            type="custom"
+            [validationCallback]="percentageValidation"
+            message="Percentage Required"
+          ></dxi-validation-rule>
+        </dxi-column>
+      </dxi-column>
+
+      <!-- Total Summary -->
+      <dxo-summary>
+        <dxi-total-item
+          column="Percentage"
+          summaryType="sum"
+          [valueFormat]="{ type: 'fixedPoint', precision: 2 }"
+          displayFormat="Total: {0} %"
+          alignment="right"
+        ></dxi-total-item>
+      </dxo-summary>
+    </dx-data-grid>
+  </div>
+
+  <!-- Save Bottom: Buttons aligned right -->
+  <div *ngIf="!isEditing" class="form-popup-buttons-container mt-3">
+    <div class="popup-footer d-flex justify-content-end gap-2">
+      <dx-button
+        text="Cancel"
+        stylingMode="outlined"
+        type="normal"
+        (onClick)="closePopup()"
+      ></dx-button>
+      <dx-button
+        text="Save"
+        (onClick)="saveAccountHead()"
+        stylingMode="contained"
+        type="default"
+      ></dx-button>
+    </div>
+  </div>
+  <!-- Update Bottom: Buttons aligned right -->
+  <div *ngIf="isEditing" class="form-popup-buttons-container mt-3">
+    <div class="popup-footer">
+      <dx-button
+        text="Cancel"
+        stylingMode="outlined"
+        type="normal"
+        (onClick)="closePopup()"
+      ></dx-button>
+      <dx-button
+        text="Update"
+        (onClick)="updateAccountHead()"
+        stylingMode="contained"
+        type="default"
+      ></dx-button>
+    </div>
+  </div>
+
+  <dx-popup
+    [(visible)]="subGroupPopup"
+    [showTitle]="true"
+    title="New Sub Group"
+    [width]="400"
+    [height]="230"
+    [dragEnabled]="true"
+    [closeOnOutsideClick]="false"
+  >
+    <div class="popup-content">
+      <dx-text-box
+        [value]="selectedMainGroupName"
+        placeholder="Main Group"
+        stylingMode="outlined"
+        class="form-field"
+        [readOnly]="true"
+      ></dx-text-box>
+
+      <dx-text-box
+        [(value)]="subGroupName"
+        placeholder="Sub Group"
+        stylingMode="outlined"
+        class="form-field"
+      ></dx-text-box>
+    </div>
+
+    <div class="form-popup-buttons-container">
+      <div class="popup-footer">
+        <dx-button
+          text="Cancel"
+          (onClick)="subGroupPopup = false"
+          stylingMode="outlined"
+        ></dx-button>
+        <dx-button
+          text="Add"
+          (onClick)="saveSubGroup()"
+          type="default"
+          stylingMode="contained"
+        ></dx-button>
+      </div>
+    </div>
+  </dx-popup>
+
+  <!-- CATEGORY POPUP -->
+  <dx-popup
+    [(visible)]="categoryPopup"
+    [showTitle]="true"
+    title="New Category"
+    [width]="400"
+    [height]="'auto'"
+    [dragEnabled]="true"
+    [closeOnOutsideClick]="false"
+  >
+    <div class="two-column-form">
+      <div class="form-group">
+        <dx-text-box
+          [value]="selectedMainGroupName"
+          label="Main Group"
+          labelMode="floating"
+          [readOnly]="true"
+          placeholder="Enter Main Group"
+        >
+        </dx-text-box>
+      </div>
+
+      <div class="form-group horizontal-group">
+        <div class="select-box-wrapper">
+          <dx-text-box
+            [value]="selectedSubGroupName"
+            label="Sub Group"
+            labelMode="floating"
+            placeholder="Sub Group"
+            [readOnly]="true"
+          >
+          </dx-text-box>
+        </div>
+      </div>
+    </div>
+
+    <div class="full-width-form-group">
+      <dx-text-box
+        [(value)]="categoryName"
+        label="Category"
+        labelMode="floating"
+        placeholder="Category"
+        stylingMode="outlined"
+        class="form-field"
+      >
+      </dx-text-box>
+    </div>
+    <div class="form-popup-buttons-container">
+      <div class="popup-footer">
+        <dx-button
+          text="Cancel"
+          (onClick)="categoryPopup = false"
+          stylingMode="outlined"
+        ></dx-button>
+        <dx-button
+          text="Add"
+          (onClick)="saveCategory()"
+          type="default"
+          stylingMode="contained"
+        ></dx-button>
+      </div>
+    </div>
+  </dx-popup>
+</div>
+<dx-load-panel
+  shadingColor="rgba(0,0,0,0.0)"
+  [(visible)]="loadingVisible"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="true"
+  [hideOnOutsideClick]="false"
+  [message]="'Loading...'"
+>
+</dx-load-panel>

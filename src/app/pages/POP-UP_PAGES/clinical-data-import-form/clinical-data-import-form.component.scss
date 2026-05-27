@@ -1,0 +1,63 @@
+::ng-deep .dx-fileuploader-input-wrapper {
+    padding: 0;
+    margin-top: 0px;
+    border: 3px dashed transparent;
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.plain-styled-form {
+  max-height: 200px; /* or any width you prefer */
+  margin: 0 auto;   /* center the form horizontally */
+}
+
+.custom-file-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 10px;
+}
+
+.file-item {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.remove-icon {
+  cursor: pointer;
+  color: red;
+}
+::ng-deep .tabsData1.dx-tabs.dx-state-focused {
+    .dx-tab.dx-state-focused {
+        background-color: #3b82f6;
+        color: #ffffff;
+    }
+  }
+
+  .status-box {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-align: center;
+  display: inline-block;
+}
+
+.status-success {
+  background-color: #28a745; /* green */
+  color: white;
+}
+
+.status-failed {
+  background-color: #dc3545; /* red */
+  color: white;
+}
+  
+  

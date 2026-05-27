@@ -1,0 +1,104 @@
+<!-- <div class="view-wrapper titleDiv m-3">
+  <h4>License Info</h4>
+</div> -->
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    class="grid theme-dependent"
+    noDataText=" No Data"
+    height="600"
+    [columns]="Columns"
+    [dataSource]="DataSource"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    (onExporting)="onExporting($event)"
+    height="82vh"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="showInfo"
+      [showNavigationButtons]="showNavButtons"
+    >
+    </dxo-pager>
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="true"></dxo-header-filter>
+    <dxo-filter-row
+      *ngIf="isRowSearchVisible"
+      [visible]="true"
+    ></dxo-filter-row>
+
+    <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
+    <dxo-export [enabled]="true" [formats]="['xlsx']"> </dxo-export>
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">License Info</div>
+      </dxi-item>
+      <dxi-item location="before">
+        <div>
+          <dx-text-box
+            [(value)]="ProductKey"
+            labelMode="floating"
+            labelLocation="left"
+            label="Product Key"
+            [width]="200"
+            [readOnly]="true"
+          >
+          </dx-text-box>
+        </div>
+      </dxi-item>
+      <dxi-item location="center">
+        <div>
+          <dx-text-box
+            [(value)]="LicensedTo"
+            labelMode="floating"
+            labelLocation="left"
+            label="Licensed To"
+            [width]="400"
+            [readOnly]="true"
+          >
+          </dx-text-box>
+        </div>
+      </dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: 'search',
+          hint: 'Show/hide search row',
+          stylingMode: 'text',
+          onClick: showSearch
+        }"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          icon: 'refresh',
+          onClick: refresh,
+          stylingMode: 'text'
+        }"
+      ></dxi-item>
+
+      <dxi-item name="exportButton"></dxi-item>
+    </dxo-toolbar>
+
+    <!-- <dxo-selection mode="multiple"></dxo-selection> -->
+    <dxo-header-filter [visible]="true">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+  </dx-data-grid>
+</div>

@@ -1,0 +1,153 @@
+<dx-validation-group #validationGroup>
+  <dx-form class="plain-styled-form mobile-friendly-form">
+    <dxi-item itemType="group">
+      <dxo-col-count-by-screen
+        [xs]="1"
+        [sm]="1"
+        [md]="1"
+        [lg]="1"
+      ></dxo-col-count-by-screen>
+
+      <dxi-item [colSpan]="2">
+        <div *dxTemplate>
+          <dx-text-box
+            label="Department"
+            [(value)]="newDepartment.DEPARTMENT"
+            labelMode="floating"
+            height="40"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="Department is required"
+              ></dxi-validation-rule>
+              <dxi-validation-rule
+                type="async"
+                message="Department already exists"
+                [validationCallback]="checkDepartmentExists"
+                [ignoreEmptyValue]="true"
+                [reevaluate]="true"
+              ></dxi-validation-rule>
+            </dx-validator>
+          </dx-text-box>
+        </div>
+      </dxi-item>
+
+      <dxi-item [colSpan]="2">
+        <div *dxTemplate>
+          <dx-select-box
+            label="Cost Bucket"
+            labelMode="floating"
+            height="40"
+            class="inputBox"
+            [items]="Cost_Bucket_DropDownData"
+            [(value)]="newDepartment.COST_BUCKET_ID"
+            displayExpr="DESCRIPTION"
+            valueExpr="ID"
+            placeholder="Select a Cost Bucket"
+          ></dx-select-box>
+        </div>
+      </dxi-item>
+
+      <dxi-item [colSpan]="2">
+        <div *dxTemplate>
+          <dx-select-box
+            label="Type"
+            labelMode="floating"
+            height="40"
+            class="inputBox"
+            [items]="Cost_Type_List"
+            [(value)]="newDepartment.COST_CENTER_TYPE_ID"
+            displayExpr="DESCRIPTION"
+            valueExpr="ID"
+            placeholder="Select a Cost Centre Type"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="Type is required"
+              ></dxi-validation-rule>
+            </dx-validator>
+          </dx-select-box>
+        </div>
+      </dxi-item>
+
+      <dxi-item [colSpan]="2">
+        <div *dxTemplate>
+          <div
+            style="
+              border: 1px solid #d1d1d1;
+              padding: 15px;
+              border-radius: 6px;
+              margin-top: 10px;
+              opacity: 1;
+            "
+            [style.opacity]="
+              newDepartment.COST_CENTER_TYPE_ID == 1 ? '1' : '0.5'
+            "
+          >
+            <div style="margin-bottom: 10px; font-weight: 600">
+              Overhead Cost Center Allocation
+            </div>
+
+            <!-- Radio Buttons -->
+            <dx-radio-group
+              [items]="allocationOptions"
+              layout="vertical"
+              valueExpr="value"
+              displayExpr="text"
+              [(value)]="newDepartment.OverheadAllocationType"
+              (onValueChanged)="onAllocationChanged($event)"
+              [disabled]="newDepartment.COST_CENTER_TYPE_ID !== 1"
+            >
+            </dx-radio-group>
+
+            <!-- Select Box shown only when option 3 selected -->
+            <div
+              style="margin-top: 10px"
+            >
+              <dx-tag-box
+                [items]="OverheadCostCenterList"
+                displayExpr="DESCRIPTION"
+                valueExpr="ID"
+                label="Cost Centers"
+                labelMode="floating"
+                width="100%"
+                height="40"
+                [(value)]="newDepartment.OverheadAllocationDepartmentID"
+                [disabled]="!(newDepartment.COST_CENTER_TYPE_ID === 1 && newDepartment.OverheadAllocationType === 2)"
+                [showSelectionControls]="true"
+                [applyValueMode]="'useButtons'"
+                [searchEnabled]="true"
+              >
+               <dx-validator>
+                <dxi-validation-rule
+                  type="custom"
+                  [validationCallback]="validateTagBoxRequired"
+                  message="Please a select Cost Center"
+                >
+                </dxi-validation-rule>
+              </dx-validator>
+              </dx-tag-box>
+            </div>
+          </div>
+        </div>
+      </dxi-item>
+    </dxi-item>
+  </dx-form>
+
+  <div class="popup-footer">
+    <dx-button
+      text="Cancel"
+      stylingMode="outlined"
+      type="normal"
+      (onClick)="reset_NewDenialFormData()"
+    ></dx-button>
+    <dx-button
+      text="Save"
+      type="default"
+      stylingMode="contained"
+      (onClick)="onSaveDepartment(validationGroup)"
+    ></dx-button>
+  </div>
+</dx-validation-group>

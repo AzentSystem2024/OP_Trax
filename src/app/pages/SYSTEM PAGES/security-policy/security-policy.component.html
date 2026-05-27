@@ -1,0 +1,302 @@
+<div class="FullBody view-wrapper">
+  <div class="topDiv d-flex justify-content-between align-items-center">
+    <div class="grid-header">Security Policy</div>
+
+    <div class="d-flex gap-2">
+      <dx-button
+        style="border-radius: 24px"
+        stylingMode="outlined"
+        text="Cancel"
+        type="normal"
+        (onClick)="onClickCancel()"
+      ></dx-button>
+
+      <dx-button
+        style="border-radius: 24px"
+        stylingMode="contained"
+        text="Save"
+        type="default"
+        (onClick)="onClickSave()"
+        [disabled]="!menuPrevilage.CanEdit"
+      ></dx-button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="BorderBox">
+        <div class="dx-field mb-3">
+          <dx-switch
+            [(value)]="validationRequired"
+            [switchedOnText]="'Yes'"
+            [switchedOffText]="'No'"
+            (onValueChanged)="onValidationEnableChange($event.value)"
+          >
+          </dx-switch>
+          <label class="ms-2 headingText">Password Validation Required</label>
+        </div>
+
+        <div class="mb-3">
+          <dx-number-box
+            [(value)]="minPasswordLength"
+            labelMode="floating"
+            labelLocation="left"
+            label="Minimum Password Length"
+            [showSpinButtons]="true"
+            [width]="'100%'"
+            [readOnly]="readOnlyValue"
+            [disabled]="readOnlyValue"
+            hint="Minimum length of a Password"
+            [min]="minAllowedLength"
+            (onValueChanged)="onPasswordLengthChange($event)"
+          >
+            <dxi-button name="spins"></dxi-button>
+          </dx-number-box>
+        </div>
+
+        <div class="mb-3">
+          <dx-check-box
+            class="d-block mb-2"
+            [(value)]="isNumberChecked"
+            text="Minimum 1 Number [0-9] required"
+            [readOnly]="readOnlyValue"
+            hint="Password should contain at least one number"
+          ></dx-check-box>
+          <dx-check-box
+            class="d-block mb-2"
+            [(value)]="isUppercaseChecked"
+            text="Minimum 1 Uppercase character required"
+            [readOnly]="readOnlyValue"
+            hint="Password should contain at least one Uppercase character"
+          ></dx-check-box>
+          <dx-check-box
+            class="d-block mb-2"
+            [(value)]="isLowercaseChecked"
+            text="Minimum 1 Lowercase character required"
+            [readOnly]="readOnlyValue"
+            hint="Password should contain at least one Lowercase character"
+          ></dx-check-box>
+          <dx-check-box
+            class="d-block"
+            [(value)]="isSpecialCharactersChecked"
+            text="Minimum 1 Special character required"
+            [readOnly]="readOnlyValue"
+            hint="Password should contain at least one Special character"
+          ></dx-check-box>
+        </div>
+      </div>
+
+      <div class="MFABorderBox p-3">
+        <!-- Switch -->
+        <div class="dx-field mb-3">
+          <dx-switch
+            [(value)]="MFAvalidationRequired"
+            [switchedOnText]="'Yes'"
+            [switchedOffText]="'No'"
+          ></dx-switch>
+          <label class="ms-2 headingText">
+            Enable Multi-factor Authentication
+          </label>
+          <span
+            class="ms-2 text-primary fw-semibold"
+            style="font-size: 0.875rem"
+          >
+            (Recommended)
+          </span>
+        </div>
+
+        <!-- Checkboxes (Mutually Exclusive) -->
+        <div class="mb-3">
+          <dx-check-box
+            class="d-block mb-2"
+            [(value)]="isGoogleAuthenticator"
+            text="Google"
+            [readOnly]="!MFAvalidationRequired"
+            hint="Use Google Authenticator"
+            (valueChange)="onCheckboxChanged('google', $event)"
+          ></dx-check-box>
+
+          <dx-check-box
+            class="d-block mb-2"
+            [(value)]="isMicrosoftAuthenticator"
+            text="Microsoft"
+            [readOnly]="!MFAvalidationRequired"
+            hint="Use Microsoft Authenticator"
+            (valueChange)="onCheckboxChanged('microsoft', $event)"
+          ></dx-check-box>
+
+          <dx-check-box
+            class="d-block mb-2"
+            [(value)]="isCustomAuthenticator"
+            text="Custom"
+            [readOnly]="!MFAvalidationRequired"
+            hint="Use Custom Authenticator"
+            (valueChange)="onCheckboxChanged('custom', $event)"
+          ></dx-check-box>
+
+          <div class="row ms-0" *ngIf="isCustomAuthenticator">
+            <div class="col-md-6">
+              <dx-check-box
+                class="d-block mb-2"
+                text="SMS"
+                [(value)]="customSMS"
+              ></dx-check-box>
+              <dx-check-box
+                class="d-block mb-2"
+                text="Email"
+                [(value)]="customEmail"
+              ></dx-check-box>
+              <dx-check-box
+                class="d-block mb-2"
+                text="WhatsApp"
+                [(value)]="customWhatsapp"
+              ></dx-check-box>
+            </div>
+            <div class="col-md-6">
+              <dx-radio-group
+                [items]="tokenOptions"
+                [(value)]="customSingleToken"
+                displayExpr="label"
+                valueExpr="value"
+                layout="vertical"
+              >
+              </dx-radio-group>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="MFAvalidationRequired">
+          <label class="fw-bold d-block mb-2"
+            >Multi-factor authentication applies to:</label
+          >
+          <dx-check-box
+            class="d-inline-block me-4"
+            [(value)]="appliesToLogin"
+            text="Login Attempts"
+          ></dx-check-box>
+          <dx-check-box
+            class="d-inline-block"
+            [(value)]="appliesToPasswordChange"
+            text="Password Changes"
+          ></dx-check-box>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 ms-2">
+      <div class="BorderBox p-3">
+        <div class="headingText">Account Lock</div>
+        <div class="mt-3 items w-100">
+          <dx-number-box
+            class="w-100"
+            [(value)]="LoginAttempts"
+            labelMode="floating"
+            labelLocation="left"
+            label="Number Of Login Attempts"
+            hint="The user account must be locked out after consecutive N invalid logins attempts."
+          ></dx-number-box>
+        </div>
+        <div class="mt-3 items w-100">
+          <dx-number-box
+            class="w-100"
+            [(value)]="resetDuration"
+            labelMode="floating"
+            labelLocation="left"
+            label="Lock Reset Duration"
+            hint="The Account lockout counter must reset after n minutes"
+          ></dx-number-box>
+        </div>
+        <div class="mt-3 items w-100">
+          <dx-number-box
+            class="w-100"
+            [(value)]="failedLoginDuration"
+            labelMode="floating"
+            labelLocation="left"
+            label="Failed Login Check Duration"
+            hint="This settings is used to Lock a User on Failed Logins. Latest Login status of given X minutes will be checked for Locking"
+          ></dx-number-box>
+        </div>
+      </div>
+
+      <div class="BorderBox p-3">
+        <div class="headingText">General</div>
+        <div class="dx-field m-1 mt-1 w-100">
+          <dx-check-box
+            class="w-100"
+            [(value)]="changePasswordOnLogin"
+            text="Change Password On Login"
+            hint="User must change Password - First Login or after Password is Reset by the Admin"
+          ></dx-check-box>
+        </div>
+        <div class="mt-3 items w-100">
+          <dx-number-box
+            class="w-100"
+            [(value)]="passwordExpiryDaysCount"
+            labelMode="floating"
+            labelLocation="left"
+            label="How many days until the password expires?"
+            hint="Maximum password age (days)"
+          ></dx-number-box>
+        </div>
+        <div class="mt-3 items w-100">
+          <dx-number-box
+            class="w-100"
+            [(value)]="passwordRepeatCycle"
+            labelMode="floating"
+            labelLocation="left"
+            label="Password Repeat Cycle"
+            hint="Password should not be repeated within a N cycle"
+          ></dx-number-box>
+        </div>
+        <div class="mt-3 items w-100">
+          <dx-number-box
+            class="w-100"
+            [(value)]="sessionTimeOut"
+            labelMode="floating"
+            labelLocation="left"
+            label="Session Time Out(in minutes)"
+            hint="Session will logout after N minutes of inactivity"
+          ></dx-number-box>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="OthersBorderBox p-3">
+    <div class="headingText">Others</div>
+    <div class="d-flex gap-3 flex-nowrap w-100">
+      <div style="width: 70%; min-width: 0">
+        <dx-text-box
+          labelMode="floating"
+          labelLocation="left"
+          label="Unauthorized Banner Message"
+          [(value)]="unautherizedMessage"
+          width="100%"
+          hint="This message will be shown on successful login or at the time of unsuccessful access attempts"
+        ></dx-text-box>
+      </div>
+
+      <div style="width: 30%; min-width: 0">
+        <dx-number-box
+          [(value)]="disableUserOn"
+          labelMode="floating"
+          labelLocation="left"
+          label="Disable User On"
+          width="100%"
+          hint="Enter the number of days to disable the user after inactivity"
+        ></dx-number-box>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dx-load-panel
+  [visible]="isLoading"
+  [message]="'Loading...'"
+  [shadingColor]="'rgba(0,0,0,0.4)'"
+  [shading]="true"
+  [showIndicator]="true"
+  [showPane]="true"
+  [closeOnOutsideClick]="false"
+  [position]="{ of: '.FullBody' }"
+>
+</dx-load-panel>

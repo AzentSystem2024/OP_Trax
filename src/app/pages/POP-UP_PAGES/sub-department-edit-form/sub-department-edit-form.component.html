@@ -1,0 +1,63 @@
+<dx-validation-group #validationGroup>
+  <dx-form class="plain-styled-form mobile-friendly-form">
+    <dxi-item itemType="group">
+      <dxo-col-count-by-screen [xs]="1" [sm]="1" [md]="1" [lg]="1"></dxo-col-count-by-screen>
+
+      <dxi-item [colSpan]="2">
+        <div *dxTemplate>
+          <dx-text-box
+            label="Sub Department"
+            [(value)]="newDepartmentData.SUB_DEPARTMENT"
+            labelMode="floating"
+            height="40"
+          >
+            <dx-validator>
+              <dxi-validation-rule type="required" message="Sub Department is required"></dxi-validation-rule>
+              <dxi-validation-rule
+                type="async"
+                message="Sub Department already exists"
+                [validationCallback]="checkDuplicateSubDepartment"
+              ></dxi-validation-rule>
+            </dx-validator>
+          </dx-text-box>
+        </div>
+      </dxi-item>
+
+      <dxi-item [colSpan]="2">
+        <div *dxTemplate>
+          <dx-select-box
+            label="Department"
+            labelMode="floating"
+            height="40"
+            class="inputBox"
+            [items]="Department_DropDownData"
+            [(value)]="newDepartmentData.DEPARTMENT_ID"
+            displayExpr="DESCRIPTION"
+            valueExpr="ID"
+            placeholder="Select a Department"
+          >
+            <dx-validator>
+              <dxi-validation-rule type="required" message="Department is required"></dxi-validation-rule>
+            </dx-validator>
+          </dx-select-box>
+        </div>
+      </dxi-item>
+    </dxi-item>
+
+    <dxi-item [colSpan]="2">
+      <div *dxTemplate>
+        <dx-check-box [(value)]="newDepartmentData.IS_INACTIVE" text="Inactive"></dx-check-box>
+      </div>
+    </dxi-item>
+  </dx-form>
+
+  <div class="popup-footer">
+    <dx-button text="Cancel" type="normal" (onClick)="resetFormData()"></dx-button>
+    <dx-button
+      text="Save"
+      type="default"
+      stylingMode="contained"
+      (onClick)="onUpdateDepartment(validationGroup)"
+    ></dx-button>
+  </div>
+</dx-validation-group>

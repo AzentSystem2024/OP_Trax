@@ -1,0 +1,49 @@
+// body {
+//   // background: #fff;
+//   min-height: 100vh;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: space-between;
+//   padding: 4rem;
+// }
+// .content {
+//   // text-align: left;
+//   width: 100%;
+//   align-items: center;
+//   padding: 3rem;
+// }
+
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.logo {
+  max-width: 180px;
+  margin-bottom: 1rem;
+}
+.gears-img-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+}
+.gears-img {
+  max-width: 500px;
+  width: 100%;
+}
+.footer-links a {
+  margin: 0 10px;
+  color: #007bff;
+  text-decoration: none;
+  font-size: 14px;
+}
+.footer-links a:hover {
+  text-decoration: underline;
+}
+.footer {
+  font-size: 14px;
+  color: #666;
+}

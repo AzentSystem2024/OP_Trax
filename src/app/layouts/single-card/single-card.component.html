@@ -1,0 +1,21 @@
+<dx-scroll-view
+  height="100%"
+  width="100%"
+  class="view-wrapper-scroll single-card"
+>
+  <div class="loadingimgform" *ngIf="loadImgComponent">
+    <!-- <div class="label">Custom image</div> -->
+    <dx-load-indicator
+      id="image-indicator"
+      indicatorSrc="../../../assets/loading-4802.gif"
+      [height]="200"
+      [width]="500"
+    ></dx-load-indicator>
+  </div>
+  <app-card-auth
+    title="Welcome to OPTrax"
+    [description]="description"
+  >
+    <ng-content></ng-content>
+  </app-card-auth>
+</dx-scroll-view>

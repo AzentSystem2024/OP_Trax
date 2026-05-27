@@ -1,0 +1,36 @@
+<dx-popup
+  [title]="titleText"
+  [(visible)]="visible"
+  [fullScreen]="!!(screen.xSmallScreenChanged | async)"
+  [width]="width"
+  [wrapperAttr]="getWrapperAttrs | apply : wrapperAttr"
+  (onHidden)="close()"
+  [height]="height"
+  [shading]="true"
+>
+  <dx-validation-group #validationGroup>
+    <ng-content></ng-content>
+  </dx-validation-group>
+
+  <dxi-toolbar-item class="mt-3" toolbar="bottom" location="center">
+    <div
+      *ngIf="visibleButtons"
+      class="form-popup-buttons-container"
+      [class.flex-buttons]="width <= 360"
+    >
+      <dx-button
+        text="Cancel"
+        stylingMode="outlined"
+        type="normal"
+        (onClick)="close()"
+      ></dx-button>
+      <dx-button
+        [text]="saveButtonText"
+        stylingMode="contained"
+        type="default"
+        [disabled]="isSaveDisabled"
+        (onClick)="onSaveClick()"
+      ></dx-button>
+    </div>
+  </dxi-toolbar-item>
+</dx-popup>

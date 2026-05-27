@@ -1,0 +1,129 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    class="grid theme-dependent"
+    noDataText="no data"
+    height="600"
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    (onExporting)="onExporting($event)"
+    (onRowRemoving)="onRowRemoving($event)"
+    (onEditingStart)="onEditingStart($event)"
+    height="82vh"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-editing
+      mode="popup"
+      [allowUpdating]="menuPrevilage.CanEdit"
+      [allowDeleting]="menuPrevilage.CanDelete"
+      [allowAdding]="menuPrevilage.CanAdd"
+    >
+    </dxo-editing>
+
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="showInfo"
+      [showNavigationButtons]="showNavButtons"
+    >
+    </dxo-pager>
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="isFilterRowVisible">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+    <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+    <dxo-column-chooser [enabled]="true" [height]="400"></dxo-column-chooser>
+    <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
+    <dxo-export
+      [enabled]="true"
+      [allowExportSelectedData]="false"
+      [formats]="['xlsx']"
+    >
+    </dxo-export>
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">User Role</div>
+      </dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' }
+        }"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          icon: 'refresh',
+          onClick: refresh,
+          stylingMode: 'text',
+          hint: 'refresh'
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        name="exportButton"
+        location="after"
+        cssClass="custom-export-button"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="addButtonOptions"
+      ></dxi-item>
+    </dxo-toolbar>
+
+    <dxi-column dataField="UserRoles" caption="User Role"></dxi-column>
+    <dxi-column
+      dataField="LastModifiedTime"
+      Caption="Last Modified Time"
+      [calculateCellValue]="formatLastModifiedTime"
+    ></dxi-column>
+  </dx-data-grid>
+
+  <!-- =========== add new user level ============ -->
+  <form-popup
+    class="formPopupClass m-2"
+    [(visible)]="isAddFormVisible"
+    titleText="New User Role"
+    [height]="'auto'"
+    [width]="popup_width"
+    (save)="onClickSaveNewData()"
+    (onHiding)="onPopupClose()"
+  >
+    <app-user-level-new-form *ngIf="isAddFormVisible"></app-user-level-new-form>
+  </form-popup>
+
+  <!-- =========== edit user level ============ -->
+  <form-popup
+    class="formPopupClass m-2"
+    [(visible)]="iseditFormVisible"
+    titleText="Edit User Role"
+    [height]="'auto'"
+    [width]="popup_width"
+    (save)="onRowUpdating()"
+    (onHiding)="onEditPopupClose()"
+  >
+    <app-user-level-new-form
+      *ngIf="iseditFormVisible"
+      [editValue]="clickedRowData"
+    ></app-user-level-new-form>
+  </form-popup>
+</div>

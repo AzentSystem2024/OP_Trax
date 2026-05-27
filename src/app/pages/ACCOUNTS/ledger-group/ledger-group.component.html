@@ -1,0 +1,127 @@
+<div class="view-wrapper list-page">
+  <div class="grid-container">
+    <dx-data-grid
+      #dataGrid
+      noDataText="No data available"
+      [width]="'100%'"
+      [height]="'82vh'"
+      [loadPanel]="{
+        enabled: true,
+        text: 'Loading...',
+        showIndicator: true,
+        showPane: true
+      }"
+      class="grid theme-dependent"
+      [dataSource]="ledgerGroupData"
+      [showBorders]="true"
+      [columnAutoWidth]="false"
+      [wordWrapEnabled]="false"
+      [rowAlternationEnabled]="true"
+      [allowColumnReordering]="true"
+      [showColumnHeaders]="true"
+      [columnAutoWidth]="true"
+      [allowColumnResizing]="true"
+      [columnResizingMode]="'nextColumn'"
+      [headerFilter]="{ visible: true, allowSearch: true }"
+      rowAlternationInterval="2"
+      [selection]="{ mode: 'single' }"
+      focusStateEnabled="false"
+      (onEditingStart)="onEditAccount($event)"
+      (onRowRemoving)="onDeleteAccountHead($event)"
+    >
+      <dxo-editing
+        mode="popup"
+        [allowUpdating]="true"
+        [allowDeleting]="true"
+      ></dxo-editing>
+      <dxo-paging [pageSize]="20"></dxo-paging>
+      <dxo-pager
+        [visible]="true"
+        [allowedPageSizes]="allowedPageSizes"
+        [displayMode]="displayMode"
+        [showPageSizeSelector]="showPageSizeSelector"
+        [showInfo]="true"
+        [showNavigationButtons]="true"
+      ></dxo-pager>
+      <dxo-load-panel [showPane]="false"></dxo-load-panel>
+      <dxo-scrolling mode="virtual"></dxo-scrolling>
+      <dxo-filter-row
+        [visible]="isFilterRowVisible"
+        [applyFilter]="auto"
+      ></dxo-filter-row>
+      <dxo-toolbar>
+        <dxi-item location="before">
+          <div class="grid-header">Ledger Group</div>
+        </dxi-item>
+        <dxi-item location="after" locateInMenu="auto"> </dxi-item>
+
+        <dxi-item
+          location="after"
+          locateInMenu="auto"
+          showText="inMenu"
+          widget="dxButton"
+          [options]="{
+            icon: isFilterRowVisible ? 'filter' : 'filter',
+            hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+            onClick: toggleFilterRow,
+            stylingMode: 'text',
+            elementAttr: { class: 'commonButtons' }
+          }"
+        ></dxi-item>
+        <dxi-item
+          location="after"
+          locateInMenu="auto"
+          showText="inMenu"
+          widget="dxButton"
+          [options]="{
+            text: 'Refresh',
+            hint: 'Refresh',
+            icon: 'refresh',
+            onClick: refresh,
+            stylingMode: 'text',
+            elementAttr: { class: 'commonButtons' }
+          }"
+        ></dxi-item>
+
+        <dxi-item
+          location="after"
+          widget="dxButton"
+          [options]="addButtonOptions"
+        ></dxi-item>
+      </dxo-toolbar>
+
+      <dxi-column dataField="HeadCode" caption="Code"></dxi-column>
+      <dxi-column dataField="HeadName" caption="Head Name"></dxi-column>
+    </dx-data-grid>
+  </div>
+</div>
+
+<!--  ========================= Add popup =============== -->
+<dx-popup
+  [(visible)]="addAccountPopupOpened"
+  [width]="'85vw'"
+  [height]="'100vh'"
+  title="Over Head Ledger Group"
+  (onHiding)="handleClose()"
+>
+  <app-ledger-group-popup
+    *ngIf="addAccountPopupOpened"
+    (popupClosed)="handleClose()"
+  ></app-ledger-group-popup>
+</dx-popup>
+
+<!--  ========================= Edit popup =============== -->
+<dx-popup
+  [(visible)]="editAccountPopupOpened"
+  [width]="'85vw'"
+  [height]="'100vh'"
+  title="Over Head Ledger Group"
+  (onHiding)="handleClose()"
+>
+  <app-ledger-group-popup
+    *ngIf="editAccountPopupOpened"
+    [isEditing]="true"
+    [EditingResponseData]="selectedRowData"
+    (popupClosed)="handleClose()"
+  ></app-ledger-group-popup>
+</dx-popup>

@@ -1,0 +1,47 @@
+@use "../../../../variables.scss" as *;
+@use "sass:math";
+
+.list-page {
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  margin: 0px;
+}
+.view-wrapper{
+  padding: 0px;
+  margin: 0px;
+}
+
+.dx-tabpanel .dx-tab {
+  width: 700px;
+  display: flex;
+  justify-content: center;
+}
+.inputBox {
+  width: 40%;
+  padding: 0px;
+}
+.topDiv {
+  height: 25%;
+  border-radius: 8px;
+  justify-content: center;
+  background-color: var(--base-bg);
+  margin-bottom: var(--content-padding);
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.04);
+}
+.headDiv {
+  height: 55px;
+}
+.tabs-demo {
+  height: 100%;
+  background-color: var(--base-bg);
+  border-radius: 8px;
+}
+.grid-header {
+  @include header();
+}
+.dx-datagrid {
+  padding: 0px;
+  margin: 0px;
+}

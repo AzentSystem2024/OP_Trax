@@ -1,0 +1,132 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    class="grid theme-dependent"
+    noDataText=""
+    height="600"
+    [dataSource]="datasource"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    (onEditingStart)="onEditingRow($event)"
+    (onRowRemoving)="onRowRemoving($event)"
+    height="82vh"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-editing
+      mode="popup"
+      [allowUpdating]="menuPrevilage.CanEdit"
+      [allowDeleting]="menuPrevilage.CanDelete"
+    >
+    </dxo-editing>
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="showInfo"
+      [showNavigationButtons]="showNavButtons"
+    ></dxo-pager>
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="isFilterRowVisible">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+    <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+    <dxo-column-chooser [enabled]="true" [height]="400"></dxo-column-chooser>
+    <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
+    <dxo-export
+      [enabled]="true"
+      [allowExportSelectedData]="false"
+      [formats]="['xlsx']"
+    >
+    </dxo-export>
+
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">User</div>
+      </dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' }
+        }"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          icon: 'refresh',
+          stylingMode: 'text',
+          hint: 'refresh',
+          onClick: refresh,
+
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        name="exportButton"
+        location="after"
+        cssClass="custom-export-button"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="addButtonOptions"
+      ></dxi-item>
+    </dxo-toolbar>
+
+    <dxi-column dataField="UserName" caption="Name"></dxi-column>
+    <dxi-column dataField="UserRoleName" caption="Role"></dxi-column>
+    <dxi-column dataField="DateofBirth" caption="Date of Birth"></dxi-column>
+    <dxi-column dataField="Gender" caption="Gender"></dxi-column>
+    <dxi-column dataField="Email" caption="Email"></dxi-column>
+    <dxi-column dataField="Mobile" caption="Mobile No."></dxi-column>
+    <dxi-column dataField="Whatsapp" caption="Whatsapp No."></dxi-column>
+    <dxi-column type="buttons">
+    <dxi-button
+      name="edit"
+      [visible]="menuPrevilage.CanEdit"
+    ></dxi-button>
+
+    <dxi-button
+      name="delete"
+      [visible]="canShowDelete"
+    ></dxi-button>
+  </dxi-column>
+  </dx-data-grid>
+  <form-popup
+    class="formPopupClass"
+    [(visible)]="isAddFormPopupOpened"
+    titleText="New User"
+    [height]="'100vh'"
+    [width]="popupwidth"
+    (save)="onClickSaveNewData()"
+    (clear)="onClearData()"
+  >
+    <app-user-new-form></app-user-new-form>
+  </form-popup>
+  <dx-popup
+    [(visible)]="isEditPopupOpened"
+    title="Edit User"
+    [height]="'100vh'"
+    [width]="popupwidth"
+  >
+    <app-user-edit-form
+      [formdata]="selectedRowData"
+      (closeForm)="CloseEditForm()"
+    ></app-user-edit-form>
+  </dx-popup>
+</div>

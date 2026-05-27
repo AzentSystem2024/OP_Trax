@@ -1,0 +1,87 @@
+@use "../../../../variables.scss" as *;
+@use "sass:math";
+
+:host {
+  --side-panel-toolbar-height: 72px;
+
+  width: 100%;
+  display: contents;
+}
+
+.view-wrapper {
+  position: relative;
+  height: 84vh;
+  margin: var(--content-padding);
+  padding: 0px;
+  border-radius: 7px;
+
+  .grid {
+    border-radius: 8px;
+    .name-template {
+      .position {
+        font-size: 12px;
+        color: var(--texteditor-label-color);
+      }
+    }
+    ::ng-deep & {
+      .dx-datagrid-header-panel {
+        padding: 0 var(--content-padding);
+      }
+
+      .dx-toolbar {
+        margin-bottom: 0;
+        padding: var(--toolbar-margin-bottom) 0;
+      }
+
+      .dx-datagrid-content .dx-row {
+        cursor: pointer;
+      }
+    }
+
+    .grid-header {
+      @include header();
+    }
+  }
+
+  user-panel {
+    display: inherit;
+  }
+}
+.toolbarDiv {
+  background-color: var(--base-bg);
+  padding: 5px var(--content-padding);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.04);
+}
+.mainContent {
+  height: 90vh;
+  background-color: var(--base-bg);
+  padding: 8px;
+  border-radius: 8px;
+}
+.condentBody {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  background-color: var(--base-bg);
+  border-radius: 8px;
+}
+
+.facilityContainer {
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  height: 60vh;
+}
+.footerButton {
+  position: relative;
+  margin-top: 10px;
+}
+
+::ng-deep .toolbarDiv .dx-toolbar .dx-toolbar-after .dx-button {
+  margin-left: 10px;
+  border-radius: 24px;
+}
+::ng-deep .add-button .dx-icon {
+  color: white !important; /* or your preferred color */
+  font-size: 18px; /* optional */
+}

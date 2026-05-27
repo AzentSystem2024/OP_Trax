@@ -1,0 +1,146 @@
+<div class="view-wrapper list-page">
+  <div class="grid-container">
+    <dx-data-grid
+      #dataGrid
+      noDataText="No data available"
+      [width]="'100%'"
+      [height]="'82vh'"
+      [loadPanel]="{
+        enabled: true,
+        text: 'Loading...',
+        showIndicator: true,
+        showPane: true
+      }"
+      class="grid theme-dependent"
+      [dataSource]="accountsGroupList"
+      [showBorders]="true"
+      [columnAutoWidth]="false"
+      [wordWrapEnabled]="false"
+      [rowAlternationEnabled]="true"
+      [allowColumnReordering]="true"
+      [showColumnHeaders]="true"
+      [columnAutoWidth]="true"
+      [allowColumnResizing]="true"
+      [columnResizingMode]="'nextColumn'"
+      [headerFilter]="{ visible: isFilterRowVisible, allowSearch: true }"
+      rowAlternationInterval="2"
+      [selection]="{ mode: 'single' }"
+      focusStateEnabled="false"
+      (onEditingStart)="onEditAccount($event)"
+      (onRowRemoving)="onDeleteAccountHead($event)"
+      (onExporting)="onExporting($event)"
+    >
+      <dxo-editing
+        mode="popup"
+        [allowUpdating]="true"
+        [allowDeleting]="true"
+      ></dxo-editing>
+      <dxo-paging [pageSize]="20"></dxo-paging>
+      <dxo-pager
+        [visible]="true"
+        [allowedPageSizes]="allowedPageSizes"
+        [displayMode]="displayMode"
+        [showPageSizeSelector]="showPageSizeSelector"
+        [showInfo]="true"
+        [showNavigationButtons]="true"
+      ></dxo-pager>
+      <dxo-load-panel [showPane]="false"></dxo-load-panel>
+      <dxo-scrolling mode="virtual"></dxo-scrolling>
+      <dxo-filter-row
+        [visible]="isFilterRowVisible"
+        [applyFilter]="auto"
+      ></dxo-filter-row>
+      <dxo-search-panel [visible]="true" placeholder="Search"></dxo-search-panel>
+    <dxo-export
+      [enabled]="true"
+      [allowExportSelectedData]="false"
+      [formats]="['xlsx']"
+    >
+    </dxo-export>
+      <dxo-toolbar>
+        <dxi-item location="before">
+          <div class="grid-header">Chart Of Accounts</div>
+        </dxi-item>
+        <dxi-item location="after" locateInMenu="auto"> </dxi-item>
+
+        <dxi-item
+          location="after"
+          locateInMenu="auto"
+          showText="inMenu"
+          widget="dxButton"
+          [options]="{
+            icon: isFilterRowVisible ? 'filter' : 'filter',
+            hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+            onClick: toggleFilterRow,
+            stylingMode: 'text',
+            elementAttr: { class: 'commonButtons' }
+          }"
+        ></dxi-item>
+        <dxi-item
+          location="after"
+          locateInMenu="auto"
+          showText="inMenu"
+          widget="dxButton"
+          [options]="{
+            text: 'Refresh',
+            hint: 'Refresh',
+            icon: 'refresh',
+            onClick: refresh,
+            stylingMode: 'text',
+            elementAttr: { class: 'commonButtons' }
+          }"
+        ></dxi-item>
+
+        <dxi-item
+        name="exportButton"
+        location="after"
+        cssClass="custom-export-button"
+      ></dxi-item>
+
+        <dxi-item
+          location="after"
+          widget="dxButton"
+          [options]="addButtonOptions"
+        ></dxi-item>
+      </dxo-toolbar>
+      <dxi-column dataField="sno" caption="S.No" alignment="center"></dxi-column>
+      <dxi-column dataField="MainGroup" caption="Main Group"></dxi-column>
+      <dxi-column dataField="SubGroup" caption="Sub Group"></dxi-column>
+      <dxi-column dataField="Category" caption="Category"></dxi-column>
+      <!-- <dxi-column dataField="ExpenseType" caption="Expense Type"></dxi-column> -->
+      <dxi-column dataField="HeadCode" caption="Code"></dxi-column>
+      <dxi-column dataField="HeadName" caption="Head Name"></dxi-column>
+      <dxi-column dataField="CostType" caption="Cost Type"></dxi-column>
+    </dx-data-grid>
+  </div>
+</div>
+
+<!--  ========================= Add popup =============== -->
+<dx-popup
+  [(visible)]="addAccountPopupOpened"
+  [width]="'85vw'"
+  [height]="'100vh'"
+  title="New Account"
+  (onHiding)="handleClose()"
+>
+  <app-add-account
+    *ngIf="addAccountPopupOpened"
+    (popupClosed)="handleClose()"
+  ></app-add-account>
+</dx-popup>
+
+<!--  ========================= Edit popup =============== -->
+<dx-popup
+  [(visible)]="editAccountPopupOpened"
+  [width]="'85vw'"
+  [height]="'100vh'"
+  title="Update Account"
+  (onHiding)="handleClose()"
+>
+  <app-add-account
+    *ngIf="editAccountPopupOpened"
+    [isEditing]="true"
+    [EditingResponseData]="selectedAccountHead"
+    (popupClosed)="handleClose()"
+  ></app-add-account>
+</dx-popup>

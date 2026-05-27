@@ -1,0 +1,362 @@
+<div class="view-wrapper list-page">
+  <!-- =================================ToolBar============================ -->
+  <div class="toolbarDiv mb-2">
+    <dx-toolbar class="pe-4">
+      <!-- Title on the left -->
+      <dxi-item
+        class="ms-2"
+        location="before"
+        text="Download Settings"
+      ></dxi-item>
+      <!-- Buttons on the right -->
+      <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="{
+          text: 'Clear',
+          stylingMode: 'outlined',
+          type: 'normal',
+          onClick: onClearClick
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        class="ms-2"
+        location="after"
+        widget="dxButton"
+        [options]="{
+          text: 'Save',
+          stylingMode: 'contained',
+          type: 'default',
+          disabled: !menuPrevilage.CanEdit,
+          onClick: on_Click_Save_Settings
+        }"
+      ></dxi-item>
+    </dx-toolbar>
+  </div>
+  <!-- =================================Content============================ -->
+  <div class="contentBody">
+    <div class="mainContent mb-1">
+      <!-- ============================Form Data========================== -->
+      <div id="form-container" class="ms-2 me-2">
+        <div class="row">
+          <!-- Database Name Field with Checkbox -->
+          <div class="col-md-4">
+            <dx-check-box
+              class="mb-3"
+              [(value)]="isDatabaseNameEditable"
+              text="Keep download log in a separate database"
+              hint="Keep download log in a separate database"
+            >
+            </dx-check-box>
+            <dx-text-box
+              class="mt-0"
+              [(value)]="DatabaseName"
+              [disabled]="!isDatabaseNameEditable"
+              label="Database Name"
+              labelMode="floating"
+            ></dx-text-box>
+          </div>
+
+          <!-- XML Directory Field with Checkbox -->
+          <div class="col-md-3">
+            <dx-check-box
+              class="mb-3"
+              [(value)]="isXMLDirectoryEditable"
+              text="Save XML file"
+              hint="Save XML File"
+            ></dx-check-box>
+            <dx-text-box
+              class="mt-0"
+              [(value)]="XMLDirectory"
+              [disabled]="!isXMLDirectoryEditable"
+              label="XML Directory"
+              labelMode="floating"
+            ></dx-text-box>
+          </div>
+
+          <div class="col-md-3 mt-4 pb-3">
+            <dx-number-box
+              class="ms-0"
+              [(value)]="ServiceInterval"
+              label="Service Interval (min)"
+              labelMode="floating"
+            ></dx-number-box>
+          </div>
+        </div>
+      </div>
+      <!-- =======================Instance Creation======================= -->
+      <div class="facilityContainer m-1 p-0">
+        <!-- Toolbar with Add Instance Button -->
+        <!-- DataGrid -->
+        <dx-tree-list
+          class="instanceTreeList"
+          [keyExpr]="'id'"
+          [dataSource]="dataSource"
+          [allowColumnReordering]="true"
+          [rowAlternationEnabled]="true"
+          [showBorders]="true"
+          [autoExpandAll]="false"
+          [width]="'100%'"
+          [height]="'100%'"
+          (onRowRemoving)="deleteRow($event)"
+          (onEditingStart)="onEditingStart($event)"
+        >
+          <dxo-selection mode="multiple" [recursive]="true"></dxo-selection>
+          <dxo-editing
+            mode="popup"
+            [allowUpdating]="true"
+            [allowDeleting]="true"
+            [allowAdding]="allowAdding"
+          >
+            <dxo-popup
+              title="Edit Facility"
+              [showTitle]="true"
+              [width]="'50%'"
+              [height]="'auto'"
+            >
+            </dxo-popup>
+            <dxo-form [colCount]="1"> </dxo-form>
+          </dxo-editing>
+
+          <dxo-row-dragging
+            [onDragChange]="onDragChange"
+            [onReorder]="onReorder"
+            [allowDropInsideItem]="true"
+            [allowReordering]="true"
+            [showDragIcons]="true"
+          ></dxo-row-dragging>
+
+          <dxo-toolbar>
+            <dxi-item location="before">
+              <div class="grid-header ms-3"><h6>Instance managing</h6></div>
+            </dxi-item>
+
+            <dxi-item location="after" locateInMenu="auto" class="me-3">
+              <dx-button
+                text="New"
+                icon="bi bi-file-earmark-plus"
+                type="default"
+                stylingMode="contained"
+                class="add-button"
+                hint="Add new Instant"
+                (onClick)="on_Add_New_Instance($event)"
+              ></dx-button>
+            </dxi-item>
+          </dxo-toolbar>
+
+          <!-- Instance Column -->
+          <dxi-column
+            dataField="Instance"
+            caption="Instance"
+            [allowEditing]="!isChildNodeData"
+            disabled="!isChildNodeData"
+          ></dxi-column>
+
+          <!-- Facility Column with dxTagBox as editor -->
+          <dxi-column
+            dataField="Facility"
+            caption="Facility"
+            [width]="'auto'"
+            [lookup]="{
+              dataSource: FacilityDataSource,
+              valueExpr: 'FacilityID',
+              displayExpr: 'FacilityName'
+            }"
+            [allowEditing]="!isChildNodeData"
+          ></dxi-column>
+
+          <dxi-column
+            dataField="ClaimTransactionDate"
+            caption="Claim Transaction Date"
+            dataType="date"
+            format="dd-MMM-yyyy"
+          ></dxi-column>
+        </dx-tree-list>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- dxPopup For add new  -->
+<dx-popup
+  [(visible)]="isAddPopupVisible"
+  [width]="'40%'"
+  [height]="'auto'"
+  [showTitle]="true"
+  title="Add new Instance"
+  [closeOnOutsideClick]="false"
+>
+  <div *dxTemplate="let data of 'content'">
+    <dx-form [colCount]="1">
+      <!-- Instance Field -->
+      <dxi-item>
+        <div>
+          <dx-text-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Instance"
+            [(value)]="InstanceValue"
+            [readOnly]="true"
+          >
+          </dx-text-box>
+        </div>
+      </dxi-item>
+
+      <!-- Updated Facility Field -->
+      <dxi-item
+        itemType="group"
+        cssClass="form-group"
+        class="rowGroup"
+        [colCount]="8"
+        [colCountByScreen]="{ xs: 8, sm: 8, md: 8, lg: 8 }"
+      >
+        <dxi-item [colSpan]="8">
+          <dx-tag-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Facility"
+            [items]="filteredFacilityDataSource"
+            displayExpr="FacilityName"
+            valueExpr="FacilityID"
+            [(value)]="Facility_Value"
+            [showSelectionControls]="true"
+            applyValueMode="instantly"
+            [inputAttr]="{ 'aria-label': 'Product' }"
+          >
+          </dx-tag-box>
+        </dxi-item>
+      </dxi-item>
+
+      <!-- Claim Transaction Date Field -->
+      <dxi-item>
+        <div>
+          <dx-date-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Claim Transaction Date"
+            type="date"
+            displayFormat="dd/MMM/yyyy"
+            valueFormat="yyyy/MM/dd"
+            [(value)]="instanceClaimDownloadStartDate"
+          >
+          </dx-date-box>
+        </div>
+      </dxi-item>
+    </dx-form>
+
+    <!-- Popup Buttons -->
+    <div class="footerButton d-flex justify-content-end mt-4 pt-3">
+      <dx-button
+        text="Cancel"
+        stylingMode="outlined"
+        type="normal"
+        class="me-2"
+        (onClick)="resetForm()"
+      ></dx-button>
+
+      <!-- Save Button -->
+      <dx-button
+        text="Save"
+        stylingMode="contained"
+        type="default"
+        (onClick)="onAddClick()"
+      ></dx-button>
+    </div>
+  </div>
+</dx-popup>
+
+<!-- dxPopup for update the value -->
+<dx-popup
+  [(visible)]="is_EditFormVisible"
+  [width]="'40%'"
+  [height]="'auto'"
+  [showTitle]="true"
+  title="Update Instance"
+  [closeOnOutsideClick]="false"
+>
+  <div *dxTemplate="let data of 'content'">
+    <dx-form #updateForm [colCount]="1">
+      <!-- Instance Field -->
+      <dxi-item>
+        <div>
+          <dx-text-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Instance"
+            [(value)]="Update_InstanceValue"
+          >
+          </dx-text-box>
+        </div>
+      </dxi-item>
+
+      <!-- Updated Facility Field -->
+      <dxi-item
+        itemType="group"
+        cssClass="form-group"
+        class="rowGroup"
+        [colCount]="8"
+        [colCountByScreen]="{ xs: 8, sm: 8, md: 8, lg: 8 }"
+      >
+        <dxi-item [colSpan]="8">
+          <dx-tag-box
+            label="Facility"
+            labelMode="floating"
+            labelLocation="left"
+            [items]="iseditfilteredFacility"
+            displayExpr="FacilityName"
+            valueExpr="FacilityID"
+            [(value)]="Update_Facility_Value"
+            [showSelectionControls]="true"
+            applyValueMode="instantly"
+            [inputAttr]="{ 'aria-label': 'Product' }"
+            (onValueChanged)="onFacilitySelectionChange($event)"
+          >
+          </dx-tag-box>
+        </dxi-item>
+      </dxi-item>
+
+      <!-- Claim Transaction Date Field -->
+      <dxi-item>
+        <div>
+          <dx-date-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Claim Transaction Date"
+            type="date"
+            displayFormat="dd/MMM/yyyy"
+            valueFormat="yyyy/MM/dd"
+            [(value)]="update_instanceClaimDownloadStartDate"
+          >
+            <dx-validator #dateValidator>
+              <dxi-validation-rule
+                type="required"
+                message="Claim Transaction Date is required"
+              ></dxi-validation-rule>
+            </dx-validator>
+          </dx-date-box>
+        </div>
+      </dxi-item>
+    </dx-form>
+
+    <!-- Popup Buttons -->
+    <div class="footerButton d-flex justify-content-end mt-4 pt-3">
+      <dx-button
+        text="Cancel"
+        stylingMode="outlined"
+        type="normal"
+        class="me-2"
+        (onClick)="resetForm()"
+      ></dx-button>
+
+      <!-- Save Button -->
+      <dx-button
+        text="Save"
+        stylingMode="contained"
+        type="default"
+        [useSubmitBehavior]="true"
+        (onClick)="On_Update_DataSource()"
+      ></dx-button>
+    </div>
+  </div>
+</dx-popup>

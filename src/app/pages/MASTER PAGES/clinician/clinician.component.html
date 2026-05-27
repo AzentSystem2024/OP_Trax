@@ -1,0 +1,155 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    class="grid theme-dependent"
+    noDataText="No data available"
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    (onExporting)="onExporting($event)"
+    (onRowRemoving)="onRowRemoving($event)"
+    (onEditingStart)="openEditingStart($event)"
+    height="82vh"
+  >
+    <dxo-editing
+      mode="popup"
+      [allowUpdating]="menuPrevilage.CanEdit"
+      [allowDeleting]="menuPrevilage.CanDelete"
+      [popup]="{ width: '40%', height: 'auto' }"
+    >
+      
+    </dxo-editing>
+
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="true"
+      [showNavigationButtons]="true"
+    ></dxo-pager>
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="isFilterRowVisible">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+    <dxo-filter-row
+      [visible]="isFilterRowVisible"
+      [applyFilter]="auto"
+    ></dxo-filter-row>
+
+    <dxo-search-panel
+      [visible]="true"
+      placeholder="Search"
+      [highlightCaseSensitive]="false"
+    ></dxo-search-panel>
+
+    <dxo-export
+      [enabled]="true"
+      [allowExportSelectedData]="false"
+      [formats]="['xlsx']"
+    ></dxo-export>
+
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">Clinician</div>
+      </dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' }
+        }"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          hint: 'Refresh',
+          icon: 'refresh',
+          onClick: refresh,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' }
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        name="exportButton"
+        location="after"
+        cssClass="custom-export-button"
+      ></dxi-item>
+
+      <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="addButtonOptions"
+      ></dxi-item>
+    </dxo-toolbar>
+
+    <dxi-column dataField="ClinicianLicense" caption="License"></dxi-column>
+    <dxi-column dataField="ClinicianName" caption="Name"></dxi-column>
+    <dxi-column
+      dataField="ClinicianShortName"
+      caption="Short Name"
+    ></dxi-column>
+    <dxi-column dataField="SpecialityName" caption="Speciality"> </dxi-column>
+    <dxi-column dataField="Major" caption="Major"> </dxi-column>
+    <dxi-column dataField="Profession" caption="Profession"> </dxi-column>
+    <dxi-column dataField="Category" caption="Category"> </dxi-column>
+    <dxi-column dataField="Gender" caption="Gender"> </dxi-column>
+    <dxi-column dataField="Department" caption="Department"> </dxi-column>
+  </dx-data-grid>
+
+  <dx-popup
+    [(visible)]="isAddClinicianPopupOpened"
+    [width]="'50%'"
+    [height]="'auto'"
+    [showTitle]="true"
+    title="New Clinician"
+    [dragEnabled]="true"
+    [closeOnOutsideClick]="true"
+    [showCloseButton]="true"
+    [shading]="false"
+    [toolbarItems]="toolbarItems"
+    [resizeEnabled]="false"
+  >
+    <div>
+      <app-clinician-new-form></app-clinician-new-form>
+    </div>
+  </dx-popup>
+
+  <dx-popup
+    [(visible)]="isEditClinicianPopupOpened"
+    [width]="'50%'"
+    [height]="'auto'"
+    [showTitle]="true"
+    title="Edit Clinician"
+    [dragEnabled]="true"
+    [closeOnOutsideClick]="true"
+    [showCloseButton]="true"
+    [shading]="false"
+    [toolbarItems]="toolbarEditItems"
+    [resizeEnabled]="false"
+  >
+    <div>
+      <app-clinician-edit-form
+        [formData]="selectedClinician"
+      ></app-clinician-edit-form>
+    </div>
+  </dx-popup>
+</div>

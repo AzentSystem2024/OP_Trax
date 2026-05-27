@@ -1,0 +1,41 @@
+<dx-form class="plain-styled-form">
+  <dxi-item itemType="group">
+    <dxo-col-count-by-screen
+      [xs]="1"
+      [sm]="1"
+      [md]="1"
+      [lg]="1"
+    ></dxo-col-count-by-screen>
+
+    <dxi-item>
+      <div *dxTemplate>
+        <dx-text-box label="CPT Type" [(value)]="newCptTypeData.CptTypeValue" labelMode="floating" height="40">
+           <dx-validator>
+            <dxi-validation-rule type="required" message="CPT Type is required"></dxi-validation-rule>
+            <dxi-validation-rule
+            type="async"
+            message="CPT Type already exists"
+            [validationCallback]="checkDuplicateCptType"
+          ></dxi-validation-rule>
+          </dx-validator>
+        </dx-text-box>
+      </div>
+    </dxi-item>
+    <dxi-item>
+      <div *dxTemplate>
+        <dx-text-area
+          label="Description"
+          labelMode="floating"
+          [(value)]="newCptTypeData.DescriptionValue"
+          [height]="200"
+          placeholder="Enter a desciption..."
+          [width]="'100%'"
+          [maxHeight]="200"
+          [minHeight]="50"
+          [autoResizeEnabled]="true"
+        >
+        </dx-text-area>
+      </div>
+    </dxi-item>
+  </dxi-item>
+</dx-form>

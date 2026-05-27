@@ -1,0 +1,567 @@
+<div class="tabs-demo view-wrapper">
+  <div class="widget-container">
+    <!-- User Details Section with Hide/Show Button -->
+    <div style="display: flex; align-items: center; margin-bottom: 10px">
+      <label style="font-weight: bold; font-size: 16px; margin-right: 10px"
+        >User Details:</label
+      >
+      <dx-button
+        icon="{{ showUserDetails ? 'chevronup' : 'chevrondown' }}"
+        type="default"
+        (onClick)="toggleUserDetails()"
+        [elementAttr]="{
+          style: 'background-color: transparent; border: none; color: #000;'
+        }"
+        stylingMode="text"
+      ></dx-button>
+    </div>
+
+    <div *ngIf="showUserDetails">
+      <!-- User Details Form in Two Columns -->
+      <div
+        class="user-details"
+        style="display: flex; flex-wrap: wrap; gap: 20px"
+      >
+        <div class="form-column" style="flex: 2">
+          <dx-text-box
+            [(value)]="newUserData.UserName"
+            label="User Name"
+            hint="User Name"
+            (input)="onUserNameInput($event)"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="User Name is required"
+              ></dxi-validation-rule>
+            </dx-validator>
+          </dx-text-box>
+
+          <div style="position: relative; display: flex">
+            <dx-text-box
+              label="Password"
+              [(value)]="newUserData.Password"
+              [readOnly]="true"
+              [(value)]="generatedPassword"
+              width="100%"
+              hint="Password"
+            ></dx-text-box>
+            <!-- Refresh Button -->
+            <button
+              width="'70px'"
+              (click)="refreshPassword()"
+              style="
+                top: 10px;
+                background: none;
+                color: var(--base-text-color);
+                border: none;
+                cursor: pointer;
+              "
+            >
+              <i class="dx-icon-refresh"></i>
+              <!-- DevExtreme refresh icon -->
+            </button>
+
+            <dx-tooltip
+              [target]="copyButton"
+              [position]="{ my: 'top', at: 'bottom', of: copyButton }"
+              [visible]="tooltipVisible"
+              [showEvent]="'click'"
+              [hideEvent]="'click'"
+              [animation]="{
+                show: { type: 'fade', duration: 300 },
+                hide: { type: 'fade', duration: 300 }
+              }"
+            >
+              <div>Copied!</div>
+            </dx-tooltip>
+
+            <button
+              #copyButton
+              type="button"
+              (click)="copyToClipboard()"
+              style="
+                position: absolute;
+                right: 35px;
+                color: var(--base-text-color);
+                top: 30px;
+                transform: translateY(-50%);
+                background: none;
+                border: none;
+                cursor: pointer;
+              "
+            >
+              <i class="dx-icon-copy"></i>
+              <!-- Use appropriate icon for copy action -->
+            </button>
+          </div>
+
+          <dx-select-box
+            label="Gender"
+            [(value)]="newUserData.GenderID"
+            [items]="gender"
+            displayExpr="DESCRIPTION"
+            valueExpr="ID"
+            placeholder="Select Gender"
+            hint="Gender"
+          >
+          </dx-select-box>
+
+          <div style="display: flex">
+            <dx-select-box
+              label="Mobile"
+              [searchEnabled]="true"
+              [acceptCustomValue]="false"
+              [(value)]="newUserData.countryCode"
+              [items]="countryCodes"
+              [displayExpr]="countryCodeDisplay"
+              valueExpr="data.dial_code"
+              [width]="100"
+              placeholder="+971"
+              [dropDownOptions]="{ width: '370px' }"
+              hint="Country Code"
+              (valueChange)="updateMobileNumber()"
+              (onOpened)="onDropdownOpened()"
+              (onClosed)="onDropdownClosed()"
+            >
+              <!-- Custom template for the dropdown list items -->
+              <div *dxTemplate="let item of 'item'">
+                <span>{{ item.data.flag }} </span>
+                <span>{{ item.data.dial_code }} </span>
+                <span>{{ item.data.name }}</span>
+              </div>
+
+              <dx-validator>
+                <dxi-validation-rule
+                  type="required"
+                  message="Country code is required"
+                ></dxi-validation-rule>
+              </dx-validator>
+            </dx-select-box>
+
+            <dx-text-box
+              label="No."
+              [(value)]="newUserData.Mobile"
+              [width]="'100%'"
+              style="margin-left: 10px"
+              hint="Mobile No"
+              [valueChangeEvent]="'input'"
+              (input)="onMobileInputChange($event)"
+              [maxLength]="17"
+            >
+              <dx-validator>
+                <dxi-validation-rule
+                  type="required"
+                  message="Mobile No is required"
+                ></dxi-validation-rule>
+                <dxi-validation-rule
+                  type="custom"
+                  [validationCallback]="MobileNumberValidate"
+                ></dxi-validation-rule>
+              </dx-validator>
+            </dx-text-box>
+          </div>
+        </div>
+
+        <div class="form-column" style="flex: 2">
+          <dx-text-box
+            label="Login Name"
+            [(value)]="newUserData.LoginName"
+            hint="Login Name"
+            (input)="onLoginNameInput($event)"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="Login Name is required"
+              ></dxi-validation-rule>
+              <dxi-validation-rule
+                type="custom"
+                message="Login Name already exists"
+                [validationCallback]="checkLoginNameExists"
+              ></dxi-validation-rule>
+              <dxi-validation-rule
+                type="stringLength"
+                min="5"
+                message="Login Name must be at least 5 characters long"
+              ></dxi-validation-rule>
+              <dxi-validation-rule
+                type="stringLength"
+                max="20"
+                message="Login Name cannot exceed 20 characters"
+              ></dxi-validation-rule>
+            </dx-validator>
+          </dx-text-box>
+
+          <dx-select-box
+            label="User Role"
+            [(value)]="newUserData.UserRoleID"
+            [items]="userRole"
+            displayExpr="DESCRIPTION"
+            valueExpr="ID"
+            placeholder="Select User Role"
+            hint="User Role"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="User Role is required"
+              ></dxi-validation-rule>
+            </dx-validator>
+          </dx-select-box>
+
+          <dx-date-box
+            label="Date of Birth"
+            type="date"
+            [displayFormat]="'dd/MM/yyyy'"
+            placeholder="Select Date of Birth"
+            stylingMode="outlined"
+            hint="Date Of Birth"
+            (onValueChanged)="onDateOfBirthChange($event)"
+          ></dx-date-box>
+
+          <dx-text-box
+            label="Email"
+            [(value)]="newUserData.Email"
+            hint="Email"
+            (input)="onEmailInput($event)"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="Email is required"
+              ></dxi-validation-rule>
+              <dxi-validation-rule
+                type="custom"
+                message="Invalid Email Format"
+                [validationCallback]="customEmailValidation"
+              >
+              </dxi-validation-rule>
+              <dxi-validation-rule
+                type="custom"
+                message="Email already exists"
+                [validationCallback]="checkEmailExists"
+              >
+              </dxi-validation-rule>
+            </dx-validator>
+          </dx-text-box>
+        </div>
+        <div class="form-column" style="flex: 2">
+          <label class="profile-img-label">Profile Image</label>
+          <div
+            id="drop-area"
+            (dragenter)="preventDefaults($event)"
+            (dragover)="preventDefaults($event)"
+            (dragleave)="handleDragLeave($event)"
+            (drop)="handleDrop($event)"
+            [class.image-uploaded]="isImageUploaded"
+          >
+            <!-- Conditionally show this section only if no images have been uploaded -->
+            <span *ngIf="images.length === 0"
+              >Drag and drop an image file here or
+            </span>
+            <input
+              style="display: none"
+              type="file"
+              #fileInput
+              (change)="handleFileInputChange($event)"
+              accept="image/*"
+              hidden
+            />
+
+            <!-- Conditionally show the button if no images are uploaded -->
+            <button *ngIf="images.length === 0" (click)="fileInput.click()">
+              Select a file
+            </button>
+
+            <!-- Gallery to display uploaded images -->
+            <div id="gallery">
+              <div *ngIf="images.length === 1" class="image-container">
+                <img [src]="images[0]" alt="" />
+                <span class="close-icon" (click)="removeImage()">&#x2715;</span>
+                <!-- Close icon -->
+              </div>
+            </div>
+          </div>
+
+          <dx-text-box
+            label="Whatsapp No"
+            [(value)]="newUserData.Whatsapp"
+            (input)="validateWhatsapp($event)"
+            hint="Whatsapp No"
+            (onFocusIn)="autoBindWhatsapp()"
+            [maxLength]="17"
+          >
+            <dx-validator>
+              <dxi-validation-rule
+                type="required"
+                message="Whatsapp no. is required"
+              ></dxi-validation-rule>
+              <dxi-validation-rule
+                type="custom"
+                message="Mobile no. must be at least 10 digits long"
+                [validationCallback]="WhatsappValidate"
+              ></dxi-validation-rule>
+            </dx-validator>
+          </dx-text-box>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs for Options and Facility -->
+    <dx-tabs
+      [width]="'auto'"
+      [selectedIndex]="0"
+      [rtlEnabled]="false"
+      [scrollByContent]="true"
+      [showNavButtons]="true"
+      [dataSource]="tabItems"
+      (onItemClick)="onTabClick($event)"
+    >
+    </dx-tabs>
+
+    <!-- Content Area for Tabs -->
+    <div class="tab-content">
+      <!-- Facility Tab Content -->
+      <div *ngIf="selectedIndex === 0">
+        <dx-data-grid
+          [dataSource]="facilityList"
+          [showBorders]="true"
+          [selection]="{ mode: 'multiple' }"
+          height="300"
+          keyExpr="ID"
+          [(selectedRowKeys)]="selectedRows"
+          (onSelectionChanged)="onSelectionChanged($event)"
+          width="100%"
+        >
+          <dxo-header-filter [visible]="true"></dxo-header-filter>
+          <dxo-sorting mode="multiple"></dxo-sorting>
+
+          <dxi-column
+            [width]="'200'"
+            dataField="FacilityLicense"
+            caption="Facility License"
+          >
+            <dxo-header-filter [allowSelectAll]="false">
+              <dxo-search [enabled]="true"></dxo-search>
+            </dxo-header-filter>
+          </dxi-column>
+          <dxi-column
+            [width]="'auto'"
+            dataField="FacilityName"
+            caption="Facility Name"
+          >
+            <dxo-header-filter [allowSelectAll]="false">
+              <dxo-search [enabled]="true"></dxo-search>
+            </dxo-header-filter>
+          </dxi-column>
+          <dxi-column
+            [width]="'auto'"
+            dataField="FacilityRegion"
+            caption="Facility Region"
+          >
+            <dxo-header-filter [allowSelectAll]="false">
+              <dxo-search [enabled]="true"></dxo-search>
+            </dxo-header-filter>
+          </dxi-column>
+          <dxi-column
+            [width]="'auto'"
+            dataField="FacilityGroup"
+            caption="Facility Group"
+          >
+            <dxo-header-filter [allowSelectAll]="false">
+              <dxo-search [enabled]="true"></dxo-search>
+            </dxo-header-filter>
+          </dxi-column>
+          <dxi-column
+            [width]="'auto'"
+            dataField="FacilityType"
+            caption="Facility Type"
+          >
+            <dxo-header-filter [allowSelectAll]="false">
+              <dxo-search [enabled]="true"></dxo-search>
+            </dxo-header-filter>
+          </dxi-column>
+        </dx-data-grid>
+        <!-- Display selected row count -->
+        <div style="margin-top: 10px">
+          Selected Rows: {{ selectedRowCount }}
+        </div>
+      </div>
+
+      <!-- Options Tab Content -->
+      <div *ngIf="selectedIndex === 1">
+        <!-- Options: Inactive -->
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            margin-top: 10px;
+          "
+        >
+          <dx-check-box
+            [(value)]="newUserData.IsInactive"
+            text="Inactive"
+            stylingMode="outlined"
+            hint="Inactive"
+          ></dx-check-box>
+          <div
+            *ngIf="newUserData.IsInactive"
+            style="margin-left: 10px; flex: 1"
+          >
+            <dx-text-box
+              placeholder="Reason for Inactive"
+              [(value)]="newUserData.InactiveReason"
+              width="400"
+              hint="Reason for Inactive"
+            ></dx-text-box>
+          </div>
+        </div>
+
+        <!-- Options: Locked -->
+        <div style="display: flex; align-items: center">
+          <dx-check-box
+            [(value)]="newUserData.IsLocked"
+            text="Locked "
+            stylingMode="outlined"
+            hint="Locked"
+          ></dx-check-box>
+          <div
+            *ngIf="newUserData.IsLocked"
+            style="
+              display: flex;
+              align-items: center;
+              margin-left: 10px;
+              flex: 3;
+            "
+          >
+            <dx-date-box
+              placeholder="From"
+              [displayFormat]="'dd/MM/yyyy'"
+              stylingMode="outlined"
+              hint="Locked from"
+              (onValueChanged)="onLockDateFromChange($event)"
+            >
+              <dx-validator>
+                <dxi-validation-rule
+                  type="required"
+                  message="From Date is required when locked."
+                ></dxi-validation-rule>
+              </dx-validator>
+            </dx-date-box>
+            <dx-date-box
+              placeholder="To"
+              [displayFormat]="'dd/MM/yyyy'"
+              stylingMode="outlined"
+              style="margin-left: 10px"
+              hint="Locked To"
+              (onValueChanged)="onLockDateToChange($event)"
+            >
+              <dx-validator>
+                <dxi-validation-rule
+                  type="required"
+                  message="From Date is required when locked."
+                ></dxi-validation-rule>
+              </dx-validator>
+            </dx-date-box>
+            <dx-text-box
+              placeholder="Reason for Locked"
+              [(value)]="newUserData.LockReason"
+              style="margin-left: 10px"
+              width="400"
+              hint="Reason for Locked"
+            ></dx-text-box>
+          </div>
+        </div>
+        <div
+          style="
+            display: flex;
+            flex: 2;
+            align-items: center;
+            margin: 20px 0 10px;
+          "
+        >
+          <dx-date-box
+            label="Login Expiry Date"
+            [displayFormat]="'dd/MM/yyyy'"
+            stylingMode="outlined"
+            hint="Login Expiry Date"
+            (onValueChanged)="onLoginExpiryDateChange($event)"
+            style="margin-right: 20px"
+          ></dx-date-box>
+        </div>
+        <div style="margin: 30px 0 10px; font-size: 16px; font-weight: bold">
+          Date-Time and Currency Settings
+        </div>
+
+        <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px">
+          <div style="display: flex; align-items: flex-start; gap: 20px">
+            <!-- Date Format Section -->
+            <div>
+              <dx-select-box
+                [items]="dateFormat"
+                [(value)]="newUserData.Date_Format"
+                placeholder="Select an option"
+                stylingMode="outlined"
+                label="Date Format"
+                displayExpr="DESCRIPTION"
+                valueExpr="DESCRIPTION"
+                hint="Dropdown Field"
+                [searchEnabled]="true"
+                width="235"
+                (onKeyDown)="preventTyping($event)"
+                (onValueChanged)="onDateFormatChange($event)"
+              ></dx-select-box>
+              <div
+                *ngIf="exampleDateFormat"
+                style="margin-top: 10px; color: gray"
+              >
+                Eg: {{ exampleDateFormat }}
+              </div>
+            </div>
+
+            <!-- Time Format Section -->
+            <div>
+              <dx-select-box
+                [items]="timeFormat"
+                [(value)]="newUserData.Time_Format"
+                placeholder="Select an option"
+                stylingMode="outlined"
+                label="Time Format"
+                displayExpr="DESCRIPTION"
+                valueExpr="DESCRIPTION"
+                hint="Dropdown Field"
+                [searchEnabled]="true"
+                width="235"
+                (onKeyDown)="preventTyping($event)"
+                (onValueChanged)="onTimeFormatChange($event)"
+              ></dx-select-box>
+              <div
+                *ngIf="exampleTimeFormat"
+                style="margin-top: 10px; color: gray"
+              >
+                Eg: {{ exampleTimeFormat }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- <dx-number-box
+                [(value)]="newUserData.Decimal_Points"
+                format="#,##0"
+                label="No. of digits after decimal"
+                stylingMode="outlined"
+                placeholder="Fraction Values"
+                hint="Fraction Values"
+                width="235"
+                [showSpinButtons]="true"
+                [min]="0"
+                [max]="10"
+              ></dx-number-box> -->
+        <!-- </div>
+      </div> -->
+      </div>
+    </div>
+  </div>
+</div>

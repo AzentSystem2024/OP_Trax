@@ -1,0 +1,6 @@
+@use "../../../../variables.scss" as *;
+@use "sass:math";
+.grid-header {
+    @include header();
+  }
+ 

@@ -1,0 +1,198 @@
+/* stylelint-disable no-duplicate-selectors */
+@use "../../../../variables.scss" as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  height: 100%;
+  // background-color: #196c99 !important;
+  border-radius: 0px;
+
+  .menu-container {
+    background-color: var(--side-panel-background);
+    // color: rgba(203, 213, 225, 1)!important;
+    min-height: 100%;
+    width: 250px;
+    display: flex;
+    flex: 1;
+    padding-top: var(--toolbar-vertical-padding);
+    padding-bottom: var(--footer-height);
+
+    ::ng-deep .dx-treeview {
+      // ## Icon width customization
+      .dx-treeview-item {
+      padding-left: 5px;
+      flex-direction: row-reverse;
+      border-radius: 8px;
+      min-height: 36px; /* instead of fixed height */
+      margin-top: 10px;
+      align-items: center;
+      white-space: normal; /* allow wrapping */
+      line-height: 1.3em;
+      padding-right: 10px;
+
+      .dx-treeview-item-content {
+        white-space: normal; /* allow wrapping for text */
+        word-break: break-word;
+      }
+
+      .dx-icon.dx-icon {
+        width: var(--side-panel-min-width);
+        font-weight: bold;
+        margin-bottom: 1px;
+        margin-right: 1px;
+        flex-shrink: 0;
+      }
+    }
+
+      // ##
+
+      // ## Arrow customization
+      // .dx-treeview-node.dx-treeview-node {
+      //   // padding: 0 0;
+      // }
+
+      // .dx-treeview-toggle-item-visibility {
+      //   right: 10px;
+      //   left: auto;
+      //   color: rgba(255, 255, 255, 1);
+      // }
+
+      .dx-rtl .dx-treeview-toggle-item-visibility {
+        left: 10px;
+        right: auto;
+      }
+
+      // ##
+
+      // ## Item levels customization
+      .dx-treeview-node {
+        &[aria-level="1"] {
+          // color: var(--side-menu-text-color);
+            //  color: rgba(255, 255, 255, 1) !important;
+                // color: rgba(203, 213, 225, 1)!important;
+                color: var(--side-menu-text-color)!important;
+                
+          font-size: 16px;
+          font-weight: bold;
+          border-bottom: 1px solid var(--border-color);
+        }
+        &[aria-level="2"] .dx-treeview-item-content {
+          font-weight: normal;
+          // color: rgba(108, 165, 197, 1)!important;
+                    font-size: 14px;
+          color: var(--menu-selected-text-color)!important;
+
+          // padding: 0 0 0 var(--side-panel-min-width);
+          padding-left: 30px;
+        }
+      }
+    }
+  }
+}
+
+::ng-deep .menu-container .dx-treeview-item.dx-state-hover {
+  // background-color: rgba(248, 250, 252, 1)!important;
+  background-color: transparent !important;
+  //  color: rgba(25, 108, 153, 1) !important;
+  color: #FFFFFF !important;
+  border-radius: 6px;
+}
+
+::ng-deep .dx-treeview-toggle-item-visibility .dx-state-hover {
+        right: 10px;
+        left: auto;
+        color: rgba(255, 255, 255, 1);
+      }
+
+::ng-deep .dx-treeview .dx-treeview-node[aria-level="2"] > .dx-treeview-item.dx-state-hover,
+::ng-deep .dx-treeview .dx-treeview-node[aria-level="3"] > .dx-treeview-item.dx-state-hover {
+   background-color: var(--selected-menu-bg-color)!important;
+    color: rgba(25, 108, 153, 1) !important; /* dark blue text */
+  border-radius: 8px;
+
+}
+/* 🌟 SELECTED (level 2 and 3) */
+::ng-deep .dx-treeview .dx-treeview-node[aria-level="2"] > .dx-treeview-item.dx-state-selected,
+::ng-deep .dx-treeview .dx-treeview-node[aria-level="3"] > .dx-treeview-item.dx-state-selected {
+  background-color: var(--selected-menu-bg-color) !important;
+  border-radius: 8px!important;
+  //  color: rgba(25, 108, 153, 1) !important; /* dark blue text */
+ 
+}
+
+/* ✅ FORCE text color for selected item text (DevExtreme overrides this) */
+::ng-deep .dx-treeview .dx-treeview-node[aria-level="2"] > .dx-treeview-item.dx-state-selected .dx-item-content,
+::ng-deep .dx-treeview .dx-treeview-node[aria-level="3"] > .dx-treeview-item.dx-state-selected .dx-item-content {
+  color: rgba(25, 108, 153, 1) !important;
+}
+
+::ng-deep .dx-treeview-item-without-checkbox.dx-state-selected
+  > .dx-treeview-item {
+  color: var(--side-menu-text-color) !important;
+  background-color: var(--side-menu-selected-bg)!important;  
+}
+// /* Keep the same background when submenu is selected */
+// ::ng-deep .dx-treeview .dx-treeview-node[aria-level="2"] > .dx-treeview-item.dx-state-selected,
+// ::ng-deep .dx-treeview .dx-treeview-node[aria-level="3"] > .dx-treeview-item.dx-state-selected {
+//   background-color: var(--selected-menu-bg-color)!important;
+//   color: rgba(25, 108, 153, 1) !important;
+//   border-radius: 6px;
+// }
+
+
+::ng-deep .dx-treeview-item-without-checkbox .dx-state-focused {
+  > .dx-treeview-item {
+   color: rgba(25, 108, 153, 1) !important;
+   border-top-right-radius: 0px !important;
+   border-bottom-right-radius: 0px !important;
+  }
+}
+
+::ng-deep.dx-treeview-item-without-checkbox.dx-state-selected
+  > .dx-treeview-item {
+  background-color: var(--selected-menu-bg-color)!important;
+   color: rgba(25, 108, 153, 1) !important;
+   border-top-right-radius: 0px !important;
+   border-bottom-right-radius: 0px !important;
+}
+
+.position-sticky {
+  background-color: var(--side-panel-background);
+}
+
+::ng-deep .dx-treeview .dx-treeview-node[aria-level="1"] .dx-treeview-item.dx-state-selected {
+  background-color: transparent !important;
+  color: rgba(255, 255, 255, 1) !important;
+}
+::ng-deep .dx-treeview .dx-treeview-node[aria-level="1"] .dx-treeview-item{
+  // background-color: transparent !important;
+  // color: rgba(255, 255, 255, 1) !important;
+  cursor: default !important;
+}
+/* Remove hover effect only for main parent menu items */
+
+::ng-deep .dx-treeview-item-without-checkbox.dx-state-focused > .dx-treeview-item {
+  background-color: transparent !important;
+  color: inherit !important;
+  border-radius: 8px;
+}
+
+
+//===========side menu arrow icon color change on hover and normal state==================
+::ng-deep .dx-treeview-toggle-item-visibility {
+  right: 10px;
+  left: auto;
+  color: var(--side-menu-text-color); /* normal state (optional light gray) */
+  transition: color 0.2s ease;
+}
+
+/* On hover of the item → make icon white */
+::ng-deep .dx-treeview-node:hover > .dx-item .dx-treeview-toggle-item-visibility {
+  color: rgba(255, 255, 255, 1) !important;
+}
+::ng-deep .dx-treeview-node.dx-state-selected > .dx-item .dx-treeview-toggle-item-visibility {
+  color: rgba(255, 255, 255, 1) !important;
+}
+

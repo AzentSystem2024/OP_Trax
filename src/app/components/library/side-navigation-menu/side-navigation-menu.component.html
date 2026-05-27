@@ -1,0 +1,26 @@
+<ng-content></ng-content>
+
+<div class="menu-container theme-dependent">
+  <dx-tree-view
+    [items]="items"
+    keyExpr="id"
+    displayExpr="text"
+    selectionMode="single"
+    [(selectedItemKeys)]="selectedItemKeys"
+    [focusStateEnabled]="false"
+    (onItemClick)="onItemClick($event)"
+    expandEvent="click"
+    [searchEnabled]="true"
+    searchMode="contains"
+    width="100%"
+  >
+  </dx-tree-view>
+</div>
+<ng-content select="app-footer">
+  <!-- <div
+    class="position-sticky bottom-0 text-center py-2 border-top"
+    style="z-index: 10"
+  >
+    version {{ customerInfo.version }}
+  </div> -->
+</ng-content>

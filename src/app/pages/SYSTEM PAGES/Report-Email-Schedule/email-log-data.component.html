@@ -1,0 +1,512 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    class="grid theme-dependent"
+    noDataText="No Data"
+    [height]="'84vh'"
+    [width]="'100%'"
+    [dataSource]="dataSource"
+    [columns]="columns"
+    [showBorders]="true"
+    [allowColumnResizing]="false"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    (onEditingStart)="onEditingStart($event)"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="true"
+      [showNavigationButtons]="true"
+    ></dxo-pager>
+
+    <dxo-editing mode="popup" [allowUpdating]="true" [allowDeleting]="false">
+    </dxo-editing>
+
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="true">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+
+    <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+
+    <dxo-search-panel
+      [visible]="false"
+      placeholder=" Search"
+    ></dxo-search-panel>
+
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">Report Email Schedule</div>
+      </dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' }
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          hint: 'Refresh',
+          icon: 'refresh',
+          onClick: refresh,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' }
+        }"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="newButtonOptions"
+      ></dxi-item>
+    </dxo-toolbar>
+  </dx-data-grid>
+
+  <!-- =========Custom Add new  popup form========= -->
+  <dx-popup
+    [(visible)]="is_addFormVisible"
+    [width]="'50%'"
+    [height]="'auto'"
+    [showTitle]="true"
+    title="Add E-mail Alert"
+    [closeOnOutsideClick]="false"
+    (onHiding)="resert_addNew_Form()"
+  >
+    <div>
+      <dx-form [colCount]="1">
+        <!-- Report Name Field -->
+        <dxi-item itemType="group" cssClass="form-group" [colSpan]="2">
+          <dxi-item [colSpan]="2">
+            <dx-drop-down-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Reports"
+              [(value)]="newReportIDValue"
+              displayExpr="DESCRIPTION"
+              valueExpr="ID"
+              [showClearButton]="true"
+              [dataSource]="reportNameDatasource"
+            >
+              <div *dxTemplate="let data of 'content'">
+                <dx-data-grid
+                  [dataSource]="reportNameDatasource"
+                  [columns]="[
+                    {
+                      dataField: 'DESCRIPTION',
+                      caption: 'Reports',
+                    },
+                  ]"
+                  [selection]="{ mode: 'multiple' }"
+                  [hoverStateEnabled]="true"
+                  [paging]="{ enabled: true, pageSize: 10 }"
+                  [filterRow]="{ visible: true }"
+                  [headerFilter]="{ visible: true }"
+                  [scrolling]="{ mode: 'virtual' }"
+                  [height]="250"
+                  [(selectedRowKeys)]="newReportIDValue"
+                >
+                </dx-data-grid>
+              </div>
+            </dx-drop-down-box>
+          </dxi-item>
+        </dxi-item>
+
+        <!-- Facility Field -->
+        <dxi-item itemType="group" cssClass="form-group" [colSpan]="2">
+          <dxi-item [colSpan]="2">
+            <dx-drop-down-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Facility"
+              [(value)]="Facility_Value"
+              valueExpr="ID"
+              displayExpr="FacilityName"
+              [showClearButton]="true"
+              [dataSource]="Facility_DataSource"
+            >
+              <div *dxTemplate="let data of 'content'">
+                <dx-data-grid
+                  [dataSource]="Facility_DataSource"
+                  [columns]="[
+                    {
+                      dataField: 'FacilityLicense',
+                      caption: 'License',
+                      width: 'auto'
+                    },
+                    {
+                      dataField: 'FacilityName',
+                      caption: 'Name',
+                      width: 'auto'
+                    },
+                    { dataField: 'Region', caption: 'Region', width: 'auto' },
+                    {
+                      dataField: 'Emirate',
+                      caption: 'Emirates',
+                      width: 'auto'
+                    },
+                    { dataField: 'Zone', caption: 'Zone', width: 'auto' },
+                    { dataField: 'Type', caption: 'Type', width: 'auto' },
+                    {
+                      dataField: 'Category',
+                      caption: 'Category',
+                      width: 'auto'
+                    },
+                    {
+                      dataField: 'Postoffice',
+                      caption: 'Post Office',
+                      width: 'auto'
+                    }
+                  ]"
+                  [selection]="{ mode: 'multiple' }"
+                  [hoverStateEnabled]="true"
+                  [paging]="{ enabled: true, pageSize: 10 }"
+                  [filterRow]="{ visible: true }"
+                  [headerFilter]="{ visible: true }"
+                  [scrolling]="{ mode: 'virtual' }"
+                  [height]="250"
+                  [(selectedRowKeys)]="Facility_Value"
+                >
+                </dx-data-grid>
+              </div>
+            </dx-drop-down-box>
+          </dxi-item>
+        </dxi-item>
+
+        <!-- Search On Field -->
+        <dxi-item>
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Search On"
+            displayExpr="Name"
+            valueExpr="ID"
+            [dataSource]="SearchOn_DataSource"
+            [(value)]="newSearchOnValue"
+          >
+          </dx-select-box>
+        </dxi-item>
+
+        <!-- Encounter Type Field -->
+        <dxi-item>
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Encounter Type"
+            displayExpr="Name"
+            valueExpr="ID"
+            [dataSource]="EncounterType_DataSource"
+            [(value)]="newEncounterTypeValue"
+          >
+          </dx-select-box>
+        </dxi-item>
+
+        <!-- Date Period Field -->
+        <dxi-item>
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Date Period"
+            displayExpr="DESCRIPTION"
+            valueExpr="ID"
+            [dataSource]="timePeriodDataSource"
+            [(value)]="newDatePeriodValue"
+          >
+          </dx-select-box>
+        </dxi-item>
+
+        <!-- Email ID Field -->
+        <dxi-item itemType="group" cssClass="form-group" [colSpan]="2">
+          <dxi-item [colSpan]="2">
+            <dx-drop-down-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Users"
+              [(value)]="newUserIDValue"
+              displayExpr="UserName"
+              [showClearButton]="true"
+              [dataSource]="userListDataSource"
+            >
+              <div *dxTemplate="let data of 'content'">
+                <dx-data-grid
+                  [dataSource]="userListDataSource"
+                  [columns]="[
+                    {
+                      dataField: 'UserName',
+                      caption: 'User Name',
+                    },
+                    {
+                      dataField: 'Email',
+                      caption: 'E-mail',
+                    }
+                  ]"
+                  [selection]="{ mode: 'multiple' }"
+                  [hoverStateEnabled]="true"
+                  [paging]="{ enabled: true, pageSize: 10 }"
+                  [filterRow]="{ visible: true }"
+                  [headerFilter]="{ visible: true }"
+                  [scrolling]="{ mode: 'virtual' }"
+                  [height]="250"
+                  [(selectedRowKeys)]="newUserIDValue"
+                >
+                </dx-data-grid>
+              </div>
+            </dx-drop-down-box>
+          </dxi-item>
+        </dxi-item>
+      </dx-form>
+
+      <!-- Popup Buttons -->
+      <div class="footerButton d-flex justify-content-end mt-4 pt-3">
+        <!-- Cancel Button -->
+        <dx-button
+          text="Cancel"
+          stylingMode="outlined"
+          type="normal"
+          class="me-2"
+          (onClick)="resert_addNew_Form()"
+        ></dx-button>
+
+        <!-- Save Button -->
+        <dx-button
+          text="Save"
+          stylingMode="contained"
+          type="default"
+          (onClick)="On_Click_save_new_Data()"
+        ></dx-button>
+      </div>
+    </div>
+  </dx-popup>
+
+  <!-- ===================================Custom edit popup form=============================== -->
+  <dx-popup
+    [(visible)]="is_EditFormVisible"
+    [width]="'50%'"
+    [height]="'auto'"
+    [showTitle]="true"
+    title="Update E-mail Alert"
+    [closeOnOutsideClick]="false"
+  >
+    <div *dxTemplate="let data of 'content'">
+      <dx-form [colCount]="1">
+        <!-- report Field -->
+        <dxi-item itemType="group" cssClass="form-group" [colSpan]="2">
+          <dxi-item [colSpan]="2">
+            <dx-drop-down-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Reports"
+              [(value)]="selectedRowData.ReportIDList"
+              displayExpr="DESCRIPTION"
+              valueExpr="ID"
+              [showClearButton]="true"
+              [dataSource]="reportNameDatasource"
+            >
+              <div *dxTemplate="let data of 'content'">
+                <dx-data-grid
+                  [dataSource]="reportNameDatasource"
+                  [columns]="[
+                    {
+                      dataField: 'DESCRIPTION',
+                      caption: 'Reports',
+                    },
+                  ]"
+                  [selection]="{ mode: 'multiple' }"
+                  [hoverStateEnabled]="true"
+                  [paging]="{ enabled: true, pageSize: 10 }"
+                  [filterRow]="{ visible: true }"
+                  [headerFilter]="{ visible: true }"
+                  [scrolling]="{ mode: 'virtual' }"
+                  [height]="250"
+                  [(selectedRowKeys)]="selectedRowData.ReportIDList"
+                >
+                </dx-data-grid>
+              </div>
+            </dx-drop-down-box>
+          </dxi-item>
+        </dxi-item>
+
+        <!-- Updated Facility Field -->
+        <dxi-item itemType="group" cssClass="form-group" [colSpan]="2">
+          <dxi-item [colSpan]="2">
+            <dx-drop-down-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Facility"
+              [(value)]="selectedRowData.FacilityIDList"
+              valueExpr="ID"
+              displayExpr="FacilityName"
+              [showClearButton]="true"
+              [dataSource]="Facility_DataSource"
+            >
+              <div *dxTemplate="let data of 'content'">
+                <dx-data-grid
+                  [dataSource]="Facility_DataSource"
+                  [columns]="[
+                    {
+                      dataField: 'FacilityLicense',
+                      caption: 'License',
+                      width: 'auto'
+                    },
+                    {
+                      dataField: 'FacilityName',
+                      caption: 'Name',
+                      width: 'auto'
+                    },
+                    { dataField: 'Region', caption: 'Region', width: 'auto' },
+                    {
+                      dataField: 'Emirate',
+                      caption: 'Emirates',
+                      width: 'auto'
+                    },
+                    { dataField: 'Zone', caption: 'Zone', width: 'auto' },
+                    { dataField: 'Type', caption: 'Type', width: 'auto' },
+                    {
+                      dataField: 'Category',
+                      caption: 'Category',
+                      width: 'auto'
+                    },
+                    {
+                      dataField: 'Postoffice',
+                      caption: 'Post Office',
+                      width: 'auto'
+                    }
+                  ]"
+                  [selection]="{ mode: 'multiple' }"
+                  [hoverStateEnabled]="true"
+                  [paging]="{ enabled: true, pageSize: 10 }"
+                  [filterRow]="{ visible: true }"
+                  [headerFilter]="{ visible: true }"
+                  [scrolling]="{ mode: 'virtual' }"
+                  [height]="250"
+                  [(selectedRowKeys)]="selectedRowData.FacilityIDList"
+                >
+                </dx-data-grid>
+              </div>
+            </dx-drop-down-box>
+          </dxi-item>
+        </dxi-item>
+
+        <!-- Search On Field -->
+        <dxi-item>
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Search On"
+            displayExpr="Name"
+            valueExpr="ID"
+            [dataSource]="SearchOn_DataSource"
+            [(value)]="selectedRowData.SearchOn"
+          >
+          </dx-select-box>
+        </dxi-item>
+
+        <!-- Encounter Type Field -->
+        <dxi-item>
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Encounter Type"
+            displayExpr="Name"
+            valueExpr="ID"
+            [dataSource]="EncounterType_DataSource"
+            [(value)]="selectedRowData.EncounterType"
+          >
+          </dx-select-box>
+        </dxi-item>
+
+        <!-- Date Period Field -->
+        <dxi-item>
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Date Period"
+            displayExpr="DESCRIPTION"
+            valueExpr="ID"
+            [dataSource]="timePeriodDataSource"
+            [(value)]="selectedRowData.DatePeriod"
+          >
+          </dx-select-box>
+        </dxi-item>
+
+        <!-- Email ID Field -->
+        <dxi-item itemType="group" cssClass="form-group" [colSpan]="2">
+          <dxi-item [colSpan]="2">
+            <dx-drop-down-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Users"
+              [(value)]="selectedRowData.EmailUserIDList"
+              displayExpr="UserName"
+              valueExpr="UserID"
+              [showClearButton]="true"
+              [dataSource]="userListDataSource"
+            >
+              <div *dxTemplate="let data of 'content'">
+                <dx-data-grid
+                  [dataSource]="userListDataSource"
+                  [columns]="[
+                    {
+                      dataField: 'UserName',
+                      caption: 'User Name',
+                    },
+                    {
+                      dataField: 'Email',
+                      caption: 'E-mail',
+                    }
+                  ]"
+                  [selection]="{ mode: 'multiple' }"
+                  [hoverStateEnabled]="true"
+                  [paging]="{ enabled: true, pageSize: 10 }"
+                  [filterRow]="{ visible: true }"
+                  [headerFilter]="{ visible: true }"
+                  [scrolling]="{ mode: 'virtual' }"
+                  [height]="250"
+                  [(selectedRowKeys)]="selectedRowData.EmailUserIDList"
+                >
+                </dx-data-grid>
+              </div>
+            </dx-drop-down-box>
+          </dxi-item>
+        </dxi-item>
+      </dx-form>
+
+      <!-- Popup Buttons -->
+      <div class="footerButton d-flex justify-content-end mt-4 pt-3">
+        <dx-button
+          text="Cancel"
+          stylingMode="outlined"
+          type="normal"
+          class="me-2"
+          (onClick)="resetForm()"
+        ></dx-button>
+
+        <!-- Save Button -->
+        <dx-button
+          text="Save"
+          stylingMode="contained"
+          type="default"
+          (onClick)="On_Update_Log_Data()"
+        ></dx-button>
+      </div>
+    </div>
+  </dx-popup>
+</div>

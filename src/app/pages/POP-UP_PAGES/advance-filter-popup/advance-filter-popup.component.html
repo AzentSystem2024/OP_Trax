@@ -1,0 +1,47 @@
+<dx-data-grid
+  #dataGrid
+  [dataSource]="gridDataSource"
+  [columns]="columnData"
+  [showBorders]="true"
+  [paging]="{ pageSize: 10 }"
+  [pager]="{ showPageSizeSelector: true, allowedPageSizes: [10, 25, 50] }"
+  [filterRow]="{ visible: false }"
+  [headerFilter]="{ visible: false }"
+  [columnResizingMode]="'widget'"
+  [allowColumnResizing]="true"
+  [allowColumnReordering]="true"
+  [columnAutoWidth]="true"
+  [columnFixing]="{ enabled: true }"
+  [columnChooser]="{ enabled: true, mode: 'select', height: 400 }"
+  [height]="'100%'"
+  [width]="'100%'"
+>
+  <dxo-toolbar class="toolBarDiv p-0 m-0">
+    <dxi-item
+      class="me-2"
+      name="columnChooserButton"
+      locateInMenu="auto"
+    ></dxi-item>
+    <dxi-item location="after" locateInMenu="auto">
+      <div class="separator"></div>
+    </dxi-item>
+
+    <dxi-item location="after" locateInMenu="auto">
+      <dx-button
+        class="me-2"
+        text="Import "
+        icon="import"
+        type="default"
+        stylingMode="contained"
+        (onClick)="fileInput.click()"
+      ></dx-button>
+    </dxi-item>
+  </dxo-toolbar>
+  <input style="display: none;"
+    #fileInput
+    type="file"
+    accept=".xlsx, .xls"
+    hidden
+    (change)="import_ExcelData($event)"
+  />
+</dx-data-grid>

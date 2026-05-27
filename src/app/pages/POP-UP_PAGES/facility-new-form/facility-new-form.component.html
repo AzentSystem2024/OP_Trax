@@ -1,0 +1,78 @@
+<dx-form
+  class="facility-master-form single-column"
+  [colCount]="1"
+  labelLocation="top"
+  stylingMode="outlined"
+>
+
+  <!-- Facility Info -->
+  <dxi-item itemType="group" caption="Facility Information">
+    <dxi-item>
+      <dx-text-box 
+      label="Facility License" 
+      labelMode="floating"
+      [(value)]="newFacilityData.FACILITY_LICENSE"
+      ></dx-text-box>
+    </dxi-item>
+
+    <dxi-item>
+      <dx-text-box 
+      label="Facility Name" 
+      labelMode="floating"
+      [(value)]="newFacilityData.FACILITY_NAME"
+      ></dx-text-box>
+    </dxi-item>
+
+    <dxi-item>
+      <dx-select-box
+        label="Post Office"
+        labelMode="floating"
+        [items]="postoffice_DropDownData"
+        [(value)]="newFacilityData.POST_OFFICE_ID"
+        placeholder="Select a Post Office"
+        displayExpr="DESCRIPTION"
+        valueExpr="ID"
+      ></dx-select-box>
+    </dxi-item>
+  </dxi-item>
+
+  <!-- Credentials -->
+  <dxi-item itemType="group" caption="🔐Post Office Credentials">
+    <dxi-item>
+      <dx-text-box 
+      label="Login Name" 
+      labelMode="floating"
+      [(value)]="newFacilityData.LOGIN_NAME"
+      ></dx-text-box>
+    </dxi-item>
+
+    <dxi-item>
+      <dx-text-box 
+      label="Password" 
+      mode="password" 
+      labelMode="floating"
+      [(value)]="newFacilityData.PASSWORD"
+      ></dx-text-box>
+    </dxi-item>
+
+    <dxi-item>
+      <div class="verify-row">
+        <dx-check-box text="Verified" class="verified-checkbox" [disabled]="true" [(value)]="newFacilityData.IS_VERIFIED"></dx-check-box>
+        <dx-button text="Verify" icon="check" type="default" stylingMode="contained" (onClick)="verifyPostOffice()"></dx-button>
+      </div>
+
+      <!-- Last Verification Date -->
+    <div *ngIf="newFacilityData.VERIFIED_ON" class="verification-date">
+      <small>Last Verification on:</small><br>
+      <strong>{{ newFacilityData.VERIFIED_ON | date:'medium' }}</strong>
+    </div>
+    </dxi-item>
+  </dxi-item>
+
+</dx-form>
+
+<!-- Footer -->
+<div class="form-footer">
+  <dx-button text="Cancel" type="normal"></dx-button>
+  <dx-button text="Save" type="default" stylingMode="contained" (onClick)="onSaveFacility()"></dx-button>
+</div>

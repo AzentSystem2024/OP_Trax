@@ -1,0 +1,200 @@
+// @use "../../../../../variables.scss" as *;
+@use "../../../../variables.scss" as *;
+@use "sass:math";
+
+:host {
+  --side-panel-toolbar-height: 76px;
+
+  width: 100%;
+  display: contents;
+  overflow: auto;
+}
+.view-wrapper {
+  .grid {
+    .name-template {
+      .position {
+        font-size: 12px;
+        color: var(--texteditor-label-color);
+      }
+    }
+
+    ::ng-deep & {
+      .dx-datagrid-header-panel {
+        padding: 0 var(--content-padding);
+      }
+
+      .dx-toolbar {
+        margin-bottom: 0;
+        padding: var(--toolbar-margin-bottom) 0;
+      }
+
+      .dx-datagrid-content .dx-row {
+        cursor: pointer;
+      }
+    }
+
+    .grid-header {
+      @include header();
+    }
+  }
+
+  user-panel {
+    display: inherit;
+  }
+}
+
+.two-column-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.form-group {
+  width: 100%;
+}
+.subgroup-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subgroup-container dx-select-box {
+  flex: 1;
+}
+
+.horizontal-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.select-box-wrapper {
+  flex: 1;
+}
+
+.add-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px; /* Optional: for slightly rounded corners */
+  padding: 0;
+  min-width: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -4px;
+}
+
+.add-btn .dx-button-content {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-btn .dx-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+  line-height: 1 !important;
+}
+
+.full-width-form-group {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.form-popup-buttons-container {
+  display: flex;
+  justify-content: flex-end; /* Moves buttons to the right */
+  padding: 10px; /* Optional: Adds some spacing */
+}
+
+.popup-footer {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+}
+
+.checkbox-container {
+  margin-top: 16px;
+}
+.form-field {
+  display: block;
+  margin-bottom: 8px; /* Adjust space as needed */
+}
+.single-column-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1px; /* spacing between fields */
+}
+
+.fieldDiv {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 5px;
+  margin: 0px;
+}
+.single-column-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.form-popup-buttons-container {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+::ng-deep .dx-datagrid-header-panel {
+  border-bottom: 1px solid rgb(97, 97, 97);
+  /* padding: 8px 0; */
+}
+
+::ng-deep
+  .dx-datagrid-headers.dx-header-multi-row:not(.dx-datagrid-sticky-columns)
+  .dx-datagrid-content
+  .dx-datagrid-table
+  .dx-row.dx-header-row
+  > td {
+  border: 1px solid var(--border-color);
+}
+
+// ::ng-deep .dx-datagrid .dx-row > td {
+//   white-space: normal;
+//   word-break: break-word;
+// }
+::ng-deep .dx-datagrid-rowsview .dx-editor-cell .dx-texteditor,
+.dx-datagrid-rowsview .dx-editor-cell .dx-tagbox {
+  height: 40px !important;
+  overflow: hidden;
+}
+
+::ng-deep .dx-datagrid-rowsview .dx-editor-cell .dx-tagbox .dx-tag-content {
+  max-height: 24px;
+  overflow: hidden;
+}
+
+::ng-deep .dx-datagrid-rowsview .dx-selection.dx-row:not(.dx-row-focused) > td,
+.dx-datagrid-rowsview .dx-selection.dx-row:not(.dx-row-focused) > tr > td,
+.dx-datagrid-rowsview .dx-selection.dx-row:not(.dx-row-focused):hover > td,
+.dx-datagrid-rowsview
+  .dx-selection.dx-row:not(.dx-row-focused):hover
+  > tr
+  > td {
+  background-color: #2177b8d6;
+  color: unset;
+}
+.row > * {
+  padding-right: calc(var(--bs-gutter-x) * 0.3);
+  padding-left: calc(var(--bs-gutter-x) * 0.1);
+  margin-top: var(--bs-gutter-y);
+}
+::ng-deep.dx-datagrid-revert-tooltip .dx-revert-button {
+  border-radius: 4px;
+  background-color: #dc2828;
+  color: #fff;
+  margin: 0 0 0 0px;
+  height: 38px;
+  width: 20px;
+  box-shadow: none;
+  min-width: inherit;
+}

@@ -1,0 +1,28 @@
+::ng-deep .no-padding-form .dx-layout-manager .dx-field-item-content {
+  padding: 1px !important;
+  margin: 0 !important;
+}
+
+::ng-deep .no-padding-form .dx-field-item {
+  padding: 1px !important;
+  margin: 0 !important;
+}
+
+::ng-deep .highlighted-facility {
+  background-color: #0e5c80 !important; // Light blue, customize as needed
+}
+
+.inner-box {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+.subgridDataDiv {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+  padding-left: 130px;
+}
+
+

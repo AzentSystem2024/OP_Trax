@@ -1,0 +1,36 @@
+@use "../../../../variables.scss" as *;
+@use "sass:math";
+
+/* Optional base styling for form */
+.plain-styled-form {
+  padding: 1rem;
+}
+
+/* Responsive adjustments */
+.mobile-friendly-form {
+  width: 100%;
+}
+
+/* Footer buttons container */
+.popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Make buttons full width on smaller screens */
+@media (max-width: 600px) {
+  .popup-footer {
+    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .popup-footer dx-button {
+    width: 100%;
+  }
+}
+

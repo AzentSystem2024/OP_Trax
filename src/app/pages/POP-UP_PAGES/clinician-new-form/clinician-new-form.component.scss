@@ -1,0 +1,42 @@
+
+  .plain-styled-form {
+    // background-color: var(--background-color);
+    padding: 10px;
+
+    .dx-item {
+      margin-bottom: 0px;
+    }
+
+    .dx-textbox {
+      width: 100%;
+      padding: 4px;
+      font-size: 14px;
+      background-color: var(--background-color);
+      color: var(--text-color);
+
+
+    }
+    .dx-selectbox {
+      width: 100%;
+      padding: 4px;
+      font-size: 14px;
+      background-color: var(--background-color);
+      color: var(--text-color);
+    }
+
+
+    .dx-field-label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: var(--text-color);
+    }
+
+    .buttons-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .select-box-label{
+        margin-bottom: 4px;
+    }
+  }

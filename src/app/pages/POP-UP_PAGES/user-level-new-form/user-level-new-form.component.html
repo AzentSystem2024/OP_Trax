@@ -1,0 +1,125 @@
+<div class="dx-theme-fluent dx-theme-fluent">
+  <div class="view-wrapper topDiv d-flex mb-2 mt-0">
+    <div class="headDiv d-flex align-items-center m-0 p-0">
+      <div class="inputBox ms-3">
+        <dx-text-box
+          [(value)]="UserLevelValue"
+          label="Enter User Role"
+          labelMode="floating"
+          validationMessagePosition="right"
+        >
+          <dx-validator #userRoleValidator>
+            <dxi-validation-rule
+              type="required"
+              message="user level is required"
+            ></dxi-validation-rule>
+          </dx-validator>
+        </dx-text-box>
+      </div>
+
+      <div class="inputBox ms-3" *ngIf="!editValue">
+        <dx-select-box
+          [(value)]="CopiedUserLevelValue"
+          [items]="userRoles"
+          label="Copy User Role"
+          labelMode="floating"
+          [showClearButton]="true"
+          validationMessagePosition="right"
+          (onValueChanged)="onUserRoleCopySelectionChange($event)"
+        >
+        </dx-select-box>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs-demo view-wrapper">
+    <div class="widget-container">
+      <div>
+        <dx-tabs
+          #withIconAndText
+          [width]="width"
+          [selectedIndex]="selectedTab"
+          [scrollByContent]="scrollByContent"
+          [showNavButtons]="showNavButtons"
+          [dataSource]="MenuDatasource"
+          [orientation]="orientations"
+          [stylingMode]="stylingMode"
+          [iconPosition]="iconPosition"
+          (onItemClick)="onTabClick($event)"
+        >
+        </dx-tabs>
+
+        <dx-data-grid
+          #dataGrid
+          *ngIf="selectedTabData"
+          class="grid theme-dependent"
+          noDataText=""
+          [height]="'58vh'"
+          [dataSource]="selectedTabData"
+          [allowColumnResizing]="true"
+          [allowColumnReordering]="true"
+          [rowAlternationEnabled]="true"
+          [hoverStateEnabled]="true"
+          rowAlternationInterval="2"
+          (onSelectionChanged)="onSelectionChanged($event)"
+          [selectedRowKeys]="selectedRows[selectedTab]"
+          (onEditorPreparing)="onEditorPreparing($event)"
+        >
+          <dxo-selection mode="multiple"></dxo-selection>
+
+          <dxo-editing mode="cell" [allowUpdating]="true"> </dxo-editing>
+
+          <dxi-column dataField="MenuName" caption="Menu List"></dxi-column>
+
+          <dxi-column
+            dataField="canAdd"
+            caption="Add"
+            dataType="boolean"
+            [showEditorAlways]="true"
+          >
+          </dxi-column>
+          <dxi-column
+            dataField="canEdit"
+            caption="Modify"
+            dataType="boolean"
+            [showEditorAlways]="true"
+          >
+          </dxi-column>
+          <dxi-column
+            dataField="canDelete"
+            caption="Delete"
+            dataType="boolean"
+            [showEditorAlways]="true"
+          >
+          </dxi-column>
+        </dx-data-grid>
+
+        <div class="mt-2 d-flex gap-2 ps-2 pt-1">
+          <dx-check-box
+            [(value)]="canVerifyCostingData"
+            text="Verify Costing Data"
+            (onValueChanged)="onPermissionCheckboxChanged()"
+          ></dx-check-box>
+
+          <dx-check-box
+            [(value)]="canApproveCostingData"
+            text="Approve Costing Data"
+            (onValueChanged)="onPermissionCheckboxChanged()"
+          ></dx-check-box>
+
+          <dx-check-box
+            [(value)]="canUploadCostingData"
+            text="Upload Costing Data"
+            (onValueChanged)="onPermissionCheckboxChanged()"
+          ></dx-check-box>
+
+          <dx-check-box
+            [(value)]="canReprocessCostingData"
+            text="Reprocess Costing Data"
+            (onValueChanged)="onPermissionCheckboxChanged()"
+          ></dx-check-box>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

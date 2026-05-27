@@ -1,0 +1,59 @@
+<dx-form class="plain-styled-form">
+  <dxi-item itemType="group">
+    <dxo-col-count-by-screen
+      [xs]="1"
+      [sm]="1"
+      [md]="1"
+      [lg]="1"
+    ></dxo-col-count-by-screen>
+    <dxi-item [colSpan]="2">
+      <div *dxTemplate>
+        <dx-text-box label="Code" [(value)]="newDenial.DenialCode">
+        </dx-text-box>
+      </div>
+    </dxi-item>
+
+    <dxi-item [colSpan]="2">
+      <div *dxTemplate>
+        <div>Type</div>
+        <dx-select-box
+          class="inputBox"
+          [items]="Denial_Type_DropDownData"
+          displayExpr="DESCRIPTION"
+          valueExpr="ID"
+          placeholder="Select a type"
+          [(value)]="newDenial.DenialTypeID"
+        ></dx-select-box>
+      </div>
+    </dxi-item>
+
+    <dxi-item [colSpan]="2">
+      <div *dxTemplate>
+        <div>Category</div>
+        <dx-select-box
+          class="inputBox"
+          [items]="Denial_Category_DropDownData"
+          displayExpr="DESCRIPTION"
+          valueExpr="ID"
+          placeholder="Select a Category"
+          [(value)]="newDenial.DenialCategoryID"
+        ></dx-select-box>
+      </div>
+    </dxi-item>
+    <dxi-item [colSpan]="2">
+      <div *dxTemplate>
+        <dx-text-area
+          label="Description"
+          [(value)]="newDenial.Description"
+          [height]="160"
+          [width]="'100%'"
+          [maxHeight]="250"
+          [minHeight]="50"
+          [autoResizeEnabled]="true"
+          placeholder="Enter a description..."
+        >
+        </dx-text-area>
+      </div>
+    </dxi-item>
+  </dxi-item>
+</dx-form>

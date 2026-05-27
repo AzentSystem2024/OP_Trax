@@ -1,0 +1,110 @@
+@use "../../../variables.scss" as *;
+
+:host {
+  flex-direction: column;
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+.layout-body {
+  flex: 1;
+  min-height: 0;
+  background-color: var(--background-color);
+}
+.tabItems {
+  position: relative;
+  width: auto;
+  max-width: 200px;
+  height: 30px;
+  // border-radius: 30px; /* Radius for the top-left corner */
+  margin: 0px;
+  padding-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tabItems:hover {
+  cursor: pointer;
+  border-radius: 8px;
+  // background-color: rgba(86, 145, 227, 0.663);
+  border-bottom: none !important;
+}
+.tabSubItems {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.close-icon {
+  margin-left: 10px;
+  font-size: 14px;
+  padding: 4px;
+  border-radius: 50%;
+  color: #9ca3af;
+  opacity: 0; /* hidden by default */
+  transition: all 0.2s ease;
+}
+
+/* ===== SHOW ICON ON HOVER (inactive tab) ===== */
+.tabItems:hover .close-icon {
+  opacity: 1;
+}
+
+/* ===== ACTIVE TAB ICON (always visible) ===== */
+.tabItems.active .close-icon {
+  opacity: 1;
+  color: #374151; /* darker gray */
+}
+
+/* ===== HOVER EFFECT ===== */
+.tabItems .close-icon:hover {
+  color: var(--selected-tab-text-color);
+  background-color: rgb(96 165 250 / 20%);
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+/* ===== CLICK EFFECT ===== */
+.tabItems .close-icon:active {
+  background-color: #ef4444;
+  color: #fff;
+}
+
+.fillColor {
+  height: 8px;
+  width: 100%;
+}
+
+/* VERY IMPORTANT */
+::ng-deep .dx-tab {
+  position: relative;
+}
+
+/* Separator */
+::ng-deep .dx-tab::after {
+  content: '|';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--selected-tab-text-color);
+  font-size: 14px;
+  z-index: 5;
+  opacity: 0.3;
+}
+
+/* Remove for last tab */
+::ng-deep .dx-tab:last-child::after {
+  content: '';
+}
+
+/* Remove for active tab */
+::ng-deep .dx-tab.dx-tab-selected::after {
+  content: '';
+}
+
+/* ✅ KEY: remove separator from previous tab */
+::ng-deep .dx-tab:has(+ .dx-tab.dx-tab-selected)::after {
+  content: '';
+}

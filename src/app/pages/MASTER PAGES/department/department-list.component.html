@@ -1,0 +1,143 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    class="grid theme-dependent custom-grid"
+    noDataText=""
+    height="82vh"
+    keyExpr="ID"
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    (onExporting)="onExporting($event)"
+    (onRowRemoving)="onRowRemoving($event)"
+    (onEditingStart)="openEditingStart($event)"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-editing
+      mode="popup"
+      [allowUpdating]="menuPrevilage.CanEdit"
+      [allowDeleting]="menuPrevilage.CanDelete"
+      [allowAdding]="menuPrevilage.CanAdd"
+      [popup]="{ width: '30%', height: 'auto' }"
+    >
+      <dxo-popup title="Edit Department" [showTitle]="true"></dxo-popup>
+    </dxo-editing>
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="showInfo"
+      [showNavigationButtons]="showNavButtons"
+    >
+    </dxo-pager>
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="true">
+      <dxo-search [enabled]="isFilterRowVisible"></dxo-search>
+    </dxo-header-filter>
+    <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+    <dxo-search-panel [visible]="true" placeholder="Search"></dxo-search-panel>
+    <dxo-export
+      [enabled]="true"
+      [allowExportSelectedData]="false"
+      [formats]="['xlsx']"
+    >
+    </dxo-export>
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">Department / Cost Centre</div>
+      </dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' }
+        }"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          icon: 'refresh',
+          hint: 'refresh',
+          onClick: refresh,
+          stylingMode: 'text'
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        name="exportButton"
+        location="after"
+        cssClass="custom-export-button"
+      ></dxi-item>
+
+      <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="addButtonOptions"
+      ></dxi-item>
+    </dxo-toolbar>
+
+    <!-- <dxo-selection mode="multiple"></dxo-selection> -->
+
+    <!-- Department column with required validator -->
+    <dxi-column dataField="DEPARTMENT" caption="Department">
+      <dxi-validation-rule
+        type="required"
+        message="Department is required"
+      ></dxi-validation-rule>
+    </dxi-column>
+
+    <dxi-column dataField="COST_BUCKET" caption="Cost Bucket"></dxi-column>
+
+    <!-- Type column with required validator -->
+    <dxi-column dataField="TYPE" caption="Type">
+      <dxi-validation-rule
+        type="required"
+        message="Type is required"
+      ></dxi-validation-rule>
+    </dxi-column>
+
+    <dxi-column dataField="STATUS" caption="Status"></dxi-column>
+  </dx-data-grid>
+
+  <dx-popup
+    class="formPopupClass"
+    [(visible)]="isAddDepartmentPopupOpened"
+    title="New Department"
+    width="700"
+    height="auto"
+    (onHiding)="handleFormClosed()"
+  >
+    <department-new-form
+      (formClosed)="handleFormClosed()"
+    ></department-new-form>
+  </dx-popup>
+
+  <dx-popup
+    class="formPopupClass"
+    [(visible)]="isEditDepartmentPopupOpened"
+    title="Edit Department"
+    width="700"
+    height="auto"
+    (onHiding)="handleFormClosed()"
+  >
+    <department-edit-form
+      [departmentData]="selectedDepartment"
+      (formClosed)="handleFormClosed()"
+    ></department-edit-form>
+  </dx-popup>
+</div>

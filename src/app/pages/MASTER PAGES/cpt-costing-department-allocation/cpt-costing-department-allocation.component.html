@@ -1,0 +1,240 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    #dataGrid
+    height="82vh"
+    class="grid theme-dependent"
+    noDataText="No data available"
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    (onInitNewRow)="onInitNewRow($event)"
+    (onRowInserted)="handleRowInserted($event)"
+    (onEditorPreparing)="onEditorPreparing($event)"
+    (onRowUpdated)="handleRowUpdated($event)"
+    (onRowRemoved)="handleRowRemoved($event)"
+    (onRowValidating)="onRowValidating($event)"
+  >
+    <dxo-editing
+      mode="row"
+      [allowAdding]="menuPrevilage.CanAdd"
+      [allowUpdating]="menuPrevilage.CanEdit"
+      [allowDeleting]="menuPrevilage.CanDelete"
+      [newRowPosition]="'last'"
+    >
+    </dxo-editing>
+
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="true"
+      [showNavigationButtons]="true"
+    ></dxo-pager>
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="true">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+    <dxo-filter-row [visible]="false"></dxo-filter-row>
+
+    <dxo-search-panel
+      [visible]="true"
+      placeholder="Search"
+      [highlightCaseSensitive]="false"
+    ></dxo-search-panel>
+
+    <dxo-export
+      [enabled]="true"
+      [allowExportSelectedData]="false"
+      [formats]="['xlsx']"
+    ></dxo-export>
+
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">CPT Department Settings</div>
+      </dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          hint: 'Refresh',
+          icon: 'refresh',
+          onClick: refresh,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' }
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        name="exportButton"
+        location="after"
+        cssClass="custom-export-button"
+      ></dxi-item>
+
+      <dxi-item
+        class="mt-4"
+        location="after"
+        widget="dxButton"
+        [options]="{
+          text: 'Add Row',
+          type: 'default',
+          stylingMode: 'contained',
+          disabled: !menuPrevilage.CanAdd,
+          onClick: onAddRowClick
+        }"
+      ></dxi-item>
+    </dxo-toolbar>
+
+    <dxi-column
+      caption="Sl No"
+      dataField="slNo"
+      [allowEditing]="false"
+      width="80"
+      alignment="center"
+      [allowHeaderFiltering]="false"
+    >
+    </dxi-column>
+
+    <dxi-column
+      dataField="SearchCPTID"
+      caption="CPT To Search"
+      editCellTemplate="tagBoxSearchEditor"
+      [cellTemplate]="searchCptCellTemplate"
+    >
+      <dxo-lookup
+        [dataSource]="cptToSearchDataSource"
+        valueExpr="ID"
+        displayExpr="DESCRIPTION"
+      ></dxo-lookup>
+      <dxi-validation-rule
+        type="required"
+        message="CPT To Search is required"
+        [validationCallback]="groupRequiredValidation"
+      ></dxi-validation-rule>
+    </dxi-column>
+
+    <!-- Template for Search CPT TagBox -->
+    <div *dxTemplate="let cellInfo of 'tagBoxSearchEditor'">
+      <dx-tag-box
+        [dataSource]="cptToSearchDataSource"
+        [value]="cellInfo.value"
+        valueExpr="ID"
+        displayExpr="DESCRIPTION"
+        [showSelectionControls]="true"
+        [showMultiTagOnly]="false"
+        [searchEnabled]="true"
+        [multiline]="false"
+        applyValueMode="useButtons"
+        (onValueChanged)="onSearchCptChanged($event.value, cellInfo)"
+        (onSelectionChanged)="cellInfo.component.updateDimensions()"
+      >
+      </dx-tag-box>
+    </div>
+
+    <!-- Encounter Type as single-select dropdown -->
+    <dxi-column dataField="EncounterType" caption="Encounter Type" width="auto">
+      <dxo-lookup
+        [dataSource]="encounterTypeDataSource"
+        valueExpr="DESCRIPTION"
+        displayExpr="DESCRIPTION"
+      ></dxo-lookup>
+      <dxi-validation-rule
+        type="required"
+        message="Encounter Type is required"
+        [validationCallback]="groupRequiredValidation"
+      ></dxi-validation-rule>
+    </dxi-column>
+
+    <dxi-column
+      dataField="EffectiveCPTID"
+      caption="Effective CPT"
+      editCellTemplate="tagBoxEditor"
+      [cellTemplate]="effectiveCptCellTemplate"
+    >
+      <dxo-lookup
+        [dataSource]="effectiveCPTDataSource"
+        valueExpr="ID"
+        displayExpr="DESCRIPTION"
+      ></dxo-lookup>
+      <dxi-validation-rule
+        type="required"
+        message="Effective CPT is required"
+        [validationCallback]="groupRequiredValidation"
+      ></dxi-validation-rule>
+    </dxi-column>
+
+    <!-- Template for multi-select -->
+    <div *dxTemplate="let cellInfo of 'tagBoxEditor'">
+      <dx-tag-box
+        [dataSource]="effectiveCPTDataSource"
+        [value]="cellInfo.value"
+        valueExpr="ID"
+        displayExpr="DESCRIPTION"
+        [showSelectionControls]="true"
+        [showMultiTagOnly]="false"
+        [searchEnabled]="true"
+        [multiline]="false"
+        applyValueMode="useButtons"
+        (onValueChanged)="cellInfo.setValue($event.value)"
+        (onSelectionChanged)="cellInfo.component.updateDimensions()"
+      >
+      </dx-tag-box>
+    </div>
+
+    <dxi-column dataField="DepartmentID" caption="Costing Department">
+      <dxo-lookup
+        [dataSource]="costingDepartmentDataSource"
+        valueExpr="ID"
+        displayExpr="DESCRIPTION"
+      ></dxo-lookup>
+      <dxi-validation-rule
+        type="required"
+        message="Costing Department is required"
+        [validationCallback]="groupRequiredValidation"
+      ></dxi-validation-rule>
+    </dxi-column>
+
+    <dxi-column dataField="PrincipleCPTID" caption="Principle Procedure">
+      <dxo-lookup
+        [dataSource]="cptToSearchDataSource"
+        valueExpr="ID"
+        displayExpr="DESCRIPTION"
+      ></dxo-lookup>
+      <dxi-validation-rule
+        type="required"
+        message="Principle Procedure is required"
+        [validationCallback]="groupRequiredValidation"
+      ></dxi-validation-rule>
+    </dxi-column>
+
+    <!-- Status as dropdown -->
+    <dxi-column dataField="Status" caption="Status" width="auto">
+      <dxo-lookup
+        [dataSource]="statusDataSource"
+        valueExpr="id"
+        displayExpr="name"
+      ></dxo-lookup>
+    </dxi-column>
+  </dx-data-grid>
+</div>
+<!-- ======= Load panel ========= -->
+<dx-load-panel
+  #loadPanel
+  shadingColor="rgba(0,0,0,0.6)"
+  [(visible)]="loadingVisible"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="true"
+  [message]="'Loading...'"
+>
+</dx-load-panel>

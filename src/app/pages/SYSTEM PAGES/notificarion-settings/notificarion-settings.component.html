@@ -1,0 +1,586 @@
+
+<div class="ParentDiv view-wrapper Notification-Settings">
+  <div class="titleBar d-flex align-items-center">
+    <div class="headingText">Notification Settings</div>
+    <div class="ms-auto mt-0 me-4 d-flex align-items-center">
+      <div>
+        <dx-button
+          stylingMode="contained"
+          [text]="saveButtonText"
+          type="default"
+          (onClick)="onClickSave()"
+          [disabled]="!menuPrevilage.CanEdit || isSaving"
+        >
+        </dx-button>
+      </div>
+    </div>
+  </div>
+
+  <div class="FullBody">
+    <div class="mainclass">
+      <dx-tabs
+        #withIconAndText
+        [width]="'45%'"
+        [selectedIndex]="0"
+        [rtlEnabled]="rtlEnabled"
+        [scrollByContent]="scrollByContent"
+        [showNavButtons]="showTabNavButtons"
+        [dataSource]="tabsWithIconAndText"
+        [orientation]="orientation"
+       class="custom-tab-style"
+        [iconPosition]="iconPosition"
+        (onItemClick)="onTabClick($event)"
+      >
+      </dx-tabs>
+      <div class="BorderBox">
+        <dx-form [formData]="formData" #formRef>
+          <!-- E-mail Tab -->
+
+          <dxi-item
+            *ngIf="clickedTabName === 'E-mail'"
+            [visible]="isEmailVisible"
+            itemType="group"  
+            [colCount]="2"
+            [height]="'10px'"
+          >
+            <!-- Sender ID -->
+            <dxi-item class="m-0 p-0">
+              <dx-text-box
+                [(value)]="formData.EmailSenderID"
+                mode="text"
+                label="Sender ID"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="Sender ID is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+            <!-- SMTP Host -->
+            <dxi-item class="m-0 ms-3 p-0">
+              <dx-text-box
+                [(value)]="formData.EmailSMTPHost"
+                mode="text"
+                label="SMTP HOST"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="SMTP Host is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+            <!-- Sender Name -->
+            <dxi-item class="m-0 p-0">
+              <dx-text-box
+                [(value)]="formData.EmailSenderName"
+                mode="text"
+                label="Sender Name"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="Sender Name is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+            <!-- SMTP Port -->
+            <dxi-item class="m-0 ms-3 p-0">
+              <dx-text-box
+                [(value)]="formData.EmailSMTPPort"
+                mode="text"
+                label="SMTP PORT"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="SMTP Port is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+            <!-- Password -->
+            <dxi-item class="m-0 p-0">
+              <dx-text-box
+                [(value)]="formData.EmailSenderPassword"
+                mode="password"
+                label="Password"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="Password is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+            <dxi-item itemType="group" [colCount]="5">
+              <!-- SSL Enable Checkbox -->
+              <dxi-item class="ms-3 mt-3 p-0" [colSpan]="2">
+                <dx-check-box
+                  [(value)]="formData.EmailEnableSSL"
+                  text="Enable SSL/TLS"
+                  [iconSize]="20"
+                ></dx-check-box>
+              </dxi-item>
+
+              <dxi-item class="ms-3 mt-3 p-0">
+                <dx-check-box
+                  [(value)]="formData.EmailIsInactive"
+                  text="Inactive"
+                  [iconSize]="20"
+                ></dx-check-box>
+              </dxi-item>
+
+              <dxi-item class="mt-3 p-0">
+              <ng-template dxTemplate>
+                <div class="d-flex align-items-center mt-3">
+                  <!-- Verified / Not Verified icon -->
+                  <i 
+                    class="dx-icon-check" 
+                    *ngIf="formData.IsEmailVerified" 
+                    style="font-size:18px; color:green;">
+                  </i>
+                  <i 
+                    class="dx-icon-close" 
+                    *ngIf="!formData.IsEmailVerified" 
+                    style="font-size:18px; color:red;">
+                  </i>
+
+                  <!-- Verified / Not Verified text -->
+                  <span class="ms-1" [ngStyle]="{'color': formData.IsEmailVerified ? 'green' : 'red'}">
+                    {{ formData.IsEmailVerified ? 'Verified' : 'Not Verified' }}
+                  </span>
+                </div>
+              </ng-template>
+            </dxi-item>
+
+
+
+
+              <!-- SSL Enable Checkbox -->
+              <dxi-item class="mt-2">
+                <div class="d-flex justify-content-end">
+                  <dx-button
+                    stylingMode="contained"
+                    text="Test mail"
+                    type="success"
+                    style="border-radius: 8px;"
+                    (onClick)="onClickTestMail()"
+                  >
+                  </dx-button>
+                </div>
+              </dxi-item>
+            </dxi-item>
+          </dxi-item>
+
+          <!-- SMS Tab -->
+          <dxi-item
+            *ngIf="clickedTabName === 'SMS'"
+            [visible]="isSMSVisible"
+            itemType="group"
+            [colCount]="2"
+            [height]="10"
+          >
+            <!-- Provider URL -->
+            <dxi-item class="m-0 p-0">
+              <dx-text-box
+                [(value)]="formData.SMSProviderURL"
+                mode="email"
+                label="Provider URL"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="Provider URL is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+            <!-- User ID -->
+            <dxi-item class="m-0 p-0">
+              <dx-text-box
+                [(value)]="formData.SMSUserID"
+                mode="text"
+                label="User ID"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="User ID is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+            <!-- SMS Password -->
+            <dxi-item class="m-0 p-0">
+              <dx-text-box
+                [(value)]="formData.SMSPassword"
+                mode="password"
+                label="SMS Password"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="SMS Password is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+            <!-- Mobile Number -->
+            <dxi-item class="m-0 p-0">
+              <dx-text-box
+                [(value)]="formData.SMSMobileNo"
+                mode="text"
+                label="Mobile Number"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="Mobile Number is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+            <dxi-item class="m-0 p-0">
+              <dx-check-box
+                  [(value)]="formData.SMSIsInactive"
+                  text="Inactive"
+                  [iconSize]="20"
+                ></dx-check-box>
+            </dxi-item>
+          </dxi-item>
+
+          <!-- WhatsApp Tab -->
+          <dxi-item
+            *ngIf="clickedTabName === 'WhatsApp'"
+            [visible]="iswhatsAppVisible"
+            itemType="group"
+            [colCount]="1"
+          >
+            <!-- WhatsApp Number -->
+            <dxi-item class="m-0 p-0">
+              <dx-text-box
+                [(value)]="formData.WhatsappNumber"
+                mode="text"
+                label="WhatsApp Number"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="pattern"
+                    message="WhatsApp Number is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+            <!-- WhatsApp Source -->
+            <dxi-item class="m-0 p-0">
+              <dx-text-box
+                [(value)]="formData.WhatsappSource"
+                mode="text"
+                label="WhatsApp Source"
+                labelMode="floating"
+                labelLocation="left"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="WhatsApp Source is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </dxi-item>
+
+             <dxi-item class="m-0 p-0">
+              <dx-check-box
+                  [(value)]="formData.WhatsappIsInactive"
+                  text="Inactive"
+                  [iconSize]="20"
+                ></dx-check-box>
+            </dxi-item>
+
+          </dxi-item>
+        </dx-form>
+      </div>
+    </div>
+
+    <div class="datagridSection mt-2">
+      <dx-data-grid
+        class="grid"
+        [dataSource]="dataSource"
+        [showBorders]="true"
+        [height]="'auto'"
+        [paging]="{ pageSize: 10 }"
+        [allowColumnReordering]="true"
+        [allowColumnResizing]="true"
+        (onRowUpdating)="onRowUpdating($event)"
+        (onEditingStart)="onEditingStart($event)"
+      >
+        <dxo-paging [pageSize]="10"></dxo-paging>
+
+        <!-- Change editing mode to 'row' -->
+        <dxo-editing
+          mode="row"
+          [allowUpdating]="menuPrevilage.CanEdit"
+          [allowAdding]="false"
+          [allowDeleting]="false"
+        ></dxo-editing>
+
+        <dxo-toolbar>
+          <dxi-item location="before">
+            <div class="grid-header">Notification Event Templates</div>
+          </dxi-item>
+
+          <dxi-item
+            location="after"
+            locateInMenu="auto"
+            showText="inMenu"
+            widget="dxButton"
+            [options]="{
+              text: 'Refresh',
+              hint: 'Refresh',
+              icon: 'refresh',
+              onClick: refresh,
+              stylingMode: 'text',
+              elementAttr: { class: 'commonButtons' }
+            }"
+          ></dxi-item>
+        </dxo-toolbar>
+
+        <dxi-column
+          dataField="serialNumber"
+          caption="SL No"
+          width="auto"
+        ></dxi-column>
+
+        <dxi-column dataField="Notification" caption="Action"></dxi-column>
+
+        <dxi-column
+          dataField="SendEmail"
+          caption="Email"
+          dataType="boolean"
+          [showEditorAlways]="true"
+          [allowEditing]="true"
+        ></dxi-column>
+
+        <!-- Make checkboxes editable -->
+        <dxi-column
+          dataField="SendSMS"
+          caption="SMS"
+          dataType="boolean"
+          [showEditorAlways]="true"
+          [allowEditing]="true"
+        ></dxi-column>
+
+        <dxi-column
+          dataField="SendWhatsapp"
+          caption="WhatsApp"
+          dataType="boolean"
+          [showEditorAlways]="true"
+          [allowEditing]="true"
+          readOnly="false"
+        ></dxi-column>
+      </dx-data-grid>
+    </div>
+  </div>
+
+  <dx-popup
+    [width]="'60%'"
+    [height]="'75vh'"
+    [showTitle]="true"
+    title="Test Mail"
+    [dragEnabled]="true"
+    [hideOnOutsideClick]="false"
+    [showCloseButton]="true"
+    container=".dx-viewport"
+    [(visible)]="testMailpopupVisible"
+    (onHidden)="cleardata()"
+  >
+    <div>
+      <div class="d-flex align-items-center">
+        <div class="ms-auto">
+          <dx-button
+            stylingMode="contained"
+            [text]="sendButtonText"
+            type="default"
+            (onClick)="onTestMailSending()"
+            [disabled]="!TestMailReceiverID || !TestMailSubject || !TestMailMessageBody"
+          >
+          </dx-button>
+        </div>
+      </div>
+      <!-- receiver id -->
+      <dxi-item class="m-0 p-0">
+        <dx-text-box
+          [(value)]="TestMailReceiverID"
+          mode="email"
+          label="Recipient email Address:"
+          labelMode="floating"
+          labelLocation="left"
+        >
+          <dx-validator >
+            <dxi-validation-rule
+              type="required"
+              message="Receiver ID is required"
+            ></dxi-validation-rule>
+            <dxi-validation-rule
+              type="email"
+              message="Please enter a valid email address"
+            ></dxi-validation-rule>
+          </dx-validator>
+        </dx-text-box>
+      </dxi-item>
+      <!-- mail subject  -->
+      <dxi-item class="m-0 p-0 mt-2">
+        <dx-text-box
+          [(value)]="TestMailSubject"
+          mode="text"
+          label="Subject"
+          labelMode="floating"
+          labelLocation="left"
+        >
+          <dx-validator>
+            <dxi-validation-rule
+              type="required"
+              message="Sender ID is required"
+            ></dxi-validation-rule>
+          </dx-validator>
+        </dx-text-box>
+      </dxi-item>
+      <!-- test mail message body  -->
+      <dxi-item class="m-0 p-0 mt-4">
+        <dx-text-area
+          [(value)]="TestMailMessageBody"
+          label="Message"
+          labelMode="floating"
+          labelLocation="left"
+          height="250px"
+        >
+          <dx-validator>
+            <dxi-validation-rule
+              type="required"
+              message="Message is required"
+            ></dxi-validation-rule>
+          </dx-validator>
+        </dx-text-area>
+      </dxi-item>
+    </div>
+  </dx-popup>
+
+  <dx-popup
+    [width]="'70%'"
+    [height]="'90vh'"
+    [showTitle]="true"
+    [title]="editpopupHeading"
+    [dragEnabled]="true"
+    [hideOnOutsideClick]="true"
+    [showCloseButton]="true"
+    [(visible)]="isRowDataEditing"
+    (onHiding)="clearFormData()"
+  >
+    <div class="d-flex align-items-center">
+      <div class="ms-auto me-4">
+        <dx-button
+          stylingMode="contained"
+          text="save"
+          type="default"
+          (onClick)="onClickSaveNotificationTemplate()"
+        ></dx-button>
+      </div>
+    </div>
+
+    <dx-form [formData]="clickedEditRowData" caption="Hello Testing">
+      <!-- First Group -->
+      <dxi-item itemType="group" [colCount]="2" class="mb-3">
+        <!-- First Row: SendEmail -->
+        <dxi-item
+          dataField="SendEmail"
+          editorType="dxCheckBox"
+          [label]="{ visible: false }"
+          [editorOptions]="{ text: 'Send Email', iconSize: '20' }"
+          [colSpan]="2"
+        ></dxi-item>
+
+        <!-- Second Row: EmailSubject -->
+        <dxi-item dataField="EmailSubject" [colSpan]="2"></dxi-item>
+
+        <!-- Third Row: EmailMessage -->
+        <dxi-item
+          #editor
+          dataField="EmailMessage"
+          editorType="dxHtmlEditor"
+          [colSpan]="2"
+          [editorOptions]="HtmleditorOptions"
+        ></dxi-item>
+      </dxi-item>
+
+      <!-- Second Row of SMS and WhatsApp -->
+      <dxi-item itemType="group" [colCount]="1" class="mb-3">
+        <!-- Second Group: SMS -->
+        <dxi-item itemType="group" [colCount]="1">
+          <dxi-item
+            dataField="SendSMS"
+            editorType="dxCheckBox"
+            [label]="{ visible: false }"
+            [editorOptions]="{ text: 'Send SMS', iconSize: '20' }"
+          ></dxi-item>
+          <dxi-item dataField="SMSTemplate"></dxi-item>
+        </dxi-item>
+
+        <!-- Third Group: WhatsApp -->
+        <dxi-item itemType="group" [colCount]="1" class="whatsappGroupDiv">
+          <dxi-item
+            dataField="SendWhatsapp"
+            editorType="dxCheckBox"
+            [label]="{ visible: false }"
+            [editorOptions]="{ text: 'Send WhatsApp Message', iconSize: '20' }"
+          ></dxi-item>
+          <dxi-item
+            dataField="WhatsappTemplate"
+            caption="WhatsApp Template"
+            [label]="{
+              text: 'WhatsApp Template',
+              location: 'top',
+              mode: 'floating'
+            }"
+          ></dxi-item>
+        </dxi-item>
+      </dxi-item>
+    </dx-form>
+  </dx-popup>
+</div>
+

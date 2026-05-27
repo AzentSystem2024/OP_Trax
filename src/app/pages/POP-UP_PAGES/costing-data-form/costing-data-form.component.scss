@@ -1,0 +1,45 @@
+::ng-deep .dx-fileuploader-input-wrapper {
+  padding: 0;
+  margin-top: 0px;
+  border: 3px dashed transparent;
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.plain-styled-form {
+  max-height: 200px; /* or any width you prefer */
+  margin: 0 auto; /* center the form horizontally */
+}
+
+.custom-file-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 10px;
+}
+
+.file-item {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.remove-icon {
+  cursor: pointer;
+  color: red;
+}
+
+::ng-deep .dx-datagrid-headers.dx-header-multi-row:not(.dx-datagrid-sticky-columns)
+  .dx-datagrid-content
+  .dx-datagrid-table
+  .dx-row.dx-header-row
+  > td {
+  border: 1px solid var(--border-color);
+}

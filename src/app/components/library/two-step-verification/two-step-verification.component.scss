@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.mainPage {
+  width: 100%;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.otp-inputs {
+  justify-content: center;
+  gap: 8px;
+}
+
+.otp-input ::ng-deep input {
+  color: black;
+  text-align: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 15px;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+
+.otp-inputs ::ng-deep .dx-texteditor.dx-editor-outlined {
+  color: rgb(0, 0, 0);
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  background-color: unset;
+}
+
+::ng-deep .dx-button.dx-button-default {
+  border-radius: 4px;
+  background-color: rgba(25, 108, 153, 1);
+  color: #ffffff;
+}

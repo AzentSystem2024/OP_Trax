@@ -1,0 +1,51 @@
+.facility-master-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: 16px;
+
+  .dx-form-group-caption {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 12px;
+    border-left: 4px solid #1976d2;
+    padding-left: 8px;
+  }
+
+  .verify-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 4px;
+
+    .verified-checkbox {
+      margin: 0;
+    }
+  }
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 20px;
+  margin-top: 24px;
+
+  dx-button {
+    min-width: 100px;
+  }
+}
+
+.verification-date {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+::ng-deep .dx-field-item:not(.dx-field-item-has-group):not(.dx-field-item-has-tabs):not(.dx-first-row):not(.dx-label-v-align) {
+    padding-top: 0px;
+}
+
+::ng-deep .dx-form-group-caption {
+  font-size: 15px; /* or whatever size you prefer */
+}

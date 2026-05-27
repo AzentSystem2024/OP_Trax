@@ -1,0 +1,135 @@
+<dx-data-grid
+  #dataGrid
+  [showBorders]="true"
+  [allowColumnResizing]="true"
+  [allowColumnReordering]="true"
+  [rowAlternationEnabled]="true"
+  rowAlternationInterval="2"
+  [columnAutoWidth]="true"
+  [columnFixing]="{ enabled: true }"
+  [height]="'72vh'"
+  [width]="'100%'"
+  [dataSource]="gridData"
+  [columns]="columns"
+  (onCellPrepared)="onCellPrepared($event)"
+>
+  <dxo-paging [pageSize]="100"></dxo-paging>
+  <dxo-pager
+    [visible]="true"
+    [allowedPageSizes]="allowedPageSizes"
+    [displayMode]="displayMode"
+    [showPageSizeSelector]="showPageSizeSelector"
+    [showInfo]="true"
+    [showNavigationButtons]="true"
+  ></dxo-pager>
+
+  <dxo-load-panel
+    [enabled]="true"
+    [shading]="true"
+    [showIndicator]="true"
+    [showPane]="false"
+  ></dxo-load-panel>
+  <dxo-scrolling mode="virtual" [useNative]="false"></dxo-scrolling>
+
+  <dxo-toolbar class="toolBarDiv p-0 m-0">
+    <dxi-item location="before" locateInMenu="auto">
+      <dx-select-box
+        label="Masters"
+        [dataSource]="masterList"
+        displayExpr="Master"
+        valueExpr="ID"
+        labelMode="floating"
+        placeholder="Select Master"
+        [showClearButton]="true"
+        [searchEnabled]="true"
+        [(value)]="newImportData.masters"
+        [height]="40"
+        [width]="200"
+        [stylingMode]="'outlined'"
+        (onValueChanged)="onMasterSelected($event)"
+      >
+        <dx-validator>
+          <dxi-validation-rule
+            type="required"
+            message="This field is required"
+          ></dxi-validation-rule>
+        </dx-validator>
+      </dx-select-box>
+    </dxi-item>
+    <dxi-item location="after" locateInMenu="auto">
+      <dx-button
+        hint="Download Masters Template"
+        icon="download"
+        type="default"
+        stylingMode="contained"
+        (onClick)="downloadTemplate()"
+        [visible]="isColumnsLoaded"
+      ></dx-button>
+    </dxi-item>
+    <dxi-item location="after" locateInMenu="auto">
+      <dx-button
+        class="me-2"
+        text="Import "
+        icon="import"
+        type="default"
+        stylingMode="contained"
+        (onClick)="selectFile()"
+      ></dx-button>
+    </dxi-item>
+  </dxo-toolbar>
+  <input style="display: none;"
+    #fileInput
+    type="file"
+    accept=".xlsx, .xls"
+    style="display: none"
+    (change)="onFileSelected($event)"
+  />
+</dx-data-grid>
+
+<!-- Radio Group for import options -->
+<div class="mt-3">
+  <dx-radio-group
+    [dataSource]="importOptions"
+    displayExpr="text"
+    valueExpr="value"
+    [(value)]="selectedImportOption"
+    layout="horizontal"
+  >
+  </dx-radio-group>
+</div>
+<div class="form-popup-buttons-container">
+  <dx-button
+    text="Cancel"
+    stylingMode="outlined"
+    type="normal"
+    (onClick)="close()"
+  ></dx-button>
+  <dx-button
+    text="Save"
+    stylingMode="contained"
+    type="default"
+    [disabled]="isSaving"
+    (onClick)="onSaveClick()"
+  ></dx-button>
+</div>
+<dx-load-panel
+  #loadPanel
+  shadingColor="rgba(0,0,0,0.4)"
+  [position]="{ of: '#dataGrid' }"
+  [(visible)]="isLoading"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="true"
+  message="Saving..."
+></dx-load-panel>
+
+<dx-load-panel
+  #loadPanel
+  shadingColor="rgba(0,0,0,0.4)"
+  [position]="{ of: '#dataGrid' }"
+  [(visible)]="beforeLoading"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="true"
+  message="Loading..."
+></dx-load-panel>

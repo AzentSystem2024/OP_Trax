@@ -1,0 +1,28 @@
+<div class="loginMainDiv">
+  <div class="auth-card">
+    <div class="dx-card content">
+      <div style="position: relative">
+        <dx-button
+          icon="close"
+          stylingMode="text"
+          class="close-icon"
+          *ngIf="isResetPasswordPage"
+          (onClick)="redirectToLogin()"
+        >
+        </dx-button>
+      </div>
+
+      <div class="header d-flex flex-column align-items-center text-center">
+        <div class="logo mb-1">
+          <img
+            src="../../../../assets/OPtrax Logo.png"
+            alt="{{ title }}"
+            height="50"
+          />
+        </div>
+        <div class="description">{{ description }}</div>
+      </div>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

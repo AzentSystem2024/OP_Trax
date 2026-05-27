@@ -1,0 +1,140 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    class="grid theme-dependent"
+    noDataText=""
+    height="600"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    height="82vh"
+    [dataSource]="dataSource"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-editing [allowUpdating]="menuPrevilage.CanEdit"> </dxo-editing>
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="showInfo"
+      [showNavigationButtons]="showNavButtons"
+    ></dxo-pager>
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="isFilterRowVisible">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+    <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+    <dxo-column-chooser [enabled]="true" [height]="400"></dxo-column-chooser>
+    <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
+    <dxo-export
+      [enabled]="true"
+      [allowExportSelectedData]="true"
+      [formats]="['xlsx', 'pdf']"
+    >
+    </dxo-export>
+
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">Import Master Data</div>
+      </dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' }
+        }"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          icon: 'refresh',
+          stylingMode: 'text',
+          hint: 'refresh',
+          onClick: refresh,
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        name="exportButton"
+        location="after"
+        cssClass="custom-export-button"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="addButtonOptions"
+      ></dxi-item>
+    </dxo-toolbar>
+
+    <dxi-column
+      dataField="SerialNo"
+      caption="Sl No."
+      [alignment]="'left'"
+    ></dxi-column>
+    <dxi-column
+      dataField="ImportTime"
+      caption="Date"
+      [calculateCellValue]="formatImportTime"
+    ></dxi-column>
+    <dxi-column
+      dataField="DocNo"
+      caption="Document No"
+      [alignment]="'left'"
+    ></dxi-column>
+    <dxi-column dataField="Master" caption="Imported Master"></dxi-column>
+    <dxi-column dataField="UserName" caption="User"></dxi-column>
+    <dxi-column type="buttons" [width]="110" caption=" ">
+      <dxi-button
+        class="button-info"
+        text="Details"
+        icon="info"
+        [onClick]="viewDetails"
+      >
+      </dxi-button>
+    </dxi-column>
+  </dx-data-grid>
+
+  <!-- // ===new popup ===== -->
+  <dx-popup
+    class="formPopupClass"
+    [(visible)]="isNewFormPopupOpened"
+    title="Import Master Data"
+    [height]="'auto'"
+    width="90vw"
+    [width]="popupwidth"
+    (onHiding)="onClearData()"
+  >
+    <app-import-master-data-form
+      *ngIf="isNewFormPopupOpened"
+      (closeForm)="CloseEditForm()"
+    ></app-import-master-data-form>
+  </dx-popup>
+  <!-- // ===view popup ===== -->
+  <dx-popup
+    [(visible)]="ViewImportDataPopup"
+    title="View Imported Master Data"
+    [width]="popupwidth"
+    [height]="'auto'"
+    width="90vw"
+    (onHiding)="onClearViewData()"
+  >
+    <app-view-imported-master-data-form
+      *ngIf="ViewImportDataPopup"
+      [formdata]="selectedData"
+    ></app-view-imported-master-data-form>
+  </dx-popup>
+</div>
