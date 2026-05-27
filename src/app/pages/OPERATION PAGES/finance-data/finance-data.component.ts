@@ -1,11 +1,8 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   NgModule,
-  OnDestroy,
   OnInit,
-  Output,
   ViewChild,
 } from '@angular/core';
 import notify from 'devextreme/ui/notify';
@@ -30,15 +27,11 @@ import { ReportService } from 'src/app/services/Report-data.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
-import { Router } from '@angular/router';
 import { DataService } from 'src/app/services';
 import { OperationReportService } from '../operation-report.service';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import {
-  ClinicalDataImportFormComponent,
-  ClinicalDataImportFormModule,
-} from '../../POP-UP_PAGES/clinical-data-import-form/clinical-data-import-form.component';
+import { ClinicalDataImportFormModule } from '../../POP-UP_PAGES/clinical-data-import-form/clinical-data-import-form.component';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import { firstValueFrom } from 'rxjs';
 import { confirm } from 'devextreme/ui/dialog';
@@ -178,7 +171,6 @@ export class FinanceDataComponent implements OnInit {
     private dataService: DataService,
     private operationService: OperationReportService,
     private masterService: MasterReportService,
-    private datePipe: DatePipe,
   ) {
     this.UserID = sessionStorage.getItem('UserID');
     this.minDate = new Date(2023, 0, 1);

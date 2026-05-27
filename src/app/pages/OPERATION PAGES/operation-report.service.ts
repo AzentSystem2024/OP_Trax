@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { ConfigService } from 'src/app/services/config.service';
-
-const Token = JSON.parse(localStorage.getItem('Token'));
 
 @Injectable({
   providedIn: 'root',
 })
 export class OperationReportService {
-  constructor(private http: HttpClient, private config: ConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private config: ConfigService,
+  ) {}
 
   private get BASE_URL(): string {
     return this.config.apiBaseUrl;
@@ -33,29 +32,25 @@ export class OperationReportService {
 
   getFinanceDataImportLog() {
     // const reqBody = payload;
-    return this.http.post<any>(
-      `${this.BASE_URL}FinanceDataImport/list`,
-      {}
-    );
+    return this.http.post<any>(`${this.BASE_URL}FinanceDataImport/list`, {});
   }
 
   getFinanceDataImportData(id: number) {
     const data = {
-      ID:id
-    }
-    return this.http.post(`${this.BASE_URL}FinanceDataImport/select`,data);
+      ID: id,
+    };
+    return this.http.post(`${this.BASE_URL}FinanceDataImport/select`, data);
   }
 
   update_Finance_Data_Status(data: any) {
     const url = `${this.BASE_URL}FinanceDataImport/updatestatus`;
     return this.http.post(url, data);
   }
-  
 
   getProcessFinanceData(data: any) {
     return this.http.post(
       `${this.BASE_URL}ClinicalCostingProcess/getFinanceData`,
-      data
+      data,
     );
   }
 
@@ -63,7 +58,7 @@ export class OperationReportService {
   processFinanceData(data: any) {
     return this.http.post(
       `${this.BASE_URL}ClinicalCostingProcess/process`,
-      data
+      data,
     );
   }
 
@@ -71,7 +66,7 @@ export class OperationReportService {
   process_Data_Clear() {
     return this.http.post(
       `${this.BASE_URL}ClinicalCostingProcess/clearProcess`,
-      {}
+      {},
     );
   }
 
@@ -79,7 +74,7 @@ export class OperationReportService {
   Validate_process_Data(payload: any) {
     return this.http.post(
       `${this.BASE_URL}ClinicalCostingProcess/validateProcess`,
-      payload
+      payload,
     );
   }
 
@@ -87,7 +82,7 @@ export class OperationReportService {
   Begin_process_Data(payload: any) {
     return this.http.post(
       `${this.BASE_URL}ClinicalCostingProcess/processBegin`,
-      payload
+      payload,
     );
   }
 
@@ -95,7 +90,7 @@ export class OperationReportService {
   Process_process_Data(payload: any) {
     return this.http.post(
       `${this.BASE_URL}ClinicalCostingProcess/processBatch`,
-      payload
+      payload,
     );
   }
 
@@ -103,7 +98,7 @@ export class OperationReportService {
   Finish_process_Data(payload: any) {
     return this.http.post(
       `${this.BASE_URL}ClinicalCostingProcess/processFinish`,
-      payload
+      payload,
     );
   }
 
@@ -113,14 +108,14 @@ export class OperationReportService {
     };
     return this.http.post<any>(
       `${this.BASE_URL}ClinicalCostingProcess/list`,
-      data
+      data,
     );
   }
 
   removeClinicalCostingData(id: any) {
     return this.http.post(
       `${this.BASE_URL}ClinicalCostingProcess/delete/${id}`,
-      {}
+      {},
     );
   }
 
@@ -207,7 +202,7 @@ export class OperationReportService {
   fetch_selected_orderingClinician_Data(clinicianID: any) {
     return this.http.post(
       `${this.BASE_URL}ClinicalData/selectClinician/${clinicianID}`,
-      {}
+      {},
     );
   }
 
@@ -218,8 +213,6 @@ export class OperationReportService {
     const reqBody = payload;
     return this.http.post(url, reqBody);
   }
-
-  
 
   get_clinical_costing_data_popup_data(payload: any) {
     const url = `${this.BASE_URL}ClinicalCostingProcess/costview-details`;
@@ -241,9 +234,8 @@ export class OperationReportService {
     return this.http.post(url, reqBody);
   }
 
-
-   // ============= re-generate XML data ===============
-   regenerate_Row_Xml_data(payload: any) {
+  // ============= re-generate XML data ===============
+  regenerate_Row_Xml_data(payload: any) {
     const url = `${this.BASE_URL}ClinicalCostingProcess/regenerateXmlData`;
     const reqBody = payload;
     return this.http.post(url, reqBody);
@@ -257,7 +249,7 @@ export class OperationReportService {
 
   //=============update allocated cost ==============
 
-  updateAllocatedCost(payload:any){
+  updateAllocatedCost(payload: any) {
     const url = `${this.BASE_URL}CostingEdit/updateCost`;
     const reqBody = payload;
     return this.http.post(url, reqBody);
@@ -265,7 +257,7 @@ export class OperationReportService {
 
   //==========getPendingBatches For Process Resume ==========
 
-  resume_Process_Data(payload:any){
+  resume_Process_Data(payload: any) {
     const url = `${this.BASE_URL}ClinicalCostingProcess/getPendingBatches`;
     const reqBody = payload;
     return this.http.post(url, reqBody);

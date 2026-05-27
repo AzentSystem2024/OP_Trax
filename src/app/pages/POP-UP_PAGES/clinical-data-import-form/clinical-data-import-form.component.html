@@ -34,7 +34,7 @@
 
     <dxi-item>
       <dx-radio-group
-        [items]="['Import XML File', 'Import Excel File']"
+        [items]="['Import Excel File']"
         [(value)]="selectedOption"
         layout="vertical"
       >
@@ -71,6 +71,7 @@
         <dx-button
           text="Import"
           type="default"
+          [disabled]="selectedFacilityIDs.length === 0"
           (onClick)="onImport()"
         ></dx-button>
       </div>

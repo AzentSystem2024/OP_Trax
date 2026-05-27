@@ -163,7 +163,9 @@ body {
 
 .dx-scrollbar-horizontal.dx-scrollbar-hoverable {
   height: 10px;
-  transition: height 0.2s linear 0.15s, background-color 0.2s linear 0.15s;
+  transition:
+    height 0.2s linear 0.15s,
+    background-color 0.2s linear 0.15s;
 }
 
 .dx-tabpanel .dx-tabpanel-tabs .dx-tabs {
@@ -688,7 +690,7 @@ body {
   .dx-toolbar-text-auto-hide
   .dx-button.dx-button-has-icon:hover {
   background-color: rgb(96 165 250 / 20%);
-  border:none !important;
+  border: none !important;
   color: #2563eb;
   transform: scale(1.05); /* slight zoom */
 }
@@ -745,11 +747,11 @@ body {
 
 .grid .dx-checkbox-checked.dx-state-readonly .dx-checkbox-icon {
   // color: #ffffff;
-  background-color: #196c99;
-  border: 1px solid #196c99;
+  background-color: teal;
+  border: 1px solid teal;
 }
 .grid .dx-checkbox.dx-state-readonly .dx-checkbox-icon {
-  border: 1px solid #196c99;
+  border: 1px solid teal;
 }
 .mandatory-header {
   color: red; /* Change text color to red */
@@ -875,7 +877,9 @@ body {
 }
 
 .dx-dropdowneditor-overlay.dx-popup-wrapper .dx-overlay-content {
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 8px 16px 0 rgba(0, 0, 0, 0.28);
+  box-shadow:
+    0 0 2px 0 rgba(0, 0, 0, 0.24),
+    0 8px 16px 0 rgba(0, 0, 0, 0.28);
   border: 2px solid var(--border-color);
   overflow: hidden;
 }
@@ -1147,11 +1151,15 @@ body {
 
 .dx-scrollbar-horizontal.dx-scrollbar-hoverable {
   height: 10px !important;
-  transition: height 0.2s linear 0.15s, background-color 0.2s linear 0.15s;
+  transition:
+    height 0.2s linear 0.15s,
+    background-color 0.2s linear 0.15s;
 }
 
 .dx-scrollbar-horizontal.dx-scrollbar-hoverable .dx-scrollable-scroll {
-  transition: background-color 0.5s linear 1s, height 0.2s linear 0.15s;
+  transition:
+    background-color 0.5s linear 1s,
+    height 0.2s linear 0.15s;
   background-color: #5aa7cc;
   height: 10px !important;
 }
@@ -1165,7 +1173,9 @@ body {
 }
 .dx-scrollbar-horizontal.dx-scrollbar-hoverable
   .dx-scrollable-scroll.dx-state-invisible {
-  transition: background-color 0.5s linear 1s, height 0.2s linear 0.15s;
+  transition:
+    background-color 0.5s linear 1s,
+    height 0.2s linear 0.15s;
   height: 10px !important;
 }
 .dx-datagrid .dx-datagrid-sticky-columns .dx-scrollable-scrollbar {
@@ -1174,7 +1184,9 @@ body {
 }
 
 .dx-scrollbar-vertical.dx-scrollbar-hoverable .dx-scrollable-scroll {
-  transition: background-color 0.5s linear 1s, height 0.2s linear 0.15s;
+  transition:
+    background-color 0.5s linear 1s,
+    height 0.2s linear 0.15s;
   background-color: #5aa7cc;
   width: 10px !important;
 }
@@ -1188,7 +1200,9 @@ body {
 }
 .dx-scrollbar-vertical.dx-scrollbar-hoverable
   .dx-scrollable-scroll.dx-state-invisible {
-  transition: background-color 0.5s linear 1s, height 0.2s linear 0.15s;
+  transition:
+    background-color 0.5s linear 1s,
+    height 0.2s linear 0.15s;
   // height: 25px !important;
   width: 10px !important;
 }
@@ -1204,14 +1218,14 @@ body {
 
 .dx-button.dx-button-default {
   border-radius: 8px !important;
-  background-color: #196c99 !important;
+  background-color: teal !important;
   padding: 8px 32px !important;
   color: #fff !important; /* text color */
 }
 
 .dx-button.dx-button-default:hover {
   border-radius: 8px !important;
-  background-color: #17618a !important;
+  background-color: teal !important;
   padding: 8px 32px !important;
   color: #fff !important; /* text color */
 }
@@ -1219,7 +1233,7 @@ body {
 .add-button.dx-button.dx-button-default {
   height: 36px !important;
   border-radius: 8px !important;
-  background-color: #196c99 !important;
+  background-color: teal !important;
   padding: 8px 4px !important;
   color: #fff !important; /* text color */
 }
@@ -1282,8 +1296,8 @@ body {
 
 .dx-checkbox-checked .dx-checkbox-icon {
   color: rgb(255, 255, 255) !important;
-  border-color: #196c99 !important;
-  background-color: #196c99 !important;
+  border-color: teal !important;
+  background-color: teal !important;
   font: 14px / 1 DXIcons;
   font-size: 16px;
 }
@@ -1293,7 +1307,7 @@ body {
 .dx-pagination .dx-pages .dx-selection,
 .dx-pagination .dx-page-sizes .dx-selection {
   font-weight: 500;
-  background-color: #196c99 !important;
+  background-color: teal !important;
   color: #fff !important;
   border: none;
 }
@@ -1303,12 +1317,12 @@ body {
 }
 
 .dx-switch-on-value .dx-switch-container::before {
-  background-color: #196c99 !important;
-  border-color: #196c99 !important;
+  background-color: teal !important;
+  border-color: teal !important;
 }
 
 .dx-radiobutton-icon-checked .dx-radiobutton-icon-dot {
-  background-color: #196c99 !important;
+  background-color: teal !important;
 }
 
 .dx-treeview-node[aria-expanded="true"] > .dx-item .dx-item-content {
@@ -1350,20 +1364,20 @@ body {
 
 .dx-dialog-button[aria-label="No"] {
   background-color: transparent !important;
-  color: #196c99 !important; /* white text */
-  border: 1px solid #196c99 !important;
+  color: teal !important; /* white text */
+  border: 1px solid teal !important;
 }
 
 .dx-dialog-button[aria-label="OK"] {
-  background-color: #196c99 !important; /* red background */
+  background-color: teal !important; /* red background */
   color: #fff !important; /* white text */
-  border-color: #196c99 !important; /* match border with background */
+  border-color: teal !important; /* match border with background */
 }
 
 .dx-dialog-button[aria-label="No"]:hover {
   background-color: transparent !important;
-  color: #196c99 !important; /* white text */
-  border: 1px solid #196c99 !important;
+  color: teal !important; /* white text */
+  border: 1px solid teal !important;
 }
 
 .dx-treeview-search {
@@ -1396,7 +1410,7 @@ body {
 
 .add-row.dx-button.dx-button-default {
   border-radius: 8px !important;
-  background-color: #196c99 !important;
+  background-color: teal !important;
   padding: 8px 6px !important;
   color: #fff !important;
 }
@@ -1406,7 +1420,7 @@ body {
   display: none !important;
 }
 // .dx-treeview-item-without-checkbox.dx-state-selected > .dx-treeview-item {
-//     color: #196C99;
+//     color: teal;
 //     // background-color: var(--select-main-menu-bg)!important;
 //     background-color: white!important;
 // }
@@ -1426,12 +1440,12 @@ body {
 }
 
 // .dx-treeview-item-without-checkbox.dx-state-selected > .dx-treeview-item {
-//     color: #196C99 !important;
+//     color: teal !important;
 //     background-color: #F8FAFC !important;
 // }
 
 // .dx-treeview-item-without-checkbox.dx-state-hover > .dx-treeview-item {
-//     color: #196C99 !important;
+//     color: teal !important;
 //     background-color: #F8FAFC !important;
 // }
 ::ng-deep.dx-button.dx-button-default .dx-icon {
@@ -1619,5 +1633,5 @@ body {
 }
 
 .claim-grid {
-  --grid-header-bg: var(--claim-grid-header-bg)
+  --grid-header-bg: var(--claim-grid-header-bg);
 }

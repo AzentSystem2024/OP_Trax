@@ -48,6 +48,7 @@ import { TwoStepVerificationComponent } from './components/library/two-step-veri
 import { AboutPageComponent } from './pages/about-page/about-page.component';
 import { CPTCostingDepartmentAllocationComponent } from './pages/MASTER PAGES/cpt-costing-department-allocation/cpt-costing-department-allocation.component';
 import { LedgerGroupComponent } from './pages/ACCOUNTS/ledger-group/ledger-group.component';
+import { ClinicalDataComponent } from './pages/OPERATION PAGES/clinical-data/clinical-data.component';
 
 const routes: Routes = [
   {
@@ -252,7 +253,11 @@ const routes: Routes = [
         component: SubDepartmentListComponent,
         canActivate: [AuthGuardService],
       },
-
+      {
+        path: 'clinical-data',
+        component: ClinicalDataComponent,
+        canActivate: [AuthGuardService],
+      },
       {
         path: 'finance-data',
         component: FinanceDataComponent,

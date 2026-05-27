@@ -1,0 +1,465 @@
+<div class="clinical-data-root">
+  <div class="view-wrapper list-page">
+    <div class="container-fluid toolbar-fields p-2">
+      <div class="row align-items-center g-2">
+        <div class="col-auto">
+          <dx-drop-down-box
+            label="Facility"
+            labelMode="floating"
+            labelLocation="left"
+            [(value)]="selectedFacility"
+            valueExpr="FacilityLicense"
+            [displayExpr]="displayFacility"
+            [showClearButton]="true"
+            [dataSource]="facilityListDataSource"
+            [width]="'250'"
+            [dropDownOptions]="{ width: '400' }"
+          >
+            <div *dxTemplate="let data of 'content'">
+              <dx-data-grid
+                #facilityGrid
+                [dataSource]="facilityListDataSource"
+                keyExpr="FacilityLicense"
+                [columns]="[
+                  { dataField: 'FacilityLicense', caption: 'License' },
+                  { dataField: 'FacilityName', caption: 'Name' },
+                ]"
+                [selection]="{ mode: 'multiple' }"
+                [hoverStateEnabled]="true"
+                [paging]="{ enabled: true, pageSize: 10 }"
+                [filterRow]="{ visible: true }"
+                [headerFilter]="{ visible: true }"
+                [scrolling]="{ mode: 'virtual' }"
+                [height]="'auto'"
+                [(selectedRowKeys)]="selectedFacility"
+              ></dx-data-grid>
+            </div>
+          </dx-drop-down-box>
+        </div>
+
+        <div class="col-auto">
+          <dx-select-box
+            label="Search On"
+            labelMode="floating"
+            labelLocation="left"
+            [items]="searchOnDataSource"
+            valueExpr="id"
+            displayExpr="name"
+            [(value)]="selectedSearchOn"
+            [width]="180"
+          >
+          </dx-select-box>
+        </div>
+
+        <div class="col-auto">
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Year"
+            [(value)]="selectedYear"
+            [dataSource]="years"
+            (onValueChanged)="onYearChanged($event)"
+            placeholder="Year"
+            [width]="'auto'"
+            [width]="100"
+          ></dx-select-box>
+        </div>
+
+        <div class="col-auto">
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="month"
+            [dataSource]="monthDataSource"
+            displayExpr="name"
+            valueExpr="value"
+            [(value)]="selectedmonth"
+            (onValueChanged)="onMonthValueChanged($event)"
+            [width]="140"
+          >
+          </dx-select-box>
+        </div>
+
+        <div class="col-auto">
+          <dx-date-box
+            label="From Date"
+            labelMode="floating"
+            labelLocation="left"
+            [(value)]="fromDate"
+            [displayFormat]="'dd-MM-yyyy'"
+            type="date"
+            [width]="130"
+            [min]="minDate"
+            [max]="maxDate"
+          >
+          </dx-date-box>
+        </div>
+
+        <div class="col-auto">
+          <dx-date-box
+            label="To Date"
+            labelMode="floating"
+            labelLocation="left"
+            [(value)]="toDate"
+            [displayFormat]="'dd-MM-yyyy'"
+            [min]="fromDate"
+            [max]="today"
+            type="date"
+            [width]="130"
+          >
+          </dx-date-box>
+        </div>
+
+        <div class="col-auto ms-auto mt-3 apply-btn-container d-flex">
+          <dx-button
+            text="Apply"
+            icon=""
+            class="apply_button"
+            type="default"
+            (onClick)="onApplyFilter()"
+          >
+          </dx-button>
+        </div>
+      </div>
+    </div>
+
+    <dx-data-grid
+      height="78vh"
+      class="grid theme-dependent"
+      noDataText="No data available"
+      [dataSource]="dataSource"
+      [showBorders]="true"
+      [showColumnLines]="true"
+      [showRowLines]="true"
+      [allowColumnResizing]="false"
+      [allowColumnReordering]="true"
+      [rowAlternationEnabled]="true"
+      [columnAutoWidth]="true"
+      rowAlternationInterval="2"
+      [columnFixing]="{
+        enabled: true,
+        texts: { fix: 'Freeze', unfix: 'Unfreeze' },
+      }"
+      (onExporting)="onExporting($event)"
+      (onSelectionChanged)="onSelectionChanged($event)"
+      (onCellClick)="onCellClick($event)"
+      (onRowUpdating)="onRowUpdating($event)"
+    >
+      <dxo-paging [pageSize]="10"></dxo-paging>
+      <dxo-editing
+        mode="popup"
+        [allowUpdating]="false"
+        [allowDeleting]="false"
+        [allowAdding]="true"
+        [popup]="{ width: '35%', height: '70vh' }"
+      >
+      </dxo-editing>
+      <dxo-pager
+        [visible]="true"
+        [allowedPageSizes]="allowedPageSizes"
+        [displayMode]="displayMode"
+        [showPageSizeSelector]="showPageSizeSelector"
+        [showInfo]="showInfo"
+        [showNavigationButtons]="showNavButtons"
+      >
+      </dxo-pager>
+      <dxo-selection mode="multiple"></dxo-selection>
+      <dxo-load-panel [showPane]="false"></dxo-load-panel>
+      <dxo-scrolling mode="virtual"></dxo-scrolling>
+      <dxo-sorting mode="multiple"></dxo-sorting>
+      <dxo-header-filter [visible]="isFilterRowVisible"></dxo-header-filter>
+      <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+      <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
+      <dxo-filter-builder [allowHierarchicalFields]="true">
+      </dxo-filter-builder>
+      <dxo-search-panel
+        [visible]="true"
+        placeholder=" Search"
+      ></dxo-search-panel>
+      <dxo-grouping
+        [autoExpandAll]="false"
+        [contextMenuEnabled]="true"
+        [expandMode]="'rowClick'"
+      ></dxo-grouping>
+      <dxo-export
+        [enabled]="true"
+        [allowExportSelectedData]="false"
+        [formats]="['xlsx']"
+      >
+      </dxo-export>
+      <dxo-toolbar>
+        <dxi-item location="before">
+          <div class="grid-header">Clinical Data</div>
+        </dxi-item>
+
+        <!-- <dxi-item
+          name="updateButton"
+          location="after"
+          widget="dxButton"
+          [options]="updateButtonOptions"
+        ></dxi-item> -->
+
+        <dxi-item
+          name="processButton"
+          location="after"
+          widget="dxButton"
+          [options]="processButtonOptions"
+        ></dxi-item>
+        <dxi-item
+          location="after"
+          locateInMenu="auto"
+          showText="inMenu"
+          widget="dxButton"
+          [options]="{
+            icon: isFilterRowVisible ? 'filter' : 'filter',
+            hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+            onClick: toggleFilterRow,
+            stylingMode: 'text',
+            elementAttr: { class: 'commonButtons' },
+          }"
+        ></dxi-item>
+        <dxi-item
+          location="after"
+          locateInMenu="auto"
+          showText="inMenu"
+          widget="dxButton"
+          [options]="{
+            text: 'Refresh',
+            icon: 'refresh',
+            onClick: refresh,
+            stylingMode: 'text',
+            hint: 'Refresh',
+          }"
+        ></dxi-item>
+
+        <dxi-item
+          name="exportButton"
+          location="after"
+          cssClass="custom-export-button"
+        ></dxi-item>
+
+        <dxi-item
+          location="after"
+          widget="dxButton"
+          [options]="addButtonOptions"
+        ></dxi-item>
+      </dxo-toolbar>
+
+      <dxo-editing mode="cell" [allowUpdating]="true"></dxo-editing>
+
+      <dxi-column
+        dataField="FacilityID"
+        caption="FacilityID"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="ClaimNumber"
+        caption="Claim Number"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="ClaimActivityNumber"
+        caption="Activity Number"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="TransactionDate"
+        caption="Transaction Date"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="PatientID"
+        caption="PatientID"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="EncounterType"
+        caption="Encounter Type"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="EncounterStartDate"
+        caption="Encounter Start Date"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="EncounterEndDate"
+        caption="Encounter End Date"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="Quantity"
+        caption="Quantity"
+        [format]="{ type: 'fixedPoint', precision: 2 }"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="Qty_Weight"
+        caption="Qty Weight"
+        [format]="{ formatter: qtyWeightFormatter }"
+        [allowEditing]="canEditRow"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="CPTCode"
+        caption="CPT Code"
+        [allowGrouping]="true"
+        [showWhenGrouped]="true"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="OrderingClinician"
+        caption="Ordering Clinician"
+        [allowGrouping]="true"
+        [showWhenGrouped]="true"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="RenderingClinician"
+        caption="Rendering Clinician"
+        [allowGrouping]="true"
+        [showWhenGrouped]="true"
+        [allowEditing]="false"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="Amount"
+        caption="Amount"
+        [format]="{ type: 'fixedPoint', precision: 2 }"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="CostingDepartment"
+        caption="Costing Department"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="ProcessStatus"
+        caption="Status"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
+        dataField="pendingReason"
+        caption="Pending Reason"
+        [allowGrouping]="true"
+        [showWhenGrouped]="true"
+        [allowEditing]="false"
+      ></dxi-column>
+
+      <dxo-summary>
+        <dxi-total-item
+          coluvmn="Amount"
+          summaryType="sum"
+          [valueFormat]="usNumberFormat"
+          displayFormat="Total: {0}"
+          alignment="right"
+        ></dxi-total-item>
+      </dxo-summary>
+    </dx-data-grid>
+
+    <!-- ============== import file popup ================= -->
+    <dx-popup
+      class="formPopupClass"
+      [(visible)]="isAddFormPopupOpened"
+      title="Select Import Option"
+      height="auto"
+      width="400"
+      (onHidden)="CloseForm()"
+    >
+      <app-clinical-data-import-form (closeForm)="CloseForm()">
+      </app-clinical-data-import-form>
+    </dx-popup>
+
+    <!-- ============Cpt code editing popup ============= -->
+    <form-popup
+      class="formPopupClass"
+      [(visible)]="isCptEditFormPopupOpened"
+      (save)="onClickUpdateNewCptType()"
+      titleText="Edit CPT Master"
+      [width]="'70%'"
+      height="auto"
+    >
+      <app-cpt-master-edit-form
+        *ngIf="isCptEditFormPopupOpened"
+        [formData]="selectedCptCodeData"
+      ></app-cpt-master-edit-form>
+    </form-popup>
+
+    <!--  ============Ordering Clinician code editing popup ============= -->
+    <dx-popup
+      [(visible)]="isEditClinicianPopupOpened"
+      [width]="'50%'"
+      [height]="'auto'"
+      [showTitle]="true"
+      title="Edit Clinician"
+      [dragEnabled]="true"
+      [closeOnOutsideClick]="true"
+      [showCloseButton]="true"
+      [shading]="false"
+      [toolbarItems]="toolbarEditItems"
+      [resizeEnabled]="false"
+    >
+      <div>
+        <app-clinician-edit-form
+          *ngIf="isEditClinicianPopupOpened"
+          [formData]="selectedClinicianData"
+        ></app-clinician-edit-form>
+      </div>
+    </dx-popup>
+
+    <!-- =============== claim details popup ============== -->
+    <form-popup
+      class="formPopupClass"
+      [(visible)]="isSingleClaimDetailsVisible"
+      [visibleButtons]="false"
+      titleText="Claim Details"
+      [width]="'90%'"
+    >
+      <app-single-claim-details
+        *ngIf="isSingleClaimDetailsVisible"
+        [rowData]="clickedCellRowData"
+      ></app-single-claim-details>
+    </form-popup>
+  </div>
+
+  <input
+    type="file"
+    #excelFileInput
+    accept=".xlsx,.xls"
+    hidden
+    (change)="onExcelFileSelected($event)"
+  />
+
+  <dx-load-panel
+    #loadPanel
+    shadingColor="rgba(0,0,0,0.4)"
+    [position]="{ of: '#dataGrid' }"
+    [(visible)]="isLoading"
+    [showIndicator]="true"
+    [showPane]="true"
+    [shading]="true"
+    message="Allocating..."
+  ></dx-load-panel>
+
+  <dx-load-panel
+    #loadPanel
+    shadingColor="rgba(0,0,0,0.4)"
+    [position]="{ of: '#dataGrid' }"
+    [(visible)]="isExcelLoading"
+    [showIndicator]="true"
+    [showPane]="true"
+    [shading]="true"
+    message="Loading..."
+  ></dx-load-panel>
+
+  <dx-load-panel
+    #loadPanel
+    shadingColor="rgba(0,0,0,0.4)"
+    [position]="{ of: '#dataGrid' }"
+    [(visible)]="isUpdating"
+    [showIndicator]="true"
+    [showPane]="true"
+    [shading]="true"
+    message="Updating..."
+  ></dx-load-panel>
+</div>

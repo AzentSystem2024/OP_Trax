@@ -45,8 +45,8 @@ export class ClinicalDataImportFormComponent {
   @Output() closeForm = new EventEmitter();
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('validationGroup', { static: true })
-  validationGroup: DxValidationGroupComponent;
-  selectedOption: string = 'Import XML File';
+  validationGroup!: DxValidationGroupComponent;
+  selectedOption: string = 'Import Excel File';
   selectedXmlFile: any | null = null;
   importResults: any[] = [];
   isResponsePopupOpened: boolean = false;
@@ -64,7 +64,7 @@ export class ClinicalDataImportFormComponent {
   showNavButtons = true;
   userID: any;
   facilityData: any;
-  selectedFacilityIDs: string[] = [];
+  selectedFacilityIDs: any[] = [];
   claimDataSource: any[] = [];
   diagnosisDataSource: any[] = [];
   activityDataSource: any[] = [];
@@ -352,13 +352,13 @@ export class ClinicalDataImportFormComponent {
     MajorValue: '',
     DescriptionValue: '',
   };
-
   newclinicianMajor = this.clinicianMajor;
+
   constructor(
     private service: MasterReportService,
     private operationservice: OperationReportService,
     private reportservice: ReportService,
-    private inactivityService: InactivityService
+    private inactivityService: InactivityService,
   ) {
     this.userID = sessionStorage.getItem('UserID');
     this.getUserFacilityData();
@@ -380,7 +380,7 @@ export class ClinicalDataImportFormComponent {
   async loadcptCodeList(): Promise<void> {
     try {
       const res: any = await firstValueFrom(
-        this.service.Get_GropDown('CPT_CODE')
+        this.service.Get_GropDown('CPT_CODE'),
       );
       this.cptCodeList = res ?? [];
     } catch (error) {
@@ -392,7 +392,7 @@ export class ClinicalDataImportFormComponent {
   async loadclinicianLicenseList(): Promise<void> {
     try {
       const res: any = await firstValueFrom(
-        this.service.Get_GropDown('CLINICIAN_LICENSE')
+        this.service.Get_GropDown('CLINICIAN_LICENSE'),
       );
       this.clinicianLicenseList = res ?? [];
     } catch (error) {
@@ -406,19 +406,17 @@ export class ClinicalDataImportFormComponent {
   }
 
   getUserFacilityData() {
-  this.service
-    .Get_User_Facility_List_Data(this.userID)
-    .subscribe((res: any) => {
-      this.facilityData = res.data;
+    this.service
+      .Get_User_Facility_List_Data(this.userID)
+      .subscribe((res: any) => {
+        this.facilityData = res.data;
 
-      // ✅ AUTO SELECT if only one facility
-      if (this.facilityData?.length === 1) {
-        this.selectedFacilityIDs = [
-          this.facilityData[0].FacilityLicense
-        ];
-      }
-    });
-}
+        // ✅ AUTO SELECT if only one facility
+        if (this.facilityData?.length === 1) {
+          this.selectedFacilityIDs = [this.facilityData[0].FacilityLicense];
+        }
+      });
+  }
 
   getNewclinicianMajor = () => ({
     ...this.newclinicianMajor,
@@ -435,135 +433,168 @@ export class ClinicalDataImportFormComponent {
 
   // ================ Called when a file is selected
   async onFileSelected(event: any, fileInput: HTMLInputElement): Promise<void> {
-  this.hasError = false;
-  this.importResults = [];
-  this.isExcelLoading = true; // Show loader at the start
-  console.log(this.selectedFacilityIDs, 'selectedFacility');
+    this.hasError = false;
+    this.importResults = [];
+    this.isExcelLoading = true; // Show loader at the start
 
-  const files = event.target.files || [];
-  this.totalFiles = files.length;
-  this.uploadedCount = 0;
-  this.successCount = 0;
-  this.alreadyImportedCount = 0;
-  this.failCount = 0;
+    const files = event.target.files || [];
+    this.totalFiles = files.length;
+    this.uploadedCount = 0;
+    this.successCount = 0;
+    this.alreadyImportedCount = 0;
+    this.failCount = 0;
 
-  this.selectedXmlFile = [];
+    this.selectedXmlFile = [];
 
-  // Helper to process one XML file sequentially
-  const processXmlFile = (file: File): Promise<void> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64String = (reader.result as string).split(',')[1];
-        const filePayload: any = {
-          facilityID: this.selectedFacilityIDs.join(','),
-          fileName: file.name,
-          fileData: base64String,
-          userID: 1,
+    // Helper to process one XML file sequentially
+    const processXmlFile = (file: File): Promise<void> => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64String = (reader.result as string).split(',')[1];
+          const filePayload: any = {
+            facilityID: this.selectedFacilityIDs.join(','),
+            fileName: file.name,
+            fileData: base64String,
+            userID: 1,
+          };
+
+          this.selectedXmlFile.push(filePayload);
+          this.isResponsePopupOpened = true;
+
+          this.service.ImportClinicalData(filePayload).subscribe({
+            next: (res: any) => {
+              this.uploadedCount++;
+              if (res.message === 'Success') this.successCount++;
+              else if (res.message === 'File already imported.')
+                this.alreadyImportedCount++;
+              else this.failCount++;
+
+              if (Array.isArray(res.data)) {
+                this.importResults.push(...res.data);
+                console.log(this.importResults, 'import response');
+              }
+            },
+            error: (err) => {
+              console.error('Import error:', err);
+              this.failCount++;
+            },
+            complete: () => resolve(),
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+
+    // Process files sequentially
+    for (const file of files) {
+      const fileName = file.name.toLowerCase();
+
+      // XML import (sequential)
+      if (fileName.endsWith('.xml')) {
+        await processXmlFile(file); // waits for each XML upload
+      }
+
+      // Excel import
+      else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+        await this.loadInitialData();
+
+        const reader = new FileReader();
+        this.importedFileName = fileName;
+
+        reader.onload = (e: any) => {
+          const workbook = XLSX.read(new Uint8Array(e.target.result), {
+            type: 'array',
+          });
+          const [sheet1, sheet2, sheet3, sheet4] = workbook.SheetNames;
+
+          const claimRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheet1], {
+            raw: false,
+          });
+          const diagnosisRows = XLSX.utils.sheet_to_json(
+            workbook.Sheets[sheet2],
+            { raw: false },
+          );
+          const activityRows = XLSX.utils.sheet_to_json(
+            workbook.Sheets[sheet3],
+            { raw: false },
+          );
+          const observationRows = XLSX.utils.sheet_to_json(
+            workbook.Sheets[sheet4],
+            { raw: false },
+          );
+
+          // Format dates
+          const claimFormatted = this.formatDateFields(claimRows, [
+            'TransactionDate',
+            'EncounterStartDate',
+            'EncounterEndDate',
+          ]);
+          const diagnosisFormatted = this.formatDateFields(diagnosisRows, []);
+          const activityFormatted = this.formatDateFields(activityRows, [
+            'ActivityStart',
+          ]);
+          const observationFormatted = this.formatDateFields(
+            observationRows,
+            [],
+          );
+
+          // Run validation
+          this.claimDataSource = this.validateAndSort(
+            claimFormatted,
+            this.importClaimColumnMeta,
+          );
+          this.diagnosisDataSource = this.validateAndSort(
+            diagnosisFormatted,
+            this.importDiagnosisColumnMeta,
+          );
+          this.activityDataSource = this.validateAndSort(
+            activityFormatted,
+            this.importActivityColumnMeta,
+          );
+          this.observationDataSource = this.validateAndSort(
+            observationFormatted,
+            this.importObservationColumnMeta,
+          );
+
+          this.isExcelpopupOpened = true;
+
+          console.log('Sheet 1:', this.claimDataSource);
+          console.log('Sheet 2:', this.diagnosisDataSource);
+          console.log('Sheet 3:', this.activityDataSource);
+          console.log('Sheet 4:', this.observationDataSource);
+
+          this.isExcelLoading = false; // Hide loader after Excel processing
         };
 
-        this.selectedXmlFile.push(filePayload);
-        this.isResponsePopupOpened = true;
+        reader.readAsArrayBuffer(file);
+      }
 
-        this.service.ImportClinicalData(filePayload).subscribe({
-          next: (res: any) => {
-            this.uploadedCount++;
-            if (res.message === 'Success') this.successCount++;
-            else if (res.message === 'File already imported.') this.alreadyImportedCount++;
-            else this.failCount++;
-
-            if (Array.isArray(res.data)) {
-              this.importResults.push(...res.data);
-              console.log(this.importResults, 'import response');
-            }
+      // Invalid file type
+      else {
+        notify(
+          {
+            message: `Invalid file type: ${file.name}`,
+            position: { at: 'top right', my: 'top right' },
           },
-          error: (err) => {
-            console.error('Import error:', err);
-            this.failCount++;
-          },
-          complete: () => resolve()
-        });
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  // Process files sequentially
-  for (const file of files) {
-    const fileName = file.name.toLowerCase();
-
-    // XML import (sequential)
-    if (fileName.endsWith('.xml')) {
-      await processXmlFile(file); // waits for each XML upload
+          'error',
+        );
+        this.isExcelLoading = false;
+      }
     }
 
-    // Excel import
-    else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      await this.loadInitialData();
-
-      const reader = new FileReader();
-      this.importedFileName = fileName;
-
-      reader.onload = (e: any) => {
-        const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-        const [sheet1, sheet2, sheet3, sheet4] = workbook.SheetNames;
-
-        const claimRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheet1], { raw: false });
-        const diagnosisRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheet2], { raw: false });
-        const activityRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheet3], { raw: false });
-        const observationRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheet4], { raw: false });
-
-        // Format dates
-        const claimFormatted = this.formatDateFields(claimRows, [
-          'TransactionDate', 'EncounterStartDate', 'EncounterEndDate'
-        ]);
-        const diagnosisFormatted = this.formatDateFields(diagnosisRows, []);
-        const activityFormatted = this.formatDateFields(activityRows, ['ActivityStart']);
-        const observationFormatted = this.formatDateFields(observationRows, []);
-
-        // Run validation
-        this.claimDataSource = this.validateAndSort(claimFormatted, this.importClaimColumnMeta);
-        this.diagnosisDataSource = this.validateAndSort(diagnosisFormatted, this.importDiagnosisColumnMeta);
-        this.activityDataSource = this.validateAndSort(activityFormatted, this.importActivityColumnMeta);
-        this.observationDataSource = this.validateAndSort(observationFormatted, this.importObservationColumnMeta);
-
-
-        this.isExcelpopupOpened = true;
-
-        console.log('Sheet 1:', this.claimDataSource);
-        console.log('Sheet 2:', this.diagnosisDataSource);
-        console.log('Sheet 3:', this.activityDataSource);
-        console.log('Sheet 4:', this.observationDataSource);
-
-        this.isExcelLoading = false; // Hide loader after Excel processing
-      };
-
-      reader.readAsArrayBuffer(file);
-    }
-
-    // Invalid file type
-    else {
-      notify({
-        message: `Invalid file type: ${file.name}`,
-        position: { at: 'top right', my: 'top right' },
-      }, 'error');
-      this.isExcelLoading = false;
-    }
+    // Final cleanup
+    this.isExcelLoading = false;
+    fileInput.value = ''; // allow reselecting same file
   }
 
-  // Final cleanup
-  this.isExcelLoading = false;
-  fileInput.value = ''; // allow reselecting same file
-}
-
-
-formatNumber(value: any): string {
-  if (value === null || value === undefined || value === '') return '';
-  return Number(value).toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
+  formatNumber(value: any): string {
+    if (value === null || value === undefined || value === '') return '';
+    return Number(value).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
 
   getSystemDateFormat(): string {
     const testDate = new Date(2024, 0, 5); // 5 Jan 2024
@@ -573,10 +604,10 @@ formatNumber(value: any): string {
     const sep = formatted.includes('/')
       ? '/'
       : formatted.includes('-')
-      ? '-'
-      : formatted.includes('.')
-      ? '.'
-      : ' ';
+        ? '-'
+        : formatted.includes('.')
+          ? '.'
+          : ' ';
 
     const parts = formatted.split(sep);
 
@@ -593,70 +624,70 @@ formatNumber(value: any): string {
 
   //========== Format date as dd/MM/yyyy
   formatDateFields(data: any[], dateFields: string[]): any[] {
-  return data.map(row => {
-    const newRow = { ...row };
+    return data.map((row) => {
+      const newRow = { ...row };
 
-    dateFields.forEach(field => {
-      const val = newRow[field];
-      if (!val) return;
+      dateFields.forEach((field) => {
+        const val = newRow[field];
+        if (!val) return;
 
-      let dateObj: Date | null = null;
+        let dateObj: Date | null = null;
 
-      //  1. Already Date (BEST CASE)
-      if (val instanceof Date) {
-        dateObj = val;
-      }
-
-      // 2. Excel serial number
-      else if (typeof val === 'number') {
-        const excelEpoch = new Date(1899, 11, 30);
-        dateObj = new Date(excelEpoch.getTime() + val * 86400000);
-      }
-
-      // 3. STRING → manual SAFE parse (dd/MM/yyyy ONLY)
-      else if (typeof val === 'string') {
-        const [datePart, timePart] = val.split(' ');
-        const parts = datePart.split(/[\/\-]/).map(Number);
-
-        if (parts.length === 3) {
-          let day = parts[0];
-          let month = parts[1];
-          let year = parts[2];
-
-          // Fix 2-digit year
-          if (year < 100) year += 2000;
-
-          let hours = 0;
-          let minutes = 0;
-
-          if (timePart) {
-            const time = timePart.split(':').map(Number);
-            hours = time[0] || 0;
-            minutes = time[1] || 0;
-          }
-
-          dateObj = new Date(year, month - 1, day, hours, minutes);
+        //  1. Already Date (BEST CASE)
+        if (val instanceof Date) {
+          dateObj = val;
         }
-      }
 
-      // FINAL FORMAT
-      if (dateObj && !isNaN(dateObj.getTime())) {
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const year = dateObj.getFullYear();
+        // 2. Excel serial number
+        else if (typeof val === 'number') {
+          const excelEpoch = new Date(1899, 11, 30);
+          dateObj = new Date(excelEpoch.getTime() + val * 86400000);
+        }
 
-        const hours = String(dateObj.getHours()).padStart(2, '0');
-        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+        // 3. STRING → manual SAFE parse (dd/MM/yyyy ONLY)
+        else if (typeof val === 'string') {
+          const [datePart, timePart] = val.split(' ');
+          const parts = datePart.split(/[\/\-]/).map(Number);
 
-        newRow[field] = `${year}/${month}/${day} ${hours}:${minutes}`;
-      } else {
-        newRow[field] = '';
-      }
+          if (parts.length === 3) {
+            let day = parts[0];
+            let month = parts[1];
+            let year = parts[2];
+
+            // Fix 2-digit year
+            if (year < 100) year += 2000;
+
+            let hours = 0;
+            let minutes = 0;
+
+            if (timePart) {
+              const time = timePart.split(':').map(Number);
+              hours = time[0] || 0;
+              minutes = time[1] || 0;
+            }
+
+            dateObj = new Date(year, month - 1, day, hours, minutes);
+          }
+        }
+
+        // FINAL FORMAT
+        if (dateObj && !isNaN(dateObj.getTime())) {
+          const day = String(dateObj.getDate()).padStart(2, '0');
+          const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+          const year = dateObj.getFullYear();
+
+          const hours = String(dateObj.getHours()).padStart(2, '0');
+          const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+
+          newRow[field] = `${year}/${month}/${day} ${hours}:${minutes}`;
+        } else {
+          newRow[field] = '';
+        }
+      });
+
+      return newRow;
     });
-
-    return newRow;
-  });
-}
+  }
 
   //validate rows of imported excel
   validateAndSort(data: any[], columnMeta: any[]): any[] {
@@ -755,7 +786,7 @@ formatNumber(value: any): string {
           message: 'Please import your file',
           position: { at: 'top right', my: 'top right' },
         },
-        'error'
+        'error',
       );
       return;
     }
@@ -766,7 +797,7 @@ formatNumber(value: any): string {
           message: 'Please fix the validation errors before saving.',
           position: { at: 'top right', my: 'top right' },
         },
-        'error'
+        'error',
       );
       return;
     }
@@ -787,7 +818,7 @@ formatNumber(value: any): string {
       Math.ceil(claimData.length / chunkSize),
       Math.ceil(diagnosisData.length / chunkSize),
       Math.ceil(activityData.length / chunkSize),
-      Math.ceil(observationData.length / chunkSize)
+      Math.ceil(observationData.length / chunkSize),
     );
 
     const batchNo =
@@ -815,15 +846,15 @@ formatNumber(value: any): string {
         CLAIM_DATA: claimData.slice(index * chunkSize, (index + 1) * chunkSize),
         DIAGNOSIS_DATA: diagnosisData.slice(
           index * chunkSize,
-          (index + 1) * chunkSize
+          (index + 1) * chunkSize,
         ),
         ACTIVITY_DATA: activityData.slice(
           index * chunkSize,
-          (index + 1) * chunkSize
+          (index + 1) * chunkSize,
         ),
         OBSERVATION_DATA: observationData.slice(
           index * chunkSize,
-          (index + 1) * chunkSize
+          (index + 1) * chunkSize,
         ),
       };
 
@@ -839,7 +870,7 @@ formatNumber(value: any): string {
                   message: 'Import failed.',
                   position: { at: 'top right', my: 'top right' },
                 },
-                'error'
+                'error',
               );
               this.isSaving = false;
               this.isLoading = false;
@@ -878,7 +909,7 @@ formatNumber(value: any): string {
                 position: { at: 'top right', my: 'top right' },
                 displayTime: 1000,
               },
-              'success'
+              'success',
             );
             this.close();
           } else {
@@ -888,7 +919,7 @@ formatNumber(value: any): string {
                 position: { at: 'top right', my: 'top right' },
                 displayTime: 1000,
               },
-              'error'
+              'error',
             );
           }
           this.isLoading = false;
@@ -913,7 +944,7 @@ formatNumber(value: any): string {
           position: { at: 'top right', my: 'top right' },
           displayTime: 1000,
         },
-        'error'
+        'error',
       );
     } else if (error.status === 500) {
       notify(
@@ -922,7 +953,7 @@ formatNumber(value: any): string {
           position: { at: 'top right', my: 'top right' },
           displayTime: 1000,
         },
-        'error'
+        'error',
       );
     } else {
       notify(
@@ -931,7 +962,7 @@ formatNumber(value: any): string {
           position: { at: 'top right', my: 'top right' },
           displayTime: 1000,
         },
-        'error'
+        'error',
       );
     }
     console.error('Error during data import:', error);
@@ -950,7 +981,7 @@ formatNumber(value: any): string {
       case 'Import Excel File':
         return '.xls,.xlsx';
       default:
-        return ''; // No restriction (or optionally disable input)
+        return '';
     }
   }
 
@@ -1026,7 +1057,7 @@ formatNumber(value: any): string {
     if (!columnMeta) return;
 
     const column = columnMeta.find(
-      (col) => col.dataField === e.column.dataField
+      (col) => col.dataField === e.column.dataField,
     );
     console.log(column, 'column');
     if (!column) return;
