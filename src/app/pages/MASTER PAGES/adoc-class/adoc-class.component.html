@@ -27,7 +27,7 @@
       >
       </dxo-popup>
 
-      <dxo-form [colCount]="1">
+      <dxo-form [colCount]="1"  labelMode="floating">
         <dxi-item
           dataField="ClassCode"
           [editorOptions]="{ readOnly: true }"
@@ -138,7 +138,7 @@
     [hideOnOutsideClick]="false"
   >
     <div *dxTemplate="let data of 'content'">
-      <dx-form [formData]="newADOCClass">
+      <dx-form [formData]="newADOCClass"  labelMode="floating">
         <dxi-item
           dataField="Code"
           editorType="dxTextBox"

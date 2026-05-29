@@ -1269,4 +1269,132 @@ export class MasterReportService {
   Remove_adocClass_Row_Data(id: any) {
     return this.http.post(`${this.BASE_URL}ADOCClass/delete/${id}`, {});
   }
+
+  // ================= Price Master =================
+  // ===== Get Price Master List =====
+  get_PriceMaster_List() {
+    const url = `${this.BASE_URL}price/list`;
+    return this.http.post(url, {});
+  }
+
+  // ===== Add Price Master =====
+  Insert_PriceMaster_Data(
+    FacilityID: any,
+    CPTCode: any,
+    Price: any,
+    EffectFrom: any,
+    RevisedOn: any,
+    IsInactive: any,
+  ) {
+    const url = `${this.BASE_URL}price/save`;
+
+    const reqBody = {
+      FacilityID: FacilityID,
+      CPTID: CPTCode,
+      Price: Price,
+      EffectFrom: this.formatDate(EffectFrom),
+      EffectTo: this.formatDate(RevisedOn),
+      IsInactive: IsInactive,
+    };
+
+    return this.http.post(url, reqBody);
+  }
+
+  // ===== Update Price Master =====
+  update_PriceMaster_Data(
+    ID: any,
+    FacilityID: any,
+    CPTCode: any,
+    Price: any,
+    EffectFrom: any,
+    RevisedOn: any,
+    IsInactive: any,
+  ) {
+    const url = `${this.BASE_URL}price/update`;
+
+    const reqBody = {
+      ID: ID,
+      FacilityID: FacilityID,
+      CPTID: CPTCode,
+      Price: Price,
+      EffectFrom: this.formatDate(EffectFrom),
+      EffectTo: this.formatDate(RevisedOn),
+      IsInactive: IsInactive,
+    };
+
+    return this.http.post(url, reqBody);
+  }
+
+  // ===== Delete Price Master =====
+  Remove_PriceMaster_Row_Data(id: any) {
+    return this.http.post(`${this.BASE_URL}price/delete/${id}`, {});
+  }
+
+  // ================= Price Master =================
+  // ===== Get Price Master List =====
+  get_CPTWeightage_List() {
+    const url = `${this.BASE_URL}CPTWeightage/list`;
+    return this.http.post(url, {});
+  }
+
+  // ===== Add Price Master =====
+  Insert_CPTWeightage_Data(
+    FacilityID: any,
+    CPTCode: any,
+    Weightage: any,
+    EffectFrom: any,
+    RevisedOn: any,
+    IsInactive: any,
+  ) {
+    const url = `${this.BASE_URL}CPTWeightage/save`;
+
+    const reqBody = {
+      FacilityID: FacilityID,
+      CPTID: CPTCode,
+      Weightage: Weightage,
+      EffectFrom: this.formatDate(EffectFrom),
+      EffectTo: this.formatDate(RevisedOn),
+      IsInactive: IsInactive,
+    };
+
+    return this.http.post(url, reqBody);
+  }
+
+  // ===== Update Price Master =====
+  update_CPTWeightage_Data(
+    ID: any,
+    FacilityID: any,
+    CPTCode: any,
+    Weightage: any,
+    EffectFrom: any,
+    RevisedOn: any,
+    IsInactive: any,
+  ) {
+    const url = `${this.BASE_URL}CPTWeightage/update`;
+
+    const reqBody = {
+      ID: ID,
+      FacilityID: FacilityID,
+      CPTID: CPTCode,
+      Weightage: Weightage,
+      EffectFrom: this.formatDate(EffectFrom),
+      EffectTo: this.formatDate(RevisedOn),
+      IsInactive: IsInactive,
+    };
+
+    return this.http.post(url, reqBody);
+  }
+
+  // ===== Delete Price Master =====
+  Remove_CPTWeightage_Row_Data(id: any) {
+    return this.http.post(`${this.BASE_URL}CPTWeightage/delete/${id}`, {});
+  }
+
+  formatDate(dateString: any) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 }

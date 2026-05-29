@@ -27,7 +27,7 @@
       >
       </dxo-popup>
 
-      <dxo-form [colCount]="1">
+      <dxo-form [colCount]="1" labelMode="floating">
         <dxi-item
           dataField="GroupCode"
           [editorOptions]="{ readOnly: true }"
@@ -38,6 +38,7 @@
         <dxi-item
           dataField="IsChargeable"
           editorType="dxSelectBox"
+          [label]="{ visible: false }"
           [editorOptions]="{
             dataSource: chargeableList,
             valueExpr: 'ID',
@@ -48,7 +49,7 @@
         <dxi-item
           dataField="IsInactive"
           editorType="dxCheckBox"
-          [label]="{ text: 'Inactive' }"
+          [label]="{ visible: false }"
           [editorOptions]="{
             text: 'Inactive',
           }"
@@ -156,7 +157,7 @@
     [hideOnOutsideClick]="false"
   >
     <div *dxTemplate="let data of 'content'">
-      <dx-form [formData]="newADOCGroup">
+      <dx-form [formData]="newADOCGroup" labelMode="floating">
         <dxi-item
           dataField="GroupCode"
           editorType="dxTextBox"

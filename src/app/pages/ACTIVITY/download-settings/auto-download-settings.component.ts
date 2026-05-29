@@ -33,10 +33,10 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class AutoDownloadSettingsComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   @ViewChild(DxTreeListComponent, { static: true })
-  treelist: DxTreeListComponent;
+  treelist!: DxTreeListComponent;
 
   @ViewChild('dateValidator', { static: false })
   dateValidator!: DxValidatorComponent;
@@ -73,7 +73,7 @@ export class AutoDownloadSettingsComponent {
   iseditfilteredFacility: any;
 
   InstanceCount: number = 0;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage:any;
 
   constructor(private dataService: DataService, private route: ActivatedRoute) {
     this.route.url.subscribe((segments) => {
@@ -87,7 +87,7 @@ export class AutoDownloadSettingsComponent {
   }
   //======used to enable add button only parent nodes of the tree view=======
   // allowAdding = ({ row }) => row.data.parentId === null;
-  allowAdding = ({ row }) => false;
+  allowAdding:any =  false;
 
   get_Facility_List() {
     this.dataService
@@ -124,7 +124,7 @@ export class AutoDownloadSettingsComponent {
             FacilityID,
             FacilityName,
             ClaimTransactionDate,
-          }) => ({
+          }:any) => ({
             id: ID,
             parentId: ParentID,
             Instance: InstanceNo,
@@ -191,7 +191,7 @@ export class AutoDownloadSettingsComponent {
       this.dataSource.map((item) => item.Facility)
     );
     this.filteredFacilityDataSource = this.FacilityDataSource.filter(
-      (facility) => !usedFacilityIds.has(facility.FacilityID)
+      (facility:any) => !usedFacilityIds.has(facility.FacilityID)
     );
 
     if (this.filteredFacilityDataSource.length === 0) {
@@ -248,7 +248,7 @@ export class AutoDownloadSettingsComponent {
           .map((item) => item.Facility)
       );
       this.iseditfilteredFacility = this.FacilityDataSource.filter(
-        (facility) =>
+        (facility:any) =>
           currentParentFacilityIds.has(facility.FacilityID) ||
           !allUsedFacilityIds.has(facility.FacilityID)
       );
