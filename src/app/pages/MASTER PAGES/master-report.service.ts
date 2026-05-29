@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 import { ConfigService } from 'src/app/services/config.service';
 
-const Token = JSON.parse(localStorage.getItem('Token'));
+const Token = JSON.parse(localStorage.getItem('Token')||'{}');
 
 const gender: any = [
   { description: 'Male' },
@@ -224,7 +224,8 @@ export class MasterReportService {
     EmirateID: any,
     ZoneID: any,
     TypeID: any,
-    CategoryID: any
+    CategoryID: any,
+    KPI:any
   ) {
     const url = `${this.BASE_URL}facility/update`;
     const reqBody = {
@@ -241,6 +242,7 @@ export class MasterReportService {
       ZoneID: ZoneID,
       TypeID: TypeID,
       CategoryID: CategoryID,
+      KPI:KPI
     };
     return this.http.post(url, reqBody);
   }

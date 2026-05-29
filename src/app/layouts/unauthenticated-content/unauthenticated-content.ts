@@ -24,7 +24,7 @@ export class UnauthenticatedContentComponent {
   constructor(private router: Router) {}
 
   get description() {
-    const path = this.router.url.split('/').at(-1);
+    const path = this.router.url.split('/')?.at(-1) ?? '';
     switch (path) {
       case 'login':
         return 'Login To Your Account';
@@ -36,7 +36,7 @@ export class UnauthenticatedContentComponent {
   }
 
   get title() {
-    const path = this.router.url.split('/').at(-1);
+    const path = this.router.url.split('/').at(-1) ?? '';
     switch (path) {
       case 'login':
         return 'OPTrax';

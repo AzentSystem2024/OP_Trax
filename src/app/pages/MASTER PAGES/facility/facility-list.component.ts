@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
 import {
   DxButtonModule,
   DxDataGridComponent,
@@ -20,7 +14,7 @@ import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
 import notify from 'devextreme/ui/notify';
 import DataSource from 'devextreme/data/data_source';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-facility-list',
@@ -30,7 +24,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class FacilityListComponent implements OnInit {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   FacilityType_DataSource: any;
   Facilitygroup_DataSource: any;
@@ -58,9 +52,9 @@ export class FacilityListComponent implements OnInit {
       }),
   });
   isFilterRowVisible: boolean = false;
-  currentPathName: string;
-  initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  currentPathName: string='';
+  initialized: boolean=false;
+  menuPrevilage:any;
 
   constructor(
     private service: ReportService,
@@ -130,6 +124,7 @@ export class FacilityListComponent implements OnInit {
     let ZoneID = combinedData.ZoneID;
     let TypeID = combinedData.TypeID;
     let CategoryID = combinedData.CategoryID;
+    let KPI=combinedData.KPI
 
     this.masterService
       .update_facility_data(
@@ -145,7 +140,8 @@ export class FacilityListComponent implements OnInit {
         EmirateID,
         ZoneID,
         TypeID,
-        CategoryID
+        CategoryID,
+        KPI
       )
       .subscribe((data: any) => {
         if (data) {

@@ -30,7 +30,7 @@
           [editorOptions]="{
             label: 'License',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         >
           <!-- <dxo-label text="License"></dxo-label> -->
@@ -42,7 +42,6 @@
           [label]="{ visible: false }"
           [editorOptions]="{ label: 'Name', labelMode: 'floating', height: 40 }"
         >
-          <!-- <dxo-label text="Name"></dxo-label> -->
         </dxi-item>
 
         <dxi-item
@@ -53,10 +52,9 @@
           [editorOptions]="{
             label: 'Post Office',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         >
-          <!-- <dxo-label text="Post office"></dxo-label> -->
         </dxi-item>
         <dxi-item
           dataField="FacilityShortName"
@@ -65,10 +63,9 @@
           [editorOptions]="{
             label: 'Short Name',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         >
-          <!-- <dxo-label text="Short Name"></dxo-label> -->
         </dxi-item>
 
         <dxi-item
@@ -80,10 +77,9 @@
             valueExpr: 'ID',
             label: 'Region',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         >
-          <!-- <dxo-label text="Region"></dxo-label> -->
         </dxi-item>
 
         <dxi-item
@@ -95,10 +91,9 @@
             valueExpr: 'ID',
             label: 'Emirates',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         >
-          <!-- <dxo-label text="Emirates"></dxo-label> -->
         </dxi-item>
 
         <dxi-item
@@ -110,10 +105,9 @@
             valueExpr: 'ID',
             label: 'Zone',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         >
-          <!-- <dxo-label text="Zone"></dxo-label> -->
         </dxi-item>
 
         <dxi-item
@@ -125,10 +119,9 @@
             valueExpr: 'ID',
             label: 'Type',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         >
-          <!-- <dxo-label text="Type"></dxo-label> -->
         </dxi-item>
 
         <dxi-item
@@ -140,13 +133,24 @@
             valueExpr: 'ID',
             label: 'Category',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         >
           <dxo-label text="Category"></dxo-label>
         </dxi-item>
-        <dxi-item>
-          <!-- <dxo-label text="Category"></dxo-label> -->
+
+        <dxi-item
+          dataField="KPI"
+          editorType="dxNumberBox"
+          [label]="{ visible: false }"
+          [editorOptions]="{
+            label: 'KPI',
+            labelMode: 'floating',
+            height: 40,
+            format: '#',
+            showSpinButtons: false,
+          }"
+        >
         </dxi-item>
 
         <dxi-item
@@ -157,10 +161,10 @@
           [label]="{ visible: false }"
           [editorOptions]="{ label: 'Address', labelMode: 'floating' }"
         >
-          <!-- <dxo-label text="Address"></dxo-label> -->
         </dxi-item>
       </dxo-form>
     </dxo-editing>
+    
     <dxo-pager
       [visible]="true"
       [allowedPageSizes]="allowedPageSizes"
@@ -199,7 +203,7 @@
           hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
           onClick: toggleFilterRow,
           stylingMode: 'text',
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
       <dxi-item
@@ -212,7 +216,7 @@
           icon: 'refresh',
           hint: 'refresh',
           onClick: refresh,
-          stylingMode: 'text'
+          stylingMode: 'text',
         }"
       ></dxi-item>
 

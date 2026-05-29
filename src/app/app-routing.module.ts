@@ -49,6 +49,10 @@ import { AboutPageComponent } from './pages/about-page/about-page.component';
 import { CPTCostingDepartmentAllocationComponent } from './pages/MASTER PAGES/cpt-costing-department-allocation/cpt-costing-department-allocation.component';
 import { LedgerGroupComponent } from './pages/ACCOUNTS/ledger-group/ledger-group.component';
 import { ClinicalDataComponent } from './pages/OPERATION PAGES/clinical-data/clinical-data.component';
+import { ADOCClassComponent } from './pages/MASTER PAGES/adoc-class/adoc-class.component';
+import { PriceMasterComponent } from './pages/MASTER PAGES/price-master/price-master.component';
+import { ADOCGroupComponent } from './pages/MASTER PAGES/adoc-group/adoc-group.component';
+import { CPTWeightageComponent } from './pages/MASTER PAGES/cpt-weightage/cpt-weightage.component';
 
 const routes: Routes = [
   {
@@ -266,6 +270,26 @@ const routes: Routes = [
       {
         path: 'process',
         component: ProcessComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'adoc-class',
+        component: ADOCClassComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'adoc-group',
+        component: ADOCGroupComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'price',
+        component: PriceMasterComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'cpt-weightage',
+        component: CPTWeightageComponent,
         canActivate: [AuthGuardService],
       },
       {

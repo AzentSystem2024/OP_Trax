@@ -38,13 +38,13 @@ import {
 })
 export class ClinicianComponent implements OnInit {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   @ViewChild(ClinicianNewFormComponent, { static: false })
-  clinicianComponent: ClinicianNewFormComponent;
+  clinicianComponent!: ClinicianNewFormComponent;
 
   @ViewChild(ClinicianEditFormComponent, { static: false })
-  clinicianEditComponent: ClinicianEditFormComponent;
+  clinicianEditComponent!: ClinicianEditFormComponent;
 
   isAddClinicianPopupOpened: any = false;
   isEditClinicianPopupOpened: any = false;
@@ -138,7 +138,7 @@ export class ClinicianComponent implements OnInit {
 
   isFilterRowVisible: boolean = false;
   selectedClinician: any;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: any;
 
   constructor(
     private service: ReportService,
@@ -146,7 +146,7 @@ export class ClinicianComponent implements OnInit {
     private dataService: DataService,
     private router: Router,
     private popupStateService: PopupStateService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -231,7 +231,7 @@ export class ClinicianComponent implements OnInit {
       CategoryID,
       Gender,
       DepartmentID,
-    } = this.clinicianComponent.getnewClinicianData();
+    } = this.clinicianComponent.getnewClinicianData() || {};
 
     this.masterService
       .Insert_Clinician_Data(
@@ -243,7 +243,7 @@ export class ClinicianComponent implements OnInit {
         ProfessionID,
         CategoryID,
         Gender,
-        DepartmentID
+        DepartmentID,
       )
       .subscribe((response: any) => {
         if (response) {
@@ -252,7 +252,7 @@ export class ClinicianComponent implements OnInit {
               message: `New Clinician saved Successfully`,
               position: { at: 'top right', my: 'top right' },
             },
-            'success'
+            'success',
           );
           this.isAddClinicianPopupOpened = false;
           this.dataGrid.instance.refresh();
@@ -262,7 +262,7 @@ export class ClinicianComponent implements OnInit {
               message: `Your Data Not Saved`,
               position: { at: 'top right', my: 'top right' },
             },
-            'error'
+            'error',
           );
         }
       });
@@ -282,7 +282,7 @@ export class ClinicianComponent implements OnInit {
       CategoryID,
       Gender,
       DepartmentID,
-    } = this.clinicianEditComponent.getnewClinicianData();
+    } = this.clinicianEditComponent.getnewClinicianData() || {};
 
     this.masterService
       .update_Clinician_data(
@@ -295,7 +295,7 @@ export class ClinicianComponent implements OnInit {
         ProfessionID,
         CategoryID,
         Gender,
-        DepartmentID
+        DepartmentID,
       )
       .subscribe((response: any) => {
         if (response) {
@@ -304,7 +304,7 @@ export class ClinicianComponent implements OnInit {
               message: `Clinician updated Successfully`,
               position: { at: 'top right', my: 'top right' },
             },
-            'success'
+            'success',
           );
           this.isEditClinicianPopupOpened = false;
           this.dataGrid.instance.refresh();
@@ -314,7 +314,7 @@ export class ClinicianComponent implements OnInit {
               message: `Your Data Not Saved`,
               position: { at: 'top right', my: 'top right' },
             },
-            'error'
+            'error',
           );
         }
       });
@@ -333,7 +333,7 @@ export class ClinicianComponent implements OnInit {
               position: { at: 'top right', my: 'top right' },
               displayTime: 500,
             },
-            'success'
+            'success',
           );
         } catch (error) {
           notify(
@@ -342,7 +342,7 @@ export class ClinicianComponent implements OnInit {
               position: { at: 'top right', my: 'top right' },
               displayTime: 500,
             },
-            'error'
+            'error',
           );
         }
         event.component.refresh();
