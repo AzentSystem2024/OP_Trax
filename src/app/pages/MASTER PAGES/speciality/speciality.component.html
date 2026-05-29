@@ -45,14 +45,16 @@
       <dxo-search [enabled]="true"></dxo-search>
     </dxo-header-filter>
     <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
-    <dxo-column-chooser [enabled]="true" [height]="400"></dxo-column-chooser>
+    <dxo-column-chooser [enabled]="false" [height]="400"></dxo-column-chooser>
     <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
+
     <dxo-export
       [enabled]="true"
       [allowExportSelectedData]="false"
       [formats]="['xlsx']"
     >
     </dxo-export>
+
     <dxo-toolbar>
       <dxi-item location="before">
         <div class="grid-header">Speciality</div>
@@ -96,8 +98,6 @@
       ></dxi-item>
     </dxo-toolbar>
 
-    <!-- <dxo-selection mode="multiple"></dxo-selection> -->
-
     <dxi-column dataField="SpecialityCode" caption="Code"></dxi-column>
     <dxi-column dataField="SpecialityName" caption="Name"></dxi-column>
     <dxi-column
@@ -105,6 +105,7 @@
       caption="Short Name"
     ></dxi-column>
     <dxi-column dataField="Description" caption="Description"></dxi-column>
+    
   </dx-data-grid>
   <form-popup
     class="formPopupClass"

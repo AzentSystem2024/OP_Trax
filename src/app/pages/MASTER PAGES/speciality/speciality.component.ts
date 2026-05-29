@@ -33,9 +33,9 @@ import { DataService } from 'src/app/services';
 })
 export class SpecialityComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
   @ViewChild(SpecialityNewFormComponent, { static: false })
-  SpecialityNewForm: SpecialityNewFormComponent;
+  SpecialityNewForm!: SpecialityNewFormComponent;
 
   //========Variables for Pagination ====================
   readonly allowedPageSizes: any = [5, 10, 'all'];
@@ -59,7 +59,7 @@ export class SpecialityComponent {
   addButtonOptions: any;
 
   isFilterRowVisible: boolean = false;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: any;
   constructor(
     private service: ReportService,
     private masterService: MasterReportService,

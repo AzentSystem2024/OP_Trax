@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConfigService } from 'src/app/services/config.service';
 
-const Token = JSON.parse(localStorage.getItem('Token')||'{}');
+const Token = JSON.parse(localStorage.getItem('Token') || '{}');
 
 const gender: any = [
   { description: 'Male' },
@@ -16,7 +16,10 @@ const gender: any = [
   providedIn: 'root',
 })
 export class MasterReportService {
-  constructor(private http: HttpClient, private config: ConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private config: ConfigService,
+  ) {}
 
   private get BASE_URL(): string {
     return this.config.apiBaseUrl;
@@ -60,7 +63,7 @@ export class MasterReportService {
       canVerifyCostingData: ObjData[0].canVerifyCostingData,
       canApproveCostingData: ObjData[0].canApproveCostingData,
       canUploadCostingData: ObjData[0].canUploadCostingData,
-      canReprocessCostingData : ObjData[0].canReprocessCostingData,
+      canReprocessCostingData: ObjData[0].canReprocessCostingData,
       UserMenuList: ObjData[0].Menus,
     };
     return this.http.post(Url, reqBody);
@@ -74,7 +77,7 @@ export class MasterReportService {
       canVerifyCostingData: ObjData[0].canVerifyCostingData,
       canApproveCostingData: ObjData[0].canApproveCostingData,
       canUploadCostingData: ObjData[0].canUploadCostingData,
-      canReprocessCostingData : ObjData[0].canReprocessCostingData,
+      canReprocessCostingData: ObjData[0].canReprocessCostingData,
       UserMenuList: ObjData[0].Menus,
     };
     return this.http.post(Url, reqBody);
@@ -100,7 +103,7 @@ export class MasterReportService {
     SpecialityCode: any,
     SpecialityName: any,
     SpecialityShortName: any,
-    Description: any
+    Description: any,
   ) {
     const url = `${this.BASE_URL}speciality/insert`;
     const reqBody = {
@@ -119,7 +122,7 @@ export class MasterReportService {
     SpecialityCode: any,
     SpecialityName: any,
     SpecialityShortName: any,
-    Description: any
+    Description: any,
   ) {
     const url = `${this.BASE_URL}speciality/update`;
     const reqBody = {
@@ -152,7 +155,7 @@ export class MasterReportService {
   Insert_Insurance_Data(
     InsuranceID: any,
     InsuranceName: any,
-    InsuranceShortName: any
+    InsuranceShortName: any,
   ) {
     const url = `${this.BASE_URL}insurancecompany/insert`;
     const reqBody = {
@@ -169,7 +172,7 @@ export class MasterReportService {
     id: any,
     InsuranceID: any,
     InsuranceName: any,
-    InsuranceShortName: any
+    InsuranceShortName: any,
   ) {
     const url = `${this.BASE_URL}insurancecompany/update`;
     const reqBody = {
@@ -225,7 +228,7 @@ export class MasterReportService {
     ZoneID: any,
     TypeID: any,
     CategoryID: any,
-    KPI:any
+    KPI: any,
   ) {
     const url = `${this.BASE_URL}facility/update`;
     const reqBody = {
@@ -242,7 +245,7 @@ export class MasterReportService {
       ZoneID: ZoneID,
       TypeID: TypeID,
       CategoryID: CategoryID,
-      KPI:KPI
+      KPI: KPI,
     };
     return this.http.post(url, reqBody);
   }
@@ -301,7 +304,7 @@ export class MasterReportService {
   Insert_FacilityGroup_Data(
     facilitygroup: any,
     FacilityCategoryValue: any,
-    description: any
+    description: any,
   ) {
     const url = `${this.BASE_URL}facilitygroup/insert`;
     const reqBody = {
@@ -317,7 +320,7 @@ export class MasterReportService {
     id: any,
     facilitygroup: any,
     FacilityCategoryValue: any,
-    description: any
+    description: any,
   ) {
     const url = `${this.BASE_URL}facilitygROUP/update`;
     const reqBody = {
@@ -391,12 +394,12 @@ export class MasterReportService {
     CPTDepartmentID: any,
     CostDepartmentID: any,
     CostDriveID: any,
-    FixedQuantity : any,
-    IsDifferentCPTDepartment:any,
-    IsDifferentLedger:any,     
-    selectedLedgerID:any,   
-    CPTEncounterDepartments:any,
-    data: any
+    FixedQuantity: any,
+    IsDifferentCPTDepartment: any,
+    IsDifferentLedger: any,
+    selectedLedgerID: any,
+    CPTEncounterDepartments: any,
+    data: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/insert`;
     const reqBody = {
@@ -410,10 +413,10 @@ export class MasterReportService {
       CostDepartmentID: CostDepartmentID,
       CostDriveID: CostDriveID,
       FixedQuantity: FixedQuantity,
-      IsDifferentCPTDepartment : IsDifferentCPTDepartment,
-      IsDifferentLedger:IsDifferentLedger,     
-      SelectedLedgerID:selectedLedgerID,   
-      CPTEncounterDepartments:CPTEncounterDepartments,
+      IsDifferentCPTDepartment: IsDifferentCPTDepartment,
+      IsDifferentLedger: IsDifferentLedger,
+      SelectedLedgerID: selectedLedgerID,
+      CPTEncounterDepartments: CPTEncounterDepartments,
       data: data,
     };
 
@@ -422,67 +425,66 @@ export class MasterReportService {
 
   //=====Update Cpt Master data======
   update_CptMaster_data(
-  id: any,
-  CPTTypeID: any,
-  CPTCode: any,
-  CPTName: any,
-  description: any,
-  CPTGroup: any,
-  DepartmentID: any,
-  CPTDepartmentID: any,
-  CostDepartmentID: any,
-  CostDriveID: any,
-  FixedQuantity: any,
-  IsDifferentCPTDepartment: any,
-  IsDifferentLedger:any,     
-  selectedLedgerID:any,    
-  CPTEncounterDepartments: any,
-  data: any
-) {
-  const url = `${this.BASE_URL}cptmaster/update`;
+    id: any,
+    CPTTypeID: any,
+    CPTCode: any,
+    CPTName: any,
+    description: any,
+    CPTGroup: any,
+    DepartmentID: any,
+    CPTDepartmentID: any,
+    CostDepartmentID: any,
+    CostDriveID: any,
+    FixedQuantity: any,
+    IsDifferentCPTDepartment: any,
+    IsDifferentLedger: any,
+    selectedLedgerID: any,
+    CPTEncounterDepartments: any,
+    data: any,
+  ) {
+    const url = `${this.BASE_URL}cptmaster/update`;
 
-  /* ===============================
+    /* ===============================
      NORMALIZE PAYLOAD (IMPORTANT)
      =============================== */
 
-  let finalDepartmentID = DepartmentID;
-  let finalCPTDepartmentID = CPTDepartmentID;
-  let finalEncounterDepartments = CPTEncounterDepartments;
-  let finalIsDifferent = IsDifferentCPTDepartment;
+    let finalDepartmentID = DepartmentID;
+    let finalCPTDepartmentID = CPTDepartmentID;
+    let finalEncounterDepartments = CPTEncounterDepartments;
+    let finalIsDifferent = IsDifferentCPTDepartment;
 
-  // COMMON department selected
-  if (finalIsDifferent === 0) {
-    finalEncounterDepartments = [];
+    // COMMON department selected
+    if (finalIsDifferent === 0) {
+      finalEncounterDepartments = [];
+    }
+
+    // SEPARATE department selected
+    if (finalIsDifferent === 1) {
+      finalDepartmentID = null;
+      finalCPTDepartmentID = null;
+    }
+
+    const reqBody = {
+      ID: id,
+      CPTTypeID: CPTTypeID,
+      CPTCode: CPTCode,
+      CPTName: CPTName,
+      Description: description,
+      CPTGroup: CPTGroup,
+      DepartmentID: finalDepartmentID,
+      CPTDepartmentID: finalCPTDepartmentID,
+      CostDepartmentID: CostDepartmentID,
+      CostDriveID: CostDriveID,
+      FixedQuantity: FixedQuantity,
+      IsDifferentCPTDepartment: finalIsDifferent,
+      IsDifferentLedger: IsDifferentLedger,
+      SelectedLedgerID: selectedLedgerID,
+      CPTEncounterDepartments: finalEncounterDepartments || [],
+      data: data,
+    };
+
+    return this.http.post(url, reqBody);
   }
-
-  // SEPARATE department selected
-  if (finalIsDifferent === 1) {
-    finalDepartmentID = null;
-    finalCPTDepartmentID = null;
-  }
-
-  const reqBody = {
-    ID: id,
-    CPTTypeID: CPTTypeID,
-    CPTCode: CPTCode,
-    CPTName: CPTName,
-    Description: description,
-    CPTGroup: CPTGroup,
-    DepartmentID: finalDepartmentID,
-    CPTDepartmentID: finalCPTDepartmentID,
-    CostDepartmentID: CostDepartmentID,
-    CostDriveID: CostDriveID,
-    FixedQuantity: FixedQuantity,
-    IsDifferentCPTDepartment: finalIsDifferent,
-    IsDifferentLedger :IsDifferentLedger,   
-    SelectedLedgerID : selectedLedgerID,    
-    CPTEncounterDepartments: finalEncounterDepartments || [],
-    data: data,
-  };
-
-  return this.http.post(url, reqBody);
-}
-
 
   //=====Remove Cpt Master Data==========
   Remove_CptMaster_Row_Data(id: any) {
@@ -542,7 +544,7 @@ export class MasterReportService {
     DenialCode: any,
     Description: any,
     DenialTypeID: any,
-    DenialCategoryID: any
+    DenialCategoryID: any,
   ) {
     const DenialAddData = {
       DenialCode,
@@ -560,7 +562,7 @@ export class MasterReportService {
     DenialCode: any,
     Description: any,
     DenialTypeID: any,
-    DenialCategoryID: any
+    DenialCategoryID: any,
   ) {
     const UpdateData = {
       ID,
@@ -672,7 +674,7 @@ export class MasterReportService {
     ProfessionID: any,
     CategoryID: any,
     Gender: any,
-    DepartmentID: any
+    DepartmentID: any,
   ) {
     const url = `${this.BASE_URL}clinician/insert`;
     const reqBody = {
@@ -701,7 +703,7 @@ export class MasterReportService {
     ProfessionID: any,
     CategoryID: any,
     Gender: any,
-    DepartmentID: any
+    DepartmentID: any,
   ) {
     const url = `${this.BASE_URL}clinician/update`;
     const reqBody = {
@@ -752,7 +754,7 @@ export class MasterReportService {
   update_InsuranceClassification_data(
     id: any,
     Classification: any,
-    description: any
+    description: any,
   ) {
     const url = `${this.BASE_URL}insuranceclassification/update`;
     const reqBody = {
@@ -767,7 +769,7 @@ export class MasterReportService {
   Remove_InsuranceClassification_Data(id: any) {
     return this.http.post(
       `${this.BASE_URL}insuranceclassification/delete/${id}`,
-      {}
+      {},
     );
   }
 
@@ -805,7 +807,7 @@ export class MasterReportService {
   remove_ClinicianProfession(id: any) {
     return this.http.post(
       `${this.BASE_URL}clinicianprofession/delete/${id}`,
-      {}
+      {},
     );
   }
 
@@ -885,7 +887,7 @@ export class MasterReportService {
   getCountryList() {
     return this.http.post(
       `http://103.180.120.134/veztaretail/api/country/list`,
-      {}
+      {},
     );
   }
 
@@ -1016,8 +1018,8 @@ export class MasterReportService {
     COST_BUCKET_ID: any,
     COST_CENTER_TYPE_ID: any,
     IS_INACTIVE: any,
-    OverheadAllocationType : any,
-    OverheadAllocationDepartmentID:any
+    OverheadAllocationType: any,
+    OverheadAllocationDepartmentID: any,
   ) {
     const DepartmentAddData = {
       DEPARTMENT,
@@ -1025,7 +1027,7 @@ export class MasterReportService {
       COST_CENTER_TYPE_ID,
       IS_INACTIVE,
       OverheadAllocationType,
-      OverheadAllocationDepartmentID
+      OverheadAllocationDepartmentID,
     };
 
     return this.http.post(`${this.BASE_URL}department/save`, DepartmentAddData);
@@ -1038,8 +1040,8 @@ export class MasterReportService {
     COST_BUCKET_ID: any,
     COST_CENTER_TYPE_ID: any,
     IS_INACTIVE: any,
-    OverheadAllocationType:any,
-    OverheadAllocationDepartmentID:any
+    OverheadAllocationType: any,
+    OverheadAllocationDepartmentID: any,
   ) {
     const DepartmentUpdateData = {
       ID,
@@ -1048,12 +1050,12 @@ export class MasterReportService {
       COST_CENTER_TYPE_ID,
       IS_INACTIVE,
       OverheadAllocationType,
-      OverheadAllocationDepartmentID
+      OverheadAllocationDepartmentID,
     };
 
     return this.http.post(
       `${this.BASE_URL}department/Update`,
-      DepartmentUpdateData
+      DepartmentUpdateData,
     );
   }
 
@@ -1080,7 +1082,7 @@ export class MasterReportService {
 
     return this.http.post(
       `${this.BASE_URL}subdepartment/save`,
-      DepartmentAddData
+      DepartmentAddData,
     );
   }
 
@@ -1089,7 +1091,7 @@ export class MasterReportService {
     ID: any,
     SUB_DEPARTMENT: any,
     DEPARTMENT_ID: any,
-    IS_INACTIVE: any
+    IS_INACTIVE: any,
   ) {
     const DepartmentUpdateData = {
       ID,
@@ -1100,7 +1102,7 @@ export class MasterReportService {
 
     return this.http.post(
       `${this.BASE_URL}subdepartment/Update`,
-      DepartmentUpdateData
+      DepartmentUpdateData,
     );
   }
 
@@ -1125,7 +1127,7 @@ export class MasterReportService {
     // files is expected to be an array of { fileName, fileData }
     return this.http.post(
       `${this.BASE_URL}ClinicalData/saveImportedFile`,
-      files
+      files,
     );
   }
 
@@ -1133,7 +1135,7 @@ export class MasterReportService {
   getCptCostingDepartmentAllocationData() {
     return this.http.post<any>(
       `${this.BASE_URL}CptCostingDepartmentAllocation/list`,
-      {}
+      {},
     );
   }
 
@@ -1141,7 +1143,7 @@ export class MasterReportService {
   addCptCostingDepartmentAllocation(data: any) {
     return this.http.post(
       `${this.BASE_URL}CptCostingDepartmentAllocation/save`,
-      data
+      data,
     );
   }
 
@@ -1149,7 +1151,7 @@ export class MasterReportService {
   updateCptCostingDepartmentAllocation(data: any) {
     return this.http.post(
       `${this.BASE_URL}CptCostingDepartmentAllocation/update`,
-      data
+      data,
     );
   }
 
@@ -1157,26 +1159,114 @@ export class MasterReportService {
   removeCptCostingDepartmentAllocation(id: any) {
     return this.http.post(
       `${this.BASE_URL}CptCostingDepartmentAllocation/delete/${id}`,
-      {}
+      {},
     );
   }
 
   selectCptCostingDepartmentAllocation(id: any) {
     return this.http.post(
       `${this.BASE_URL}CptCostingDepartmentAllocation/select/${id}`,
-      {}
+      {},
     );
   }
-
 
   exportReport(payload: any) {
-    return this.http.post(
-      `${this.BASE_URL}exportreport/export`,
-      payload,
-      {
-        responseType: 'blob' // 🔥 VERY IMPORTANT
-      }
-    );
+    return this.http.post(`${this.BASE_URL}exportreport/export`, payload, {
+      responseType: 'blob', // 🔥 VERY IMPORTANT
+    });
   }
 
+  // ================= ADCO GROUP ============
+  //====ADCO GROUP List===========
+  get_adocGroup_List() {
+    const Url = `${this.BASE_URL}ADOCGroup/list`;
+    const reqBody = {
+      list: [],
+    };
+
+    return this.http.post(Url, reqBody);
+  }
+
+  //=====Add ADCO GROUP data========
+  Insert_adocGroup_Data(
+    Code: any,
+    Name: any,
+    IsChargeable: any,
+    IsInactive: any,
+  ) {
+    const url = `${this.BASE_URL}ADOCGroup/save`;
+    const reqBody = {
+      GroupCode: Code,
+      GroupName: Name,
+      IsChargeable: IsChargeable,
+      IsInactive: IsInactive,
+    };
+
+    return this.http.post(url, reqBody);
+  }
+
+  //=====Update ADCO GROUP data======
+  update_adocGroup_data(
+    id: any,
+    Code: any,
+    Name: any,
+    IsChargeable: any,
+    IsInactive: any,
+  ) {
+    const url = `${this.BASE_URL}ADOCGroup/update`;
+    const reqBody = {
+      ID: id,
+      GroupCode: Code,
+      GroupName: Name,
+      IsChargeable: IsChargeable,
+      IsInactive: IsInactive,
+    };
+
+    return this.http.post(url, reqBody);
+  }
+
+  //=====Remove ADCO GROUP Data=====
+  Remove_adocGroupList_Row_Data(id: any) {
+    return this.http.post(`${this.BASE_URL}ADOCGroup/delete/${id}`, {});
+  }
+
+  // ================= ADCO Class ============
+  //====ADCO Class List===========
+  get_adocClass_List() {
+    const Url = `${this.BASE_URL}ADOCClass/list`;
+    const reqBody = {
+      list: [],
+    };
+
+    return this.http.post(Url, reqBody);
+  }
+  //=====Add ADCO Class data========
+  Insert_adocClass_Data(Code: any, Name: any, IsInactive: any) {
+    const url = `${this.BASE_URL}ADOCClass/save`;
+    const reqBody = {
+      ClassCode: Code,
+      ClassName: Name,
+      IsInactive: IsInactive,
+    };
+
+    return this.http.post(url, reqBody);
+  }
+
+  //=====Update ADCO Class data======
+  update_adocClass_data(id: any, Code: any, Name: any, IsInactive: any) {
+    const url = `${this.BASE_URL}ADOCClass/update`;
+    const reqBody = {
+      ID: id,
+      ClassCode: Code,
+      ClassName: Name,
+      IsInactive: IsInactive,
+    };
+
+    return this.http.post(url, reqBody);
+  }
+
+  //=====Remove ADCO Class Data=====
+  Remove_adocClass_Row_Data(id: any) {
+    return this.http.post(`${this.BASE_URL}ADOCClass/delete/${id}`, {});
+  }
 }
