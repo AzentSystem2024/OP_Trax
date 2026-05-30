@@ -19,15 +19,15 @@ import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 })
 export class ClinicianNewFormComponent {
   @ViewChild('clinicianLicenseValidator')
-  clinicianLicenseValidator: DxValidatorComponent;
+  clinicianLicenseValidator!: DxValidatorComponent;
   @ViewChild('clinicianNameValidator')
-  clinicianNameValidator: DxValidatorComponent;
+  clinicianNameValidator!: DxValidatorComponent;
 
   @ViewChild('specialityValidator')
-  specialityValidator: DxValidatorComponent;
+  specialityValidator!: DxValidatorComponent;
 
   @ViewChild('majorValidator')
-  majorValidator: DxValidatorComponent;
+  majorValidator!: DxValidatorComponent;
 
   newClinicianData = {
     iD: '',
@@ -114,7 +114,7 @@ export class ClinicianNewFormComponent {
     const clinicianLicense = e.value;
     console.log(clinicianLicense, 'clinician license');
     const exists = this.cliniciansList.some(
-      (clinician) => clinician.ClinicianLicense === clinicianLicense
+      (clinician:any) => clinician.ClinicianLicense === clinicianLicense
     );
     console.log(exists, 'exists');
 

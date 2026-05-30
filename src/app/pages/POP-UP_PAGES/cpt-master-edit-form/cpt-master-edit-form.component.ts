@@ -79,6 +79,8 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     IsDifferentLedger: 0,
     selectedLedgerID: '',
     CPTEncounterDepartments: [],
+    ADOCClassID: 0,
+    ADOCGroupID: 0,
     data: [],
   };
   ClinicianRoleDataSource: any;
@@ -95,10 +97,12 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   ledgerMode: 0 | 1 = 0;
   selectedLedgerIds: number[] = [];
   ledgerList: any[] = [];
+  ADOCClassDataSource: any[]=[];
+  ADOCgroupDataSource: any[]=[];
 
   constructor(
     private masterService: MasterReportService,
-    private dataService: DataService
+    private dataService: DataService,
   ) {
     this.getDepartment_DropDown();
     this.getCostDepartment_DropDown();
@@ -153,7 +157,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
     const mergedData = allFacilities.map((fac: any) => {
       const savedRow = savedData.find(
-        (d: any) => d.FacilityID === fac.FacilityLicense
+        (d: any) => d.FacilityID === fac.FacilityLicense,
       );
 
       return {
@@ -269,6 +273,28 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     });
   }
 
+    async get_ADOC_GROUP_Dropdown(): Promise<void> {
+      const dropdownType = 'ADOC_GROUP';
+      const response: any = await firstValueFrom(
+        this.dataService.Get_GropDown(dropdownType),
+      );
+      if (response) {
+        // Prepend 'All' option
+        this.ADOCgroupDataSource = response;
+      }
+    }
+  
+    async get_ADOC_CLASS_Dropdown(): Promise<void> {
+      const dropdownType = 'ADOC_CLASS';
+      const response: any = await firstValueFrom(
+        this.dataService.Get_GropDown(dropdownType),
+      );
+      if (response) {
+        // Prepend 'All' option
+        this.ADOCClassDataSource = response;
+      }
+    }
+
   // =============== facility dropdown used row marking ========
   onFacilityRowPrepared(e: any) {
     if (e.rowType === 'data') {
@@ -308,7 +334,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   onClickAddRow(masterRow: any, gridInstance: any) {
     // Check if 'All' is already selected in any row
     const hasAllSelected = masterRow.data.Clinicians?.some(
-      (row: any) => row.ClinicianID === -1
+      (row: any) => row.ClinicianID === -1,
     );
 
     if (hasAllSelected) {
@@ -390,7 +416,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     // this.loadingVisible = true;
     try {
       const res: any = await firstValueFrom(
-        this.dataService.Get_User_Facility_List_Data()
+        this.dataService.Get_User_Facility_List_Data(),
       );
       if (res) {
         this.Facility_DataSource = res.data;
@@ -405,7 +431,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   async get_CostBucket_Dropdown(): Promise<void> {
     const dropdownType = 'COST_BUCKET';
     const response = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType)
+      this.dataService.Get_GropDown(dropdownType),
     );
     if (response) {
       this.CostBucketDataSource = response;
@@ -416,7 +442,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   async get_CostType_Dropdown(): Promise<void> {
     const dropdownType = 'COST_TYPE';
     const response = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType)
+      this.dataService.Get_GropDown(dropdownType),
     );
     if (response) {
       this.CostTypeDataSource = response;
@@ -427,7 +453,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   async get_Clinician_Dropdown(): Promise<void> {
     const dropdownType = 'CLINICIAN';
     const response: any = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType)
+      this.dataService.Get_GropDown(dropdownType),
     );
     if (response) {
       // Prepend 'All' option
@@ -437,7 +463,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
   async loadEncounterTypes() {
     const res: any = await firstValueFrom(
-      this.dataService.Get_GropDown('ENCOUNTER_TYPE')
+      this.dataService.Get_GropDown('ENCOUNTER_TYPE'),
     );
 
     if (this.newCptMasterData.CPTEncounterDepartments?.length) {
@@ -452,7 +478,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
   async loadLedger() {
     const res: any = await firstValueFrom(
-      this.dataService.Get_GropDown('AC_HEAD')
+      this.dataService.Get_GropDown('AC_HEAD'),
     );
     if (res) {
       this.ledgerList = res;
@@ -471,6 +497,8 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
       DepartmentID: null,
       CPTDepartmentID: null,
       CostDepartmentID: null,
+      ADOCClassID: 0,
+      ADOCGroupID: 0,
       data: [],
     };
 
@@ -485,7 +513,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
     // Clear SEPARATE grid selections
     if (Array.isArray(this.newCptMasterData.CPTEncounterDepartments)) {
-      this.newCptMasterData.CPTEncounterDepartments.forEach((row) => {
+      this.newCptMasterData.CPTEncounterDepartments.forEach((row: any) => {
         // row.DepartmentID = null;
       });
     }
@@ -499,10 +527,10 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
       this.newCptMasterData.IsDifferentCPTDepartment = 1;
       console.log(
         this.newCptMasterData.IsDifferentCPTDepartment,
-        '$$$$$$$$$$$$$$$$$4'
+        '$$$$$$$$$$$$$$$$$4',
       );
       if (Array.isArray(this.newCptMasterData.CPTEncounterDepartments)) {
-        this.newCptMasterData.CPTEncounterDepartments.forEach((row) => {
+        this.newCptMasterData.CPTEncounterDepartments.forEach((row: any) => {
           // row.DepartmentID = null;
         });
       }
@@ -534,7 +562,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
       let isValid = true;
 
-      rows.forEach((row, index) => {
+      rows.forEach((row: any, index: any) => {
         if (!row.DepartmentID) {
           isValid = false;
 

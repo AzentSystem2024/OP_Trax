@@ -3,8 +3,8 @@
     <dxo-col-count-by-screen
       [xs]="1"
       [sm]="1"
-      [md]="2"
-      [lg]="2"
+      [md]="1"
+      [lg]="1"
     ></dxo-col-count-by-screen>
     <dxi-item [colSpan]="1">
       <div *dxTemplate>
@@ -74,20 +74,6 @@
     <dxi-item>
       <div *dxTemplate>
         <dx-select-box
-          [items]="clinicianMajorDatasource"
-          displayExpr="DESCRIPTION"
-          valueExpr="ID"
-          placeholder="Select a value"
-          [(value)]="newClinician.MajorID"
-          label="Major"
-          labelMode="floating"
-        ></dx-select-box>
-      </div>
-    </dxi-item>
-
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
           [items]="clinicianProfessionDatasource"
           displayExpr="DESCRIPTION"
           valueExpr="ID"
@@ -95,48 +81,6 @@
           [(value)]="newClinician.ProfessionID"
           label="Profession"
           labelMode="floating"
-        ></dx-select-box>
-      </div>
-    </dxi-item>
-
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
-          [items]="clinicianCategoryDatasource"
-          displayExpr="DESCRIPTION"
-          valueExpr="ID"
-          placeholder="Select a value"
-          [(value)]="newClinician.CategoryID"
-          label="Category"
-          labelMode="floating"
-        ></dx-select-box>
-      </div>
-    </dxi-item>
-
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
-          [items]="genderDatasource"
-          displayExpr="DESCRIPTION"
-          valueExpr="DESCRIPTION"
-          placeholder="Select a value"
-          [(value)]="newClinician.Gender"
-          label="Gender"
-          labelMode="floating"
-        ></dx-select-box>
-      </div>
-    </dxi-item>
-
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
-          [items]="departmentDatasource"
-          displayExpr="DESCRIPTION"
-          valueExpr="ID"
-          placeholder="Select a Department"
-          label="Department"
-          labelMode="floating"
-          [(value)]="newClinician.DepartmentID"
         ></dx-select-box>
       </div>
     </dxi-item>

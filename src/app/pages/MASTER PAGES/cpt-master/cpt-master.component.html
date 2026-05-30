@@ -61,7 +61,7 @@
           onClick: toggleFilterRow,
           stylingMode: 'text',
 
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
       <dxi-item
@@ -74,7 +74,7 @@
           icon: 'refresh',
           hint: 'Refresh',
           onClick: refresh,
-          stylingMode: 'text'
+          stylingMode: 'text',
         }"
       ></dxi-item>
 
@@ -97,8 +97,10 @@
     <dxi-column dataField="Department" caption="Department"></dxi-column>
     <dxi-column dataField="CPTDepartment" caption="Sub Department"></dxi-column>
     <dxi-column dataField="CostDepartment" caption="Cost Center"></dxi-column>
-    <dxi-column dataField="FixedQuantity" caption="Fixed Quantity"
-    [format]="{ formatter: fixedQtyFormat  }"
+    <dxi-column
+      dataField="FixedQuantity"
+      caption="Fixed Quantity"
+      [format]="{ formatter: fixedQtyFormat }"
     ></dxi-column>
   </dx-data-grid>
 
@@ -108,8 +110,8 @@
     [(visible)]="isAddFormPopupOpened"
     (save)="onClickSaveNewCptType()"
     titleText="New CPT Master"
-    [height]="'100vh'"
-    [width]="'80%'"
+    [height]="'auto'"
+    [width]="'60%'"
     (clear)="resetCptForm()"
     [customValidate]="validateCptForm"
   >
@@ -124,8 +126,8 @@
     [(visible)]="isEditFormPopupOpened"
     (save)="onClickUpdateNewCptType()"
     titleText="Edit CPT Master"
-    [height]="'100vh'"
-    [width]="'80%'"
+    [height]="'auto'"
+    [width]="'60%'"
     (clear)="clearEditForm()"
     [customValidate]="validateCptEditForm"
   >

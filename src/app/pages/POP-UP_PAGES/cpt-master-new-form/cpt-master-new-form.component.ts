@@ -57,7 +57,7 @@ export class CptMasterNewFormComponent implements OnInit {
 
   // @Input() formData: any = null;
 
-  CptMasterData = {
+  CptMasterData: any = {
     ID: '',
     CPTTypeID: '',
     CPTCode: '',
@@ -69,10 +69,12 @@ export class CptMasterNewFormComponent implements OnInit {
     CostDepartmentID: '',
     FixedQuantity: 0,
     CostDriveID: 0,
-    IsDifferentCPTDepartment:0,
-    IsDifferentLedger:0,
-    selectedLedgerID:'',
-    CPTEncounterDepartments:[],
+    IsDifferentCPTDepartment: 0,
+    IsDifferentLedger: 0,
+    selectedLedgerID: '',
+    CPTEncounterDepartments: [],
+    ADOCClassID: 0,
+    ADOCGroupID: 0,
     data: [],
   };
 
@@ -94,11 +96,10 @@ export class CptMasterNewFormComponent implements OnInit {
 
   encounterDepartmentData: any[] = [];
 
-
   ledgerModeOptions = [
-  { value: 0, text: 'All Ledgers' },
-  { value: 1, text: 'Selected Ledger' }
-];
+    { value: 0, text: 'All Ledgers' },
+    { value: 1, text: 'Selected Ledger' },
+  ];
 
   ledgerMode: 0 | 1 = 0;
 
@@ -108,17 +109,21 @@ export class CptMasterNewFormComponent implements OnInit {
   selectedLedgerIds: number[] = [];
 
   newCptMasterData: any = this.CptMasterData;
+  ADOCgroupDataSource: any[]=[];
+  ADOCClassDataSource: any[]=[];
 
   constructor(
     private masterService: MasterReportService,
     private dataService: DataService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
   ) {
     this.getDepartment_DropDown();
     this.getCostDepartment_DropDown();
     this.getCpt_DropDown();
     this.getCostDrive_DropDown();
     this.getClinicianRole_DropDown();
+    this.get_ADOC_CLASS_Dropdown()
+    this.get_ADOC_GROUP_Dropdown()
   }
 
   async ngOnInit() {
@@ -129,48 +134,34 @@ export class CptMasterNewFormComponent implements OnInit {
       await this.get_Clinician_Dropdown();
       await this.loadEncounterTypes();
       await this.loadLedger();
-      // this.isEditDataAvailable();
+    
     } catch (error) {
       console.error('Initialization error:', error);
     } finally {
     }
   }
 
-  // ngOnChanges(changes: SimpleChanges) {
-  //   if (changes['formData'] && this.formData && this.formData.ID) {
-  //     this.masterService
-  //       .getSubDepartmentDropDownData(this.formData.DepartmentID)
-  //       .subscribe({
-  //         next: (response: any) => {
-  //           this.Subdepartment_DropDownData = response.data;
-  //         },
-  //         error: (err) => {
-  //           console.error('Error fetching sub departments:', err);
-  //         },
-  //       });
-
-  //     this.newCptMasterData = { ...this.formData };
-  //     this.onDepartmentChanged({});
-  //   }
-  // }
+ 
 
   async get_Facility_dataList(): Promise<void> {
     try {
       const res: any = await firstValueFrom(
-        this.dataService.Get_User_Facility_List_Data()
+        this.dataService.Get_User_Facility_List_Data(),
       );
       if (res && res.data) {
         this.Facility_DataSource = res.data;
-        console.log(this.Facility_DataSource,"facilityDatasource");
-        this.newCptMasterData.data = this.Facility_DataSource.map((fac: any) => ({
-          FacilityID: fac.FacilityLicense,
-          RVU_Doctor: 0,
-          RVU_Nurse: 0,
-          RVU_Allied: 0,
-          RVU_Cost: 0,
-        }));
+        console.log(this.Facility_DataSource, 'facilityDatasource');
+        this.newCptMasterData.data = this.Facility_DataSource.map(
+          (fac: any) => ({
+            FacilityID: fac.FacilityLicense,
+            RVU_Doctor: 0,
+            RVU_Nurse: 0,
+            RVU_Allied: 0,
+            RVU_Cost: 0,
+          }),
+        );
 
-        console.log(this.CptMasterData,"cptmasterdata")
+        console.log(this.CptMasterData, 'cptmasterdata');
       }
     } catch (error) {}
   }
@@ -178,7 +169,7 @@ export class CptMasterNewFormComponent implements OnInit {
   async get_CostBucket_Dropdown(): Promise<void> {
     const dropdownType = 'COST_BUCKET';
     const response = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType)
+      this.dataService.Get_GropDown(dropdownType),
     );
     if (response) {
       this.CostBucketDataSource = response;
@@ -189,7 +180,7 @@ export class CptMasterNewFormComponent implements OnInit {
   async get_CostType_Dropdown(): Promise<void> {
     const dropdownType = 'COST_TYPE';
     const response = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType)
+      this.dataService.Get_GropDown(dropdownType),
     );
     if (response) {
       this.CostTypeDataSource = response;
@@ -200,7 +191,7 @@ export class CptMasterNewFormComponent implements OnInit {
   async get_Clinician_Dropdown(): Promise<void> {
     const dropdownType = 'CLINICIAN';
     const response: any = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType)
+      this.dataService.Get_GropDown(dropdownType),
     );
     if (response) {
       // Prepend 'All' option
@@ -208,26 +199,48 @@ export class CptMasterNewFormComponent implements OnInit {
     }
   }
 
+  async get_ADOC_GROUP_Dropdown(): Promise<void> {
+    const dropdownType = 'ADOC_GROUP';
+    const response: any = await firstValueFrom(
+      this.dataService.Get_GropDown(dropdownType),
+    );
+    if (response) {
+      // Prepend 'All' option
+      this.ADOCgroupDataSource =response;
+    }
+  }
+
+  async get_ADOC_CLASS_Dropdown(): Promise<void> {
+    const dropdownType = 'ADOC_CLASS';
+    const response: any = await firstValueFrom(
+      this.dataService.Get_GropDown(dropdownType),
+    );
+    if (response) {
+      // Prepend 'All' option
+      this.ADOCClassDataSource = response;
+    }
+  }
+
   async loadEncounterTypes() {
-  const res: any = await firstValueFrom(
-    this.dataService.Get_GropDown('ENCOUNTER_TYPE')
-  );
+    const res: any = await firstValueFrom(
+      this.dataService.Get_GropDown('ENCOUNTER_TYPE'),
+    );
 
-  this.newCptMasterData.CPTEncounterDepartments = res.map((e: any) => ({
-    EncounterType: e.DESCRIPTION,
-    DepartmentID: null
-  }));
-}
+    this.newCptMasterData.CPTEncounterDepartments = res.map((e: any) => ({
+      EncounterType: e.DESCRIPTION,
+      DepartmentID: null,
+    }));
+  }
 
-async loadLedger() {
-  const res: any = await firstValueFrom(
-    this.dataService.Get_GropDown('AC_HEAD')
-  );
+  async loadLedger() {
+    const res: any = await firstValueFrom(
+      this.dataService.Get_GropDown('AC_HEAD'),
+    );
 
-   if (res) {
+    if (res) {
       this.ledgerList = res;
     }
-}
+  }
 
   getNewCptMasterData = () => ({ ...this.newCptMasterData });
 
@@ -283,7 +296,8 @@ async loadLedger() {
       this.masterService.Get_GropDown('CPT_CODE').subscribe({
         next: (res: any) => {
           const exists = res?.some(
-            (item: any) => item.DESCRIPTION?.toLowerCase().trim() === inputValue
+            (item: any) =>
+              item.DESCRIPTION?.toLowerCase().trim() === inputValue,
           );
           resolve(!exists);
         },
@@ -320,13 +334,15 @@ async loadLedger() {
       CPTTypeID: null,
       CPTGroup: '',
       CostDriveID: 0,
-      FixedQuantity : 0,
+      FixedQuantity: 0,
       DepartmentID: null,
       CPTDepartmentID: null,
       CostDepartmentID: null,
-      IsDifferentCPTDepartment:0,
-      IsDifferentLedger:0,
-      CPTEncounterDepartments : [],
+      IsDifferentCPTDepartment: 0,
+      IsDifferentLedger: 0,
+      CPTEncounterDepartments: [],
+      ADOCClassID: 0,
+      ADOCGroupID: 0,
       data: [],
     };
     this.CptMasterData.data = [];
@@ -342,146 +358,142 @@ async loadLedger() {
       CPTDepartmentID: '',
       CostDepartmentID: '',
       CostDriveID: 0,
-      FixedQuantity:0,
-      IsDifferentCPTDepartment:0,
-      IsDifferentLedger:0,
-      selectedLedgerID:'',
-      CPTEncounterDepartments : [],
+      FixedQuantity: 0,
+      IsDifferentCPTDepartment: 0,
+      IsDifferentLedger: 0,
+      selectedLedgerID: '',
+      CPTEncounterDepartments: [],
+      ADOCClassID: 0,
+    ADOCGroupID: 0,
       data: [],
     };
 
     this.Facility_Value = null;
   }
 
-
   onCostCenterChanged(e: any) {
-  // Reset radio selection
-  this.departmentMode = 0;
+    // Reset radio selection
+    this.departmentMode = 0;
 
-  // Clear COMMON selections
-  this.newCptMasterData.DepartmentID = null;
-  this.newCptMasterData.CPTDepartmentID = null;
+    // Clear COMMON selections
+    this.newCptMasterData.DepartmentID = null;
+    this.newCptMasterData.CPTDepartmentID = null;
 
-  // Clear SEPARATE grid selections
-  if (Array.isArray(this.newCptMasterData.CPTEncounterDepartments)) {
-    this.newCptMasterData.CPTEncounterDepartments.forEach((row:any) => {
-      row.DepartmentID = null;
-    });
-  }
-}
-
-
-  onRadioButtonChanged(e: any) {
-  const selectedMode = e.value;
-
-  if (selectedMode ==1) {
-    // Clear SEPARATE values (grid)
-    this.newCptMasterData.IsDifferentCPTDepartment = 1;
+    // Clear SEPARATE grid selections
     if (Array.isArray(this.newCptMasterData.CPTEncounterDepartments)) {
-      this.newCptMasterData.CPTEncounterDepartments.forEach((row:any) => {
+      this.newCptMasterData.CPTEncounterDepartments.forEach((row: any) => {
         row.DepartmentID = null;
       });
     }
   }
 
-  if (selectedMode ==0) {
-    // Clear COMMON values
-    this.newCptMasterData.IsDifferentCPTDepartment = 0;
-    this.newCptMasterData.DepartmentID = null;
-    this.newCptMasterData.CPTDepartmentID = null;
-  }
-}
+  onRadioButtonChanged(e: any) {
+    const selectedMode = e.value;
 
-validateDepartment = (e: any): boolean => {
-  // e.value is DepartmentID
-  return e.value !== null && e.value !== undefined && e.value !== '';
-};
-
-validateForm(): boolean {
-
-  // 🔴 Ledger validation
-  if (this.ledgerMode === 1 && (!this.selectedLedgerIds || !this.selectedLedgerIds.length)) {
-    return false;
-  }
-
-  // 2️⃣ SEPARATE mode validation
-  if (this.departmentMode === 1) {
-    const rows = this.newCptMasterData.CPTEncounterDepartments || [];
-
-    let isValid = true;
-
-    rows.forEach((row:any, index:any) => {
-      if (!row.DepartmentID) {
-        isValid = false;
-
-        // 🔥 Force grid validation error
-        this.encounterGrid.instance.cellValue(
-          index,
-          'DepartmentID',
-          null
-        );
+    if (selectedMode == 1) {
+      // Clear SEPARATE values (grid)
+      this.newCptMasterData.IsDifferentCPTDepartment = 1;
+      if (Array.isArray(this.newCptMasterData.CPTEncounterDepartments)) {
+        this.newCptMasterData.CPTEncounterDepartments.forEach((row: any) => {
+          row.DepartmentID = null;
+        });
       }
-    });
+    }
 
-    if (!isValid) {
-      // 🔥 This makes grid show red error message
-      this.encounterGrid.instance.repaint();
-      return false;
+    if (selectedMode == 0) {
+      // Clear COMMON values
+      this.newCptMasterData.IsDifferentCPTDepartment = 0;
+      this.newCptMasterData.DepartmentID = null;
+      this.newCptMasterData.CPTDepartmentID = null;
     }
   }
 
-  return true;
-}
+  validateDepartment = (e: any): boolean => {
+    // e.value is DepartmentID
+    return e.value !== null && e.value !== undefined && e.value !== '';
+  };
 
+  validateForm(): boolean {
+    // 🔴 Ledger validation
+    if (
+      this.ledgerMode === 1 &&
+      (!this.selectedLedgerIds || !this.selectedLedgerIds.length)
+    ) {
+      return false;
+    }
 
-ledgerDisplayFormatter = (selectedIds: number[]) => {
-  if (!selectedIds?.length) {
-    return '';
+    // 2️⃣ SEPARATE mode validation
+    if (this.departmentMode === 1) {
+      const rows = this.newCptMasterData.CPTEncounterDepartments || [];
+
+      let isValid = true;
+
+      rows.forEach((row: any, index: any) => {
+        if (!row.DepartmentID) {
+          isValid = false;
+
+          // 🔥 Force grid validation error
+          this.encounterGrid.instance.cellValue(index, 'DepartmentID', null);
+        }
+      });
+
+      if (!isValid) {
+        // 🔥 This makes grid show red error message
+        this.encounterGrid.instance.repaint();
+        return false;
+      }
+    }
+
+    return true;
   }
 
-  return this.ledgerList
-    .filter(l => selectedIds.includes(l.ID))
-    .map(l => l.DESCRIPTION)
-    .join(', ');
-};
+  ledgerDisplayFormatter = (selectedIds: number[]) => {
+    if (!selectedIds?.length) {
+      return '';
+    }
 
-get selectedLedgerTooltip(): string {
-  if (!this.selectedLedgerIds?.length) {
-    return '';
+    return this.ledgerList
+      .filter((l) => selectedIds.includes(l.ID))
+      .map((l) => l.DESCRIPTION)
+      .join(', ');
+  };
+
+  get selectedLedgerTooltip(): string {
+    if (!this.selectedLedgerIds?.length) {
+      return '';
+    }
+
+    return this.ledgerList
+      .filter((l) => this.selectedLedgerIds.includes(l.ID))
+      .map((l) => l.DESCRIPTION)
+      .join(', ');
   }
 
-  return this.ledgerList
-    .filter(l => this.selectedLedgerIds.includes(l.ID))
-    .map(l => l.DESCRIPTION)
-    .join(', ');
-}
+  onledgerRadioButtonChanged(e: any) {
+    const selectedMode = e.value;
 
-onledgerRadioButtonChanged(e: any) {
-  const selectedMode = e.value;
+    if (selectedMode == 1) {
+      // Clear SEPARATE values (grid)
+      this.newCptMasterData.IsDifferentLedger = 1;
+    }
 
-  if (selectedMode ==1) {
-    // Clear SEPARATE values (grid)
-    this.newCptMasterData.IsDifferentLedger = 1;
+    if (selectedMode == 0) {
+      // Clear COMMON values
+      this.newCptMasterData.IsDifferentLedger = 0;
+      this.newCptMasterData.selectedLedgerID = null;
+    }
   }
 
-  if (selectedMode ==0) {
-    // Clear COMMON values
-    this.newCptMasterData.IsDifferentLedger = 0;
-    this.newCptMasterData.selectedLedgerID = null;
-  }
-}
-
-validateSelectedLedger = (): boolean => {
-  // Validation only applies when Selected Ledger mode is ON
-  if (this.ledgerMode === 1) {
-    return Array.isArray(this.selectedLedgerIds) &&
-           this.selectedLedgerIds.length > 0;
-  }
-  return true; // All Ledger → always valid
-};
-
-
-
+  validateSelectedLedger = (): boolean => {
+    // Validation only applies when Selected Ledger mode is ON
+    if (this.ledgerMode === 1) {
+      return (
+        Array.isArray(this.selectedLedgerIds) &&
+        this.selectedLedgerIds.length > 0
+      );
+    }
+    return true; // All Ledger → always valid
+  };
 }
 @NgModule({
   imports: [
@@ -499,7 +511,7 @@ validateSelectedLedger = (): boolean => {
     DxDataGridModule,
     DxDropDownBoxModule,
     DxButtonModule,
-    DxRadioGroupModule
+    DxRadioGroupModule,
   ],
   declarations: [CptMasterNewFormComponent],
   exports: [CptMasterNewFormComponent],

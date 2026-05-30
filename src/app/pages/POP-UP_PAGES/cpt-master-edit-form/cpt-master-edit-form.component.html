@@ -3,16 +3,15 @@
     <dxo-col-count-by-screen
       [xs]="1"
       [sm]="1"
-      [md]="3"
-      [lg]="6"
+      [md]="1"
+      [lg]="1"
     ></dxo-col-count-by-screen>
 
-    <dxi-item [colSpan]="2">
+    <dxi-item>
       <div *dxTemplate>
         <dx-text-box
           label="CPT Code"
           [(value)]="newCptMasterData.CPTCode"
-          [height]="40"
           labelMode="floating"
           [readOnly]="true"
         >
@@ -26,11 +25,10 @@
       </div>
     </dxi-item>
 
-    <dxi-item [colSpan]="4">
+    <dxi-item>
       <div *dxTemplate>
         <dx-text-box
           label="CPT Name"
-          [height]="40"
           labelMode="floating"
           [(value)]="newCptMasterData.CPTName"
         >
@@ -44,22 +42,20 @@
       </div>
     </dxi-item>
 
-    <dxi-item [colSpan]="6">
+    <dxi-item>
       <div *dxTemplate>
         <dx-text-box
           label="Description"
-          [height]="40"
           labelMode="floating"
           [(value)]="newCptMasterData.Description"
         ></dx-text-box>
       </div>
     </dxi-item>
 
-    <dxi-item [colSpan]="2">
+    <dxi-item>
       <div *dxTemplate>
         <dx-select-box
           label="CPT Type"
-          [height]="40"
           labelMode="floating"
           [(value)]="newCptMasterData.CPTTypeID"
           [items]="CptType_DropDownData"
@@ -77,310 +73,34 @@
       </div>
     </dxi-item>
 
-    <dxi-item [colSpan]="2">
-      <div *dxTemplate>
-        <dx-text-box
-          label="CPT Group"
-          [(value)]="newCptMasterData.CPTGroup"
-          [height]="40"
-          labelMode="floating"
-        >
-        </dx-text-box>
-      </div>
-    </dxi-item>
-
-    <dxi-item [colSpan]="2">
-      <div *dxTemplate>
-        <!-- <dx-select-box
-          label="Cost Drive"
-          [(value)]="newCptMasterData.CostDriveID"
-          [height]="40"
-          labelMode="floating"
-          [items]="CostDrive_DropDownData"
-          displayExpr="DESCRIPTION"
-          valueExpr="ID"
-          [searchEnabled]="true"
-        >
-        </dx-select-box> -->
-
-        <dx-number-box
-        label="CPT Fixed Quantity"
-        [(value)]="newCptMasterData.FixedQuantity"
-        [width]="160"
-        [height]="40"
-        labelMode="floating"
-        [showSpinButtons]="false"
-        [min]="0"
-        [step]="0.01"
-         format="#0.00"
-      >
-      </dx-number-box>
-      </div>
-    </dxi-item>
-
-    <dxi-item [colSpan]="2">
+    <dxi-item>
       <div *dxTemplate>
         <dx-select-box
-          label="Cost Center"
-          [(value)]="newCptMasterData.CostDepartmentID"
-          [height]="40"
+          label="ADOC Group"
+          [(value)]="newCptMasterData.ADOCGroupID"
           labelMode="floating"
-          [items]="Costdepartment_DropDownData"
+          [items]="ADOCgroupDataSource"
           displayExpr="DESCRIPTION"
           [searchEnabled]="true"
           valueExpr="ID"
-          (onValueChanged)="onCostCenterChanged($event)"
-        >
-        <dx-validator>
-            <dxi-validation-rule
-              type="required"
-              message="Cost Centre is required"
-            ></dxi-validation-rule>
-          </dx-validator>
-        </dx-select-box>
-      </div>
-    </dxi-item>
-
-    <dxi-item itemType="empty" [colSpan]="6"></dxi-item>
-    <dxi-item itemType="empty" [colSpan]="6"></dxi-item>
-    <dxi-item itemType="empty" [colSpan]="6"></dxi-item>
-    <dxi-item itemType="empty" [colSpan]="6"></dxi-item>
-
-    <dxi-item *ngIf="newCptMasterData.CostDepartmentID === 1" [colSpan]="6">
-    <div *dxTemplate>
-      <dx-radio-group
-        [items]="[
-          { id: 0, text: 'Common Department for all Encounter Types' },
-          { id: 1, text: 'Separate Department for each Encounter Type' }
-        ]"
-        valueExpr="id"
-        displayExpr="text"
-        layout="vertical"
-        [(value)]="departmentMode"
-        (onValueChanged)="onRadioButtonChanged($event)"
-      >
-      </dx-radio-group>
-    </div>
-  </dxi-item>
-
-    <dxi-item
-      *ngIf="
-        newCptMasterData.CostDepartmentID == 1 &&
-        departmentMode ==0
-      "
-      [colSpan]="3"
-    >
-      <div *dxTemplate>
-        <dx-select-box
-          label="Department"
-          [height]="40"
-          labelMode="floating"
-          [(value)]="newCptMasterData.DepartmentID"
-          [items]="department_DropDownData"
-          displayExpr="DESCRIPTION"
-          valueExpr="ID"
-          [searchEnabled]="true"
-        >
-          <dx-validator>
-            <dxi-validation-rule
-              type="required"
-              message="Department is required"
-            ></dxi-validation-rule>
-          </dx-validator>
-        </dx-select-box>
-      </div>
-    </dxi-item>
-
-     <dxi-item  
-     *ngIf="
-        newCptMasterData.CostDepartmentID == 1 &&
-        departmentMode ==0 "
-     [colSpan]="3">
-      <div *dxTemplate>
-        <dx-select-box
-          label="Sub Department"
-          [(value)]="newCptMasterData.CPTDepartmentID"
-          [height]="40"
-          labelMode="floating"
-          [items]="Subdepartment_DropDownData"
-          displayExpr="DESCRIPTION"
-          valueExpr="ID"
-          [searchEnabled]="true"
         >
         </dx-select-box>
       </div>
     </dxi-item>
 
-    <dxi-item
-  *ngIf="
-    newCptMasterData.CostDepartmentID == 1 &&
-    departmentMode ==1
-  "
-  [colSpan]="3"
->
-  <div *dxTemplate>
-    <dx-data-grid
-      #encounterGrid
-      [dataSource]="newCptMasterData.CPTEncounterDepartments"
-      height="175"
-      [showBorders]="true"
-    >
-      <dxo-editing mode="cell" [allowUpdating]="true"></dxo-editing>
-
-      <dxi-column dataField="EncounterType"></dxi-column>
-
-      <dxi-column
-        dataField="DepartmentID"
-        caption="Department"
-      >
-      <dxo-lookup
-      [dataSource]="department_DropDownData"
-      valueExpr="ID"
-      displayExpr="DESCRIPTION">
-    </dxo-lookup>
-
-    <dxi-validation-rule
-      type="custom"
-      [validationCallback]="validateDepartment"
-      message="Department is required">
-    </dxi-validation-rule>
-    </dxi-column>
-    </dx-data-grid>
-  </div>
- </dxi-item>
-  </dxi-item>
-
-  <dxi-item [colSpan]="6">
-  <div *dxTemplate>
-    <div class="inner-box cost-ledger-box">
-
-      <!-- HEADER -->
-      <div class="box-header">
-        Cost Allocation Ledger
-      </div>
-
-      <!-- RADIO BUTTONS -->
-      <dx-radio-group
-        class="mt-2"
-        [items]="ledgerModeOptions"
-        valueExpr="value"
-        displayExpr="text"
-        layout="horizontal"
-        [(value)]="ledgerMode"
-        (onValueChanged)="onledgerRadioButtonChanged($event)"
-      >
-      </dx-radio-group>
-
-      <!-- TAGBOX WITH GRID (ONLY FOR SELECTED LEDGER) -->
-      <div class="mt-3" *ngIf="ledgerMode === 1">
-
-        <dx-drop-down-box
-          label="Select Ledger"
+    <dxi-item>
+      <div *dxTemplate>
+        <dx-select-box
+          label="ADOC Class"
+          [(value)]="newCptMasterData.ADOCClassID"
           labelMode="floating"
-          [(value)]="selectedLedgerIds"
-          valueExpr="ID"
+          [items]="ADOCClassDataSource"
           displayExpr="DESCRIPTION"
-          [showClearButton]="true"
-          [dataSource]="ledgerList"
-          [dropDownOptions]="{ width: 500 }"
-          [elementAttr]="{ title: selectedLedgerTooltip }"
+          [searchEnabled]="true"
+          valueExpr="ID"
         >
-
-          <dx-validator>
-            <dxi-validation-rule
-              type="custom"
-              [validationCallback]="validateSelectedLedger"
-              message="Please select at least one ledger"
-            >
-            </dxi-validation-rule>
-          </dx-validator>
-          <div *dxTemplate="let data of 'content'">
-            <dx-data-grid
-              [dataSource]="ledgerList"
-              keyExpr="ID"
-              [height]="'250'"
-              [selection]="{ mode: 'multiple' }"
-              [(selectedRowKeys)]="selectedLedgerIds"
-              [hoverStateEnabled]="true"
-              [showBorders]="true"
-              
-            >
-
-              <dxo-paging [enabled]="false"></dxo-paging>
-              <dxo-pager [visible]="false"></dxo-pager>
-
-              <dxo-filter-row [visible]="true"></dxo-filter-row>
-
-              <dxi-column
-                dataField="DESCRIPTION"
-                caption="Ledger"
-                width="'auto'"
-              ></dxi-column>
-
-            </dx-data-grid>
-          </div>
-        </dx-drop-down-box>
-
+        </dx-select-box>
       </div>
-
-    </div>
-  </div>
-</dxi-item>
-
-  <dxi-item [colSpan]="6">
-    <div *dxTemplate>
-      <div class="inner-box">
-        <dx-data-grid
-          #CostdataGrid
-          [showBorders]="true"
-          [columnAutoWidth]="true"
-          [rowAlternationEnabled]="true"
-          [dataSource]="newCptMasterData.data"
-          height="270"
-        >
-
-        <dxo-toolbar>
-            <dxi-item location="before">
-              <div class="fw-bold fs-5">RVU Details <span class="fw-normal" style="font-size: 15px">(in minutes)</span>
-              </div>
-            </dxi-item>
-          </dxo-toolbar>
-
-          <dxo-editing
-            mode="cell"
-            [allowUpdating]="true"
-            [allowAdding]="false"
-            [allowDeleting]="false"
-            newRowPosition="last"
-          ></dxo-editing>
-
-          <dxi-column
-            dataField="FacilityID"
-            caption="Facility"
-            [allowEditing]="false"
-          ></dxi-column>
-          <dxi-column
-            dataField="RVU_Doctor"
-            caption="RVU Clinician"
-            dataType="number"
-          ></dxi-column>
-          <dxi-column
-            dataField="RVU_Nurse"
-            caption="RVU Nurse"
-            dataType="number"
-          ></dxi-column>
-          <dxi-column
-            dataField="RVU_Allied"
-            caption="RVU Allied"
-            dataType="number"
-          ></dxi-column>
-          <!-- <dxi-column
-            dataField="RVU_Cost"
-            caption="RVU Cost"
-            dataType="number"
-          ></dxi-column> -->
-        </dx-data-grid>
-      </div>
-    </div>
+    </dxi-item>
   </dxi-item>
 </dx-form>

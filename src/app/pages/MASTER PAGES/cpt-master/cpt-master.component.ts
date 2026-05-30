@@ -37,13 +37,13 @@ import {
 })
 export class CPTMasterComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   @ViewChild(CptMasterNewFormComponent)
   CptNewFormComponent!: CptMasterNewFormComponent;
 
   @ViewChild(CptMasterEditFormComponent, { static: false })
-  CptEditFormComponent: CptMasterEditFormComponent;
+  CptEditFormComponent!: CptMasterEditFormComponent;
 
   //========Variables for Pagination ====================
   readonly allowedPageSizes: any = [5, 10, 'all'];
@@ -69,9 +69,9 @@ export class CPTMasterComponent {
   addButtonOptions: any;
 
   isFilterRowVisible: boolean = false;
-  currentPathName: string;
-  initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  currentPathName: string='';
+  initialized: boolean=false;
+  menuPrevilage: any;
 
   constructor(
     private service: ReportService,
@@ -142,6 +142,8 @@ export class CPTMasterComponent {
       IsDifferentLedger,     
       selectedLedgerID,     
       CPTEncounterDepartments,
+      ADOCClassID,
+      ADOCGroupID,
       data,
     } = this.CptNewFormComponent.getNewCptMasterData();
 
@@ -211,6 +213,8 @@ export class CPTMasterComponent {
       IsDifferentLedger,     
       selectedLedgerID,    
       CPTEncounterDepartments,
+      ADOCClassID,
+      ADOCGroupID,
       data,
     } = this.CptEditFormComponent.getUpdateCptMasterData();
 
