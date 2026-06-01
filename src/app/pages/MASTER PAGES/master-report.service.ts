@@ -1277,26 +1277,19 @@ export class MasterReportService {
     return this.http.post(url, {});
   }
 
-  // ===== Add Price Master =====
-  Insert_PriceMaster_Data(
-    FacilityID: any,
-    CPTCode: any,
-    Price: any,
-    EffectFrom: any,
-    RevisedOn: any,
-    IsInactive: any,
-  ) {
-    const url = `${this.BASE_URL}price/save`;
-
-    const reqBody = {
-      FacilityID: FacilityID,
-      CPTID: CPTCode,
-      Price: Price,
-      EffectFrom: this.formatDate(EffectFrom),
-      EffectTo: this.formatDate(RevisedOn),
-      IsInactive: IsInactive,
+  // ===== Get CPT-Price List =====
+  get_CPT_Price_List(facilityId: any) {
+    const url = `${this.BASE_URL}Price/cptlist`;
+    const payload = {
+      FacilityID: facilityId,
     };
+    return this.http.post(url, payload);
+  }
 
+  // ===== Add Price Master =====
+  Insert_PriceMaster_Data(payload: any) {
+    const url = `${this.BASE_URL}price/save`;
+    const reqBody = payload;
     return this.http.post(url, reqBody);
   }
 

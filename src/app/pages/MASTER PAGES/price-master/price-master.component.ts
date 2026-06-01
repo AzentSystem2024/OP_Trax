@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, NgModule, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import DataSource from 'devextreme/data/data_source';
 import notify from 'devextreme/ui/notify';
 
 import {
@@ -15,6 +14,7 @@ import {
   DxPopupModule,
   DxSelectBoxModule,
   DxCheckBoxModule,
+  DxLoadPanelModule,
 } from 'devextreme-angular';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
@@ -27,8 +27,8 @@ import { MasterReportService } from '../master-report.service';
   providers: [ReportService, DataService],
 })
 export class PriceMasterComponent {
-  @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid!: DxDataGridComponent;
+  @ViewChild('cptPriceGrid', { static: false })
+  cptPriceGrid!: DxDataGridComponent;
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
 
@@ -41,30 +41,19 @@ export class PriceMasterComponent {
   isAddPopupVisible = false;
 
   facilityList: any[] = [];
-  cptCodeList: any[] = [];
 
   menuPrevilage: any;
 
-  newPriceMaster: any = {
-    FacilityID: null,
-    CPTCode: '',
-    Price: 0,
-    EffectFrom: null,
-    RevisedOn: null,
-    IsInactive: false,
-  };
+  selectedFacilityID: any;
 
-  dataSource = new DataSource({
-    load: () =>
-      new Promise((resolve, reject) => {
-        this.masterService.get_PriceMaster_List().subscribe({
-          next: (res: any) => resolve(res.datas),
-          error: (err: any) => reject(err),
-        });
-      }),
-  });
+  saveButtonOptions: any;
+  facilitySelectOptions: any;
 
-  addButtonOptions: any;
+  cptPriceData: any = [];
+  originalCptPriceData: any[] = [];
+
+  isLoading: boolean = false;
+  editedRows: any = [];
 
   constructor(
     private masterService: MasterReportService,
@@ -77,18 +66,19 @@ export class PriceMasterComponent {
       this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
     });
 
-    this.addButtonOptions = {
-      text: 'New',
-      icon: 'bi bi-plus-circle',
+    this.saveButtonOptions = {
+      class: 'ms-2',
+      text: 'Save',
       type: 'default',
       stylingMode: 'contained',
       hint: 'Add new entry',
       disabled: !this.menuPrevilage.CanAdd,
-      onClick: () => this.showNewPopup(),
+      onClick: () => this.savePriceMaster(),
       elementAttr: { class: 'add-button' },
     };
 
     this.loadLookups();
+    this.fetchCPTPriceList();
   }
 
   loadLookups() {
@@ -97,84 +87,199 @@ export class PriceMasterComponent {
       .subscribe((response: any) => {
         this.facilityList = response.facilityDetails || [];
 
-        if (this.facilityList.length === 1) {
-          this.newPriceMaster.FacilityID = [
-            this.facilityList[0].FacilityLicense,
-          ];
+        if (this.facilityList.length > 1) {
+          this.selectedFacilityID = this.facilityList[0].FacilityLicense;
         }
+        this.facilitySelectOptions = {
+          dataSource: this.facilityList,
+          displayExpr: 'FacilityName',
+          valueExpr: 'FacilityLicense',
+          value: this.selectedFacilityID,
+          width: 250,
+          searchEnabled: true,
+          onValueChanged: (e: any) => {
+            this.selectedFacilityID = e.value;
+            this.onFacilityChanged(e);
+          },
+        };
       });
-
-    this.masterService.Get_GropDown('CPT').subscribe((response: any) => {
-      if (response) {
-        this.cptCodeList = response;
-      }
-    });
   }
 
-  showNewPopup() {
-    this.isAddPopupVisible = true;
+  fetchCPTPriceList() {
+    this.isLoading = true;
+    this.masterService
+      .get_CPT_Price_List(this.selectedFacilityID || '')
+      .subscribe((response: any) => {
+        if (response.flag === '1') {
+          const data = response.data || [];
+          this.cptPriceData = data.map((item: any, index: number) => ({
+            ...item,
+            SerialNumber: index + 1,
+          }));
+          this.originalCptPriceData = JSON.parse(
+            JSON.stringify(this.cptPriceData),
+          );
+          this.isLoading = false;
+        } else {
+          notify('Failed to load CPT Price List', 'error', 2000);
+          this.isLoading = false;
+        }
+      });
+  }
+
+  onEditorPreparing(e: any) {
+    if (e.parentType === 'dataRow' && e.dataField === 'NewEffectFrom') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      e.editorOptions.min = today;
+
+      const activePrice = e.row.data.ActivePrice;
+      const activeEffectFrom = e.row.data.ActiveEffectFrom;
+
+      // Initial Setup
+      if (!activePrice && !activeEffectFrom) {
+        return;
+      }
+
+      const activeDate = new Date(activeEffectFrom);
+      activeDate.setHours(0, 0, 0, 0);
+
+      // Optional: user can't select dates <= active date
+      const minDate = new Date(activeDate);
+      minDate.setDate(minDate.getDate() + 1);
+
+      if (minDate > today) {
+        e.editorOptions.min = minDate;
+      }
+    }
+  }
+
+  validateNewEffectFrom = (e: any) => {
+    if (!e.value) {
+      return false;
+    }
+
+    const newEffectFrom = new Date(e.value);
+    newEffectFrom.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Never allow past dates
+    if (newEffectFrom < today) {
+      return false;
+    }
+
+    const activePrice = e.data?.ActivePrice ?? e.row?.data?.ActivePrice;
+
+    const activeEffectFrom =
+      e.data?.ActiveEffectFrom ?? e.row?.data?.ActiveEffectFrom;
+
+    // Initial Setup
+    if (!activePrice && !activeEffectFrom) {
+      return true;
+    }
+
+    const activeDate = new Date(activeEffectFrom);
+    activeDate.setHours(0, 0, 0, 0);
+
+    // Existing validation
+    if (newEffectFrom <= activeDate) {
+      return false;
+    }
+
+    return true;
+  };
+
+  onRowUpdated(e: any) {
+    const originalRow = this.originalCptPriceData.find(
+      (x) => x.SerialNumber === e.data.SerialNumber,
+    );
+
+    if (!originalRow) {
+      return;
+    }
+
+    const isModified =
+      originalRow.NewPrice !== e.data.NewPrice ||
+      new Date(originalRow.NewEffectFrom).getTime() !==
+        new Date(e.data.NewEffectFrom).getTime();
+
+    e.data.IsModified = isModified;
+  }
+
+  onRowPrepared(e: any) {
+    if (e.rowType === 'data' && e.data?.IsModified) {
+      e.rowElement.style.backgroundColor = '#77a692';
+      e.rowElement.style.fontWeight = '600';
+    }
+  }
+
+  onFacilityChanged(event: any) {
+    this.selectedFacilityID = event.value;
+    this.fetchCPTPriceList();
   }
 
   savePriceMaster() {
+    const modifiedRows = this.cptPriceData.filter((row: any) => {
+      const original = this.originalCptPriceData.find(
+        (x) => x.SerialNumber === row.SerialNumber,
+      );
+
+      if (!original) {
+        return false;
+      }
+
+      return (
+        original.NewPrice !== row.NewPrice ||
+        this.getDate(original.NewEffectFrom) !== this.getDate(row.NewEffectFrom)
+      );
+    });
+
+    if (modifiedRows.length === 0) {
+      notify('No changes found', 'warning', 2000);
+      return;
+    }
+
+    const payload = modifiedRows.map((x: any) => ({
+      FacilityID: this.selectedFacilityID,
+      CPTID: x.CPTID,
+      Price: x.NewPrice,
+      EffectFrom: this.formatDate(x.NewEffectFrom),
+      EffectTo: null,
+    }));
+
     this.masterService
-      .Insert_PriceMaster_Data(
-        this.newPriceMaster.FacilityID,
-        this.newPriceMaster.CPTCode,
-        this.newPriceMaster.Price,
-        this.newPriceMaster.EffectFrom,
-        this.newPriceMaster.RevisedOn,
-        false,
-      )
-      .subscribe(() => {
-        notify('Price Master Added Successfully', 'success', 1000);
-
-        this.isAddPopupVisible = false;
-
-        this.dataGrid.instance.refresh();
+      .Insert_PriceMaster_Data(payload)
+      .subscribe((response: any) => {
+        if (response.flag === '1') {
+          notify('Price Master Saved Successfully', 'success', 2000);
+          this.fetchCPTPriceList();
+        } else {
+          notify('Failed to save Price Master', 'error', 2000);
+        }
       });
   }
 
-  onRowUpdating(event: any) {
-    const data = {
-      ...event.oldData,
-      ...event.newData,
-    };
+  getDate(value: any): string {
+    if (!value) {
+      return '';
+    }
 
-    this.masterService
-      .update_PriceMaster_Data(
-        data.ID,
-        data.FacilityID,
-        data.CPTID,
-        data.Price,
-        data.EffectFrom,
-        data.EffectTo,
-        data.IsInactive,
-      )
-      .subscribe(() => {
-        notify('Updated Successfully', 'success', 1000);
-
-        event.component.cancelEditData();
-
-        this.dataGrid.instance.refresh();
-      });
-
-    event.cancel = true;
+    return new Date(value).toISOString().split('T')[0];
   }
 
-  onRowRemoving(event: any) {
-    event.cancel = true;
-
-    this.masterService
-      .Remove_PriceMaster_Row_Data(event.key.ID)
-      .subscribe(() => {
-        notify('Deleted Successfully', 'success', 1000);
-
-        this.dataGrid.instance.refresh();
-      });
+  formatDate(dateString: any) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   refresh = () => {
-    this.dataGrid.instance.refresh();
+    this.cptPriceGrid.instance.refresh();
   };
 
   toggleFilterRow = () => {
@@ -197,6 +302,7 @@ export class PriceMasterComponent {
     DxNumberBoxModule,
     DxDateBoxModule,
     DxCheckBoxModule,
+    DxLoadPanelModule,
   ],
   declarations: [PriceMasterComponent],
 })
