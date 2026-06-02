@@ -1,92 +1,23 @@
 <div class="view-wrapper list-page">
   <dx-data-grid
-    #dataGrid
+    #cptWeightageGrid
     class="grid theme-dependent"
-    noDataText="No Data Available"
-    height="82vh"
-    [dataSource]="dataSource"
+    [dataSource]="cptWeightageData"
     [showBorders]="true"
     [allowColumnResizing]="true"
     [allowColumnReordering]="true"
     [rowAlternationEnabled]="true"
     rowAlternationInterval="2"
-    (onExporting)="onExporting($event)"
-    (onRowUpdating)="onRowUpdating($event)"
-    (onRowRemoving)="onRowRemoving($event)"
+    [editing]="{
+      mode: 'cell',
+      allowUpdating: true,
+    }"
+    height="82vh"
+    (onEditorPreparing)="onEditorPreparing($event)"
+    (onRowUpdated)="onRowUpdated($event)"
+    (onRowPrepared)="onRowPrepared($event)"
   >
-    <!-- Edit Popup -->
-
-    <dxo-editing
-      mode="popup"
-      [allowUpdating]="menuPrevilage.CanEdit"
-      [allowDeleting]="menuPrevilage.CanDelete"
-      [allowAdding]="false"
-    >
-      <dxo-popup
-        title="Edit Price Master"
-        [showTitle]="true"
-        [width]="700"
-        [height]="'auto'"
-      >
-      </dxo-popup>
-
-      <dxo-form [colCount]="1" labelMode="floating">
-        <dxi-item
-          dataField="FacilityID"
-          editorType="dxSelectBox"
-          [editorOptions]="{
-            dataSource: facilityList,
-            valueExpr: 'FacilityLicense',
-            displayExpr: 'FacilityName',
-          }"
-        ></dxi-item>
-
-        <dxi-item
-          dataField="CPTID"
-          editorType="dxSelectBox"
-          [editorOptions]="{
-            dataSource: cptCodeList,
-            valueExpr: 'ID',
-            displayExpr: 'DESCRIPTION',
-          }"
-        ></dxi-item>
-
-        <dxi-item dataField="Weightage" editorType="dxNumberBox"></dxi-item>
-
-        <dxi-item
-          dataField="EffectFrom"
-          editorType="dxDateBox"
-          [editorOptions]="{
-            type: 'date',
-            displayFormat: 'dd-MMM-yyyy',
-          }"
-        ></dxi-item>
-
-        <dxi-item
-          dataField="EffectTo"
-          editorType="dxDateBox"
-          [label]="{ text: 'Revised On' }"
-          [editorOptions]="{
-            type: 'date',
-            displayFormat: 'dd-MMM-yyyy',
-          }"
-        ></dxi-item>
-
-        <dxi-item
-          dataField="IsInactive"
-          editorType="dxCheckBox"
-          [label]="{ visible: false }"
-          [editorOptions]="{
-            text: 'Inactive',
-          }"
-        ></dxi-item>
-      </dxo-form>
-    </dxo-editing>
-
-    <!-- Paging -->
-
     <dxo-paging [pageSize]="10"></dxo-paging>
-
     <dxo-pager
       [visible]="true"
       [allowedPageSizes]="allowedPageSizes"
@@ -106,23 +37,22 @@
     </dxo-header-filter>
 
     <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
-
     <dxo-column-chooser [enabled]="true" [height]="400"></dxo-column-chooser>
-
     <dxo-search-panel [visible]="true" placeholder="Search"></dxo-search-panel>
 
-    <dxo-export
-      [enabled]="true"
-      [allowExportSelectedData]="false"
-      [formats]="['xlsx']"
-    >
-    </dxo-export>
-
     <!-- Toolbar -->
-
     <dxo-toolbar>
+      <!-- Header -->
       <dxi-item location="before">
-        <div class="grid-header">CPT Weightage</div>
+        <div class="grid-header">CPT Weightage Change</div>
+      </dxi-item>
+
+      <!-- Facility Dropdown -->
+      <dxi-item
+        location="after"
+        widget="dxSelectBox"
+        [options]="facilitySelectOptions"
+      >
       </dxi-item>
 
       <dxi-item
@@ -138,6 +68,7 @@
           elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
+
       <dxi-item
         location="after"
         locateInMenu="auto"
@@ -152,133 +83,113 @@
         }"
       ></dxi-item>
 
-      <dxi-item name="exportButton" location="after"></dxi-item>
-
       <dxi-item
         location="after"
         widget="dxButton"
-        [options]="addButtonOptions"
+        [options]="saveButtonOptions"
       ></dxi-item>
     </dxo-toolbar>
 
-    <!-- Columns -->
-
-    <dxi-column dataField="FacilityID" caption="Facility">
-      <dxo-lookup
-        [dataSource]="facilityList"
-        valueExpr="FacilityLicense"
-        displayExpr="FacilityName"
-      >
-      </dxo-lookup>
+    <!-- Grid Columns Here -->
+    <dxi-column
+      dataField="SerialNumber"
+      caption="SL"
+      [allowEditing]="false"
+      alignment="center"
+    >
     </dxi-column>
 
-    <dxi-column dataField="CPTID" caption="CPT">
-      <dxo-lookup
-        [dataSource]="cptCodeList"
-        valueExpr="ID"
-        displayExpr="DESCRIPTION"
-      >
-      </dxo-lookup>
+    <dxi-column
+      dataField="FacilityID"
+      caption="FacilityID"
+      [allowEditing]="false"
+      alignment="center"
+    >
     </dxi-column>
 
-    <dxi-column dataField="Weightage" caption="Weightage"></dxi-column>
+    <dxi-column
+      dataField="CPTCode"
+      caption="CPT Code"
+      [allowEditing]="false"
+      alignment="center"
+    >
+    </dxi-column>
+
+    <dxi-column dataField="CPTName" caption="CPT Name" [allowEditing]="false">
+    </dxi-column>
 
     <dxi-column
-      dataField="EffectFrom"
-      caption="Effect From"
-      dataType="date"
-      format="dd-MMM-yyyy"
-    ></dxi-column>
+      dataField="CPTType"
+      caption="CPT Type"
+      [allowEditing]="false"
+      alignment="center"
+    >
+    </dxi-column>
 
-    <dxi-column
-      dataField="EffectTo"
-      caption="Revised On"
-      dataType="date"
-      format="dd-MMM-yyyy"
-    ></dxi-column>
+    <dxi-column caption="Active Weightage" alignment="center">
+      <dxi-column
+        dataField="ActiveWeightage"
+        caption="Weightage"
+        dataType="number"
+        format="#,##0.00"
+        [allowEditing]="false"
+        alignment="right"
+      >
+      </dxi-column>
 
-    <dxi-column dataField="Status" caption="Status"></dxi-column>
+      <dxi-column
+        dataField="ActiveEffectFrom"
+        caption="Effect From"
+        dataType="date"
+        format="dd-MM-yyyy"
+        [allowEditing]="false"
+        alignment="center"
+      >
+      </dxi-column>
+    </dxi-column>
 
-    <dxi-column
-      dataField="IsInactive"
-      caption="Inactive"
-      dataType="boolean"
-      [visible]="false"
-    ></dxi-column>
+    <dxi-column caption="New Weightage" alignment="center">
+      <dxi-column
+        dataField="NewWeightage"
+        caption="Weightage"
+        dataType="number"
+        format="#,##0.00"
+        cssClass="new-Weightage-column"
+      >
+        <dxi-validation-rule type="required" message="New Weightage is required">
+        </dxi-validation-rule>
+
+        <dxi-validation-rule
+          type="range"
+          [min]="0.01"
+          message="Weightage must be greater than 0"
+        >
+        </dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="NewEffectFrom"
+        caption="Effect From"
+        dataType="date"
+        format="dd-MM-yyyy"
+        cssClass="new-Weightage-column"
+      >
+        <dxi-validation-rule type="required" message="Effect From is required">
+        </dxi-validation-rule>
+
+        <dxi-validation-rule
+          type="custom"
+          [validationCallback]="validateNewEffectFrom"
+          message="New Effect From cannot be less than Active Effect From"
+        >
+        </dxi-validation-rule>
+      </dxi-column>
+    </dxi-column>
   </dx-data-grid>
-
-  <!-- Add Popup -->
-
-  <dx-popup
-    [(visible)]="isAddPopupVisible"
-    title="New Price Master"
-    [width]="700"
-    [height]="'auto'"
-    [showCloseButton]="true"
-    [hideOnOutsideClick]="false"
-  >
-    <div *dxTemplate="let data of 'content'">
-      <dx-form
-        [formData]="newWeightageMaster"
-        [colCount]="1"
-        labelMode="floating"
-      >
-        <dxi-item
-          dataField="FacilityID"
-          editorType="dxSelectBox"
-          [editorOptions]="{
-            dataSource: facilityList,
-            valueExpr: 'FacilityLicense',
-            displayExpr: 'FacilityName',
-          }"
-        ></dxi-item>
-
-        <dxi-item
-          dataField="CPTCode"
-          editorType="dxSelectBox"
-          [editorOptions]="{
-            dataSource: cptCodeList,
-            valueExpr: 'ID',
-            displayExpr: 'DESCRIPTION',
-          }"
-        ></dxi-item>
-
-        <dxi-item dataField="Weightage" editorType="dxNumberBox"></dxi-item>
-
-        <dxi-item
-          dataField="EffectFrom"
-          editorType="dxDateBox"
-          [editorOptions]="{
-            type: 'date',
-            displayFormat: 'dd-MMM-yyyy',
-          }"
-        ></dxi-item>
-
-        <dxi-item
-          dataField="EffectTo"
-          editorType="dxDateBox"
-          [label]="{ text: 'Revised On' }"
-          [editorOptions]="{
-            type: 'date',
-            displayFormat: 'dd-MMM-yyyy',
-          }"
-        ></dxi-item>
-      </dx-form>
-
-      <div class="mt-4 text-end">
-        <dx-button
-          text="Cancel"
-          stylingMode="outlined"
-          (onClick)="isAddPopupVisible = false"
-        ></dx-button>
-
-        <dx-button
-          class="ms-2"
-          text="Save"
-          type="default"
-          (onClick)="saveWeightageMaster()"
-        ></dx-button>
-      </div>
-    </div>
-  </dx-popup>
 </div>
+<dx-load-panel
+  [showPane]="false"
+  shadingColor="rgba(0, 0, 0, 0.4)"
+  [position]="{ of: '.view-wrapper' }"
+  [visible]="isLoading"
+></dx-load-panel>

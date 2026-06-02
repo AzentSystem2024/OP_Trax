@@ -1240,6 +1240,7 @@ export class MasterReportService {
 
     return this.http.post(Url, reqBody);
   }
+  
   //=====Add ADCO Class data========
   Insert_adocClass_Data(Code: any, Name: any, IsInactive: any) {
     const url = `${this.BASE_URL}ADOCClass/save`;
@@ -1280,6 +1281,15 @@ export class MasterReportService {
   // ===== Get CPT-Price List =====
   get_CPT_Price_List(facilityId: any) {
     const url = `${this.BASE_URL}Price/cptlist`;
+    const payload = {
+      FacilityID: facilityId,
+    };
+    return this.http.post(url, payload);
+  }
+
+  // ===== Get CPT-Price List =====
+  get_CPT_Weightage_List(facilityId: any) {
+    const url = `${this.BASE_URL}cptweightage/cptlist`;
     const payload = {
       FacilityID: facilityId,
     };
@@ -1331,25 +1341,9 @@ export class MasterReportService {
   }
 
   // ===== Add Price Master =====
-  Insert_CPTWeightage_Data(
-    FacilityID: any,
-    CPTCode: any,
-    Weightage: any,
-    EffectFrom: any,
-    RevisedOn: any,
-    IsInactive: any,
-  ) {
+  Insert_CPTWeightage_Data(payload: any) {
     const url = `${this.BASE_URL}CPTWeightage/save`;
-
-    const reqBody = {
-      FacilityID: FacilityID,
-      CPTID: CPTCode,
-      Weightage: Weightage,
-      EffectFrom: this.formatDate(EffectFrom),
-      EffectTo: this.formatDate(RevisedOn),
-      IsInactive: IsInactive,
-    };
-
+    const reqBody = payload;
     return this.http.post(url, reqBody);
   }
 

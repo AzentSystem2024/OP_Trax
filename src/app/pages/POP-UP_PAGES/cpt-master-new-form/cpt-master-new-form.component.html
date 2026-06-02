@@ -81,13 +81,15 @@
     <dxi-item>
       <div *dxTemplate>
         <dx-select-box
-          label="ADOC Group"
+          label="ADOC Category"
           [(value)]="newCptMasterData.ADOCGroupID"
           labelMode="floating"
           [items]="ADOCgroupDataSource"
           displayExpr="DESCRIPTION"
           [searchEnabled]="true"
           valueExpr="ID"
+          [showClearButton]="true"
+          (onValueChanged)="onADOCGroupChanged($event)"
         >
         </dx-select-box>
       </div>
@@ -103,6 +105,8 @@
           displayExpr="DESCRIPTION"
           [searchEnabled]="true"
           valueExpr="ID"
+          [showClearButton]="true"
+          [disabled]="!newCptMasterData.ADOCGroupID"
         >
         </dx-select-box>
       </div>

@@ -20,7 +20,7 @@
       [allowAdding]="false"
     >
       <dxo-popup
-        title="Edit ADOC Group"
+        title="Edit ADOC Category"
         [showTitle]="true"
         [width]="500"
         [height]="'auto'"
@@ -86,7 +86,7 @@
 
     <dxo-toolbar>
       <dxi-item location="before">
-        <div class="grid-header">ADOC Group</div>
+        <div class="grid-header">ADOC Category</div>
       </dxi-item>
       <dxi-item
         location="after"
@@ -127,8 +127,8 @@
       ></dxi-item>
     </dxo-toolbar>
 
-    <dxi-column dataField="GroupCode" caption="Group Code"></dxi-column>
-    <dxi-column dataField="GroupName" caption="Group Name"></dxi-column>
+    <dxi-column dataField="GroupCode" caption="Category Code"></dxi-column>
+    <dxi-column dataField="GroupName" caption="Category Name"></dxi-column>
     <dxi-column dataField="IsChargeable" caption="Chargeable">
       <dxo-lookup
         [dataSource]="chargeableList"
@@ -150,7 +150,7 @@
   <!-- ========= new form popup ========= -->
   <dx-popup
     [(visible)]="isAddPopupVisible"
-    title="New ADOC Group"
+    title="New ADOC Category"
     [width]="500"
     [height]="'auto'"
     [showCloseButton]="true"

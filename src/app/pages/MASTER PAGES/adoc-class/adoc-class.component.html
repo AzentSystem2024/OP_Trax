@@ -27,7 +27,7 @@
       >
       </dxo-popup>
 
-      <dxo-form [colCount]="1"  labelMode="floating">
+      <dxo-form [colCount]="1" labelMode="floating">
         <dxi-item
           dataField="ClassCode"
           [editorOptions]="{ readOnly: true }"
@@ -39,7 +39,7 @@
         <dxi-item
           dataField="IsInactive"
           editorType="dxCheckBox"
-          [label]="{ visible: false, }"
+          [label]="{ visible: false }"
           [editorOptions]="{
             text: 'Inactive',
           }"
@@ -117,8 +117,8 @@
       ></dxi-item>
     </dxo-toolbar>
 
-    <dxi-column dataField="ClassCode" caption="Code"></dxi-column>
-    <dxi-column dataField="ClassName" caption="Name"></dxi-column>
+    <dxi-column dataField="ClassCode" caption="Class Code"></dxi-column>
+    <dxi-column dataField="ClassName" caption="Class Name"></dxi-column>
     <dxi-column
       dataField="IsInactive"
       caption="Inactive"
@@ -138,7 +138,7 @@
     [hideOnOutsideClick]="false"
   >
     <div *dxTemplate="let data of 'content'">
-      <dx-form [formData]="newADOCClass"  labelMode="floating">
+      <dx-form [formData]="newADOCClass" labelMode="floating">
         <dxi-item
           dataField="Code"
           editorType="dxTextBox"
