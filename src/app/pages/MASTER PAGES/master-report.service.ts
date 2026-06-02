@@ -440,6 +440,8 @@ export class MasterReportService {
     IsDifferentLedger: any,
     selectedLedgerID: any,
     CPTEncounterDepartments: any,
+    ADOCClassID: any,
+    ADOCGroupID: any,
     data: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/update`;
@@ -480,6 +482,8 @@ export class MasterReportService {
       IsDifferentLedger: IsDifferentLedger,
       SelectedLedgerID: selectedLedgerID,
       CPTEncounterDepartments: finalEncounterDepartments || [],
+      ADOCClassID: ADOCClassID,
+      ADOCGroupID: ADOCGroupID,
       data: data,
     };
 

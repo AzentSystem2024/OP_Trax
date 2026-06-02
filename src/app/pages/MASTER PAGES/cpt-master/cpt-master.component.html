@@ -23,6 +23,7 @@
     >
       <dxo-popup title="Edit CPT data" [showTitle]="true"></dxo-popup>
     </dxo-editing>
+
     <dxo-pager
       [visible]="true"
       [allowedPageSizes]="allowedPageSizes"
@@ -32,6 +33,7 @@
       [showNavigationButtons]="showNavButtons"
     >
     </dxo-pager>
+
     <dxo-load-panel [showPane]="false"></dxo-load-panel>
     <dxo-sorting mode="multiple"></dxo-sorting>
     <dxo-header-filter [visible]="isFilterRowVisible">
@@ -40,12 +42,14 @@
     <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
     <dxo-scrolling mode="virtual"></dxo-scrolling>
     <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
+
     <dxo-export
       [enabled]="true"
       [allowExportSelectedData]="false"
       [formats]="['xlsx']"
     >
     </dxo-export>
+
     <dxo-toolbar>
       <dxi-item location="before">
         <div class="grid-header">CPT Master</div>
@@ -89,14 +93,12 @@
         [options]="addButtonOptions"
       ></dxi-item>
     </dxo-toolbar>
+
     <dxi-column dataField="CPTCode" caption="Code"></dxi-column>
     <dxi-column dataField="CPTName" caption="Name"></dxi-column>
-    <dxi-column dataField="Description" caption="Description"></dxi-column>
     <dxi-column dataField="CPTType" caption="CPT Type"></dxi-column>
-    <dxi-column dataField="CPTGroup" caption="Group"></dxi-column>
-    <dxi-column dataField="Department" caption="Department"></dxi-column>
-    <dxi-column dataField="CPTDepartment" caption="Sub Department"></dxi-column>
-    
+    <dxi-column dataField="ADOCGroup" caption="ADOC Category"></dxi-column>
+    <dxi-column dataField="ADOCClass" caption="ADOC Class"></dxi-column>
   </dx-data-grid>
 
   <!-- ============ add new cpt data ============ -->
@@ -127,7 +129,6 @@
     [customValidate]="validateCptEditForm"
   >
     <app-cpt-master-edit-form
-      *ngIf="isEditFormPopupOpened"
       [formData]="selectedCptMaster"
     ></app-cpt-master-edit-form>
   </form-popup>

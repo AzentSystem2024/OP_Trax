@@ -190,8 +190,6 @@ export class CPTMasterComponent {
 
   //======= Update data ==========
   onClickUpdateNewCptType = () => {
-    const cptData = this.CptEditFormComponent.getUpdateCptMasterData();
-
     this.CptEditFormComponent.newCptMasterData.selectedLedgerID =
   this.CptEditFormComponent.ledgerMode === 1
     ? this.CptEditFormComponent.selectedLedgerIds.join(',')
@@ -235,6 +233,8 @@ export class CPTMasterComponent {
         IsDifferentLedger,     
         selectedLedgerID,    
         CPTEncounterDepartments,
+        ADOCClassID,
+      ADOCGroupID,
         data
       )
       .subscribe((response: any) => {

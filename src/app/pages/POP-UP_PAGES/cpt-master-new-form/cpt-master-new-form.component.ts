@@ -119,10 +119,10 @@ export class CptMasterNewFormComponent implements OnInit {
     this.getDepartment_DropDown();
     this.getCostDepartment_DropDown();
     this.getCpt_DropDown();
-    this.getCostDrive_DropDown();
-    this.getClinicianRole_DropDown();
     this.get_ADOC_CLASS_Dropdown();
     this.get_ADOC_GROUP_Dropdown();
+    this.getCostDrive_DropDown();
+    this.getClinicianRole_DropDown();
   }
 
   async ngOnInit() {
