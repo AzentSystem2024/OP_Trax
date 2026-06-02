@@ -51,7 +51,7 @@ import { LedgerGroupComponent } from './pages/ACCOUNTS/ledger-group/ledger-group
 import { ClinicalDataComponent } from './pages/OPERATION PAGES/clinical-data/clinical-data.component';
 import { ADOCClassComponent } from './pages/MASTER PAGES/adoc-class/adoc-class.component';
 import { PriceMasterComponent } from './pages/MASTER PAGES/price-master/price-master.component';
-import { ADOCGroupComponent } from './pages/MASTER PAGES/adoc-group/adoc-group.component';
+import { ADOCGroupComponent } from './pages/MASTER PAGES/adoc-category/adoc-group.component';
 import { CPTWeightageComponent } from './pages/MASTER PAGES/cpt-weightage/cpt-weightage.component';
 
 const routes: Routes = [

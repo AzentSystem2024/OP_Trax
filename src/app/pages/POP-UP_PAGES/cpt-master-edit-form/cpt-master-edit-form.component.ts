@@ -97,8 +97,10 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   ledgerMode: 0 | 1 = 0;
   selectedLedgerIds: number[] = [];
   ledgerList: any[] = [];
+
   ADOCClassDataSource: any[]=[];
   ADOCgroupDataSource: any[]=[];
+  allADOCClassDataSource: any;
 
   constructor(
     private masterService: MasterReportService,
@@ -283,17 +285,39 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         this.ADOCgroupDataSource = response;
       }
     }
-  
-    async get_ADOC_CLASS_Dropdown(): Promise<void> {
-      const dropdownType = 'ADOC_CLASS';
-      const response: any = await firstValueFrom(
-        this.dataService.Get_GropDown(dropdownType),
-      );
-      if (response) {
-        // Prepend 'All' option
-        this.ADOCClassDataSource = response;
-      }
+   async get_ADOC_CLASS_Dropdown(): Promise<void> {
+    const dropdownType = 'ADOC_CLASS';
+    const response: any = await firstValueFrom(
+      this.dataService.Get_GropDown(dropdownType),
+    );
+
+    if (response) {
+      this.allADOCClassDataSource = response;
+      this.ADOCClassDataSource = response;
     }
+  }
+
+  onADOCGroupChanged(e: any) {
+    this.newCptMasterData.ADOCClassID = null;
+
+    if (!e.value) {
+      this.ADOCClassDataSource = [];
+      return;
+    }
+
+    const selectedGroup = this.ADOCgroupDataSource.find(
+      (x) => x.ID === e.value,
+    );
+
+    const prefix = selectedGroup.DESCRIPTION.split('-')[0]
+      .trim()
+      .charAt(0)
+      .toUpperCase();
+
+    this.ADOCClassDataSource = this.allADOCClassDataSource.filter((x: any) =>
+      x.DESCRIPTION?.trim().toUpperCase().startsWith(prefix),
+    );
+  }
 
   // =============== facility dropdown used row marking ========
   onFacilityRowPrepared(e: any) {

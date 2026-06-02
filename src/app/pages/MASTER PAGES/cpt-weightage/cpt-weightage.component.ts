@@ -13,6 +13,7 @@ import {
   DxPopupModule,
   DxSelectBoxModule,
   DxCheckBoxModule,
+  DxLoadPanelModule,
 } from 'devextreme-angular';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
@@ -25,8 +26,8 @@ import { MasterReportService } from '../master-report.service';
   providers: [ReportService, DataService],
 })
 export class CPTWeightageComponent {
-  @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid!: DxDataGridComponent;
+  @ViewChild('cptWeightageGrid', { static: false })
+  cptWeightageGrid!: DxDataGridComponent;
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
 
@@ -39,30 +40,19 @@ export class CPTWeightageComponent {
   isAddPopupVisible = false;
 
   facilityList: any[] = [];
-  cptCodeList: any[] = [];
 
   menuPrevilage: any;
 
-  newWeightageMaster: any = {
-    FacilityID: null,
-    CPTCode: null,
-    Weightage: 0,
-    EffectFrom: null,
-    RevisedOn: null,
-    IsInactive: false,
-  };
+  selectedFacilityID: any;
 
-  dataSource = new DataSource({
-    load: () =>
-      new Promise((resolve, reject) => {
-        this.masterService.get_CPTWeightage_List().subscribe({
-          next: (res: any) => resolve(res.datas),
-          error: (err: any) => reject(err),
-        });
-      }),
-  });
+  saveButtonOptions: any;
+  facilitySelectOptions: any;
 
-  addButtonOptions: any;
+  cptWeightageData: any = [];
+  originalCptWeightageData: any[] = [];
+
+  isLoading: boolean = false;
+  editedRows: any = [];
 
   constructor(
     private masterService: MasterReportService,
@@ -75,18 +65,19 @@ export class CPTWeightageComponent {
       this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
     });
 
-    this.addButtonOptions = {
-      text: 'New',
-      icon: 'bi bi-plus-circle',
+    this.saveButtonOptions = {
+      class: 'ms-2',
+      text: 'Save',
       type: 'default',
       stylingMode: 'contained',
       hint: 'Add new entry',
       disabled: !this.menuPrevilage.CanAdd,
-      onClick: () => this.showNewPopup(),
+      onClick: () => this.saveWeightageMaster(),
       elementAttr: { class: 'add-button' },
     };
 
     this.loadLookups();
+    this.fetchCPTWeightageList();
   }
 
   loadLookups() {
@@ -95,84 +86,203 @@ export class CPTWeightageComponent {
       .subscribe((response: any) => {
         this.facilityList = response.facilityDetails || [];
 
-        if (this.facilityList.length === 1) {
-          this.newWeightageMaster.FacilityID = [
-            this.facilityList[0].FacilityLicense,
-          ];
+        if (this.facilityList.length > 1) {
+          this.selectedFacilityID = this.facilityList[0].FacilityLicense;
         }
+        this.facilitySelectOptions = {
+          dataSource: this.facilityList,
+          displayExpr: 'FacilityName',
+          valueExpr: 'FacilityLicense',
+          value: this.selectedFacilityID,
+          width: 250,
+          searchEnabled: true,
+          onValueChanged: (e: any) => {
+            this.selectedFacilityID = e.value;
+            this.onFacilityChanged(e);
+          },
+        };
       });
-
-    this.masterService.Get_GropDown('CPT').subscribe((response: any) => {
-      if (response) {
-        this.cptCodeList = response;
-      }
-    });
   }
 
-  showNewPopup() {
-    this.isAddPopupVisible = true;
+  fetchCPTWeightageList() {
+    this.isLoading = true;
+    this.masterService
+      .get_CPT_Weightage_List(this.selectedFacilityID || '')
+      .subscribe((response: any) => {
+        if (response.flag === '1') {
+          const data = response.data || [];
+          this.cptWeightageData = data.map((item: any, index: number) => ({
+            ...item,
+            SerialNumber: index + 1,
+          }));
+          this.originalCptWeightageData = JSON.parse(
+            JSON.stringify(this.cptWeightageData),
+          );
+          this.isLoading = false;
+        } else {
+          notify('Failed to load CPT Weightage List', 'error', 2000);
+          this.isLoading = false;
+        }
+      },error => {
+        notify('An error occurred while fetching CPT Weightage List', 'error', 2000);
+        this.isLoading = false;
+      });
+  }
+
+  onEditorPreparing(e: any) {
+    if (e.parentType === 'dataRow' && e.dataField === 'NewEffectFrom') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      e.editorOptions.min = today;
+
+      const activeWeightage = e.row.data.ActiveWeightage;
+      const activeEffectFrom = e.row.data.ActiveEffectFrom;
+
+      // Initial Setup
+      if (!activeWeightage && !activeEffectFrom) {
+        return;
+      }
+
+      const activeDate = new Date(activeEffectFrom);
+      activeDate.setHours(0, 0, 0, 0);
+
+      // Optional: user can't select dates <= active date
+      const minDate = new Date(activeDate);
+      minDate.setDate(minDate.getDate() + 1);
+
+      if (minDate > today) {
+        e.editorOptions.min = minDate;
+      }
+    }
+  }
+
+  validateNewEffectFrom = (e: any) => {
+    if (!e.value) {
+      return false;
+    }
+
+    const newEffectFrom = new Date(e.value);
+    newEffectFrom.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Never allow past dates
+    if (newEffectFrom < today) {
+      return false;
+    }
+
+    const activeWeightage = e.data?.ActiveWeightage ?? e.row?.data?.ActiveWeightage;
+
+    const activeEffectFrom =
+      e.data?.ActiveEffectFrom ?? e.row?.data?.ActiveEffectFrom;
+
+    // Initial Setup
+    if (!activeWeightage && !activeEffectFrom) {
+      return true;
+    }
+
+    const activeDate = new Date(activeEffectFrom);
+    activeDate.setHours(0, 0, 0, 0);
+
+    // Existing validation
+    if (newEffectFrom <= activeDate) {
+      return false;
+    }
+
+    return true;
+  };
+
+  onRowUpdated(e: any) {
+    const originalRow = this.originalCptWeightageData.find(
+      (x) => x.SerialNumber === e.data.SerialNumber,
+    );
+
+    if (!originalRow) {
+      return;
+    }
+
+    const isModified =
+      originalRow.NewWeightage !== e.data.NewWeightage ||
+      new Date(originalRow.NewEffectFrom).getTime() !==
+        new Date(e.data.NewEffectFrom).getTime();
+
+    e.data.IsModified = isModified;
+  }
+
+  onRowPrepared(e: any) {
+    if (e.rowType === 'data' && e.data?.IsModified) {
+      e.rowElement.style.backgroundColor = '#77a692';
+      e.rowElement.style.fontWeight = '600';
+    }
+  }
+
+  onFacilityChanged(event: any) {
+    this.selectedFacilityID = event.value;
+    this.fetchCPTWeightageList();
   }
 
   saveWeightageMaster() {
+    const modifiedRows = this.cptWeightageData.filter((row: any) => {
+      const original = this.originalCptWeightageData.find(
+        (x) => x.SerialNumber === row.SerialNumber,
+      );
+
+      if (!original) {
+        return false;
+      }
+
+      return (
+        original.NewWeightage !== row.NewWeightage ||
+        this.getDate(original.NewEffectFrom) !== this.getDate(row.NewEffectFrom)
+      );
+    });
+
+    if (modifiedRows.length === 0) {
+      notify('No changes found', 'warning', 2000);
+      return;
+    }
+
+    const payload = modifiedRows.map((x: any) => ({
+      FacilityID: this.selectedFacilityID,
+      CPTID: x.CPTID,
+      Weightage: x.NewWeightage,
+      EffectFrom: this.formatDate(x.NewEffectFrom),
+      EffectTo: null,
+    }));
+
     this.masterService
-      .Insert_CPTWeightage_Data(
-        this.newWeightageMaster.FacilityID,
-        this.newWeightageMaster.CPTCode,
-        this.newWeightageMaster.Weightage,
-        this.newWeightageMaster.EffectFrom,
-        this.newWeightageMaster.RevisedOn,
-        false,
-      )
-      .subscribe(() => {
-        notify('Weightage Master Added Successfully', 'success', 1000);
-
-        this.isAddPopupVisible = false;
-
-        this.dataGrid.instance.refresh();
+      .Insert_CPTWeightage_Data(payload)
+      .subscribe((response: any) => {
+        if (response.flag === '1') {
+          notify('Weightage Master Saved Successfully', 'success', 2000);
+          this.fetchCPTWeightageList();
+        } else {
+          notify('Failed to save Weightage Master', 'error', 2000);
+        }
       });
   }
 
-  onRowUpdating(event: any) {
-    const data = {
-      ...event.oldData,
-      ...event.newData,
-    };
+  getDate(value: any): string {
+    if (!value) {
+      return '';
+    }
 
-    this.masterService
-      .update_CPTWeightage_Data(
-        data.ID,
-        data.FacilityID,
-        data.CPTID,
-        data.Weightage,
-        data.EffectFrom,
-        data.EffectTo,
-        data.IsInactive,
-      )
-      .subscribe(() => {
-        notify('Updated Successfully', 'success', 1000);
-
-        event.component.cancelEditData();
-
-        this.dataGrid.instance.refresh();
-      });
-
-    event.cancel = true;
+    return new Date(value).toISOString().split('T')[0];
   }
 
-  onRowRemoving(event: any) {
-    event.cancel = true;
-
-    this.masterService
-      .Remove_CPTWeightage_Row_Data(event.key.ID)
-      .subscribe(() => {
-        notify('Deleted Successfully', 'success', 1000);
-
-        this.dataGrid.instance.refresh();
-      });
+  formatDate(dateString: any) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   refresh = () => {
-    this.dataGrid.instance.refresh();
+    this.cptWeightageGrid.instance.refresh();
+    this.fetchCPTWeightageList();
   };
 
   toggleFilterRow = () => {
@@ -194,6 +304,7 @@ export class CPTWeightageComponent {
     DxNumberBoxModule,
     DxDateBoxModule,
     DxCheckBoxModule,
+    DxLoadPanelModule,
   ],
   providers: [],
   exports: [],

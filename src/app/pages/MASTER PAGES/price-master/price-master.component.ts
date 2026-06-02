@@ -109,22 +109,32 @@ export class PriceMasterComponent {
     this.isLoading = true;
     this.masterService
       .get_CPT_Price_List(this.selectedFacilityID || '')
-      .subscribe((response: any) => {
-        if (response.flag === '1') {
-          const data = response.data || [];
-          this.cptPriceData = data.map((item: any, index: number) => ({
-            ...item,
-            SerialNumber: index + 1,
-          }));
-          this.originalCptPriceData = JSON.parse(
-            JSON.stringify(this.cptPriceData),
+      .subscribe(
+        (response: any) => {
+          if (response.flag === '1') {
+            const data = response.data || [];
+            this.cptPriceData = data.map((item: any, index: number) => ({
+              ...item,
+              SerialNumber: index + 1,
+            }));
+            this.originalCptPriceData = JSON.parse(
+              JSON.stringify(this.cptPriceData),
+            );
+            this.isLoading = false;
+          } else {
+            notify('Failed to load CPT Price List', 'error', 2000);
+            this.isLoading = false;
+          }
+        },
+        (error) => {
+          notify(
+            'An error occurred while fetching CPT Price List',
+            'error',
+            2000,
           );
           this.isLoading = false;
-        } else {
-          notify('Failed to load CPT Price List', 'error', 2000);
-          this.isLoading = false;
-        }
-      });
+        },
+      );
   }
 
   onEditorPreparing(e: any) {
@@ -280,6 +290,7 @@ export class PriceMasterComponent {
 
   refresh = () => {
     this.cptPriceGrid.instance.refresh();
+    this.fetchCPTPriceList();
   };
 
   toggleFilterRow = () => {

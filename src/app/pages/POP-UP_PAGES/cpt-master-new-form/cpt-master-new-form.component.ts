@@ -55,8 +55,6 @@ export class CptMasterNewFormComponent implements OnInit {
   @ViewChild('encounterGrid', { static: false })
   encounterGrid!: DxDataGridComponent;
 
-  // @Input() formData: any = null;
-
   CptMasterData: any = {
     ID: '',
     CPTTypeID: '',
@@ -109,8 +107,9 @@ export class CptMasterNewFormComponent implements OnInit {
   selectedLedgerIds: number[] = [];
 
   newCptMasterData: any = this.CptMasterData;
-  ADOCgroupDataSource: any[]=[];
-  ADOCClassDataSource: any[]=[];
+  ADOCgroupDataSource: any[] = [];
+  ADOCClassDataSource: any[] = [];
+  allADOCClassDataSource: any[] = [];
 
   constructor(
     private masterService: MasterReportService,
@@ -122,8 +121,8 @@ export class CptMasterNewFormComponent implements OnInit {
     this.getCpt_DropDown();
     this.getCostDrive_DropDown();
     this.getClinicianRole_DropDown();
-    this.get_ADOC_CLASS_Dropdown()
-    this.get_ADOC_GROUP_Dropdown()
+    this.get_ADOC_CLASS_Dropdown();
+    this.get_ADOC_GROUP_Dropdown();
   }
 
   async ngOnInit() {
@@ -134,14 +133,11 @@ export class CptMasterNewFormComponent implements OnInit {
       await this.get_Clinician_Dropdown();
       await this.loadEncounterTypes();
       await this.loadLedger();
-    
     } catch (error) {
       console.error('Initialization error:', error);
     } finally {
     }
   }
-
- 
 
   async get_Facility_dataList(): Promise<void> {
     try {
@@ -206,7 +202,7 @@ export class CptMasterNewFormComponent implements OnInit {
     );
     if (response) {
       // Prepend 'All' option
-      this.ADOCgroupDataSource =response;
+      this.ADOCgroupDataSource = response;
     }
   }
 
@@ -215,10 +211,33 @@ export class CptMasterNewFormComponent implements OnInit {
     const response: any = await firstValueFrom(
       this.dataService.Get_GropDown(dropdownType),
     );
+
     if (response) {
-      // Prepend 'All' option
+      this.allADOCClassDataSource = response;
       this.ADOCClassDataSource = response;
     }
+  }
+
+  onADOCGroupChanged(e: any) {
+    this.newCptMasterData.ADOCClassID = null;
+
+    if (!e.value) {
+      this.ADOCClassDataSource = [];
+      return;
+    }
+
+    const selectedGroup = this.ADOCgroupDataSource.find(
+      (x) => x.ID === e.value,
+    );
+
+    const prefix = selectedGroup.DESCRIPTION.split('-')[0]
+      .trim()
+      .charAt(0)
+      .toUpperCase();
+
+    this.ADOCClassDataSource = this.allADOCClassDataSource.filter((x) =>
+      x.DESCRIPTION?.trim().toUpperCase().startsWith(prefix),
+    );
   }
 
   async loadEncounterTypes() {
@@ -364,7 +383,7 @@ export class CptMasterNewFormComponent implements OnInit {
       selectedLedgerID: '',
       CPTEncounterDepartments: [],
       ADOCClassID: 0,
-    ADOCGroupID: 0,
+      ADOCGroupID: 0,
       data: [],
     };
 
