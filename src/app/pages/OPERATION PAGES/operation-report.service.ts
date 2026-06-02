@@ -25,6 +25,11 @@ export class OperationReportService {
     return this.http.post<any>(`${this.BASE_URL}ClinicalData/getActivityData`, reqBody);
   }
 
+    processClinicalDataInPopup(payload: any) {
+    const reqBody = payload;
+    return this.http.post<any>(`${this.BASE_URL}ClinicalData/getActivityData`, reqBody);
+  }
+
   Insert_Clinical_Data_Excel_Import(data: any) {
     const url = `${this.BASE_URL}ClinicalData/saveImportedExcel`;
     return this.http.post(url, data);
