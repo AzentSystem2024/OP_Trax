@@ -551,7 +551,7 @@
 
     <!-- Details Grid -->
     <dx-data-grid
-      [dataSource]="[selectedRowData]"
+      [dataSource]="popupGridData"
       [showBorders]="true"
       [columnAutoWidth]="true"
       [showRowLines]="true"
@@ -560,7 +560,7 @@
     >
 
       <dxi-column
-        dataField="EncounterType"
+        dataField="CPTType"
         caption="CPT Type"
       ></dxi-column>
 
@@ -570,7 +570,7 @@
       ></dxi-column>
 
       <dxi-column
-        dataField="CPTCode"
+        dataField="CPTName"
         caption="CPT Name"
       ></dxi-column>
 
@@ -580,7 +580,7 @@
       ></dxi-column>
 
       <dxi-column
-        dataField="RenderingClinician"
+        dataField="SpecialityName"
         caption="Speciality"
       ></dxi-column>
 
@@ -598,26 +598,23 @@
 
       <dxi-column
         caption="ADOC Category"
+        dataField="GroupName"
       ></dxi-column>
 
       <dxi-column
         caption="ADOC Class"
+        dataField="ClassName"
       ></dxi-column>
 
       <dxi-column
-        caption="ADOC Class Description"
-      ></dxi-column>
-
-      <dxi-column
-        dataField="Amount"
+        dataField="BillPrice"
         caption="Price"
         format="#,##0.00"
       ></dxi-column>
 
-     <dxi-column
-  dataField="Billable"
+    <dxi-column
   caption="Billable"
-  format="#,##0.00"
+  [calculateCellValue]="billableText"
 >
 </dxi-column>
 
@@ -687,4 +684,34 @@
     </div> -->
 
   </div>
+
+  <div class="d-flex justify-content-end mt-3 gap-2">
+
+  <dx-button
+    text="Process"
+    type="default"
+    stylingMode="contained"
+    (onClick)="onProcessPopupData()"
+  >
+  </dx-button>
+
+  <dx-button
+    text="Cancel"
+    type="normal"
+    stylingMode="outlined"
+    (onClick)="isRowPopupVisible = false"
+  >
+  </dx-button>
+
+  <dx-load-panel
+  [(visible)]="isPopupProcessing"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="true"
+  shadingColor="rgba(0,0,0,0.4)"
+  message="Processing..."
+>
+</dx-load-panel>
+
+</div>
 </dx-popup>

@@ -92,7 +92,7 @@ export class ClinicalDataComponent implements OnInit {
 
   processButtonOptions = {
     icon: '',
-    text: 'Allocate',
+    text: 'Process',
     type: 'default',
     stylingMode: 'contained',
     hint: 'Import',
@@ -226,6 +226,8 @@ selectedRowData: any = {};
   isUpdating: boolean = false;
 
   FileName: any;
+  popupGridData: any[] = [];
+  isPopupProcessing: boolean = false;
 
   constructor(
     private service: ReportService,
@@ -1022,12 +1024,67 @@ selectedRowData: any = {};
     return `${item.FacilityLicense} - ${item.FacilityName}`;
   };
 
- onViewClick(e: any) {
+getClinicalDataPopupData() {
 
+  const payload = {
+    ClaimUID: this.selectedRowData?.ClaimUID || 0
+  };
+
+  this.operationService
+    .getClinicalDataInPopup(payload)
+    .subscribe({
+
+      next: (res: any) => {
+
+        if (res.flag === '1') {
+
+          this.popupGridData = res.data || [];
+
+          this.isRowPopupVisible = true;
+
+        } else {
+
+          this.popupGridData = [];
+
+          notify('No data found', 'warning', 3000);
+
+        }
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+        notify('Error loading popup data', 'error', 3000);
+
+      }
+    });
+}
+
+ onViewClick(e: any) {
+  console.log(e)
   this.selectedRowData = e.row.data;
 
   this.isRowPopupVisible = true;
+  this.getClinicalDataPopupData();
 }
+
+
+onProcessPopupData() {
+  this.isPopupProcessing = true;
+
+  console.log(this.popupGridData);
+  // simulate API call
+  setTimeout(() => {
+    this.isPopupProcessing = false;
+
+    notify('Processed Successfully', 'success', 3000);
+  }, 2000);
+}
+
+billableText = (rowData: any) => {
+  return rowData.Billable ? 'Yes' : 'No';
+};
 
 }
 @NgModule({
