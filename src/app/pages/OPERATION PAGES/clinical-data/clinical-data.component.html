@@ -333,11 +333,11 @@
         caption="Costing Department"
         [allowEditing]="false"
       ></dxi-column>
-      <dxi-column
+      <!-- <dxi-column
         dataField="ProcessStatus"
         caption="Status"
         [allowEditing]="false"
-      ></dxi-column>
+      ></dxi-column> -->
       <dxi-column
         dataField="pendingReason"
         caption="Pending Reason"
@@ -345,6 +345,18 @@
         [showWhenGrouped]="true"
         [allowEditing]="false"
       ></dxi-column>
+
+     <dxi-column type="buttons" [width]="100">
+
+  <dxi-button
+    hint="View"
+    icon="errorcircle"
+    text="View"
+    [onClick]="onViewClick.bind(this)"
+  >
+  </dxi-button>
+
+</dxi-column>
 
       <dxo-summary>
         <dxi-total-item
@@ -463,3 +475,216 @@
     message="Updating..."
   ></dx-load-panel>
 </div>
+
+
+<!-- ------------Row Detail Popup---------------- -->
+<dx-popup
+  [(visible)]="isRowPopupVisible"
+  [width]="'95%'"
+  [height]="'90vh'"
+  [showTitle]="true"
+  title="ADOC Grouping & Applying Counting Rules"
+  [dragEnabled]="true"
+  [closeOnOutsideClick]="true"
+  [showCloseButton]="true"
+>
+  <div class="container-fluid p-3">
+
+    <!-- Top Details Section -->
+    <div class="row mb-3">
+
+      <div class="col-md-6">
+          <tr>
+            <td><b>Invoice No/Visit ID : </b></td>
+            <td>{{ selectedRowData?.ClaimNumber }}</td>
+          </tr>
+
+          <tr>
+            <td><b>Patient ID : </b></td>
+            <td>{{ selectedRowData?.PatientID }}</td>
+          </tr>
+
+          <tr>
+            <td><b>Encounter Start Date : </b></td>
+            <td>{{ selectedRowData?.EncounterStartDate }}</td>
+          </tr>
+      </div>
+
+      <div class="col-md-6 d-flex justify-content-end">
+
+  <table>
+
+    <tr>
+      <td class="pe-3">
+        <b>Date :</b>
+      </td>
+
+      <td>
+        {{ selectedRowData?.TransactionDate }}
+      </td>
+    </tr>
+
+    <tr>
+      <td class="pe-3">
+        <b>Encounter Type :</b>
+      </td>
+
+      <td>
+        {{ selectedRowData?.EncounterType }}
+      </td>
+    </tr>
+
+    <tr>
+      <td class="pe-3">
+        <b>Encounter End Date :</b>
+      </td>
+
+      <td>
+        {{ selectedRowData?.EncounterEndDate }}
+      </td>
+    </tr>
+
+  </table>
+
+</div>
+    </div>
+
+    <!-- Details Grid -->
+    <dx-data-grid
+      [dataSource]="[selectedRowData]"
+      [showBorders]="true"
+      [columnAutoWidth]="true"
+      [showRowLines]="true"
+      [showColumnLines]="true"
+      height="450"
+    >
+
+      <dxi-column
+        dataField="EncounterType"
+        caption="CPT Type"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="CPTCode"
+        caption="CPT Code"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="CPTCode"
+        caption="CPT Name"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="OrderingClinician"
+        caption="Ordering Clinician"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="RenderingClinician"
+        caption="Speciality"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="ActivityDate"
+        caption="ActivityDate"
+      ></dxi-column>
+
+
+      <dxi-column
+        dataField="Amount"
+        caption="Net Amount"
+        format="#,##0.00"
+      ></dxi-column>
+
+      <dxi-column
+        caption="ADOC Category"
+      ></dxi-column>
+
+      <dxi-column
+        caption="ADOC Class"
+      ></dxi-column>
+
+      <dxi-column
+        caption="ADOC Class Description"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="Amount"
+        caption="Price"
+        format="#,##0.00"
+      ></dxi-column>
+
+     <dxi-column
+  dataField="Billable"
+  caption="Billable"
+  format="#,##0.00"
+>
+</dxi-column>
+
+
+      <!-- <dxi-column
+        dataField="ProcessStatus"
+        caption="Status"
+      ></dxi-column> -->
+
+      <dxi-column
+        caption="Remark"
+      ></dxi-column>
+
+      
+
+      <dxo-summary>
+
+  <!-- Net Total under Net Amount column -->
+  <dxi-total-item
+    column="Amount"
+    showInColumn="Amount"
+    summaryType="sum"
+    displayFormat="Net Total : {0}"
+    [valueFormat]="{
+      type: 'fixedPoint',
+      precision: 2
+    }"
+    alignment="right"
+  >
+  </dxi-total-item>
+
+  <!-- Net Billable under Billable column -->
+  <dxi-total-item
+    column="Billable"
+    showInColumn="Billable"
+    summaryType="sum"
+    displayFormat="Net Billable : {0}"
+    [valueFormat]="{
+      type: 'fixedPoint',
+      precision: 2
+    }"
+    alignment="right"
+  >
+  </dxi-total-item>
+
+</dxo-summary>
+      
+    </dx-data-grid>
+
+    <!-- Footer Totals -->
+    <!-- <div class="row mt-3">
+
+      <div class="col-md-6 text-end">
+        <p>
+          Net Total :
+          {{ selectedRowData?.Amount }}
+        </p>
+      </div>
+
+      <div class="col-md-6 text-end">
+        <p>
+          Net Billable :
+          {{ selectedRowData?.Billable }}
+        </p>
+      </div>
+
+    </div> -->
+
+  </div>
+</dx-popup>

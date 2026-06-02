@@ -48,6 +48,7 @@ import { InactivityService } from 'src/app/services/inactivity.service';
 import { ReportEngineService } from '../../REPORT PAGES/report-engine.service';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
 
 @Component({
   selector: 'app-clinical-data',
@@ -158,6 +159,8 @@ export class ClinicalDataComponent implements OnInit {
     },
   ];
 
+  
+
   facilityListDataSource: any;
   selectedFacility: any[] = [];
   searchOnDataSource = [
@@ -172,6 +175,31 @@ export class ClinicalDataComponent implements OnInit {
   today: Date = new Date();
 
   dataSource!: DataSource<any, any>;
+//  dataSource: DataSource<any> | any[] = [
+//   {
+//     FacilityID: 'FAC001',
+//     ClaimNumber: 'CLM10001',
+//     ClaimActivityNumber: 'ACT5001',
+//     TransactionDate: '01-06-2026',
+//     PatientID: 'PAT12345',
+//     EncounterType: 'Outpatient',
+//     EncounterStartDate: '01-06-2026',
+//     EncounterEndDate: '01-06-2026',
+//     Quantity: 2.0,
+//     Qty_Weight: 1.5,
+//     CPTCode: 'CPT99213',
+//     OrderingClinician: 'Dr. John Mathew',
+//     RenderingClinician: 'Dr. Sarah Thomas',
+//     Amount: 1500.75,
+//     Billable: 1500.75,
+//     CostingDepartment: 'Radiology',
+//     ProcessStatus: 'Pending',
+//     pendingReason: 'Awaiting Approval',
+//   },
+// ];
+isRowPopupVisible: boolean = false;
+selectedRowData: any = {};
+
 
   selectedCptCodeData: any;
   selectedClinicianData: any;
@@ -501,6 +529,10 @@ export class ClinicalDataComponent implements OnInit {
           }
         });
     }
+//     if (e.rowType === 'data') {
+//   this.selectedRowData = e.data;
+//   this.isRowPopupVisible = true;
+// }
   }
 
   // =========== update Cpt data ===========
@@ -989,6 +1021,14 @@ export class ClinicalDataComponent implements OnInit {
     if (!item) return '';
     return `${item.FacilityLicense} - ${item.FacilityName}`;
   };
+
+ onViewClick(e: any) {
+
+  this.selectedRowData = e.row.data;
+
+  this.isRowPopupVisible = true;
+}
+
 }
 @NgModule({
   imports: [
@@ -1009,6 +1049,7 @@ export class ClinicalDataComponent implements OnInit {
     ClinicianEditFormModule,
     DxLoadPanelModule,
     SingleClaimDetailsModule,
+    DxoSummaryModule
   ],
   providers: [],
   exports: [],
