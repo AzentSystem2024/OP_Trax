@@ -79,8 +79,8 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     IsDifferentLedger: 0,
     selectedLedgerID: '',
     CPTEncounterDepartments: [],
-    ADOCClassID: 0,
-    ADOCGroupID: 0,
+    ADOCClassID: null,
+    ADOCGroupID: null,
     data: [],
   };
   ClinicianRoleDataSource: any;
@@ -98,8 +98,8 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   selectedLedgerIds: number[] = [];
   ledgerList: any[] = [];
 
-  ADOCClassDataSource: any[]=[];
-  ADOCgroupDataSource: any[]=[];
+  ADOCClassDataSource: any[] = [];
+  ADOCgroupDataSource: any[] = [];
   allADOCClassDataSource: any;
 
   constructor(
@@ -110,6 +110,8 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     this.getCostDepartment_DropDown();
     this.getCpt_DropDown();
     this.getCostDrive_DropDown();
+    this.get_ADOC_CLASS_Dropdown();
+    this.get_ADOC_GROUP_Dropdown();
   }
 
   async ngOnInit() {
@@ -121,6 +123,8 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
       await this.loadLedger();
       this.getClinicianRole_DropDown();
       await this.loadEncounterTypes();
+      await this.get_ADOC_CLASS_Dropdown();
+      await this.get_ADOC_GROUP_Dropdown();
     } catch (error) {
     } finally {
     }
@@ -275,17 +279,18 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     });
   }
 
-    async get_ADOC_GROUP_Dropdown(): Promise<void> {
-      const dropdownType = 'ADOC_GROUP';
-      const response: any = await firstValueFrom(
-        this.dataService.Get_GropDown(dropdownType),
-      );
-      if (response) {
-        // Prepend 'All' option
-        this.ADOCgroupDataSource = response;
-      }
+  async get_ADOC_GROUP_Dropdown(): Promise<void> {
+    const dropdownType = 'ADOC_GROUP';
+    const response: any = await firstValueFrom(
+      this.dataService.Get_GropDown(dropdownType),
+    );
+    if (response) {
+      // Prepend 'All' option
+      this.ADOCgroupDataSource = response;
     }
-   async get_ADOC_CLASS_Dropdown(): Promise<void> {
+  }
+
+  async get_ADOC_CLASS_Dropdown(): Promise<void> {
     const dropdownType = 'ADOC_CLASS';
     const response: any = await firstValueFrom(
       this.dataService.Get_GropDown(dropdownType),
@@ -298,8 +303,6 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   }
 
   onADOCGroupChanged(e: any) {
-    this.newCptMasterData.ADOCClassID = null;
-
     if (!e.value) {
       this.ADOCClassDataSource = [];
       return;
@@ -382,6 +385,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
       gridInstance.editCell(lastRowIndex, 'ClinicianID');
     }, 100);
   }
+
   // ========= custom validation for cost bucket column ===========
   validateCostBucket = (e: any) => {
     const row = e.data || {};

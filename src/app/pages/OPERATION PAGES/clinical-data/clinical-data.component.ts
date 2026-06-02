@@ -454,98 +454,92 @@ selectedRowData: any = {};
 
   // ======= cpt code and ordering clinician edit function ============
   onCellClick(e: any) {
-    if (!e.column || e.rowType !== 'data') {
-      return;
-    }
-    if (e.rowType === 'group') return;
+    // if (!e.column || e.rowType !== 'data') {
+    //   return;
+    // }
+    // if (e.rowType === 'group') return;
 
-    const dataField = e.column.dataField;
+    // const dataField = e.column.dataField;
 
-    // --- Helper to avoid repeated notify options---
-    const showError = (message: string) => {
-      notify(message, 'error', 3000);
-    };
+    // // --- Helper to avoid repeated notify options---
+    // const showError = (message: string) => {
+    //   notify(message, 'error', 3000);
+    // };
 
-    // ===== Check for Claim Number click =====
-    if (dataField === 'ClaimNumber') {
-      this.clickedCellRowData = e.data;
-      this.isSingleClaimDetailsVisible = true;
-      return;
-    }
+    // // ===== Check for Claim Number click =====
+    // if (dataField === 'ClaimNumber') {
+    //   this.clickedCellRowData = e.data;
+    //   this.isSingleClaimDetailsVisible = true;
+    //   return;
+    // }
 
-    if (dataField === 'CPTCode') {
-      const code = e.data?.CPTCode;
+    // if (dataField === 'CPTCode') {
+    //   const code = e.data?.CPTCode;
 
-      if (!code) {
-        showError('CPT Code is empty');
-        return;
-      }
+    //   if (!code) {
+    //     showError('CPT Code is empty');
+    //     return;
+    //   }
 
-      this.operationService
-        .fetch_selected_CptCode_Data(code)
-        .subscribe((res: any) => {
-          if (res.flag === '1' && res.data?.[0]) {
-            this.selectedCptCodeData = res.data[0];
-            this.isCptEditFormPopupOpened = true;
-          } else {
-            showError('No CPT Code data found');
-          }
-        });
-    }
+    //   this.operationService
+    //     .fetch_selected_CptCode_Data(code)
+    //     .subscribe((res: any) => {
+    //       if (res.flag === '1' && res.data?.[0]) {
+    //         this.selectedCptCodeData = res.data[0];
+    //         this.isCptEditFormPopupOpened = true;
+    //       } else {
+    //         showError('No CPT Code data found');
+    //       }
+    //     });
+    // }
 
-    if (dataField === 'OrderingClinician') {
-      const clinicianId = e.data?.OrderingClinician;
+    // if (dataField === 'OrderingClinician') {
+    //   const clinicianId = e.data?.OrderingClinician;
 
-      if (!clinicianId) {
-        showError('Ordering Clinician is empty');
-        return;
-      }
+    //   if (!clinicianId) {
+    //     showError('Ordering Clinician is empty');
+    //     return;
+    //   }
 
-      this.operationService
-        .fetch_selected_orderingClinician_Data(clinicianId)
-        .subscribe((res: any) => {
-          if (res.flag === '1' && res.data?.[0]) {
-            this.selectedClinicianData = res.data[0];
-            this.isEditClinicianPopupOpened = true;
-          } else {
-            showError('No Ordering Clinician data found');
-          }
-        });
-    }
+    //   this.operationService
+    //     .fetch_selected_orderingClinician_Data(clinicianId)
+    //     .subscribe((res: any) => {
+    //       if (res.flag === '1' && res.data?.[0]) {
+    //         this.selectedClinicianData = res.data[0];
+    //         this.isEditClinicianPopupOpened = true;
+    //       } else {
+    //         showError('No Ordering Clinician data found');
+    //       }
+    //     });
+    // }
 
-    if (dataField === 'RenderingClinician') {
-      const clinicianId = e.data?.RenderingClinician;
+    // if (dataField === 'RenderingClinician') {
+    //   const clinicianId = e.data?.RenderingClinician;
 
-      if (!clinicianId) {
-        showError('Rendering Clinician is empty');
-        return;
-      }
-      this.operationService
-        .fetch_selected_orderingClinician_Data(clinicianId)
-        .subscribe((res: any) => {
-          if (res.flag === '1' && res.data?.[0]) {
-            this.selectedClinicianData = res.data[0];
-            this.isEditClinicianPopupOpened = true;
-          } else {
-            showError('No Rendering Clinician data found');
-          }
-        });
-    }
-//     if (e.rowType === 'data') {
-//   this.selectedRowData = e.data;
-//   this.isRowPopupVisible = true;
-// }
+    //   if (!clinicianId) {
+    //     showError('Rendering Clinician is empty');
+    //     return;
+    //   }
+    //   this.operationService
+    //     .fetch_selected_orderingClinician_Data(clinicianId)
+    //     .subscribe((res: any) => {
+    //       if (res.flag === '1' && res.data?.[0]) {
+    //         this.selectedClinicianData = res.data[0];
+    //         this.isEditClinicianPopupOpened = true;
+    //       } else {
+    //         showError('No Rendering Clinician data found');
+    //       }
+    //     });
+    // }
+
   }
 
   // =========== update Cpt data ===========
   onClickUpdateNewCptType = () => {
-    const cptData = this.CptEditFormComponent.getUpdateCptMasterData();
-
     this.CptEditFormComponent.newCptMasterData.selectedLedgerID =
       this.CptEditFormComponent.ledgerMode === 1
         ? this.CptEditFormComponent.selectedLedgerIds.join(',')
         : '';
-
     const {
       ID,
       CPTTypeID,
@@ -562,6 +556,8 @@ selectedRowData: any = {};
       IsDifferentLedger,
       selectedLedgerID,
       CPTEncounterDepartments,
+      ADOCClassID,
+      ADOCGroupID,
       data,
     } = this.CptEditFormComponent.getUpdateCptMasterData();
 
@@ -582,6 +578,8 @@ selectedRowData: any = {};
         IsDifferentLedger,
         selectedLedgerID,
         CPTEncounterDepartments,
+        ADOCClassID,
+      ADOCGroupID,
         data,
       )
       .subscribe((response: any) => {
