@@ -77,23 +77,6 @@
     <dxi-item>
       <div *dxTemplate>
         <dx-select-box
-          label="ADOC Category"
-          [(value)]="newCptMasterData.ADOCGroupID"
-          labelMode="floating"
-          [items]="ADOCgroupDataSource"
-          displayExpr="DESCRIPTION"
-          [searchEnabled]="true"
-          valueExpr="ID"
-          [showClearButton]="true"
-          (onValueChanged)="onADOCGroupChanged($event)"
-        >
-        </dx-select-box>
-      </div>
-    </dxi-item>
-
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
           label="ADOC Class"
           [(value)]="newCptMasterData.ADOCClassID"
           labelMode="floating"
