@@ -49,6 +49,8 @@ import { ReportEngineService } from '../../REPORT PAGES/report-engine.service';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
+import { Workbook } from 'exceljs';
+import { exportDataGrid } from 'devextreme/excel_exporter';
 
 @Component({
   selector: 'app-clinical-data',
@@ -67,6 +69,7 @@ export class ClinicalDataComponent implements OnInit {
   clinicianEditComponent!: ClinicianEditFormComponent;
 
   @ViewChild('excelFileInput') excelFileInput!: any;
+  @ViewChild('popupGrid', { static: false }) popupGrid: any;
 
   isAddFormPopupOpened: any = false;
   //========Variables for Pagination ====================
@@ -1032,6 +1035,9 @@ getClinicalDataPopupData() {
       next: (res: any) => {
         if (res.flag === '1') {
           this.popupGridData = res.data || [];
+          // Refresh Main Grid
+          this.onApplyFilter();
+
           this.isRowPopupVisible = true;
         } else {
           this.popupGridData = [];
@@ -1052,40 +1058,64 @@ getClinicalDataPopupData() {
   this.getClinicalDataPopupData();
 }
 
-
-onProcessPopupData() {
-  this.isPopupProcessing = true;
-  const payload = {
-    ClaimUID: this.selectedRowData?.ClaimUID || 0
-  };
-
-  this.operationService
-    .processClinicalDataInPopup(payload)
-    .subscribe({
-      next: (res: any) => {
-        this.isPopupProcessing = false;
-        if (res.flag === '1') {
-          notify('Processed Successfully', 'success', 3000);
-          // close popup if needed
-          // this.isRowPopupVisible = false;
-
-          // refresh main grid
-          // this.onApplyFilter();
-        } else {
-          notify(res.message || 'Process Failed', 'error', 3000);
-        }
-      },
-      error: (err) => {
-        this.isPopupProcessing = false;
-        console.error(err);
-        notify('Error while processing', 'error', 3000);
-      }
-    });
-}
-
 billableText = (rowData: any) => {
   return rowData.Billable ? 'Yes' : 'No';
 };
+
+// calculateBillableAmount = (rowData: any) => {
+//   return rowData.Billable
+//     ? Number(rowData.BillPrice || 0)
+//     : 0;
+// };
+
+onPopupHidden() {
+  
+  setTimeout(() => {
+    this.isExcelLoading = true;
+
+    setTimeout(() => {
+      this.isExcelLoading = false;
+    }, 500);
+  }, 500);
+
+}
+
+exportFormats = [
+  { text: 'Excel', format: 'xlsx' },
+  { text: 'CSV', format: 'csv' }
+];
+
+async onExportClick(e: any) {
+  const workbook = new Workbook();
+  const worksheet = workbook.addWorksheet('ADOC Report');
+  await exportDataGrid({
+    component: this.popupGrid.instance,
+    worksheet: worksheet
+  });
+
+  // Excel Export
+  if (e.itemData.format === 'xlsx') {
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(
+      new Blob([buffer], {
+        type:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      }),
+      'ADOC_Report.xlsx'
+    );
+  }
+
+  // CSV Export
+  if (e.itemData.format === 'csv') {
+    const csvBuffer = await workbook.csv.writeBuffer();
+    saveAs(
+      new Blob([csvBuffer], {
+        type: 'text/csv;charset=utf-8;'
+      }),
+      'ADOC_Report.csv'
+    );
+  }
+}
 
 }
 @NgModule({

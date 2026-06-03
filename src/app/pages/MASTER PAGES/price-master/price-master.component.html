@@ -4,6 +4,8 @@
     class="grid theme-dependent"
     [dataSource]="cptPriceData"
     [showBorders]="true"
+    [showColumnLines]="true"
+    [showRowLines]="true"
     [allowColumnResizing]="true"
     [allowColumnReordering]="true"
     [rowAlternationEnabled]="true"
@@ -13,6 +15,7 @@
       allowUpdating: true,
     }"
     height="82vh"
+    [allowColumnResizing]="true"
     (onEditorPreparing)="onEditorPreparing($event)"
     (onRowUpdated)="onRowUpdated($event)"
     (onRowPrepared)="onRowPrepared($event)"
@@ -44,11 +47,12 @@
     <dxo-toolbar>
       <!-- Header -->
       <dxi-item location="before">
-        <div class="grid-header">CPT Price Change</div>
+        <div class="grid-header">CPT Price Master</div>
       </dxi-item>
 
       <!-- Facility Dropdown -->
       <dxi-item
+        *ngIf="!IsGlobarPrice"
         location="after"
         widget="dxSelectBox"
         [options]="facilitySelectOptions"
@@ -98,16 +102,17 @@
       caption="SL"
       [allowEditing]="false"
       alignment="center"
+      [width]="60"
     >
     </dxi-column>
 
-    <dxi-column
+    <!-- <dxi-column
       dataField="FacilityID"
       caption="FacilityID"
       [allowEditing]="false"
       alignment="center"
     >
-    </dxi-column>
+    </dxi-column> -->
 
     <dxi-column
       dataField="CPTCode"
@@ -129,7 +134,6 @@
     </dxi-column>
 
     <dxi-column caption="Active Price" alignment="center">
-      
       <dxi-column
         dataField="ActivePrice"
         caption="Price"

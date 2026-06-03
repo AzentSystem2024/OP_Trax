@@ -70,3 +70,41 @@
 }
 
 
+::ng-deep .custom-export-btn .dx-button-content {
+  padding: 4px !important;
+}
+
+::ng-deep .custom-export-btn .dx-button {
+  min-width: 32px !important;
+}
+
+.flag-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.status-flag {
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.pending-flag {
+  color: #f1c40f;
+}
+
+.applied-flag {
+  color: #28a745;
+}
+
+.billable-yes {
+  color: green;
+  font-weight: 600;
+}
+
+.billable-no {
+  color: red;
+  font-weight: 600;
+}

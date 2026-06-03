@@ -31,7 +31,7 @@
     "devextreme": "24.2.6",
     "devextreme-angular": "24.2.6",
     "devextreme-schematics": "^1.2.16",
-    "exceljs": "3.10.0",
+    "exceljs": "^3.10.0",
     "file-saver": "^2.0.5",
     "file-saver-es": "2.0.5",
     "flexmonster": "^2.9.72",

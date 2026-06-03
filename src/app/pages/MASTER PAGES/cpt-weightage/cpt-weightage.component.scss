@@ -37,12 +37,10 @@
 
       .dx-datagrid-content .dx-row {
         cursor: pointer;
-
       }
       .dx-datagrid .dx-row {
         cursor: pointer;
-        height: 10px
-
+        height: 10px;
       }
     }
 
@@ -57,10 +55,18 @@
 }
 
 .dx-datagrid {
-    height: 85vh;
+  height: 85vh;
 }
 
 .grid .dx-row {
-    height: 10px;
-  }
- 
+  height: 10px;
+}
+
+::ng-deep .dx-datagrid-rowsview .dx-data-row td {
+  border-right: 1px solid var(--border-color) !important;
+  border-bottom: 1px solidvar(--border-color) !important;
+}
+
+::ng-deep .dx-datagrid-headers .dx-header-row td {
+  border-right: 1px solidvar(--border-color) !important;
+}
