@@ -10,6 +10,7 @@ import {
 } from 'devextreme-angular';
 import { FormTextboxModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
+import validationEngine from 'devextreme/ui/validation_engine';
 
 @Component({
   selector: 'app-speciality-new-form',
@@ -21,11 +22,15 @@ export class SpecialityNewFormComponent {
     SpecialityCode: '',
     SpecialityName: '',
     SpecialityShortName: '',
-    Description: ''
+    Description: '',
   };
 
   newSpecialityData = this.SpecialityData;
   constructor(private masterService: MasterReportService) {}
+
+ validateForm(): boolean {
+  return validationEngine.validateGroup('specialityValidation').isValid || false;
+}
 
   getNewSpecialityData = () => ({ ...this.newSpecialityData });
 }

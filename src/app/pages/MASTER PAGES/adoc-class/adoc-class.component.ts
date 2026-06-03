@@ -12,6 +12,7 @@ import {
   DxCheckBoxModule,
   DxDataGridComponent,
   DxFormModule,
+  DxFormComponent,
 } from 'devextreme-angular';
 import { DataSource } from 'devextreme/common/data';
 import notify from 'devextreme/ui/notify';
@@ -33,6 +34,9 @@ import validationEngine from 'devextreme/ui/validation_engine';
 export class ADOCClassComponent {
   @ViewChild(DxDataGridComponent, { static: true })
   dataGrid!: DxDataGridComponent;
+
+  @ViewChild('addForm', { static: false })
+  addForm!: DxFormComponent;
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
   displayMode: any = 'full';
@@ -62,7 +66,7 @@ export class ADOCClassComponent {
     ADOCGroupID: null,
     Isinactive: false,
   };
-  
+
   ADOC_Category_List: any[] = [];
 
   constructor(
@@ -111,6 +115,17 @@ export class ADOCClassComponent {
 
   showNewPopup() {
     this.isAddPopupVisible = true;
+  }
+
+  onPopupHiding() {
+    this.newADOCClass = {
+      Code: '',
+      Name: '',
+      ADOCGroupID: null,
+      Isinactive: false,
+    };
+
+    this.addForm?.instance.reset();
   }
 
   // =========== Save data  =========

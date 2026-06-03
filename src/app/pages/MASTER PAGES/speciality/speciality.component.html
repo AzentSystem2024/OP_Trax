@@ -69,7 +69,7 @@
           hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
           onClick: toggleFilterRow,
           stylingMode: 'text',
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
       <dxi-item
@@ -82,7 +82,7 @@
           icon: 'refresh',
           hint: 'refresh',
           onClick: refresh,
-          stylingMode: 'text'
+          stylingMode: 'text',
         }"
       ></dxi-item>
 
@@ -98,21 +98,35 @@
       ></dxi-item>
     </dxo-toolbar>
 
-    <dxi-column dataField="SpecialityCode" caption="Code"></dxi-column>
-    <dxi-column dataField="SpecialityName" caption="Name"></dxi-column>
+    <dxi-column
+      dataField="SpecialityCode"
+      caption="Code"
+      required="true"
+    ></dxi-column>
+    <dxi-column
+      dataField="SpecialityName"
+      caption="Name"
+      required="true"
+    ></dxi-column>
     <dxi-column
       dataField="SpecialityShortName"
       caption="Short Name"
+      required="true"
     ></dxi-column>
-    <dxi-column dataField="Description" caption="Description"></dxi-column>
-    
+    <dxi-column
+      dataField="Description"
+      caption="Description"
+      required="true"
+    ></dxi-column>
   </dx-data-grid>
+
   <form-popup
     class="formPopupClass"
     [(visible)]="isAddFormPopupOpened"
     (save)="onClickSaveNewData()"
     titleText="New Speciality"
-    height="70vh"
+    [height]="'auto'"
+    [customValidate]="validateSpecialityForm"
   >
     <app-speciality-new-form></app-speciality-new-form>
   </form-popup>

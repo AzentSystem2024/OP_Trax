@@ -168,9 +168,11 @@
     [height]="'auto'"
     [showCloseButton]="true"
     [hideOnOutsideClick]="false"
+    (onHiding)="onPopupHiding()"
   >
     <div *dxTemplate="let data of 'content'">
       <dx-form
+        #addForm
         [formData]="newADOCGroup"
         labelMode="floating"
         validationGroup="adocGroupValidation"

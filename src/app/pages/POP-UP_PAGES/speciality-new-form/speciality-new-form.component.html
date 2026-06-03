@@ -1,5 +1,9 @@
-<dx-form class="plain-styled-form">
+<dx-form
+  class="plain-styled-form speciality-form"
+  validationGroup="specialityValidation"
+>
   <dxi-item itemType="group">
+
     <dxo-col-count-by-screen
       [xs]="1"
       [sm]="1"
@@ -7,57 +11,101 @@
       [lg]="2"
     ></dxo-col-count-by-screen>
 
+    <!-- Speciality Code -->
     <dxi-item [colSpan]="2">
       <div *dxTemplate>
         <dx-text-box
           label="Code"
           labelMode="floating"
-          height="40"
           [(value)]="newSpecialityData.SpecialityCode"
+          [maxLength]="20"
         >
+          <dx-validator>
+            <dxi-validation-rule
+              type="required"
+              message="Code is required"
+            ></dxi-validation-rule>
+
+            <dxi-validation-rule
+              type="stringLength"
+              [max]="20"
+              message="Maximum 20 characters allowed"
+            ></dxi-validation-rule>
+          </dx-validator>
         </dx-text-box>
       </div>
     </dxi-item>
 
+    <!-- Name -->
     <dxi-item>
       <div *dxTemplate>
         <dx-text-box
           label="Name"
           labelMode="floating"
-          height="40"
           [(value)]="newSpecialityData.SpecialityName"
+          [maxLength]="100"
         >
+          <dx-validator>
+            <dxi-validation-rule
+              type="required"
+              message="Name is required"
+            ></dxi-validation-rule>
+
+            <dxi-validation-rule
+              type="stringLength"
+              [max]="100"
+              message="Maximum 100 characters allowed"
+            ></dxi-validation-rule>
+          </dx-validator>
         </dx-text-box>
       </div>
     </dxi-item>
 
+    <!-- Short Name -->
     <dxi-item>
       <div *dxTemplate>
         <dx-text-box
-          label="ShortName"
+          label="Short Name"
           labelMode="floating"
-          height="40"
           [(value)]="newSpecialityData.SpecialityShortName"
+          [maxLength]="50"
         >
+          <dx-validator>
+            <dxi-validation-rule
+              type="required"
+              message="Short Name is required"
+            ></dxi-validation-rule>
+
+            <dxi-validation-rule
+              type="stringLength"
+              [max]="50"
+              message="Maximum 50 characters allowed"
+            ></dxi-validation-rule>
+          </dx-validator>
         </dx-text-box>
       </div>
     </dxi-item>
 
+    <!-- Description -->
     <dxi-item [colSpan]="2">
       <div *dxTemplate>
         <dx-text-area
           label="Description"
           labelMode="floating"
           [(value)]="newSpecialityData.Description"
-          [height]="160"
-          placeholder="Enter a desciption..."
-          [width]="'100%'"
-          [maxHeight]="250"
-          [minHeight]="50"
+          [height]="150"
           [autoResizeEnabled]="true"
+          [maxLength]="500"
         >
+          <dx-validator>
+            <dxi-validation-rule
+              type="required"
+              message="Description is required"
+            ></dxi-validation-rule>
+          </dx-validator>
         </dx-text-area>
       </div>
     </dxi-item>
+
   </dxi-item>
 </dx-form>

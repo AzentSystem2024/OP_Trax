@@ -34,6 +34,7 @@ import { DataService } from 'src/app/services';
 export class SpecialityComponent {
   @ViewChild(DxDataGridComponent, { static: true })
   dataGrid!: DxDataGridComponent;
+
   @ViewChild(SpecialityNewFormComponent, { static: false })
   SpecialityNewForm!: SpecialityNewFormComponent;
 
@@ -91,6 +92,10 @@ export class SpecialityComponent {
   show_new_Form() {
     this.isAddFormPopupOpened = true;
   }
+
+  validateSpecialityForm = (): boolean => {
+  return this.SpecialityNewForm?.validateForm() ?? false;
+};
 
   //========================Get Datasource =======================
 

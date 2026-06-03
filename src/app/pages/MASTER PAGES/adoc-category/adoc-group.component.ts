@@ -13,6 +13,7 @@ import {
   DxFormModule,
   DxValidationSummaryModule,
   DxValidatorModule,
+  DxFormComponent,
 } from 'devextreme-angular';
 import DataSource from 'devextreme/data/data_source';
 import notify from 'devextreme/ui/notify';
@@ -31,6 +32,9 @@ import validationEngine from 'devextreme/ui/validation_engine';
 export class ADOCGroupComponent {
   @ViewChild(DxDataGridComponent, { static: true })
   dataGrid!: DxDataGridComponent;
+
+   @ViewChild('addForm', { static: false })
+    addForm!: DxFormComponent;
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
   displayMode: any = 'full';
@@ -101,6 +105,17 @@ export class ADOCGroupComponent {
 
   showNewPopup() {
     this.isAddPopupVisible = true;
+  }
+
+   onPopupHiding() {
+    this.newADOCGroup = {
+      GroupCode: '',
+      GroupName: '',
+      Chargeable: '',
+      Status: false,
+    };
+
+    this.addForm?.instance.reset();
   }
 
   // =========== Save data  =========
