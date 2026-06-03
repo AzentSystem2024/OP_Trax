@@ -13,6 +13,9 @@
       allowUpdating: true,
     }"
     height="82vh"
+    [showColumnLines]="true"
+    [allowColumnResizing]="true"
+    [showBorders]="true"
     (onEditorPreparing)="onEditorPreparing($event)"
     (onRowUpdated)="onRowUpdated($event)"
     (onRowPrepared)="onRowPrepared($event)"
@@ -44,11 +47,12 @@
     <dxo-toolbar>
       <!-- Header -->
       <dxi-item location="before">
-        <div class="grid-header">CPT Weightage Change</div>
+        <div class="grid-header">CPT Weightage Master</div>
       </dxi-item>
 
       <!-- Facility Dropdown -->
       <dxi-item
+        *ngIf="IsWeightGlobal"
         location="after"
         widget="dxSelectBox"
         [options]="facilitySelectOptions"
@@ -96,16 +100,17 @@
       caption="SL"
       [allowEditing]="false"
       alignment="center"
+      [width]="60"
     >
     </dxi-column>
-
-    <dxi-column
+    <!-- //--------------d.	hide the column Facility--------------------- -->
+    <!-- <dxi-column
       dataField="FacilityID"
       caption="FacilityID"
       [allowEditing]="false"
       alignment="center"
     >
-    </dxi-column>
+    </dxi-column> -->
 
     <dxi-column
       dataField="CPTCode"
@@ -156,7 +161,10 @@
         format="#,##0.00"
         cssClass="new-Weightage-column"
       >
-        <dxi-validation-rule type="required" message="New Weightage is required">
+        <dxi-validation-rule
+          type="required"
+          message="New Weightage is required"
+        >
         </dxi-validation-rule>
 
         <dxi-validation-rule
