@@ -351,7 +351,7 @@ selectedRowData: any = {};
       FacilityID: Array.isArray(this.selectedFacility)
         ? this.selectedFacility.join(',')
         : '',
-      SearchOn: this.selectedSearchOn,
+      // SearchOn: this.selectedSearchOn,
       DateFrom: formatDate(this.fromDate),
       DateTo: formatDate(this.toDate),
     };
@@ -1023,38 +1023,24 @@ selectedRowData: any = {};
   };
 
 getClinicalDataPopupData() {
-
   const payload = {
     ClaimUID: this.selectedRowData?.ClaimUID || 0
   };
-
   this.operationService
     .getClinicalDataInPopup(payload)
     .subscribe({
-
       next: (res: any) => {
-
         if (res.flag === '1') {
-
           this.popupGridData = res.data || [];
-
           this.isRowPopupVisible = true;
-
         } else {
-
           this.popupGridData = [];
-
           notify('No data found', 'warning', 3000);
-
         }
       },
-
       error: (err) => {
-
         console.error(err);
-
         notify('Error loading popup data', 'error', 3000);
-
       }
     });
 }
@@ -1062,7 +1048,6 @@ getClinicalDataPopupData() {
  onViewClick(e: any) {
   console.log(e)
   this.selectedRowData = e.row.data;
-
   this.isRowPopupVisible = true;
   this.getClinicalDataPopupData();
 }
@@ -1070,14 +1055,32 @@ getClinicalDataPopupData() {
 
 onProcessPopupData() {
   this.isPopupProcessing = true;
+  const payload = {
+    ClaimUID: this.selectedRowData?.ClaimUID || 0
+  };
 
-  console.log(this.popupGridData);
-  // simulate API call
-  setTimeout(() => {
-    this.isPopupProcessing = false;
+  this.operationService
+    .processClinicalDataInPopup(payload)
+    .subscribe({
+      next: (res: any) => {
+        this.isPopupProcessing = false;
+        if (res.flag === '1') {
+          notify('Processed Successfully', 'success', 3000);
+          // close popup if needed
+          // this.isRowPopupVisible = false;
 
-    notify('Processed Successfully', 'success', 3000);
-  }, 2000);
+          // refresh main grid
+          // this.onApplyFilter();
+        } else {
+          notify(res.message || 'Process Failed', 'error', 3000);
+        }
+      },
+      error: (err) => {
+        this.isPopupProcessing = false;
+        console.error(err);
+        notify('Error while processing', 'error', 3000);
+      }
+    });
 }
 
 billableText = (rowData: any) => {

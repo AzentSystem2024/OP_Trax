@@ -77,6 +77,7 @@ export class DataService {
   //==================dashboard facility sync details data==========
   get_UserWise_FacilityList_Data() {
     const userid = sessionStorage.getItem('UserID');
+    console.log(userid)
     const url = `${this.BaseURL}facility/facilitydetails`;
     const reqBody = {
       UserID: userid,
