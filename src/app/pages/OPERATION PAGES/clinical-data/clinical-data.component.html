@@ -603,46 +603,11 @@
       </dxo-summary>
     </dx-data-grid>
 
-    <!-- Footer Totals -->
-    <!-- <div class="row mt-3">
-
-      <div class="col-md-6 text-end">
-        <p>
-          Net Total :
-          {{ selectedRowData?.Amount }}
-        </p>
-      </div>
-
-      <div class="col-md-6 text-end">
-        <p>
-          Net Billable :
-          {{ selectedRowData?.Billable }}
-        </p>
-      </div>
-
-    </div> -->
+   
   </div>
 
   <div class="d-flex justify-content-end mt-3 gap-2">
-    <!-- <dx-drop-down-button
-  icon="export"
-  stylingMode="contained"
-  type="default"
-  text="export"
-  [showArrowIcon]="false"
-  [items]="exportFormats"
-  displayExpr="text"
-  keyExpr="format"
-  [elementAttr]="{ class: 'custom-export-btn' }"
-  (onItemClick)="onExportClick($event)">
-</dx-drop-down-button> -->
-    <!-- <dx-button
-    text="Cancel"
-    type="normal"
-    stylingMode="outlined"
-    (onClick)="isRowPopupVisible = false"
-  >
-  </dx-button> -->
+    
     <dx-button
      *ngIf="selectedRowData?.Status === 'Applied'"
     text="Re-run Grouper"
