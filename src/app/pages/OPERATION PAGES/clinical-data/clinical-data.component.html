@@ -651,13 +651,14 @@
     (onClick)="isRowPopupVisible = false"
   >
   </dx-button> -->
-    <!-- <dx-button
-    text="Process"
+    <dx-button
+     *ngIf="selectedRowData?.Status === 'Applied'"
+    text="Re-run Grouper"
     type="default"
     stylingMode="contained"
-    (onClick)="onProcessPopupData()"
+    (onClick)="ReRunGrouper()"
   >
-  </dx-button> -->
+  </dx-button>
 
     <dx-load-panel
       [(visible)]="isPopupProcessing"

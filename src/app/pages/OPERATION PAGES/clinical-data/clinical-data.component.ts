@@ -1064,6 +1064,10 @@ export class ClinicalDataComponent implements OnInit {
     this.onApplyFilter();
   }
 
+  ReRunGrouper(){
+   this.getClinicalDataPopupData();
+  }
+
   exportFormats = [
     { text: 'Excel', format: 'xlsx' },
     { text: 'CSV', format: 'csv' },
