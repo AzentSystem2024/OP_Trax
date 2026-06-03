@@ -1068,6 +1068,18 @@ billableText = (rowData: any) => {
 //     : 0;
 // };
 
+onPopupHidden() {
+  
+  setTimeout(() => {
+    this.isExcelLoading = true;
+
+    setTimeout(() => {
+      this.isExcelLoading = false;
+    }, 500);
+  }, 500);
+
+}
+
 exportFormats = [
   { text: 'Excel', format: 'xlsx' },
   { text: 'CSV', format: 'csv' }

@@ -277,16 +277,17 @@
         caption="PatientID"
         [allowEditing]="false"
       ></dxi-column>
-       <dxi-column
+       <!-- <dxi-column
         dataField="PatientName"
         caption="PatientName"
         [allowEditing]="false"
-      ></dxi-column>
+      ></dxi-column> -->
       <dxi-column
         dataField="Status"
         caption="Grouper Status"
         [allowEditing]="false"
         cellTemplate="statusTemplate"
+        alignment="center"
       ></dxi-column>
      <div *dxTemplate="let data of 'statusTemplate'">
 
@@ -501,6 +502,7 @@
   [dragEnabled]="true"
   [closeOnOutsideClick]="true"
   [showCloseButton]="true"
+  (onHidden)="onPopupHidden()"
 >
   <div class="container-fluid p-3">
 
@@ -525,7 +527,7 @@
 
     <tr>
       <td class="pe-3">
-        <b>Date :</b>
+        <b>Transaction Date :</b>
       </td>
 
       <td>
@@ -548,6 +550,23 @@
 </div>
     </div>
 
+    <div class="d-flex justify-content-end mb-2 gap-2">
+
+  <dx-drop-down-button
+    icon="export"
+    text="export"
+    stylingMode="contained"
+    type="default"
+    [showArrowIcon]="false"
+    [items]="exportFormats"
+    displayExpr="text"
+    keyExpr="format"
+    [elementAttr]="{ class: 'custom-export-btn' }"
+    (onItemClick)="onExportClick($event)">
+  </dx-drop-down-button>
+
+</div>
+
     <!-- Details Grid -->
     <dx-data-grid
      #popupGrid
@@ -558,6 +577,9 @@
       [showColumnLines]="true"
       height="450"
     >
+
+     <!-- Header Filter -->
+  <dxo-header-filter [visible]="true"></dxo-header-filter>
 
     <!-- Pagination -->
   <dxo-paging
@@ -615,7 +637,6 @@
         dataField="NetAmount"
         caption="Net Amount"
         format="#,##0.00"
-        [allowEditing]="true"
       ></dxi-column>
 
       <dxi-column
@@ -624,7 +645,7 @@
       ></dxi-column>
 
       <dxi-column
-        caption="ADOC Class"
+        caption="ADOC Classification"
         dataField="ADOCClass"
       ></dxi-column>
 
@@ -718,24 +739,25 @@
 
   <div class="d-flex justify-content-end mt-3 gap-2">
 
-    <dx-drop-down-button
+    <!-- <dx-drop-down-button
   icon="export"
   stylingMode="contained"
   type="default"
+  text="export"
   [showArrowIcon]="false"
   [items]="exportFormats"
   displayExpr="text"
   keyExpr="format"
   [elementAttr]="{ class: 'custom-export-btn' }"
   (onItemClick)="onExportClick($event)">
-</dx-drop-down-button>
-    <dx-button
+</dx-drop-down-button> -->
+    <!-- <dx-button
     text="Cancel"
     type="normal"
     stylingMode="outlined"
     (onClick)="isRowPopupVisible = false"
   >
-  </dx-button>
+  </dx-button> -->
   <!-- <dx-button
     text="Process"
     type="default"
