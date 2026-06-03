@@ -278,7 +278,7 @@
         [allowEditing]="false"
       ></dxi-column>
        <dxi-column
-        dataField="PatientID"
+        dataField="PatientName"
         caption="PatientName"
         [allowEditing]="false"
       ></dxi-column>
@@ -286,17 +286,31 @@
         dataField="Status"
         caption="Grouper Status"
         [allowEditing]="false"
+        cellTemplate="statusTemplate"
       ></dxi-column>
-      <!-- <dxi-column
-        dataField="EncounterStartDate"
-        caption="Encounter Start Date"
-        [allowEditing]="false"
-      ></dxi-column>
-      <dxi-column
-        dataField="EncounterEndDate"
-        caption="Encounter End Date"
-        [allowEditing]="false"
-      ></dxi-column> -->
+     <div *dxTemplate="let data of 'statusTemplate'">
+
+  <div class="flag-container">
+
+    <!-- Pending -->
+    <span
+      *ngIf="data.value?.toLowerCase() === 'pending'"
+      class="status-flag pending-flag"
+      title="Pending">
+      ⚑
+    </span>
+
+    <!-- Applied -->
+    <span
+      *ngIf="data.value?.toLowerCase() === 'applied'"
+      class="status-flag applied-flag"
+      title="Applied">
+      ⚑
+    </span>
+
+  </div>
+
+</div>
       <!-- <dxi-column
         dataField="Quantity"
         caption="Quantity"
@@ -336,16 +350,6 @@
         dataField="Amount"
         caption="Amount"
         [format]="{ type: 'fixedPoint', precision: 2 }"
-        [allowEditing]="false"
-      ></dxi-column> -->
-      <!-- <dxi-column
-        dataField="CostingDepartment"
-        caption="Costing Department"
-        [allowEditing]="false"
-      ></dxi-column> -->
-      <!-- <dxi-column
-        dataField="ProcessStatus"
-        caption="Status"
         [allowEditing]="false"
       ></dxi-column> -->
       <!-- <dxi-column
@@ -546,16 +550,34 @@
 
     <!-- Details Grid -->
     <dx-data-grid
+     #popupGrid
       [dataSource]="popupGridData"
       [showBorders]="true"
       [columnAutoWidth]="true"
       [showRowLines]="true"
       [showColumnLines]="true"
       height="450"
+      (onCustomSummaryCalculate)="calculateBillableSummary($event)"
     >
 
+    <!-- Pagination -->
+  <dxo-paging
+    [enabled]="true"
+    [pageSize]="10">
+  </dxo-paging>
+
+  <!-- Pager -->
+  <dxo-pager
+    [visible]="true"
+    [showPageSizeSelector]="true"
+    [allowedPageSizes]="[10, 20, 50, 100]"
+    [showInfo]="true"
+    [showNavigationButtons]="true"
+    infoText="Page {0} of {1} ({2} items)">
+  </dxo-pager>  
+
     <dxi-column
-        dataField="CPTType"
+        dataField="ActivityNumber"
         caption="Activity Number"
       ></dxi-column>
 
@@ -577,18 +599,18 @@
       <dxi-column
         dataField="CPTName"
         caption="CPT Description"
+         [width]="250"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="OrderingClinician"
+        caption="Ordering Clinician"
       ></dxi-column>
 
       <dxi-column
         dataField="Speciality"
         caption="Speciality"
       ></dxi-column>
-
-      <dxi-column
-        dataField="ActivityDate"
-        caption="ActivityDate"
-      ></dxi-column>
-
 
       <dxi-column
         dataField="NetAmount"
@@ -618,12 +640,6 @@
 >
 </dxi-column>
 
-
-      <!-- <dxi-column
-        dataField="ProcessStatus"
-        caption="Status"
-      ></dxi-column> -->
-
       <dxi-column
         caption="Remark"
         dataField="Remarks"
@@ -651,7 +667,7 @@
   <dxi-total-item
     column="BillPrice"
     showInColumn="BillPrice"
-    summaryType="sum"
+    summaryType="custom"
     displayFormat="Net Billable : {0}"
     [valueFormat]="{
       type: 'fixedPoint',
@@ -688,6 +704,17 @@
 
   <div class="d-flex justify-content-end mt-3 gap-2">
 
+    <dx-drop-down-button
+  icon="export"
+  stylingMode="contained"
+  type="default"
+  [showArrowIcon]="false"
+  [items]="exportFormats"
+  displayExpr="text"
+  keyExpr="format"
+  [elementAttr]="{ class: 'custom-export-btn' }"
+  (onItemClick)="onExportClick($event)">
+</dx-drop-down-button>
     <dx-button
     text="Cancel"
     type="normal"
@@ -695,13 +722,13 @@
     (onClick)="isRowPopupVisible = false"
   >
   </dx-button>
-  <dx-button
+  <!-- <dx-button
     text="Process"
     type="default"
     stylingMode="contained"
     (onClick)="onProcessPopupData()"
   >
-  </dx-button>
+  </dx-button> -->
 
   <dx-load-panel
   [(visible)]="isPopupProcessing"
