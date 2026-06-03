@@ -116,6 +116,7 @@
       <dx-data-grid
         class="custom-grid"
         [dataSource]="newCptMasterData.CPTPrices"
+        (onRowPrepared)="onRowPreparedPrice($event)"
         [showBorders]="false"
         [columnAutoWidth]="true"
         [rowAlternationEnabled]="true"
@@ -149,6 +150,7 @@
       <dx-data-grid
         class="custom-grid"
         [dataSource]="newCptMasterData.CPTWeightages"
+        (onRowPrepared)="onRowPreparedWeightages($event)"
         [showBorders]="false"
         [columnAutoWidth]="true"
         [rowAlternationEnabled]="true"
