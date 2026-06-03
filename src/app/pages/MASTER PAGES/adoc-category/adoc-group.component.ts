@@ -11,6 +11,8 @@ import {
   DxDataGridComponent,
   DxCheckBoxModule,
   DxFormModule,
+  DxValidationSummaryModule,
+  DxValidatorModule,
 } from 'devextreme-angular';
 import DataSource from 'devextreme/data/data_source';
 import notify from 'devextreme/ui/notify';
@@ -18,6 +20,7 @@ import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services';
+import validationEngine from 'devextreme/ui/validation_engine';
 
 @Component({
   selector: 'app-adoc-group',
@@ -102,12 +105,26 @@ export class ADOCGroupComponent {
 
   // =========== Save data  =========
   saveADOCGroup() {
+    const result = validationEngine.validateGroup('adocGroupValidation');
+
+    if (!result.isValid) {
+      notify(
+        {
+          message: 'Please fill all required fields',
+          position: { at: 'top right', my: 'top right' },
+          displayTime: 1000,
+        },
+        'warning',
+      );
+      return;
+    }
+
     this.masterService
       .Insert_adocGroup_Data(
         this.newADOCGroup.GroupCode,
         this.newADOCGroup.GroupName,
         this.newADOCGroup.Chargeable,
-        false, // Status always false while adding
+        false,
       )
       .subscribe({
         next: () => {
@@ -119,13 +136,16 @@ export class ADOCGroupComponent {
             },
             'success',
           );
+
           this.isAddPopupVisible = false;
+
           this.newADOCGroup = {
             GroupCode: '',
             GroupName: '',
             Chargeable: '',
             Status: false,
           };
+
           this.dataGrid.instance.refresh();
         },
         error: () => {
@@ -143,9 +163,31 @@ export class ADOCGroupComponent {
 
   // =========== row data updating =========
   onRowUpdating(event: any) {
-    const updataDate = event.newData;
-    const oldData = event.oldData;
-    const combinedData = { ...oldData, ...updataDate };
+    const combinedData = {
+      ...event.oldData,
+      ...event.newData,
+    };
+
+    if (
+      !combinedData.GroupCode?.trim() ||
+      !combinedData.GroupName?.trim() ||
+      combinedData.IsChargeable === null ||
+      combinedData.IsChargeable === undefined ||
+      combinedData.IsChargeable === ''
+    ) {
+      notify(
+        {
+          message: 'Please fill all required fields',
+          position: { at: 'top right', my: 'top right' },
+          displayTime: 1000,
+        },
+        'warning',
+      );
+
+      event.cancel = true;
+      return;
+    }
+
     let id = combinedData.ID;
     let GroupCode = combinedData.GroupCode;
     let GroupName = combinedData.GroupName;
@@ -156,11 +198,9 @@ export class ADOCGroupComponent {
       .update_adocGroup_data(id, GroupCode, GroupName, Chargeable, IsInactive)
       .subscribe((res: any) => {
         if (res.flag === '1') {
-          this.dataGrid.instance.refresh();
-
           notify(
             {
-              message: `data updated Successfully`,
+              message: 'Data Updated Successfully',
               position: { at: 'top right', my: 'top right' },
               displayTime: 500,
             },
@@ -169,18 +209,19 @@ export class ADOCGroupComponent {
         } else {
           notify(
             {
-              message: `Your Data Not Saved`,
+              message: 'Your Data Not Saved',
               position: { at: 'top right', my: 'top right' },
               displayTime: 500,
             },
             'error',
           );
         }
-        event.component.cancelEditData(); // Close the popup
+
+        event.component.cancelEditData();
         this.dataGrid.instance.refresh();
       });
 
-    event.cancel = true; // Prevent the default update operation
+    event.cancel = true;
   }
 
   //====================Row Data Deleting========================
@@ -233,6 +274,8 @@ export class ADOCGroupComponent {
     DxPopupModule,
     DxCheckBoxModule,
     DxFormModule,
+    DxValidatorModule,
+    DxValidationSummaryModule,
   ],
   declarations: [ADOCGroupComponent],
 })
