@@ -52,7 +52,7 @@
 
       <!-- Facility Dropdown -->
       <dxi-item
-        *ngIf="IsWeightGlobal"
+        *ngIf="!IsWeightGlobal"
         location="after"
         widget="dxSelectBox"
         [options]="facilitySelectOptions"
