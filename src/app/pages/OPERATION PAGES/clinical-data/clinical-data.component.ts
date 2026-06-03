@@ -1061,6 +1061,7 @@ export class ClinicalDataComponent implements OnInit {
         this.isExcelLoading = false;
       }, 500);
     }, 500);
+    this.onApplyFilter();
   }
 
   exportFormats = [
