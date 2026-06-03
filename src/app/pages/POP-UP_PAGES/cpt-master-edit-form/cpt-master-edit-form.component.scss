@@ -25,4 +25,99 @@
   padding-left: 130px;
 }
 
+// ==========================================
+.section-card {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 5px;
+}
 
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+// ====================================
+
+::ng-deep .section-card .tabs-demo {
+  display: flex;
+}
+
+::ng-deep .section-card .strict-width {
+  max-width: 340px;
+}
+
+::ng-deep .section-card .dx-theme-generic .strict-width {
+  max-width: 250px;
+}
+
+::ng-deep .section-card .widget-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  width: 100%;
+  min-width: 200px;
+  padding: 16px 32px;
+  overflow: clip;
+}
+
+::ng-deep .section-card .widget-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  width: 100%;
+}
+
+::ng-deep .section-card .widget-wrapper-vertical {
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 20px;
+  background-color: rgba(191, 191, 191, 0.15);
+}
+
+.caption {
+  font-weight: 500;
+  font-size: 18px;
+}
+
+::ng-deep .section-card #show-navigation-buttons {
+  margin-top: 22px;
+}
+
+.option {
+  margin-top: 20px;
+}
+
+::ng-deep .section-card .dx-tabs {
+  max-width: 100%;
+}
+
+::ng-deep .section-card .dx-tabs-vertical {
+  height: 216px;
+}
+
+::ng-deep
+  .section-card
+  .dx-viewport:not(.dx-theme-generic)
+  .dx-tabs-horizontal {
+  border-block-end: 1px solid rgb(225, 225, 225, 0.4);
+}
+
+::ng-deep .section-card .dx-viewport:not(.dx-theme-generic) .dx-tabs-vertical {
+  height: 232px;
+  border-inline-end: 1px solid rgb(225, 225, 225, 0.4);
+}

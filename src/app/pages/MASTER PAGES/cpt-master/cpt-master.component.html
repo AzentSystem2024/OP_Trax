@@ -110,7 +110,6 @@
     [height]="'auto'"
     [width]="'50%'"
     (clear)="resetCptForm()"
-    [customValidate]="validateCptForm"
   >
     <app-cpt-master-new-form
       *ngIf="isAddFormPopupOpened"
@@ -124,9 +123,8 @@
     (save)="onClickUpdateNewCptType()"
     titleText="Edit CPT Master"
     [height]="'auto'"
-    [width]="'50%'"
+    [width]="'70%'"
     (clear)="clearEditForm()"
-    [customValidate]="validateCptEditForm"
   >
     <app-cpt-master-edit-form
       [formData]="selectedCptMaster"
