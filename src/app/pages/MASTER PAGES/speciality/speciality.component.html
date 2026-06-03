@@ -24,10 +24,61 @@
       <dxo-popup
         title="Edit Speciality"
         [showTitle]="true"
-        width="40%"
-        height="60vh"
+        width="600"
+        height="450"
       >
       </dxo-popup>
+
+      <dxo-form [colCount]="2" labelMode="floating">
+        <!-- Code -->
+        <dxi-item
+          dataField="SpecialityCode"
+          [colSpan]="2"
+          [editorOptions]="{
+            readOnly: true,
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Speciality Code is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
+        <!-- Name -->
+        <dxi-item dataField="SpecialityName">
+          <dxi-validation-rule
+            type="required"
+            message="Speciality Name is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
+        <!-- Short Name -->
+        <dxi-item
+          dataField="SpecialityShortName"
+          [label]="{ text: 'Short Name' }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Short Name is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
+        <!-- Description -->
+        <dxi-item
+          dataField="Description"
+          editorType="dxTextArea"
+          [colSpan]="2"
+          [label]="{ text: 'Description' }"
+          [editorOptions]="{
+            height: 120,
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Description is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+      </dxo-form>
     </dxo-editing>
     <dxo-pager
       [visible]="true"
@@ -98,26 +149,13 @@
       ></dxi-item>
     </dxo-toolbar>
 
-    <dxi-column
-      dataField="SpecialityCode"
-      caption="Code"
-      required="true"
-    ></dxi-column>
-    <dxi-column
-      dataField="SpecialityName"
-      caption="Name"
-      required="true"
-    ></dxi-column>
+    <dxi-column dataField="SpecialityCode" caption="Code"></dxi-column>
+    <dxi-column dataField="SpecialityName" caption="Name"></dxi-column>
     <dxi-column
       dataField="SpecialityShortName"
       caption="Short Name"
-      required="true"
     ></dxi-column>
-    <dxi-column
-      dataField="Description"
-      caption="Description"
-      required="true"
-    ></dxi-column>
+    <dxi-column dataField="Description" caption="Description"></dxi-column>
   </dx-data-grid>
 
   <form-popup
