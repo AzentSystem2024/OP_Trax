@@ -35,6 +35,17 @@
 
         <dxi-item dataField="ClassName"></dxi-item>
 
+        <dxi-item
+          dataField="ADOCGroupID"
+          caption="ADOC Category"
+          editorType="dxSelectBox"
+          [editorOptions]="{
+            dataSource: ADOC_Category_List,
+            displayExpr: 'DESCRIPTION',
+            valueExpr: 'ID',
+          }"
+        ></dxi-item>
+
         <!-- Only for Edit Popup -->
         <dxi-item
           dataField="IsInactive"
@@ -119,6 +130,7 @@
 
     <dxi-column dataField="ClassCode" caption="Class Code"></dxi-column>
     <dxi-column dataField="ClassName" caption="Class Name"></dxi-column>
+    <dxi-column dataField="ADOCGroupID" caption="ADOC Category"></dxi-column>
     <dxi-column
       dataField="IsInactive"
       caption="Inactive"
@@ -155,6 +167,17 @@
           [editorOptions]="{
             label: 'Name',
             labelMode: 'floating',
+          }"
+        ></dxi-item>
+
+        <dxi-item
+          dataField="ADOCGroupID"
+          editorType="dxSelectBox"
+          [label]="{ text: 'ADOC Category' }"
+          [editorOptions]="{
+            dataSource: ADOC_Category_List,
+            valueExpr: 'ID',
+            displayExpr: 'DESCRIPTION',
           }"
         ></dxi-item>
       </dx-form>

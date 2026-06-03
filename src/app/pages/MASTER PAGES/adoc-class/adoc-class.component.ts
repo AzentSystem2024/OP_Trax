@@ -1,12 +1,24 @@
 import { CommonModule } from '@angular/common';
 import { Component, NgModule, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DxDataGridModule, DxButtonModule, DxDropDownButtonModule, DxSelectBoxModule, DxTextBoxModule, DxLookupModule, DxPopupModule, DxCheckBoxModule, DxDataGridComponent, DxFormModule } from 'devextreme-angular';
+import {
+  DxDataGridModule,
+  DxButtonModule,
+  DxDropDownButtonModule,
+  DxSelectBoxModule,
+  DxTextBoxModule,
+  DxLookupModule,
+  DxPopupModule,
+  DxCheckBoxModule,
+  DxDataGridComponent,
+  DxFormModule,
+} from 'devextreme-angular';
 import { DataSource } from 'devextreme/common/data';
 import notify from 'devextreme/ui/notify';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-adoc-class',
@@ -43,8 +55,10 @@ export class ADOCClassComponent {
   newADOCClass = {
     Code: '',
     Name: '',
+    ADOCGroupID: null,
     Isinactive: false,
   };
+  ADOC_Category_List: any[] = [];
 
   constructor(
     private service: ReportService,
@@ -58,6 +72,8 @@ export class ADOCClassComponent {
       this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
     });
 
+    this.get_ADOC_GROUP_Dropdown();
+
     this.addButtonOptions = {
       text: 'New',
       icon: 'bi bi-plus-circle',
@@ -68,6 +84,16 @@ export class ADOCClassComponent {
       onClick: () => this.showNewPopup(),
       elementAttr: { class: 'add-button' },
     };
+  }
+
+  async get_ADOC_GROUP_Dropdown(): Promise<void> {
+    const dropdownType = 'ADOC_GROUP';
+    const response: any = await firstValueFrom(
+      this.dataService.Get_GropDown(dropdownType),
+    );
+    if (response) {
+      this.ADOC_Category_List = response;
+    }
   }
 
   refresh = () => {
@@ -88,6 +114,7 @@ export class ADOCClassComponent {
       .Insert_adocClass_Data(
         this.newADOCClass.Code,
         this.newADOCClass.Name,
+        this.newADOCClass.ADOCGroupID,
         false, // Status always false while adding
       )
       .subscribe({
@@ -104,6 +131,7 @@ export class ADOCClassComponent {
           this.newADOCClass = {
             Code: '',
             Name: '',
+            ADOCGroupID: null,
             Isinactive: false,
           };
           this.dataGrid.instance.refresh();
@@ -129,10 +157,11 @@ export class ADOCClassComponent {
     let id = combinedData.ID;
     let Code = combinedData.ClassCode;
     let Name = combinedData.ClassName;
+    let adocCategory = combinedData.ADOCGroupID;
     let IsInactive = combinedData.IsInactive;
 
     this.masterService
-      .update_adocClass_data(id, Code, Name, IsInactive)
+      .update_adocClass_data(id, Code, Name, adocCategory, IsInactive)
       .subscribe((data: any) => {
         if (data) {
           this.dataGrid.instance.refresh();
