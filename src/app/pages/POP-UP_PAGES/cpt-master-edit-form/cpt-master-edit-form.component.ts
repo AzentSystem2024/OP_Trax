@@ -87,7 +87,8 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     CPTWeightages: [],
   };
   ClinicianRoleDataSource: any;
-
+  IsWeightGlobal: boolean = false;
+  IsPriceGlobal: boolean = false;
   ledgerModeOptions = [
     { value: 0, text: 'All Ledgers' },
     { value: 1, text: 'Selected Ledger' },
@@ -128,6 +129,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         this.getCpt_DropDown(),
         this.get_ADOC_CLASS_Dropdown(),
         this.get_ADOC_GROUP_Dropdown(),
+        this.get_local_storage_data()
       ]);
 
       this.dropdownsLoaded = true;
@@ -239,6 +241,14 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
     this.Facility_Value = null;
   }
+
+
+  //======================Logcal storage Data ======================
+  get_local_storage_data() {
+    const data = JSON.parse(localStorage.getItem('logData') || '');
+    this.IsWeightGlobal = data.cptWeightGlobal;
+    this.IsPriceGlobal = data.cptPriceGlobal;
+  }
 }
 @NgModule({
   imports: [
@@ -261,4 +271,4 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   declarations: [CptMasterEditFormComponent],
   exports: [CptMasterEditFormComponent],
 })
-export class CptMasterEditFormModule {}
+export class CptMasterEditFormModule { }

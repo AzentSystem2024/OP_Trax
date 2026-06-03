@@ -124,7 +124,11 @@
         [showColumnLines]="false"
         height="350"
       >
-        <dxi-column dataField="FacilityID" caption="Facility"></dxi-column>
+        <dxi-column
+          dataField="FacilityID"
+          caption="Facility"
+          [visible]="!IsPriceGlobal"
+        ></dxi-column>
         <dxi-column
           dataField="Price"
           caption="Price"
@@ -153,7 +157,11 @@
         [showColumnLines]="false"
         height="350"
       >
-        <dxi-column dataField="FacilityID" caption="Facility"></dxi-column>
+        <dxi-column
+          dataField="FacilityID"
+          caption="Facility"
+          [visible]="!IsWeightGlobal"
+        ></dxi-column>
         <dxi-column
           dataField="Weightage"
           caption="Weightage"
