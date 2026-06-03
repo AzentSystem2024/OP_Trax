@@ -19,7 +19,11 @@ import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
 import { firstValueFrom } from 'rxjs';
-
+import {
+  DxValidatorModule,
+  DxValidationSummaryModule,
+} from 'devextreme-angular';
+import validationEngine from 'devextreme/ui/validation_engine';
 @Component({
   selector: 'app-adoc-class',
   templateUrl: './adoc-class.component.html',
@@ -58,6 +62,7 @@ export class ADOCClassComponent {
     ADOCGroupID: null,
     Isinactive: false,
   };
+  
   ADOC_Category_List: any[] = [];
 
   constructor(
@@ -110,30 +115,47 @@ export class ADOCClassComponent {
 
   // =========== Save data  =========
   onDataSaving() {
+    const result = validationEngine.validateGroup('adocClassValidation');
+
+    if (!result.isValid) {
+      notify(
+        {
+          message: 'Please fill all required fields',
+          position: { at: 'top right', my: 'top right' },
+          displayTime: 1000,
+        },
+        'warning',
+      );
+      return;
+    }
+
     this.masterService
       .Insert_adocClass_Data(
         this.newADOCClass.Code,
         this.newADOCClass.Name,
         this.newADOCClass.ADOCGroupID,
-        false, // Status always false while adding
+        false,
       )
       .subscribe({
         next: () => {
           notify(
             {
-              message: 'ADOC Group Added Successfully',
+              message: 'ADOC Classification Added Successfully',
               position: { at: 'top right', my: 'top right' },
               displayTime: 500,
             },
             'success',
           );
+
           this.isAddPopupVisible = false;
+
           this.newADOCClass = {
             Code: '',
             Name: '',
             ADOCGroupID: null,
             Isinactive: false,
           };
+
           this.dataGrid.instance.refresh();
         },
         error: () => {
@@ -151,13 +173,28 @@ export class ADOCClassComponent {
 
   // =========== row data updating =========
   onRowUpdating(event: any) {
-    const updataDate = event.newData;
-    const oldData = event.oldData;
-    const combinedData = { ...oldData, ...updataDate };
+    const combinedData = {
+      ...event.oldData,
+      ...event.newData,
+    };
+
+    if (!combinedData.ClassName?.trim() || !combinedData.GroupID) {
+      notify(
+        {
+          message: 'Please fill all required fields',
+          position: { at: 'top right', my: 'top right' },
+          displayTime: 1000,
+        },
+        'warning',
+      );
+
+      event.cancel = true;
+      return;
+    }
     let id = combinedData.ID;
     let Code = combinedData.ClassCode;
     let Name = combinedData.ClassName;
-    let adocCategory = combinedData.ADOCGroupID;
+    let adocCategory = combinedData.GroupID;
     let IsInactive = combinedData.IsInactive;
 
     this.masterService
@@ -241,6 +278,8 @@ export class ADOCClassComponent {
     DxPopupModule,
     DxCheckBoxModule,
     DxFormModule,
+    DxValidatorModule,
+    DxValidationSummaryModule,
   ],
   declarations: [ADOCClassComponent],
 })

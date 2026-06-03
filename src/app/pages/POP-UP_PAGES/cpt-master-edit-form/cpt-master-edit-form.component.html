@@ -43,15 +43,7 @@
       </div>
     </dxi-item>
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-text-box
-          label="Description"
-          labelMode="floating"
-          [(value)]="newCptMasterData.Description"
-        ></dx-text-box>
-      </div>
-    </dxi-item>
+ 
 
     <dxi-item>
       <div *dxTemplate>
@@ -70,6 +62,23 @@
               message="CPT Type is required"
             ></dxi-validation-rule>
           </dx-validator>
+        </dx-select-box>
+      </div>
+    </dxi-item>
+
+    <dxi-item>
+      <div *dxTemplate>
+        <dx-select-box
+          label="ADOC Category"
+          [(value)]="newCptMasterData.ADOCGroupID"
+          labelMode="floating"
+          [items]="ADOCgroupDataSource"
+          displayExpr="DESCRIPTION"
+          [searchEnabled]="true"
+          valueExpr="ID"
+          [showClearButton]="true"
+          (onValueChanged)="onADOCGroupChanged($event)"
+        >
         </dx-select-box>
       </div>
     </dxi-item>
