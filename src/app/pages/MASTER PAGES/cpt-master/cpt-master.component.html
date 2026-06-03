@@ -127,6 +127,7 @@
     (clear)="clearEditForm()"
   >
     <app-cpt-master-edit-form
+      *ngIf="isEditFormPopupOpened"
       [formData]="selectedCptMaster"
     ></app-cpt-master-edit-form>
   </form-popup>

@@ -94,30 +94,8 @@
   font-size: 18px;
 }
 
-::ng-deep .section-card #show-navigation-buttons {
-  margin-top: 22px;
-}
 
-.option {
-  margin-top: 20px;
-}
 
-::ng-deep .section-card .dx-tabs {
-  max-width: 100%;
-}
-
-::ng-deep .section-card .dx-tabs-vertical {
-  height: 216px;
-}
-
-::ng-deep
-  .section-card
-  .dx-viewport:not(.dx-theme-generic)
-  .dx-tabs-horizontal {
-  border-block-end: 1px solid rgb(225, 225, 225, 0.4);
-}
-
-::ng-deep .section-card .dx-viewport:not(.dx-theme-generic) .dx-tabs-vertical {
-  height: 232px;
-  border-inline-end: 1px solid rgb(225, 225, 225, 0.4);
+::ng-deep .section-card .dx-tab.dx-tab-selected {
+    background: rgb(192, 218, 236);
 }

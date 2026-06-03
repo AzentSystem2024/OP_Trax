@@ -29,7 +29,6 @@ import { FormTextboxModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import { DataService } from 'src/app/services';
 import { firstValueFrom } from 'rxjs';
-import notify from 'devextreme/ui/notify';
 
 @Component({
   selector: 'app-cpt-master-edit-form',
@@ -84,8 +83,8 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     ADOCClassID: null,
     ADOCGroupID: null,
     data: [],
-    CPTPrices:[],
-    CPTWeightages:[],
+    CPTPrices: [],
+    CPTWeightages: [],
   };
   ClinicianRoleDataSource: any;
 
@@ -114,43 +113,68 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   ];
 
   selectedTabIndex = 0;
+  dropdownsLoaded: boolean = false;
 
   constructor(
     private masterService: MasterReportService,
     private dataService: DataService,
   ) {
-    this.getCpt_DropDown();
-    this.get_ADOC_CLASS_Dropdown();
-    this.get_ADOC_GROUP_Dropdown();
+    this.selectedTabIndex = 0;
   }
 
   async ngOnInit() {
     try {
-      await this.get_ADOC_CLASS_Dropdown();
-      await this.get_ADOC_GROUP_Dropdown();
+      await Promise.all([
+        this.getCpt_DropDown(),
+        this.get_ADOC_CLASS_Dropdown(),
+        this.get_ADOC_GROUP_Dropdown(),
+      ]);
+
+      this.dropdownsLoaded = true;
+
+      this.bindFormData();
     } catch (error) {
-    } finally {
+      console.error(error);
     }
   }
 
   async ngOnChanges(changes: SimpleChanges) {
-    if (!changes['formData'] || !this.formData || !this.formData.ID) {
+    if (!changes['formData'] || !this.formData?.ID) {
       return;
     }
-    this.newCptMasterData = this.formData;
-    console.log(this.departmentMode, 'FINAL departmentMode');
+
+    this.bindFormData();
   }
 
+  private bindFormData(): void {
+    if (!this.dropdownsLoaded || !this.formData) {
+      return;
+    }
+
+    this.newCptMasterData = {
+      ...this.formData,
+    };
+
+    this.selectedTabIndex = 0;
+
+    if (this.newCptMasterData.ADOCGroupID) {
+      this.onADOCGroupChanged({
+        value: this.newCptMasterData.ADOCGroupID,
+      });
+    }
+  }
   getUpdateCptMasterData = () => ({ ...this.newCptMasterData });
 
- onTabSelectionChanged(e: any) {
-  this.selectedTabIndex = e.addedItems[0].id;
-}
+  onTabSelectionChanged(e: any) {
+    this.selectedTabIndex = e.addedItems[0].id;
+  }
 
-  getCpt_DropDown() {
-    this.masterService.Get_GropDown('CPTTYPE').subscribe((data: any) => {
-      this.CptType_DropDownData = data;
-    });
+  async getCpt_DropDown(): Promise<void> {
+    const response: any = await firstValueFrom(
+      this.masterService.Get_GropDown('CPTTYPE'),
+    );
+
+    this.CptType_DropDownData = response || [];
   }
 
   async get_ADOC_GROUP_Dropdown(): Promise<void> {

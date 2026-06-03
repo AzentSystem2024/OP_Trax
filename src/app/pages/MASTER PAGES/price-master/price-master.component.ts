@@ -89,7 +89,7 @@ export class PriceMasterComponent {
       .subscribe((response: any) => {
         this.facilityList = response.facilityDetails || [];
 
-        if (this.facilityList.length > 1) {
+        if (this.facilityList.length === 1) {
           this.selectedFacilityID = this.facilityList[0].FacilityLicense;
         }
         this.facilitySelectOptions = {

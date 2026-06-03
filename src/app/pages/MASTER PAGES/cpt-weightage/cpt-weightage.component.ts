@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, NgModule, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import DataSource from 'devextreme/data/data_source';
 import notify from 'devextreme/ui/notify';
 import {
   DxButtonModule,
@@ -88,7 +87,7 @@ export class CPTWeightageComponent {
       .subscribe((response: any) => {
         this.facilityList = response.facilityDetails || [];
 
-        if (this.facilityList.length > 1) {
+        if (this.facilityList.length === 1) {
           this.selectedFacilityID = this.facilityList[0].FacilityLicense;
         }
         this.facilitySelectOptions = {
@@ -300,7 +299,6 @@ export class CPTWeightageComponent {
   //======================Logcal storage Data ======================
   get_local_storage_data() {
     const data = JSON.parse(localStorage.getItem('logData') || '')
-    console.log('Retrieved log data from local storage:', data);
     this.IsWeightGlobal = data.cptWeightGlobal
   }
 }
