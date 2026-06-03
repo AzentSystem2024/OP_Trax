@@ -557,7 +557,6 @@
       [showRowLines]="true"
       [showColumnLines]="true"
       height="450"
-      (onCustomSummaryCalculate)="calculateBillableSummary($event)"
     >
 
     <!-- Pagination -->
@@ -616,6 +615,7 @@
         dataField="NetAmount"
         caption="Net Amount"
         format="#,##0.00"
+        [allowEditing]="true"
       ></dxi-column>
 
       <dxi-column
@@ -634,11 +634,26 @@
         format="#,##0.00"
       ></dxi-column>
 
-    <dxi-column
+   <dxi-column
   caption="Billable"
-  [calculateCellValue]="billableText"
->
+  cellTemplate="billableTemplate">
 </dxi-column>
+
+<div *dxTemplate="let data of 'billableTemplate'">
+
+  <span
+    *ngIf="data.data.Billable"
+    class="billable-yes">
+    Yes
+  </span>
+
+  <span
+    *ngIf="!data.data.Billable"
+    class="billable-no">
+    No
+  </span>
+
+</div>
 
       <dxi-column
         caption="Remark"
@@ -654,7 +669,7 @@
     column="NetAmount"
     showInColumn="NetAmount"
     summaryType="sum"
-    displayFormat="Net Total : {0}"
+    displayFormat="Net Total : AED {0}"
     [valueFormat]="{
       type: 'fixedPoint',
       precision: 2
@@ -665,17 +680,16 @@
 
   <!-- Net Billable under Billable column -->
   <dxi-total-item
-    column="BillPrice"
-    showInColumn="BillPrice"
-    summaryType="custom"
-    displayFormat="Net Billable : {0}"
-    [valueFormat]="{
-      type: 'fixedPoint',
-      precision: 2
-    }"
-    alignment="right"
-  >
-  </dxi-total-item>
+  column="BillPrice"
+  showInColumn="BillPrice"
+  summaryType="sum"
+  displayFormat="Net Billable : AED {0}"
+  [valueFormat]="{
+    type: 'fixedPoint',
+    precision: 2
+  }"
+  alignment="right">
+</dxi-total-item>
 
 </dxo-summary>
       

@@ -1035,6 +1035,9 @@ getClinicalDataPopupData() {
       next: (res: any) => {
         if (res.flag === '1') {
           this.popupGridData = res.data || [];
+          // Refresh Main Grid
+          this.onApplyFilter();
+
           this.isRowPopupVisible = true;
         } else {
           this.popupGridData = [];
@@ -1055,53 +1058,15 @@ getClinicalDataPopupData() {
   this.getClinicalDataPopupData();
 }
 
-
-onProcessPopupData() {
-  this.isPopupProcessing = true;
-  const payload = {
-    ClaimUID: this.selectedRowData?.ClaimUID || 0
-  };
-
-  this.operationService
-    .processClinicalDataInPopup(payload)
-    .subscribe({
-      next: (res: any) => {
-        this.isPopupProcessing = false;
-        if (res.flag === '1') {
-          notify('Processed Successfully', 'success', 3000);
-          // close popup if needed
-          // this.isRowPopupVisible = false;
-
-          // refresh main grid
-          // this.onApplyFilter();
-        } else {
-          notify(res.message || 'Process Failed', 'error', 3000);
-        }
-      },
-      error: (err) => {
-        this.isPopupProcessing = false;
-        console.error(err);
-        notify('Error while processing', 'error', 3000);
-      }
-    });
-}
-
 billableText = (rowData: any) => {
   return rowData.Billable ? 'Yes' : 'No';
 };
 
-calculateBillableSummary(e: any) {
-  if (e.name === 'BillableTotal') {
-    if (e.summaryProcess === 'start') {
-      e.totalValue = 0;
-    }
-    if (e.summaryProcess === 'calculate') {
-      if (e.value.Billable === true) {
-        e.totalValue += Number(e.value.BillPrice || 0);
-      }
-    }
-  }
-}
+// calculateBillableAmount = (rowData: any) => {
+//   return rowData.Billable
+//     ? Number(rowData.BillPrice || 0)
+//     : 0;
+// };
 
 exportFormats = [
   { text: 'Excel', format: 'xlsx' },
