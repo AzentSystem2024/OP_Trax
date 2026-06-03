@@ -69,8 +69,8 @@ export class CPTMasterComponent {
   addButtonOptions: any;
 
   isFilterRowVisible: boolean = false;
-  currentPathName: string='';
-  initialized: boolean=false;
+  currentPathName: string = '';
+  initialized: boolean = false;
   menuPrevilage: any;
 
   constructor(
@@ -78,7 +78,7 @@ export class CPTMasterComponent {
     private masterService: MasterReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -101,6 +101,7 @@ export class CPTMasterComponent {
   show_new_Form() {
     this.isAddFormPopupOpened = true;
   }
+
   toggleFilterRow = () => {
     this.isFilterRowVisible = !this.isFilterRowVisible;
   };
@@ -121,11 +122,6 @@ export class CPTMasterComponent {
       console.error('Child component not available');
       return;
     }
-    
-    this.CptNewFormComponent.newCptMasterData.selectedLedgerID =
-  this.CptNewFormComponent.ledgerMode === 1
-    ? this.CptNewFormComponent.selectedLedgerIds.join(',')
-    : '';
 
     const {
       CPTTypeID,
@@ -139,8 +135,8 @@ export class CPTMasterComponent {
       CostDriveID,
       FixedQuantity,
       IsDifferentCPTDepartment,
-      IsDifferentLedger,     
-      selectedLedgerID,     
+      IsDifferentLedger,
+      selectedLedgerID,
       CPTEncounterDepartments,
       ADOCClassID,
       ADOCGroupID,
@@ -160,12 +156,12 @@ export class CPTMasterComponent {
         CostDriveID,
         FixedQuantity,
         IsDifferentCPTDepartment,
-        IsDifferentLedger,     
-        selectedLedgerID,  
+        IsDifferentLedger,
+        selectedLedgerID,
         CPTEncounterDepartments,
         ADOCClassID,
-      ADOCGroupID,
-        data
+        ADOCGroupID,
+        data,
       )
       .subscribe((response: any) => {
         if (response) {
@@ -175,7 +171,7 @@ export class CPTMasterComponent {
               message: `New Cpt Master Saved Successfully`,
               position: { at: 'top right', my: 'top right' },
             },
-            'success'
+            'success',
           );
           this.CptNewFormComponent.clearForm();
         } else {
@@ -184,7 +180,7 @@ export class CPTMasterComponent {
               message: `Your Data Not Saved`,
               position: { at: 'top right', my: 'top right' },
             },
-            'error'
+            'error',
           );
         }
       });
@@ -192,11 +188,6 @@ export class CPTMasterComponent {
 
   //======= Update data ==========
   onClickUpdateNewCptType = () => {
-    this.CptEditFormComponent.newCptMasterData.selectedLedgerID =
-  this.CptEditFormComponent.ledgerMode === 1
-    ? this.CptEditFormComponent.selectedLedgerIds.join(',')
-    : '';
-
     const {
       ID,
       CPTTypeID,
@@ -210,8 +201,8 @@ export class CPTMasterComponent {
       CostDriveID,
       FixedQuantity,
       IsDifferentCPTDepartment,
-      IsDifferentLedger,     
-      selectedLedgerID,    
+      IsDifferentLedger,
+      selectedLedgerID,
       CPTEncounterDepartments,
       ADOCClassID,
       ADOCGroupID,
@@ -232,12 +223,12 @@ export class CPTMasterComponent {
         CostDriveID,
         FixedQuantity,
         IsDifferentCPTDepartment,
-        IsDifferentLedger,     
-        selectedLedgerID,    
+        IsDifferentLedger,
+        selectedLedgerID,
         CPTEncounterDepartments,
         ADOCClassID,
-      ADOCGroupID,
-        data
+        ADOCGroupID,
+        data,
       )
       .subscribe((response: any) => {
         if (response) {
@@ -247,7 +238,7 @@ export class CPTMasterComponent {
               message: `Cpt Master Updated Successfully`,
               position: { at: 'top right', my: 'top right' },
             },
-            'success'
+            'success',
           );
           this.resetCptForm();
         } else {
@@ -256,7 +247,7 @@ export class CPTMasterComponent {
               message: `Your Data Not Updated`,
               position: { at: 'top right', my: 'top right' },
             },
-            'error'
+            'error',
           );
         }
       });
@@ -276,7 +267,7 @@ export class CPTMasterComponent {
               position: { at: 'top right', my: 'top right' },
               displayTime: 500,
             },
-            'success'
+            'success',
           );
         } catch (error) {
           notify(
@@ -285,20 +276,13 @@ export class CPTMasterComponent {
               position: { at: 'top right', my: 'top right' },
               displayTime: 500,
             },
-            'error'
+            'error',
           );
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
       });
   }
-
-  fixedQtyFormat = (value: any) => {
-  if (value === 0 || value === "0" || value == null) {
-    return "";
-  }
-  return Number(value).toFixed(2);
-};
 
   //========================Export data ==========================
   onExporting(event: any) {
@@ -310,6 +294,7 @@ export class CPTMasterComponent {
   refresh = () => {
     this.dataGrid.instance.refresh();
   };
+
   resetCptForm() {
     this.CptNewFormComponent.clearForm();
   }
@@ -318,13 +303,7 @@ export class CPTMasterComponent {
     this.CptEditFormComponent.clearForm();
   }
 
-  validateCptForm = (): boolean => {
-  return this.CptNewFormComponent.validateForm();
-};
-
-validateCptEditForm = (): boolean => {
-  return this.CptEditFormComponent.validateForm();
-};
+ 
 }
 @NgModule({
   imports: [

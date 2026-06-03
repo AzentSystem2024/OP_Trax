@@ -1,102 +1,173 @@
-<dx-form class="plain-styled-form no-padding-form">
-  <dxi-item itemType="group">
-    <dxo-col-count-by-screen
-      [xs]="1"
-      [sm]="1"
-      [md]="1"
-      [lg]="1"
-    ></dxo-col-count-by-screen>
+<div class="cpt-master-container">
+  <!-- CPT Details Section -->
+  <div class="section-card">
+    <div class="section-title">CPT Information</div>
+    <div class="section-body">
+      <dx-form class="plain-styled-form no-padding-form">
+        <dxi-item itemType="group" [colCount]="2">
+          <dxi-item>
+            <div *dxTemplate>
+              <dx-text-box
+                label="CPT Code"
+                [(value)]="newCptMasterData.CPTCode"
+                labelMode="floating"
+                [readOnly]="true"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="CPT Code is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </div>
+          </dxi-item>
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-text-box
-          label="CPT Code"
-          [(value)]="newCptMasterData.CPTCode"
-          labelMode="floating"
-          [readOnly]="true"
-        >
-          <dx-validator>
-            <dxi-validation-rule
-              type="required"
-              message="CPT Code is required"
-            ></dxi-validation-rule>
-          </dx-validator>
-        </dx-text-box>
-      </div>
-    </dxi-item>
+          <dxi-item>
+            <div *dxTemplate>
+              <dx-select-box
+                label="CPT Type"
+                labelMode="floating"
+                [(value)]="newCptMasterData.CPTTypeID"
+                [items]="CptType_DropDownData"
+                displayExpr="DESCRIPTION"
+                valueExpr="ID"
+                [searchEnabled]="true"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="CPT Type is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-select-box>
+            </div>
+          </dxi-item>
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-text-box
-          label="CPT Name"
-          labelMode="floating"
-          height="60"
-          [(value)]="newCptMasterData.CPTName"
-        >
-          <dx-validator>
-            <dxi-validation-rule
-              type="required"
-              message="CPT Name is required"
-            ></dxi-validation-rule>
-          </dx-validator>
-        </dx-text-box>
-      </div>
-    </dxi-item>
+          <dxi-item [colSpan]="2">
+            <div *dxTemplate>
+              <dx-text-box
+                label="CPT Name"
+                [(value)]="newCptMasterData.CPTName"
+                labelMode="floating"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="CPT Name is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </div>
+          </dxi-item>
 
- 
+          <dxi-item>
+            <div *dxTemplate>
+              <dx-select-box
+                label="ADOC Category"
+                labelMode="floating"
+                [(value)]="newCptMasterData.ADOCGroupID"
+                [items]="ADOCgroupDataSource"
+                displayExpr="DESCRIPTION"
+                valueExpr="ID"
+                [searchEnabled]="true"
+                [showClearButton]="true"
+                (onValueChanged)="onADOCGroupChanged($event)"
+              >
+              </dx-select-box>
+            </div>
+          </dxi-item>
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
-          label="CPT Type"
-          labelMode="floating"
-          [(value)]="newCptMasterData.CPTTypeID"
-          [items]="CptType_DropDownData"
-          displayExpr="DESCRIPTION"
-          valueExpr="ID"
-          [searchEnabled]="true"
-        >
-          <dx-validator>
-            <dxi-validation-rule
-              type="required"
-              message="CPT Type is required"
-            ></dxi-validation-rule>
-          </dx-validator>
-        </dx-select-box>
-      </div>
-    </dxi-item>
+          <dxi-item>
+            <div *dxTemplate>
+              <dx-select-box
+                label="ADOC Class"
+                labelMode="floating"
+                [(value)]="newCptMasterData.ADOCClassID"
+                [items]="ADOCClassDataSource"
+                displayExpr="DESCRIPTION"
+                valueExpr="ID"
+                [searchEnabled]="true"
+                [disabled]="!newCptMasterData.ADOCGroupID"
+              >
+              </dx-select-box>
+            </div>
+          </dxi-item>
+        </dxi-item>
+      </dx-form>
+    </div>
+  </div>
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
-          label="ADOC Category"
-          [(value)]="newCptMasterData.ADOCGroupID"
-          labelMode="floating"
-          [items]="ADOCgroupDataSource"
-          displayExpr="DESCRIPTION"
-          [searchEnabled]="true"
-          valueExpr="ID"
-          [showClearButton]="true"
-          (onValueChanged)="onADOCGroupChanged($event)"
-        >
-        </dx-select-box>
-      </div>
-    </dxi-item>
+  <!-- Tabs Section -->
+  <div class="section-card">
+    <dx-tabs
+      #withText
+      [width]="'auto'"
+      [rtlEnabled]="false"
+      [scrollByContent]="false"
+      [showNavButtons]="false"
+      [selectedIndex]="selectedTabIndex"
+      [dataSource]="tabsWithText"
+      [orientation]="'horizontal'"
+      [stylingMode]="'secondary'"
+      (onSelectionChanged)="onTabSelectionChanged($event)"
+    ></dx-tabs>
+    <div *ngIf="selectedTabIndex === 0" class="grid-container">
+      <dx-data-grid
+        class="custom-grid"
+        [dataSource]="newCptMasterData.CPTPrices"
+        [showBorders]="false"
+        [columnAutoWidth]="true"
+        [rowAlternationEnabled]="true"
+        [hoverStateEnabled]="true"
+        [showRowLines]="true"
+        [showColumnLines]="false"
+        height="350"
+      >
+        <dxi-column dataField="FacilityID" caption="Facility"></dxi-column>
+        <dxi-column
+          dataField="Price"
+          caption="Price"
+          dataType="number"
+        ></dxi-column>
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
-          label="ADOC Class"
-          [(value)]="newCptMasterData.ADOCClassID"
-          labelMode="floating"
-          [items]="ADOCClassDataSource"
-          displayExpr="DESCRIPTION"
-          [searchEnabled]="true"
-          valueExpr="ID"
-          [disabled]="!newCptMasterData.ADOCGroupID"
-        >
-        </dx-select-box>
-      </div>
-    </dxi-item>
-  </dxi-item>
-</dx-form>
+        <dxi-column
+          dataField="EffectFrom"
+          caption="Effective From"
+        ></dxi-column>
+
+        <dxi-column dataField="EffectTo" caption="Effective To"></dxi-column>
+        <dxi-column dataField="CreatedTime" caption="Updated Time"></dxi-column>
+      </dx-data-grid>
+    </div>
+
+    <div *ngIf="selectedTabIndex === 1" class="grid-container">
+      <dx-data-grid
+        class="custom-grid"
+        [dataSource]="newCptMasterData.CPTWeightages"
+        [showBorders]="false"
+        [columnAutoWidth]="true"
+        [rowAlternationEnabled]="true"
+        [hoverStateEnabled]="true"
+        [showRowLines]="true"
+        [showColumnLines]="false"
+        height="350"
+      >
+        <dxi-column dataField="FacilityID" caption="Facility"></dxi-column>
+        <dxi-column
+          dataField="Price"
+          caption="Price"
+          dataType="number"
+        ></dxi-column>
+
+        <dxi-column
+          dataField="EffectFrom"
+          caption="Effective From"
+        ></dxi-column>
+
+        <dxi-column dataField="EffectTo" caption="Effective To"></dxi-column>
+        <dxi-column dataField="CreatedTime" caption="Updated Time"></dxi-column>
+      </dx-data-grid>
+    </div>
+  </div>
+</div>
