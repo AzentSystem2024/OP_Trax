@@ -706,6 +706,7 @@ export class ClinicalDataComponent implements OnInit {
   openPopup() {
     this.isAddFormPopupOpened = true;
   }
+
   onClickUpdateQtyWeight() {
     this.isQtyWeightUpdatePopupOpened = true;
   }
@@ -1016,13 +1017,18 @@ export class ClinicalDataComponent implements OnInit {
     const payload = {
       ClaimUID: this.selectedRowData?.ClaimUID || 0,
     };
+
     this.operationService.getClinicalDataInPopup(payload).subscribe({
       next: (res: any) => {
         if (res.flag === '1') {
-          this.popupGridData = res.data || [];
-          // Refresh Main Grid
-          this.onApplyFilter();
+          this.popupGridData = (res.data || []).map((item: any) => ({
+            ...item,
+            BillPrice: item.Billable === false ? 0 : item.Price,
+          }));
 
+          console.log('Modified Data:', this.popupGridData);
+
+          this.onApplyFilter();
           this.isRowPopupVisible = true;
         } else {
           this.popupGridData = [];
@@ -1046,12 +1052,6 @@ export class ClinicalDataComponent implements OnInit {
   billableText = (rowData: any) => {
     return rowData.Billable ? 'Yes' : 'No';
   };
-
-  // calculateBillableAmount = (rowData: any) => {
-  //   return rowData.Billable
-  //     ? Number(rowData.BillPrice || 0)
-  //     : 0;
-  // };
 
   onPopupHidden() {
     setTimeout(() => {
