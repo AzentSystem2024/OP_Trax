@@ -129,7 +129,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         this.getCpt_DropDown(),
         this.get_ADOC_CLASS_Dropdown(),
         this.get_ADOC_GROUP_Dropdown(),
-        this.get_local_storage_data()
+        this.get_local_storage_data(),
       ]);
 
       this.dropdownsLoaded = true;
@@ -242,7 +242,6 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     this.Facility_Value = null;
   }
 
-
   //======================Logcal storage Data ======================
   get_local_storage_data() {
     const data = JSON.parse(localStorage.getItem('logData') || '');
@@ -255,8 +254,8 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     if (e.rowType !== 'data') return;
     const data = this.newCptMasterData.CPTWeightages;
     if (!data || data.length === 0) return;
-    const latestRow = data.reduce((a, b) =>
-      new Date(a.CreatedTime) > new Date(b.CreatedTime) ? a : b
+    const latestRow = data.reduce((a: any, b: any) =>
+      new Date(a.CreatedTime) > new Date(b.CreatedTime) ? a : b,
     );
     if (e.data === latestRow) {
       e.rowElement.classList.add('latest-row');
@@ -294,4 +293,4 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   declarations: [CptMasterEditFormComponent],
   exports: [CptMasterEditFormComponent],
 })
-export class CptMasterEditFormModule { }
+export class CptMasterEditFormModule {}
