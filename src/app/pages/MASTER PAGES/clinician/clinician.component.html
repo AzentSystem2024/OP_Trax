@@ -19,7 +19,6 @@
       [allowDeleting]="menuPrevilage.CanDelete"
       [popup]="{ width: '40%', height: 'auto' }"
     >
-      
     </dxo-editing>
 
     <dxo-pager
@@ -70,7 +69,7 @@
           onClick: toggleFilterRow,
 
           stylingMode: 'text',
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
       <dxi-item
@@ -84,7 +83,7 @@
           icon: 'refresh',
           onClick: refresh,
           stylingMode: 'text',
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
 
@@ -109,7 +108,6 @@
     ></dxi-column>
     <dxi-column dataField="SpecialityName" caption="Speciality"> </dxi-column>
     <dxi-column dataField="Profession" caption="Profession"> </dxi-column>
-  
   </dx-data-grid>
 
   <dx-popup
@@ -126,7 +124,9 @@
     [resizeEnabled]="false"
   >
     <div>
-      <app-clinician-new-form></app-clinician-new-form>
+      <app-clinician-new-form
+        *ngIf="isAddClinicianPopupOpened"
+      ></app-clinician-new-form>
     </div>
   </dx-popup>
 
@@ -145,6 +145,7 @@
   >
     <div>
       <app-clinician-edit-form
+        *ngIf="isEditClinicianPopupOpened"
         [formData]="selectedClinician"
       ></app-clinician-edit-form>
     </div>
