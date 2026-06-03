@@ -28,12 +28,19 @@
       </dxo-popup>
 
       <dxo-form [colCount]="1" labelMode="floating">
-        <dxi-item
-          dataField="GroupCode"
-          [editorOptions]="{ readOnly: true }"
-        ></dxi-item>
+        <dxi-item dataField="GroupCode" [editorOptions]="{ readOnly: true }">
+          <dxi-validation-rule
+            type="required"
+            message="Category Code is required"
+          ></dxi-validation-rule>
+        </dxi-item>
 
-        <dxi-item dataField="GroupName"></dxi-item>
+        <dxi-item dataField="GroupName">
+          <dxi-validation-rule
+            type="required"
+            message="Category Name is required"
+          ></dxi-validation-rule>
+        </dxi-item>
 
         <dxi-item
           dataField="IsChargeable"
@@ -44,7 +51,12 @@
             valueExpr: 'ID',
             displayExpr: 'Name',
           }"
-        ></dxi-item>
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Chargeable is required"
+          ></dxi-validation-rule>
+        </dxi-item>
 
         <dxi-item
           dataField="IsInactive"
@@ -53,7 +65,8 @@
           [editorOptions]="{
             text: 'Inactive',
           }"
-        ></dxi-item>
+        >
+        </dxi-item>
       </dxo-form>
     </dxo-editing>
 
@@ -157,7 +170,11 @@
     [hideOnOutsideClick]="false"
   >
     <div *dxTemplate="let data of 'content'">
-      <dx-form [formData]="newADOCGroup" labelMode="floating">
+      <dx-form
+        [formData]="newADOCGroup"
+        labelMode="floating"
+        validationGroup="adocGroupValidation"
+      >
         <dxi-item
           dataField="GroupCode"
           editorType="dxTextBox"
@@ -166,7 +183,13 @@
             label: 'Code',
             labelMode: 'floating',
           }"
-        ></dxi-item>
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Category Code is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
         <dxi-item
           dataField="GroupName"
           editorType="dxTextBox"
@@ -175,7 +198,13 @@
             label: 'Name',
             labelMode: 'floating',
           }"
-        ></dxi-item>
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Category Name is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
         <dxi-item
           dataField="Chargeable"
           editorType="dxSelectBox"
@@ -187,7 +216,12 @@
             valueExpr: 'ID',
             displayExpr: 'Name',
           }"
-        ></dxi-item>
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Chargeable is required"
+          ></dxi-validation-rule>
+        </dxi-item>
       </dx-form>
 
       <div class="mt-5 text-end">

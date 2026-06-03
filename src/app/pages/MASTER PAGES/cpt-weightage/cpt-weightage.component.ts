@@ -53,6 +53,7 @@ export class CPTWeightageComponent {
 
   isLoading: boolean = false;
   editedRows: any = [];
+  IsWeightGlobal: boolean = false
 
   constructor(
     private masterService: MasterReportService,
@@ -78,6 +79,7 @@ export class CPTWeightageComponent {
 
     this.loadLookups();
     this.fetchCPTWeightageList();
+    this.get_local_storage_data()
   }
 
   loadLookups() {
@@ -114,6 +116,8 @@ export class CPTWeightageComponent {
           this.cptWeightageData = data.map((item: any, index: number) => ({
             ...item,
             SerialNumber: index + 1,
+            NewWeightage: item.NewWeightage > 0 ? item.NewWeightage : null,
+
           }));
           this.originalCptWeightageData = JSON.parse(
             JSON.stringify(this.cptWeightageData),
@@ -123,7 +127,7 @@ export class CPTWeightageComponent {
           notify('Failed to load CPT Weightage List', 'error', 2000);
           this.isLoading = false;
         }
-      },error => {
+      }, error => {
         notify('An error occurred while fetching CPT Weightage List', 'error', 2000);
         this.isLoading = false;
       });
@@ -206,7 +210,7 @@ export class CPTWeightageComponent {
     const isModified =
       originalRow.NewWeightage !== e.data.NewWeightage ||
       new Date(originalRow.NewEffectFrom).getTime() !==
-        new Date(e.data.NewEffectFrom).getTime();
+      new Date(e.data.NewEffectFrom).getTime();
 
     e.data.IsModified = isModified;
   }
@@ -245,7 +249,7 @@ export class CPTWeightageComponent {
     }
 
     const payload = modifiedRows.map((x: any) => ({
-      FacilityID: this.selectedFacilityID,
+      FacilityID: this.selectedFacilityID ? this.selectedFacilityID : null,
       CPTID: x.CPTID,
       Weightage: x.NewWeightage,
       EffectFrom: this.formatDate(x.NewEffectFrom),
@@ -292,6 +296,13 @@ export class CPTWeightageComponent {
   onExporting(event: any) {
     this.service.exportDataGrid(event, 'Weightage-Master');
   }
+
+  //======================Logcal storage Data ======================
+  get_local_storage_data() {
+    const data = JSON.parse(localStorage.getItem('logData') || '')
+    console.log('Retrieved log data from local storage:', data);
+    this.IsWeightGlobal = data.cptWeightGlobal
+  }
 }
 @NgModule({
   imports: [
@@ -310,4 +321,4 @@ export class CPTWeightageComponent {
   exports: [],
   declarations: [CPTWeightageComponent],
 })
-export class CPTWeightageListModule {}
+export class CPTWeightageListModule { }

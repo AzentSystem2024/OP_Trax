@@ -163,6 +163,8 @@ export class CPTMasterComponent {
         IsDifferentLedger,     
         selectedLedgerID,  
         CPTEncounterDepartments,
+        ADOCClassID,
+      ADOCGroupID,
         data
       )
       .subscribe((response: any) => {

@@ -20,22 +20,44 @@
       [allowAdding]="false"
     >
       <dxo-popup
-        title="Edit ADOC Class"
+        title="Edit ADOC Classification"
         [showTitle]="true"
         [width]="500"
-        [height]="350"
+        [height]="'auto'"
       >
       </dxo-popup>
 
       <dxo-form [colCount]="1" labelMode="floating">
+        <dxi-item dataField="ClassCode" [editorOptions]="{ readOnly: true }">
+          <dxi-validation-rule
+            type="required"
+            message="Class Code is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item dataField="ClassName">
+          <dxi-validation-rule
+            type="required"
+            message="Class Name is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
         <dxi-item
-          dataField="ClassCode"
-          [editorOptions]="{ readOnly: true }"
-        ></dxi-item>
+          dataField="GroupID"
+          [label]="{ text: 'ADOC Category' }"
+          editorType="dxSelectBox"
+          [editorOptions]="{
+            dataSource: ADOC_Category_List,
+            displayExpr: 'DESCRIPTION',
+            valueExpr: 'ID',
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="ADOC Category is required"
+          ></dxi-validation-rule>
+        </dxi-item>
 
-        <dxi-item dataField="ClassName"></dxi-item>
-
-        <!-- Only for Edit Popup -->
         <dxi-item
           dataField="IsInactive"
           editorType="dxCheckBox"
@@ -43,7 +65,8 @@
           [editorOptions]="{
             text: 'Inactive',
           }"
-        ></dxi-item>
+        >
+        </dxi-item>
       </dxo-form>
     </dxo-editing>
 
@@ -76,7 +99,7 @@
 
     <dxo-toolbar>
       <dxi-item location="before">
-        <div class="grid-header">ADOC Class</div>
+        <div class="grid-header">ADOC Classification</div>
       </dxi-item>
       <dxi-item
         location="after"
@@ -119,6 +142,13 @@
 
     <dxi-column dataField="ClassCode" caption="Class Code"></dxi-column>
     <dxi-column dataField="ClassName" caption="Class Name"></dxi-column>
+    <dxi-column dataField="GroupID" caption="ADOC Category">
+      <dxo-lookup
+        [dataSource]="ADOC_Category_List"
+        valueExpr="ID"
+        displayExpr="DESCRIPTION"
+      ></dxo-lookup
+    ></dxi-column>
     <dxi-column
       dataField="IsInactive"
       caption="Inactive"
@@ -131,32 +161,47 @@
   <!-- ========= new form popup ========= -->
   <dx-popup
     [(visible)]="isAddPopupVisible"
-    title="New ADOC Class"
+    title="New ADOC Classification"
     [width]="500"
     [height]="'auto'"
     [showCloseButton]="true"
     [hideOnOutsideClick]="false"
   >
     <div *dxTemplate="let data of 'content'">
-      <dx-form [formData]="newADOCClass" labelMode="floating">
+      <dx-form
+        #addForm
+        [formData]="newADOCClass"
+        labelMode="floating"
+        validationGroup="adocClassValidation"
+      >
+        <dxi-item dataField="Code" editorType="dxTextBox">
+          <dxi-validation-rule
+            type="required"
+            message="Code is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item dataField="Name" editorType="dxTextBox">
+          <dxi-validation-rule
+            type="required"
+            message="Name is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
         <dxi-item
-          dataField="Code"
-          editorType="dxTextBox"
-          [label]="{ visible: false }"
+          dataField="ADOCGroupID"
+          editorType="dxSelectBox"
+          [label]="{ text: 'ADOC Category' }"
           [editorOptions]="{
-            label: 'Code',
-            labelMode: 'floating',
+            dataSource: ADOC_Category_List,
+            valueExpr: 'ID',
+            displayExpr: 'DESCRIPTION',
           }"
-        ></dxi-item>
-        <dxi-item
-          dataField="Name"
-          editorType="dxTextBox"
-          [label]="{ visible: false }"
-          [editorOptions]="{
-            label: 'Name',
-            labelMode: 'floating',
-          }"
-        ></dxi-item>
+        >
+          <dxi-validation-rule
+            type="required"
+            message="ADOC Category is required"
+          ></dxi-validation-rule>
+        </dxi-item>
       </dx-form>
 
       <div class="mt-5 text-end">

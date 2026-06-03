@@ -54,6 +54,7 @@ export class PriceMasterComponent {
 
   isLoading: boolean = false;
   editedRows: any = [];
+  IsGlobarPrice: boolean = false
 
   constructor(
     private masterService: MasterReportService,
@@ -79,6 +80,7 @@ export class PriceMasterComponent {
 
     this.loadLookups();
     this.fetchCPTPriceList();
+    this.get_local_storage_data()
   }
 
   loadLookups() {
@@ -116,6 +118,7 @@ export class PriceMasterComponent {
             this.cptPriceData = data.map((item: any, index: number) => ({
               ...item,
               SerialNumber: index + 1,
+              NewPrice: item.NewPrice > 0 ? item.NewPrice : null,
             }));
             this.originalCptPriceData = JSON.parse(
               JSON.stringify(this.cptPriceData),
@@ -214,7 +217,7 @@ export class PriceMasterComponent {
     const isModified =
       originalRow.NewPrice !== e.data.NewPrice ||
       new Date(originalRow.NewEffectFrom).getTime() !==
-        new Date(e.data.NewEffectFrom).getTime();
+      new Date(e.data.NewEffectFrom).getTime();
 
     e.data.IsModified = isModified;
   }
@@ -253,7 +256,7 @@ export class PriceMasterComponent {
     }
 
     const payload = modifiedRows.map((x: any) => ({
-      FacilityID: this.selectedFacilityID,
+      FacilityID: this.selectedFacilityID ? this.selectedFacilityID : null,
       CPTID: x.CPTID,
       Price: x.NewPrice,
       EffectFrom: this.formatDate(x.NewEffectFrom),
@@ -300,6 +303,13 @@ export class PriceMasterComponent {
   onExporting(event: any) {
     this.service.exportDataGrid(event, 'Price-Master');
   }
+
+  //======================Logcal storage Data ======================
+  get_local_storage_data() {
+    const data = JSON.parse(localStorage.getItem('logData') || '')
+    console.log('Retrieved log data from local storage:', data);
+    this.IsGlobarPrice = data.cptPriceGlobal
+  }
 }
 
 @NgModule({
@@ -317,4 +327,4 @@ export class PriceMasterComponent {
   ],
   declarations: [PriceMasterComponent],
 })
-export class PriceMasterModule {}
+export class PriceMasterModule { }

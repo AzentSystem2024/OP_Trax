@@ -399,6 +399,8 @@ export class MasterReportService {
     IsDifferentLedger: any,
     selectedLedgerID: any,
     CPTEncounterDepartments: any,
+    ADOCClassID: any,
+    ADOCGroupID: any,
     data: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/insert`;
@@ -417,6 +419,8 @@ export class MasterReportService {
       IsDifferentLedger: IsDifferentLedger,
       SelectedLedgerID: selectedLedgerID,
       CPTEncounterDepartments: CPTEncounterDepartments,
+      ADOCClassID: ADOCClassID,
+      ADOCGroupID: ADOCGroupID,
       data: data,
     };
 
@@ -1246,11 +1250,12 @@ export class MasterReportService {
   }
   
   //=====Add ADCO Class data========
-  Insert_adocClass_Data(Code: any, Name: any, IsInactive: any) {
+  Insert_adocClass_Data(Code: any, Name: any, GroupID: any, IsInactive: any) {
     const url = `${this.BASE_URL}ADOCClass/save`;
     const reqBody = {
       ClassCode: Code,
       ClassName: Name,
+      GroupID: GroupID,
       IsInactive: IsInactive,
     };
 
@@ -1258,12 +1263,13 @@ export class MasterReportService {
   }
 
   //=====Update ADCO Class data======
-  update_adocClass_data(id: any, Code: any, Name: any, IsInactive: any) {
+  update_adocClass_data(id: any, Code: any, Name: any, GroupID: any, IsInactive: any) {
     const url = `${this.BASE_URL}ADOCClass/update`;
     const reqBody = {
       ID: id,
       ClassCode: Code,
       ClassName: Name,
+      GroupID: GroupID,
       IsInactive: IsInactive,
     };
 
