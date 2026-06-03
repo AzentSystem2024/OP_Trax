@@ -73,7 +73,7 @@ export class ClinicalDataComponent implements OnInit {
 
   isAddFormPopupOpened: any = false;
   //========Variables for Pagination ====================
-  readonly allowedPageSizes: any = [5, 10, 'all'];
+  readonly allowedPageSizes: any = [10, 20, 50, 'all'];
   displayMode: any = 'full';
   showPageSizeSelector = true;
   showInfo = true;
@@ -162,8 +162,6 @@ export class ClinicalDataComponent implements OnInit {
     },
   ];
 
-  
-
   facilityListDataSource: any;
   selectedFacility: any[] = [];
   searchOnDataSource = [
@@ -178,31 +176,30 @@ export class ClinicalDataComponent implements OnInit {
   today: Date = new Date();
 
   dataSource!: DataSource<any, any>;
-//  dataSource: DataSource<any> | any[] = [
-//   {
-//     FacilityID: 'FAC001',
-//     ClaimNumber: 'CLM10001',
-//     ClaimActivityNumber: 'ACT5001',
-//     TransactionDate: '01-06-2026',
-//     PatientID: 'PAT12345',
-//     EncounterType: 'Outpatient',
-//     EncounterStartDate: '01-06-2026',
-//     EncounterEndDate: '01-06-2026',
-//     Quantity: 2.0,
-//     Qty_Weight: 1.5,
-//     CPTCode: 'CPT99213',
-//     OrderingClinician: 'Dr. John Mathew',
-//     RenderingClinician: 'Dr. Sarah Thomas',
-//     Amount: 1500.75,
-//     Billable: 1500.75,
-//     CostingDepartment: 'Radiology',
-//     ProcessStatus: 'Pending',
-//     pendingReason: 'Awaiting Approval',
-//   },
-// ];
-isRowPopupVisible: boolean = false;
-selectedRowData: any = {};
-
+  //  dataSource: DataSource<any> | any[] = [
+  //   {
+  //     FacilityID: 'FAC001',
+  //     ClaimNumber: 'CLM10001',
+  //     ClaimActivityNumber: 'ACT5001',
+  //     TransactionDate: '01-06-2026',
+  //     PatientID: 'PAT12345',
+  //     EncounterType: 'Outpatient',
+  //     EncounterStartDate: '01-06-2026',
+  //     EncounterEndDate: '01-06-2026',
+  //     Quantity: 2.0,
+  //     Qty_Weight: 1.5,
+  //     CPTCode: 'CPT99213',
+  //     OrderingClinician: 'Dr. John Mathew',
+  //     RenderingClinician: 'Dr. Sarah Thomas',
+  //     Amount: 1500.75,
+  //     Billable: 1500.75,
+  //     CostingDepartment: 'Radiology',
+  //     ProcessStatus: 'Pending',
+  //     pendingReason: 'Awaiting Approval',
+  //   },
+  // ];
+  isRowPopupVisible: boolean = false;
+  selectedRowData: any = {};
 
   selectedCptCodeData: any;
   selectedClinicianData: any;
@@ -262,6 +259,7 @@ selectedRowData: any = {};
     } catch (error) {
       console.error('Initialization error:', error);
     }
+    this.onApplyFilter();
   }
 
   //================ Year value change ===================
@@ -333,6 +331,7 @@ selectedRowData: any = {};
 
   initializeDefaults(): void {
     const today = new Date();
+    this.selectedYear = today.getFullYear();
     this.toDate = today;
     this.fromDate = new Date(today.getFullYear(), 0, 1);
     this.selectedSearchOn = 'EncounterEndDate';
@@ -461,29 +460,23 @@ selectedRowData: any = {};
     //   return;
     // }
     // if (e.rowType === 'group') return;
-
     // const dataField = e.column.dataField;
-
     // // --- Helper to avoid repeated notify options---
     // const showError = (message: string) => {
     //   notify(message, 'error', 3000);
     // };
-
     // // ===== Check for Claim Number click =====
     // if (dataField === 'ClaimNumber') {
     //   this.clickedCellRowData = e.data;
     //   this.isSingleClaimDetailsVisible = true;
     //   return;
     // }
-
     // if (dataField === 'CPTCode') {
     //   const code = e.data?.CPTCode;
-
     //   if (!code) {
     //     showError('CPT Code is empty');
     //     return;
     //   }
-
     //   this.operationService
     //     .fetch_selected_CptCode_Data(code)
     //     .subscribe((res: any) => {
@@ -495,15 +488,12 @@ selectedRowData: any = {};
     //       }
     //     });
     // }
-
     // if (dataField === 'OrderingClinician') {
     //   const clinicianId = e.data?.OrderingClinician;
-
     //   if (!clinicianId) {
     //     showError('Ordering Clinician is empty');
     //     return;
     //   }
-
     //   this.operationService
     //     .fetch_selected_orderingClinician_Data(clinicianId)
     //     .subscribe((res: any) => {
@@ -515,10 +505,8 @@ selectedRowData: any = {};
     //       }
     //     });
     // }
-
     // if (dataField === 'RenderingClinician') {
     //   const clinicianId = e.data?.RenderingClinician;
-
     //   if (!clinicianId) {
     //     showError('Rendering Clinician is empty');
     //     return;
@@ -534,7 +522,6 @@ selectedRowData: any = {};
     //       }
     //     });
     // }
-
   }
 
   // =========== update Cpt data ===========
@@ -582,7 +569,7 @@ selectedRowData: any = {};
         selectedLedgerID,
         CPTEncounterDepartments,
         ADOCClassID,
-      ADOCGroupID,
+        ADOCGroupID,
         data,
       )
       .subscribe((response: any) => {
@@ -1025,13 +1012,11 @@ selectedRowData: any = {};
     return `${item.FacilityLicense} - ${item.FacilityName}`;
   };
 
-getClinicalDataPopupData() {
-  const payload = {
-    ClaimUID: this.selectedRowData?.ClaimUID || 0
-  };
-  this.operationService
-    .getClinicalDataInPopup(payload)
-    .subscribe({
+  getClinicalDataPopupData() {
+    const payload = {
+      ClaimUID: this.selectedRowData?.ClaimUID || 0,
+    };
+    this.operationService.getClinicalDataInPopup(payload).subscribe({
       next: (res: any) => {
         if (res.flag === '1') {
           this.popupGridData = res.data || [];
@@ -1047,76 +1032,73 @@ getClinicalDataPopupData() {
       error: (err) => {
         console.error(err);
         notify('Error loading popup data', 'error', 3000);
-      }
+      },
     });
-}
+  }
 
- onViewClick(e: any) {
-  console.log(e)
-  this.selectedRowData = e.row.data;
-  this.isRowPopupVisible = true;
-  this.getClinicalDataPopupData();
-}
+  onViewClick(e: any) {
+    console.log(e);
+    this.selectedRowData = e.row.data;
+    this.isRowPopupVisible = true;
+    this.getClinicalDataPopupData();
+  }
 
-billableText = (rowData: any) => {
-  return rowData.Billable ? 'Yes' : 'No';
-};
+  billableText = (rowData: any) => {
+    return rowData.Billable ? 'Yes' : 'No';
+  };
 
-// calculateBillableAmount = (rowData: any) => {
-//   return rowData.Billable
-//     ? Number(rowData.BillPrice || 0)
-//     : 0;
-// };
+  // calculateBillableAmount = (rowData: any) => {
+  //   return rowData.Billable
+  //     ? Number(rowData.BillPrice || 0)
+  //     : 0;
+  // };
 
-onPopupHidden() {
-  
-  setTimeout(() => {
-    this.isExcelLoading = true;
-
+  onPopupHidden() {
     setTimeout(() => {
-      this.isExcelLoading = false;
+      this.isExcelLoading = true;
+
+      setTimeout(() => {
+        this.isExcelLoading = false;
+      }, 500);
     }, 500);
-  }, 500);
-
-}
-
-exportFormats = [
-  { text: 'Excel', format: 'xlsx' },
-  { text: 'CSV', format: 'csv' }
-];
-
-async onExportClick(e: any) {
-  const workbook = new Workbook();
-  const worksheet = workbook.addWorksheet('ADOC Report');
-  await exportDataGrid({
-    component: this.popupGrid.instance,
-    worksheet: worksheet
-  });
-
-  // Excel Export
-  if (e.itemData.format === 'xlsx') {
-    const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(
-      new Blob([buffer], {
-        type:
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      }),
-      'ADOC_Report.xlsx'
-    );
+    this.onApplyFilter();
   }
 
-  // CSV Export
-  if (e.itemData.format === 'csv') {
-    const csvBuffer = await workbook.csv.writeBuffer();
-    saveAs(
-      new Blob([csvBuffer], {
-        type: 'text/csv;charset=utf-8;'
-      }),
-      'ADOC_Report.csv'
-    );
-  }
-}
+  exportFormats = [
+    { text: 'Excel', format: 'xlsx' },
+    { text: 'CSV', format: 'csv' },
+  ];
 
+  async onExportClick(e: any) {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('ADOC Report');
+    await exportDataGrid({
+      component: this.popupGrid.instance,
+      worksheet: worksheet,
+    });
+
+    // Excel Export
+    if (e.itemData.format === 'xlsx') {
+      const buffer = await workbook.xlsx.writeBuffer();
+      saveAs(
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+        'ADOC_Report.xlsx',
+      );
+    }
+
+    // CSV Export
+    if (e.itemData.format === 'csv') {
+      const csvBuffer = await workbook.csv.writeBuffer();
+      saveAs(
+        new Blob([csvBuffer], {
+          type: 'text/csv;charset=utf-8;',
+        }),
+        'ADOC_Report.csv',
+      );
+    }
+  }
 }
 @NgModule({
   imports: [
@@ -1137,7 +1119,7 @@ async onExportClick(e: any) {
     ClinicianEditFormModule,
     DxLoadPanelModule,
     SingleClaimDetailsModule,
-    DxoSummaryModule
+    DxoSummaryModule,
   ],
   providers: [],
   exports: [],

@@ -54,7 +54,7 @@ export class PriceMasterComponent {
 
   isLoading: boolean = false;
   editedRows: any = [];
-  IsGlobarPrice: boolean = false
+  IsGlobarPrice: boolean = false;
 
   constructor(
     private masterService: MasterReportService,
@@ -80,7 +80,7 @@ export class PriceMasterComponent {
 
     this.loadLookups();
     this.fetchCPTPriceList();
-    this.get_local_storage_data()
+    this.get_local_storage_data();
   }
 
   loadLookups() {
@@ -142,67 +142,37 @@ export class PriceMasterComponent {
 
   onEditorPreparing(e: any) {
     if (e.parentType === 'dataRow' && e.dataField === 'NewEffectFrom') {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      e.editorOptions.min = today;
-
-      const activePrice = e.row.data.ActivePrice;
-      const activeEffectFrom = e.row.data.ActiveEffectFrom;
-
-      // Initial Setup
-      if (!activePrice && !activeEffectFrom) {
-        return;
-      }
-
-      const activeDate = new Date(activeEffectFrom);
-      activeDate.setHours(0, 0, 0, 0);
-
-      // Optional: user can't select dates <= active date
-      const minDate = new Date(activeDate);
-      minDate.setDate(minDate.getDate() + 1);
-
-      if (minDate > today) {
-        e.editorOptions.min = minDate;
-      }
+      delete e.editorOptions.min;
     }
   }
 
   validateNewEffectFrom = (e: any) => {
     if (!e.value) {
-      return false;
+      return true;
     }
 
     const newEffectFrom = new Date(e.value);
     newEffectFrom.setHours(0, 0, 0, 0);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Never allow past dates
-    if (newEffectFrom < today) {
-      return false;
-    }
-
     const activePrice = e.data?.ActivePrice ?? e.row?.data?.ActivePrice;
-
     const activeEffectFrom =
       e.data?.ActiveEffectFrom ?? e.row?.data?.ActiveEffectFrom;
 
-    // Initial Setup
+    // Initial setup - no active record exists
     if (!activePrice && !activeEffectFrom) {
+      return true;
+    }
+
+    // If ActiveEffectFrom is missing, allow save
+    if (!activeEffectFrom) {
       return true;
     }
 
     const activeDate = new Date(activeEffectFrom);
     activeDate.setHours(0, 0, 0, 0);
 
-    // Existing validation
-    if (newEffectFrom <= activeDate) {
-      return false;
-    }
-
-    return true;
+    // New date must be greater than active date
+    return newEffectFrom > activeDate;
   };
 
   onRowUpdated(e: any) {
@@ -217,7 +187,7 @@ export class PriceMasterComponent {
     const isModified =
       originalRow.NewPrice !== e.data.NewPrice ||
       new Date(originalRow.NewEffectFrom).getTime() !==
-      new Date(e.data.NewEffectFrom).getTime();
+        new Date(e.data.NewEffectFrom).getTime();
 
     e.data.IsModified = isModified;
   }
@@ -306,9 +276,9 @@ export class PriceMasterComponent {
 
   //======================Logcal storage Data ======================
   get_local_storage_data() {
-    const data = JSON.parse(localStorage.getItem('logData') || '')
+    const data = JSON.parse(localStorage.getItem('logData') || '');
     console.log('Retrieved log data from local storage:', data);
-    this.IsGlobarPrice = data.cptPriceGlobal
+    this.IsGlobarPrice = data.cptPriceGlobal;
   }
 }
 
@@ -327,4 +297,4 @@ export class PriceMasterComponent {
   ],
   declarations: [PriceMasterComponent],
 })
-export class PriceMasterModule { }
+export class PriceMasterModule {}

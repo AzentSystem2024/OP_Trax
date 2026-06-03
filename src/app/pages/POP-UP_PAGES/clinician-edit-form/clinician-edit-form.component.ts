@@ -18,6 +18,7 @@ import {
 } from 'devextreme-angular';
 import { FormTextboxModule, FormPhotoUploaderModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-clinician-edit-form',
@@ -28,9 +29,9 @@ export class ClinicianEditFormComponent implements OnChanges {
   @Input() formData: any;
 
   @ViewChild('clinicianLicenseValidator')
-  clinicianLicenseValidator: DxValidatorComponent;
+  clinicianLicenseValidator!: DxValidatorComponent;
   @ViewChild('clinicianNameValidator')
-  clinicianNameValidator: DxValidatorComponent;
+  clinicianNameValidator!: DxValidatorComponent;
 
   newClinicianData = {
     ID: '',
@@ -56,9 +57,68 @@ export class ClinicianEditFormComponent implements OnChanges {
   departmentDatasource: any;
   cliniciansList: any;
 
-  constructor(private masterService: MasterReportService) {
-    this.get_DropDown_Data();
-    this.getCliniciansData();
+  dropdownsLoaded: boolean = false;
+
+  constructor(private masterService: MasterReportService) {}
+
+  async ngOnInit() {
+    await this.loadInitialData();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (!changes['formData'] || !this.formData?.ID) {
+      return;
+    }
+
+    this.bindFormData();
+  }
+
+  async loadInitialData() {
+    try {
+      const [
+        speciality,
+        major,
+        profession,
+        category,
+        gender,
+        department,
+        clinicians,
+      ] = await Promise.all([
+        firstValueFrom(this.masterService.Get_GropDown('SPECIALITY')),
+        firstValueFrom(this.masterService.Get_GropDown('CLINICIANMAJOR')),
+        firstValueFrom(this.masterService.Get_GropDown('CLINICIANPROFESSION')),
+        firstValueFrom(this.masterService.Get_GropDown('CLINICIANCATEGORY')),
+        firstValueFrom(this.masterService.Get_GropDown('GENDER')),
+        firstValueFrom(this.masterService.Get_GropDown('DEPARTMENT')),
+        firstValueFrom(this.masterService.get_Clinian_Table_Data()),
+      ]);
+
+      this.specialityDatasource = speciality;
+      this.clinicianMajorDatasource = major;
+      this.clinicianProfessionDatasource = profession;
+      this.clinicianCategoryDatasource = category;
+      this.genderDatasource = gender;
+      this.departmentDatasource = department;
+      this.cliniciansList = (clinicians as any).data;
+
+      this.dropdownsLoaded = true;
+
+      this.bindFormData();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  private bindFormData() {
+    if (!this.dropdownsLoaded || !this.formData) {
+      return;
+    }
+
+    this.newClinician = {
+      ...this.formData,
+    };
+
+    console.log('Form data bound:', this.newClinician);
   }
 
   getnewClinicianData = () => {
@@ -77,7 +137,7 @@ export class ClinicianEditFormComponent implements OnChanges {
     this.newClinician.ClinicianName = '';
     this.newClinician.ClinicianShortName = '';
     this.newClinician.SpecialityID = '';
-    (this.newClinician.MajorID = ''), (this.newClinician.ProfessionID = '');
+    ((this.newClinician.MajorID = ''), (this.newClinician.ProfessionID = ''));
     this.newClinician.CategoryID = '';
     this.newClinician.Gender = '';
   }
@@ -119,9 +179,9 @@ export class ClinicianEditFormComponent implements OnChanges {
     const currentId = this.formData?.ID; // or whatever unique ID you're using
 
     const exists = this.cliniciansList.some(
-      (clinician) =>
+      (clinician: any) =>
         clinician.ClinicianLicense === clinicianLicense &&
-        clinician.ID !== currentId // ✅ Exclude the one being edited
+        clinician.ID !== currentId, //  Exclude the one being edited
     );
 
     if (exists) {
@@ -160,16 +220,6 @@ export class ClinicianEditFormComponent implements OnChanges {
       this.cliniciansList = res.data;
       console.log('datasource', this.cliniciansList);
     });
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    console.log('ngOnChanges triggered');
-    console.log('Incoming formData:', this.formData);
-
-    if (changes['formData'] && this.formData && this.formData.ID) {
-      this.newClinician = { ...this.formData };
-      console.log('Updated internal data:', this.newClinician);
-    }
   }
 }
 

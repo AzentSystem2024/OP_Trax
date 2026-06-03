@@ -272,12 +272,12 @@
         caption="Encounter Type"
         [allowEditing]="false"
       ></dxi-column>
-       <dxi-column
+      <dxi-column
         dataField="PatientID"
         caption="PatientID"
         [allowEditing]="false"
       ></dxi-column>
-       <!-- <dxi-column
+      <!-- <dxi-column
         dataField="PatientName"
         caption="PatientName"
         [allowEditing]="false"
@@ -289,89 +289,38 @@
         cellTemplate="statusTemplate"
         alignment="center"
       ></dxi-column>
-     <div *dxTemplate="let data of 'statusTemplate'">
+      <div *dxTemplate="let data of 'statusTemplate'">
+        <div class="flag-container">
+          <!-- Pending -->
+          <span
+            *ngIf="data.value?.toLowerCase() === 'pending'"
+            class="status-flag pending-flag"
+            title="Pending"
+          >
+            ⚑
+          </span>
 
-  <div class="flag-container">
+          <!-- Applied -->
+          <span
+            *ngIf="data.value?.toLowerCase() === 'applied'"
+            class="status-flag applied-flag"
+            title="Applied"
+          >
+            ⚑
+          </span>
+        </div>
+      </div>
+      
 
-    <!-- Pending -->
-    <span
-      *ngIf="data.value?.toLowerCase() === 'pending'"
-      class="status-flag pending-flag"
-      title="Pending">
-      ⚑
-    </span>
-
-    <!-- Applied -->
-    <span
-      *ngIf="data.value?.toLowerCase() === 'applied'"
-      class="status-flag applied-flag"
-      title="Applied">
-      ⚑
-    </span>
-
-  </div>
-
-</div>
-      <!-- <dxi-column
-        dataField="Quantity"
-        caption="Quantity"
-        [format]="{ type: 'fixedPoint', precision: 2 }"
-        [allowEditing]="false"
-      ></dxi-column>
-      <dxi-column
-        dataField="Qty_Weight"
-        caption="Qty Weight"
-        [format]="{ formatter: qtyWeightFormatter }"
-        [allowEditing]="canEditRow"
-      ></dxi-column> -->
-
-      <!-- <dxi-column
-        dataField="CPTCode"
-        caption="CPT Code"
-        [allowGrouping]="true"
-        [showWhenGrouped]="true"
-        [allowEditing]="false"
-      ></dxi-column>
-      <dxi-column
-        dataField="OrderingClinician"
-        caption="Ordering Clinician"
-        [allowGrouping]="true"
-        [showWhenGrouped]="true"
-        [allowEditing]="false"
-      ></dxi-column> -->
-      <!-- <dxi-column
-        dataField="RenderingClinician"
-        caption="Rendering Clinician"
-        [allowGrouping]="true"
-        [showWhenGrouped]="true"
-        [allowEditing]="false"
-      ></dxi-column>
-
-      <dxi-column
-        dataField="Amount"
-        caption="Amount"
-        [format]="{ type: 'fixedPoint', precision: 2 }"
-        [allowEditing]="false"
-      ></dxi-column> -->
-      <!-- <dxi-column
-        dataField="pendingReason"
-        caption="Pending Reason"
-        [allowGrouping]="true"
-        [showWhenGrouped]="true"
-        [allowEditing]="false"
-      ></dxi-column> -->
-
-     <dxi-column type="buttons" [width]="100">
-
-  <dxi-button
-    hint="View"
-    icon="errorcircle"
-    text="View"
-    [onClick]="onViewClick.bind(this)"
-  >
-  </dxi-button>
-
-</dxi-column>
+      <dxi-column type="buttons" [width]="100">
+        <dxi-button
+          hint="View"
+          icon="errorcircle"
+          text="View"
+          [onClick]="onViewClick.bind(this)"
+        >
+        </dxi-button>
+      </dxi-column>
 
       <dxo-summary>
         <dxi-total-item
@@ -491,7 +440,6 @@
   ></dx-load-panel>
 </div>
 
-
 <!-- ------------Row Detail Popup---------------- -->
 <dx-popup
   [(visible)]="isRowPopupVisible"
@@ -505,71 +453,64 @@
   (onHidden)="onPopupHidden()"
 >
   <div class="container-fluid p-3">
-
     <!-- Top Details Section -->
     <div class="row mb-3">
-
       <div class="col-md-6">
-          <tr>
-            <td><b>Invoice No/Visit ID : </b></td>
-            <td>{{ selectedRowData?.ClaimNumber }}</td>
-          </tr>
+        <tr>
+          <td><b>Invoice No/Visit ID : </b></td>
+          <td>{{ selectedRowData?.ClaimNumber }}</td>
+        </tr>
 
-          <tr>
-            <td><b>Patient ID : </b></td>
-            <td>{{ selectedRowData?.PatientID }}</td>
-          </tr>
+        <tr>
+          <td><b>Patient ID : </b></td>
+          <td>{{ selectedRowData?.PatientID }}</td>
+        </tr>
       </div>
 
       <div class="col-md-6 d-flex justify-content-end">
+        <table>
+          <tr>
+            <td class="pe-3">
+              <b>Transaction Date :</b>
+            </td>
 
-  <table>
+            <td>
+              {{ selectedRowData?.TransactionDate }}
+            </td>
+          </tr>
 
-    <tr>
-      <td class="pe-3">
-        <b>Transaction Date :</b>
-      </td>
+          <tr>
+            <td class="pe-3">
+              <b>Encounter Type :</b>
+            </td>
 
-      <td>
-        {{ selectedRowData?.TransactionDate }}
-      </td>
-    </tr>
-
-    <tr>
-      <td class="pe-3">
-        <b>Encounter Type :</b>
-      </td>
-
-      <td>
-        {{ selectedRowData?.EncounterType }}
-      </td>
-    </tr>
-
-  </table>
-
-</div>
+            <td>
+              {{ selectedRowData?.EncounterType }}
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
 
     <div class="d-flex justify-content-end mb-2 gap-2">
-
-  <dx-drop-down-button
-    icon="export"
-    text="export"
-    stylingMode="contained"
-    type="default"
-    [showArrowIcon]="false"
-    [items]="exportFormats"
-    displayExpr="text"
-    keyExpr="format"
-    [elementAttr]="{ class: 'custom-export-btn' }"
-    (onItemClick)="onExportClick($event)">
-  </dx-drop-down-button>
-
-</div>
+      <dx-drop-down-button
+        icon="export"
+        text="export"
+        stylingMode="contained"
+        type="default"
+        [showArrowIcon]="false"
+        [items]="exportFormats"
+        displayExpr="text"
+        keyExpr="format"
+        [elementAttr]="{ class: 'custom-export-btn' }"
+        (onItemClick)="onExportClick($event)"
+      >
+      </dx-drop-down-button>
+    </div>
 
     <!-- Details Grid -->
     <dx-data-grid
-     #popupGrid
+      #popupGrid
       [dataSource]="popupGridData"
       [showBorders]="true"
       [columnAutoWidth]="true"
@@ -577,143 +518,97 @@
       [showColumnLines]="true"
       height="450"
     >
+      <!-- Header Filter -->
+      <dxo-header-filter [visible]="true">
+        <dxo-search [enabled]="true"></dxo-search
+      ></dxo-header-filter>
 
-     <!-- Header Filter -->
-  <dxo-header-filter [visible]="true"> <dxo-search [enabled]="true"></dxo-search></dxo-header-filter>
+      <!-- Pagination -->
+      <dxo-paging [pageSize]="10"> </dxo-paging>
+      <dxo-pager
+        [visible]="true"
+        [allowedPageSizes]="allowedPageSizes"
+        [displayMode]="displayMode"
+        [showPageSizeSelector]="showPageSizeSelector"
+        [showInfo]="showInfo"
+        [showNavigationButtons]="showNavButtons"
+      >
+      </dxo-pager>
+      <dxo-scrolling mode="virtual"></dxo-scrolling>
 
-    <!-- Pagination -->
-  <dxo-paging
-    [enabled]="true"
-    [pageSize]="10">
-  </dxo-paging>
-
-  <!-- Pager -->
-  <dxo-pager
-    [visible]="true"
-    [showPageSizeSelector]="true"
-    [allowedPageSizes]="[10, 20, 50, 100]"
-    [showInfo]="true"
-    [showNavigationButtons]="true"
-    infoText="Page {0} of {1} ({2} items)">
-  </dxo-pager>  
-
-    <dxi-column
+      <dxi-column
         dataField="ActivityNumber"
         caption="Activity Number"
       ></dxi-column>
-
-       <dxi-column
-        dataField="ActivityDate"
-        caption="Date"
-      ></dxi-column>
-
-      <dxi-column
-        dataField="CPTType"
-        caption="CPT Type"
-      ></dxi-column>
-
-      <dxi-column
-        dataField="CPTCode"
-        caption="CPT Code"
-      ></dxi-column>
-
+      <dxi-column dataField="ActivityDate" caption="Date"></dxi-column>
+      <dxi-column dataField="CPTType" caption="CPT Type"></dxi-column>
+      <dxi-column dataField="CPTCode" caption="CPT Code"></dxi-column>
       <dxi-column
         dataField="CPTName"
         caption="CPT Description"
-         [width]="250"
+        [width]="250"
       ></dxi-column>
-
       <dxi-column
         dataField="OrderingClinician"
         caption="Ordering Clinician"
       ></dxi-column>
-
-      <dxi-column
-        dataField="Speciality"
-        caption="Speciality"
-      ></dxi-column>
-
+      <dxi-column dataField="Speciality" caption="Speciality"></dxi-column>
       <dxi-column
         dataField="NetAmount"
         caption="Net Amount"
         format="#,##0.00"
       ></dxi-column>
-
-      <dxi-column
-        caption="ADOC Category"
-        dataField="ADOCCategory"
-      ></dxi-column>
-
+      <dxi-column caption="ADOC Category" dataField="ADOCCategory"></dxi-column>
       <dxi-column
         caption="ADOC Classification"
         dataField="ADOCClass"
       ></dxi-column>
-
       <dxi-column
         dataField="BillPrice"
         caption="Price"
         format="#,##0.00"
       ></dxi-column>
 
-   <dxi-column
-  caption="Billable"
-  cellTemplate="billableTemplate">
-</dxi-column>
+      <dxi-column caption="Billable" cellTemplate="billableTemplate">
+      </dxi-column>
 
-<div *dxTemplate="let data of 'billableTemplate'">
+      <div *dxTemplate="let data of 'billableTemplate'">
+        <span *ngIf="data.data.Billable" class="billable-yes"> Yes </span>
 
-  <span
-    *ngIf="data.data.Billable"
-    class="billable-yes">
-    Yes
-  </span>
+        <span *ngIf="!data.data.Billable" class="billable-no"> No </span>
+      </div>
 
-  <span
-    *ngIf="!data.data.Billable"
-    class="billable-no">
-    No
-  </span>
-
-</div>
-
-      <dxi-column
-        caption="Remark"
-        dataField="Remarks"
-      ></dxi-column>
-
-      
+      <dxi-column caption="Remark" dataField="Remarks"></dxi-column>
 
       <dxo-summary>
+        <!-- Net Total under Net Amount column -->
+        <dxi-total-item
+          column="NetAmount"
+          showInColumn="NetAmount"
+          summaryType="sum"
+          displayFormat="Net Total : AED {0}"
+          [valueFormat]="{
+            type: 'fixedPoint',
+            precision: 2,
+          }"
+          alignment="right"
+        >
+        </dxi-total-item>
 
-  <!-- Net Total under Net Amount column -->
-  <dxi-total-item
-    column="NetAmount"
-    showInColumn="NetAmount"
-    summaryType="sum"
-    displayFormat="Net Total : AED {0}"
-    [valueFormat]="{
-      type: 'fixedPoint',
-      precision: 2
-    }"
-    alignment="right"
-  >
-  </dxi-total-item>
-
-  <!-- Net Billable under Billable column -->
-  <dxi-total-item
-  column="BillPrice"
-  showInColumn="BillPrice"
-  summaryType="sum"
-  displayFormat="Net Billable : AED {0}"
-  [valueFormat]="{
-    type: 'fixedPoint',
-    precision: 2
-  }"
-  alignment="right">
-</dxi-total-item>
-
-</dxo-summary>
-      
+        <!-- Net Billable under Billable column -->
+        <dxi-total-item
+          column="BillPrice"
+          showInColumn="BillPrice"
+          summaryType="sum"
+          displayFormat="Net Billable : AED {0}"
+          [valueFormat]="{
+            type: 'fixedPoint',
+            precision: 2,
+          }"
+          alignment="right"
+        >
+        </dxi-total-item>
+      </dxo-summary>
     </dx-data-grid>
 
     <!-- Footer Totals -->
@@ -734,11 +629,9 @@
       </div>
 
     </div> -->
-
   </div>
 
   <div class="d-flex justify-content-end mt-3 gap-2">
-
     <!-- <dx-drop-down-button
   icon="export"
   stylingMode="contained"
@@ -758,7 +651,7 @@
     (onClick)="isRowPopupVisible = false"
   >
   </dx-button> -->
-  <!-- <dx-button
+    <!-- <dx-button
     text="Process"
     type="default"
     stylingMode="contained"
@@ -766,15 +659,14 @@
   >
   </dx-button> -->
 
-  <dx-load-panel
-  [(visible)]="isPopupProcessing"
-  [showIndicator]="true"
-  [showPane]="true"
-  [shading]="true"
-  shadingColor="rgba(0,0,0,0.4)"
-  message="Processing..."
->
-</dx-load-panel>
-
-</div>
+    <dx-load-panel
+      [(visible)]="isPopupProcessing"
+      [showIndicator]="true"
+      [showPane]="true"
+      [shading]="true"
+      shadingColor="rgba(0,0,0,0.4)"
+      message="Processing..."
+    >
+    </dx-load-panel>
+  </div>
 </dx-popup>

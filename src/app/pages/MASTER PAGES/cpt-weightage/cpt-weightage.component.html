@@ -103,14 +103,6 @@
       [width]="60"
     >
     </dxi-column>
-    <!-- //--------------d.	hide the column Facility--------------------- -->
-    <!-- <dxi-column
-      dataField="FacilityID"
-      caption="FacilityID"
-      [allowEditing]="false"
-      alignment="center"
-    >
-    </dxi-column> -->
 
     <dxi-column
       dataField="CPTCode"
@@ -188,7 +180,7 @@
         <dxi-validation-rule
           type="custom"
           [validationCallback]="validateNewEffectFrom"
-          message="New Effect From cannot be less than Active Effect From"
+          message="New Effect From cannot be less than or equal to Active Effect From"
         >
         </dxi-validation-rule>
       </dxi-column>
