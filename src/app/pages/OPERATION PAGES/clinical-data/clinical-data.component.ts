@@ -1035,6 +1035,7 @@ export class ClinicalDataComponent implements OnInit {
       next: (res: any) => {
         if (res.flag === '1') {
           this.getClinicalDataPopupData();
+          notify('Grouper re-run successfully', 'success', 3000);
         }
       },
       error: (err) => {
