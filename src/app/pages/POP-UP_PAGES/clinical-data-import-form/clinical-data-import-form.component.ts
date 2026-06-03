@@ -82,7 +82,6 @@ export class ClinicalDataImportFormComponent {
     { text: 'Claim Data', key: 'claim' },
     { text: 'Diagnosis Data', key: 'diagnosis' },
     { text: 'Activity Data', key: 'activity' },
-    { text: 'Observation Data', key: 'observation' },
   ];
 
   selectedTabIndex = 0;
@@ -121,13 +120,15 @@ export class ClinicalDataImportFormComponent {
     {
       dataField: 'EncounterStartDate',
       caption: 'Encounter Start Date',
-      IsMandatory: true,
+      visible: false,
+      IsMandatory: false,
       IsNumeric: false,
     },
     {
       dataField: 'EncounterEndDate',
       caption: 'Encounter End Date',
-      IsMandatory: true,
+      visible: false,
+      IsMandatory: false,
       IsNumeric: false,
     },
     {
@@ -139,12 +140,14 @@ export class ClinicalDataImportFormComponent {
     {
       dataField: 'StartType',
       caption: 'Start Type',
+      visible: false,
       IsMandatory: false,
       IsNumeric: false,
     },
     {
       dataField: 'EndType',
       caption: 'End Type',
+      visible: false,
       IsMandatory: false,
       IsNumeric: false,
     },
@@ -157,12 +160,14 @@ export class ClinicalDataImportFormComponent {
     {
       dataField: 'Speciality',
       caption: 'Speciality',
+      visible: false,
       IsMandatory: false,
       IsNumeric: false,
     },
     {
       dataField: 'SubSpeciality',
       caption: 'Sub Speciality',
+      visible: false,
       IsMandatory: false,
       IsNumeric: false,
     },
@@ -171,6 +176,7 @@ export class ClinicalDataImportFormComponent {
       caption: 'GrossAmount',
       IsMandatory: false,
       IsNumeric: true,
+      visible: false,
       alignment: 'right',
       format: { type: 'fixedPoint', precision: 2 },
     },
@@ -179,6 +185,7 @@ export class ClinicalDataImportFormComponent {
       caption: 'PatientShare',
       IsMandatory: false,
       IsNumeric: true,
+      visible: false,
       alignment: 'right',
       format: { type: 'fixedPoint', precision: 2 },
     },
@@ -247,7 +254,8 @@ export class ClinicalDataImportFormComponent {
     {
       dataField: 'ActivityType',
       caption: 'Activity Type',
-      IsMandatory: true,
+      visible: false,
+      IsMandatory: false,
       IsNumeric: false,
     },
     {
@@ -450,37 +458,90 @@ export class ClinicalDataImportFormComponent {
     const processXmlFile = (file: File): Promise<void> => {
       return new Promise((resolve) => {
         const reader = new FileReader();
-        reader.onload = () => {
-          const base64String = (reader.result as string).split(',')[1];
-          const filePayload: any = {
-            facilityID: this.selectedFacilityIDs.join(','),
-            fileName: file.name,
-            fileData: base64String,
-            userID: 1,
-          };
-
-          this.selectedXmlFile.push(filePayload);
-          this.isResponsePopupOpened = true;
-
-          this.service.ImportClinicalData(filePayload).subscribe({
-            next: (res: any) => {
-              this.uploadedCount++;
-              if (res.message === 'Success') this.successCount++;
-              else if (res.message === 'File already imported.')
-                this.alreadyImportedCount++;
-              else this.failCount++;
-
-              if (Array.isArray(res.data)) {
-                this.importResults.push(...res.data);
-                console.log(this.importResults, 'import response');
-              }
-            },
-            error: (err) => {
-              console.error('Import error:', err);
-              this.failCount++;
-            },
-            complete: () => resolve(),
+        reader.onload = (e: any) => {
+          const workbook = XLSX.read(new Uint8Array(e.target.result), {
+            type: 'array',
+            cellDates: true, // Important
           });
+
+          const [sheet1, sheet2, sheet3, sheet4] = workbook.SheetNames;
+
+          const claimRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheet1], {
+            raw: true,
+            defval: '',
+          });
+
+          const diagnosisRows = XLSX.utils.sheet_to_json(
+            workbook.Sheets[sheet2],
+            {
+              raw: true,
+              defval: '',
+            },
+          );
+
+          const activityRows = XLSX.utils.sheet_to_json(
+            workbook.Sheets[sheet3],
+            {
+              raw: true,
+              defval: '',
+            },
+          );
+
+          const observationRows = XLSX.utils.sheet_to_json(
+            workbook.Sheets[sheet4],
+            {
+              raw: true,
+              defval: '',
+            },
+          );
+
+          // Format dates
+          const claimFormatted = this.formatDateFields(claimRows, [
+            'TransactionDate',
+            'EncounterStartDate',
+            'EncounterEndDate',
+          ]);
+
+          const diagnosisFormatted = this.formatDateFields(diagnosisRows, []);
+
+          const activityFormatted = this.formatDateFields(activityRows, [
+            'ActivityStart',
+          ]);
+
+          const observationFormatted = this.formatDateFields(
+            observationRows,
+            [],
+          );
+
+          // Validation
+          this.claimDataSource = this.validateAndSort(
+            claimFormatted,
+            this.importClaimColumnMeta,
+          );
+
+          this.diagnosisDataSource = this.validateAndSort(
+            diagnosisFormatted,
+            this.importDiagnosisColumnMeta,
+          );
+
+          this.activityDataSource = this.validateAndSort(
+            activityFormatted,
+            this.importActivityColumnMeta,
+          );
+
+          this.observationDataSource = this.validateAndSort(
+            observationFormatted,
+            this.importObservationColumnMeta,
+          );
+
+          this.isExcelpopupOpened = true;
+
+          console.log('Sheet 1:', this.claimDataSource);
+          console.log('Sheet 2:', this.diagnosisDataSource);
+          console.log('Sheet 3:', this.activityDataSource);
+          console.log('Sheet 4:', this.observationDataSource);
+
+          this.isExcelLoading = false;
         };
         reader.readAsDataURL(file);
       });
@@ -629,57 +690,89 @@ export class ClinicalDataImportFormComponent {
 
       dateFields.forEach((field) => {
         const val = newRow[field];
-        if (!val) return;
+
+        if (val === null || val === undefined || val === '') {
+          return;
+        }
 
         let dateObj: Date | null = null;
 
-        //  1. Already Date (BEST CASE)
+        // Excel Date Object
         if (val instanceof Date) {
           dateObj = val;
         }
 
-        // 2. Excel serial number
+        // Excel Serial Number
         else if (typeof val === 'number') {
           const excelEpoch = new Date(1899, 11, 30);
           dateObj = new Date(excelEpoch.getTime() + val * 86400000);
         }
 
-        // 3. STRING → manual SAFE parse (dd/MM/yyyy ONLY)
+        // String Dates
         else if (typeof val === 'string') {
-          const [datePart, timePart] = val.split(' ');
-          const parts = datePart.split(/[\/\-]/).map(Number);
+          const value = val.trim();
 
-          if (parts.length === 3) {
-            let day = parts[0];
-            let month = parts[1];
-            let year = parts[2];
+          // Try native parse first
+          const parsedDate = new Date(value);
 
-            // Fix 2-digit year
-            if (year < 100) year += 2000;
+          if (!isNaN(parsedDate.getTime())) {
+            dateObj = parsedDate;
+          } else {
+            const [datePart, timePart] = value.split(' ');
+            const parts = datePart.split(/[\/\-]/);
 
-            let hours = 0;
-            let minutes = 0;
+            if (parts.length === 3) {
+              let day = 0;
+              let month = 0;
+              let year = 0;
 
-            if (timePart) {
-              const time = timePart.split(':').map(Number);
-              hours = time[0] || 0;
-              minutes = time[1] || 0;
+              // yyyy/MM/dd
+              if (parts[0].length === 4) {
+                year = +parts[0];
+                month = +parts[1];
+                day = +parts[2];
+              }
+              // MM/dd/yyyy
+              else if (+parts[0] <= 12 && +parts[1] > 12) {
+                month = +parts[0];
+                day = +parts[1];
+                year = +parts[2];
+              }
+              // dd/MM/yyyy
+              else {
+                day = +parts[0];
+                month = +parts[1];
+                year = +parts[2];
+              }
+
+              let hours = 0;
+              let minutes = 0;
+              let seconds = 0;
+
+              if (timePart) {
+                const timeParts = timePart.split(':');
+
+                hours = Number(timeParts[0]) || 0;
+                minutes = Number(timeParts[1]) || 0;
+                seconds = Number(timeParts[2]) || 0;
+              }
+
+              dateObj = new Date(year, month - 1, day, hours, minutes, seconds);
             }
-
-            dateObj = new Date(year, month - 1, day, hours, minutes);
           }
         }
 
-        // FINAL FORMAT
+        // Format Output
         if (dateObj && !isNaN(dateObj.getTime())) {
-          const day = String(dateObj.getDate()).padStart(2, '0');
-          const month = String(dateObj.getMonth() + 1).padStart(2, '0');
           const year = dateObj.getFullYear();
+          const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+          const day = String(dateObj.getDate()).padStart(2, '0');
 
           const hours = String(dateObj.getHours()).padStart(2, '0');
+
           const minutes = String(dateObj.getMinutes()).padStart(2, '0');
 
-          newRow[field] = `${year}/${month}/${day} ${hours}:${minutes}`;
+          newRow[field] = `${year}/${month}/${day}`;
         } else {
           newRow[field] = '';
         }
@@ -709,42 +802,6 @@ export class ClinicalDataImportFormComponent {
           isValid = false;
           break;
         }
-
-        // if (col.dataField === 'ActivityCode' && val) {
-        //   const cptCodeExists = this.cptCodeList.some(
-        //     (d) =>
-        //       d.DESCRIPTION?.toLowerCase().trim() === val.toLowerCase().trim()
-        //   );
-        //   if (!cptCodeExists) {
-        //     isValid = false;
-        //     this.hasError = true;
-        //     break;
-        //   }
-        // }
-
-        // if (col.dataField === 'Clinician' && val) {
-        //   const clinicianLicenseExists = this.clinicianLicenseList.some(
-        //     (d) =>
-        //       d.DESCRIPTION?.toLowerCase().trim() === val.toLowerCase().trim()
-        //   );
-        //   if (!clinicianLicenseExists) {
-        //     isValid = false;
-        //     this.hasError = true;
-        //     break;
-        //   }
-        // }
-
-        // if (col.dataField === 'OrderingClinician' && val) {
-        //   const clinicianLicenseExists = this.clinicianLicenseList.some(
-        //     (d) =>
-        //       d.DESCRIPTION?.toLowerCase().trim() === val.toLowerCase().trim()
-        //   );
-        //   if (!clinicianLicenseExists) {
-        //     isValid = false;
-        //     this.hasError = true;
-        //     break;
-        //   }
-        // }
       }
 
       if (isValid) validRows.push(row);
