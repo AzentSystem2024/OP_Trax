@@ -37,7 +37,7 @@
           </dx-drop-down-box>
         </div>
 
-        <div class="col-auto">
+        <!-- <div class="col-auto">
           <dx-select-box
             label="Search On"
             labelMode="floating"
@@ -49,7 +49,7 @@
             [width]="180"
           >
           </dx-select-box>
-        </div>
+        </div> -->
 
         <div class="col-auto">
           <dx-select-box
@@ -112,8 +112,8 @@
 
         <div class="col-auto ms-auto mt-3 apply-btn-container d-flex">
           <dx-button
-            text="Apply"
-            icon=""
+            text=""
+            icon="check"
             class="apply_button"
             type="default"
             (onClick)="onApplyFilter()"
@@ -189,7 +189,7 @@
       </dxo-export>
       <dxo-toolbar>
         <dxi-item location="before">
-          <div class="grid-header">Clinical Data</div>
+          <div class="grid-header">Billing Info</div>
         </dxi-item>
 
         <!-- <dxi-item
@@ -254,22 +254,17 @@
       ></dxi-column>
       <dxi-column
         dataField="ClaimNumber"
-        caption="Claim Number"
+        caption="Invoice No"
         [allowEditing]="false"
       ></dxi-column>
-      <dxi-column
+      <!-- <dxi-column
         dataField="ClaimActivityNumber"
         caption="Activity Number"
         [allowEditing]="false"
-      ></dxi-column>
+      ></dxi-column> -->
       <dxi-column
         dataField="TransactionDate"
         caption="Transaction Date"
-        [allowEditing]="false"
-      ></dxi-column>
-      <dxi-column
-        dataField="PatientID"
-        caption="PatientID"
         [allowEditing]="false"
       ></dxi-column>
       <dxi-column
@@ -277,7 +272,22 @@
         caption="Encounter Type"
         [allowEditing]="false"
       ></dxi-column>
+       <dxi-column
+        dataField="PatientID"
+        caption="PatientID"
+        [allowEditing]="false"
+      ></dxi-column>
+       <dxi-column
+        dataField="PatientID"
+        caption="PatientName"
+        [allowEditing]="false"
+      ></dxi-column>
       <dxi-column
+        dataField="Status"
+        caption="Grouper Status"
+        [allowEditing]="false"
+      ></dxi-column>
+      <!-- <dxi-column
         dataField="EncounterStartDate"
         caption="Encounter Start Date"
         [allowEditing]="false"
@@ -286,8 +296,8 @@
         dataField="EncounterEndDate"
         caption="Encounter End Date"
         [allowEditing]="false"
-      ></dxi-column>
-      <dxi-column
+      ></dxi-column> -->
+      <!-- <dxi-column
         dataField="Quantity"
         caption="Quantity"
         [format]="{ type: 'fixedPoint', precision: 2 }"
@@ -298,9 +308,9 @@
         caption="Qty Weight"
         [format]="{ formatter: qtyWeightFormatter }"
         [allowEditing]="canEditRow"
-      ></dxi-column>
+      ></dxi-column> -->
 
-      <dxi-column
+      <!-- <dxi-column
         dataField="CPTCode"
         caption="CPT Code"
         [allowGrouping]="true"
@@ -313,8 +323,8 @@
         [allowGrouping]="true"
         [showWhenGrouped]="true"
         [allowEditing]="false"
-      ></dxi-column>
-      <dxi-column
+      ></dxi-column> -->
+      <!-- <dxi-column
         dataField="RenderingClinician"
         caption="Rendering Clinician"
         [allowGrouping]="true"
@@ -327,24 +337,24 @@
         caption="Amount"
         [format]="{ type: 'fixedPoint', precision: 2 }"
         [allowEditing]="false"
-      ></dxi-column>
-      <dxi-column
+      ></dxi-column> -->
+      <!-- <dxi-column
         dataField="CostingDepartment"
         caption="Costing Department"
         [allowEditing]="false"
-      ></dxi-column>
+      ></dxi-column> -->
       <!-- <dxi-column
         dataField="ProcessStatus"
         caption="Status"
         [allowEditing]="false"
       ></dxi-column> -->
-      <dxi-column
+      <!-- <dxi-column
         dataField="pendingReason"
         caption="Pending Reason"
         [allowGrouping]="true"
         [showWhenGrouped]="true"
         [allowEditing]="false"
-      ></dxi-column>
+      ></dxi-column> -->
 
      <dxi-column type="buttons" [width]="100">
 
@@ -503,11 +513,6 @@
             <td><b>Patient ID : </b></td>
             <td>{{ selectedRowData?.PatientID }}</td>
           </tr>
-
-          <tr>
-            <td><b>Encounter Start Date : </b></td>
-            <td>{{ selectedRowData?.EncounterStartDate }}</td>
-          </tr>
       </div>
 
       <div class="col-md-6 d-flex justify-content-end">
@@ -534,16 +539,6 @@
       </td>
     </tr>
 
-    <tr>
-      <td class="pe-3">
-        <b>Encounter End Date :</b>
-      </td>
-
-      <td>
-        {{ selectedRowData?.EncounterEndDate }}
-      </td>
-    </tr>
-
   </table>
 
 </div>
@@ -559,6 +554,16 @@
       height="450"
     >
 
+    <dxi-column
+        dataField="CPTType"
+        caption="Activity Number"
+      ></dxi-column>
+
+       <dxi-column
+        dataField="ActivityDate"
+        caption="Date"
+      ></dxi-column>
+
       <dxi-column
         dataField="CPTType"
         caption="CPT Type"
@@ -571,16 +576,11 @@
 
       <dxi-column
         dataField="CPTName"
-        caption="CPT Name"
+        caption="CPT Description"
       ></dxi-column>
 
       <dxi-column
-        dataField="OrderingClinician"
-        caption="Ordering Clinician"
-      ></dxi-column>
-
-      <dxi-column
-        dataField="SpecialityName"
+        dataField="Speciality"
         caption="Speciality"
       ></dxi-column>
 
@@ -591,19 +591,19 @@
 
 
       <dxi-column
-        dataField="Amount"
+        dataField="NetAmount"
         caption="Net Amount"
         format="#,##0.00"
       ></dxi-column>
 
       <dxi-column
         caption="ADOC Category"
-        dataField="GroupName"
+        dataField="ADOCCategory"
       ></dxi-column>
 
       <dxi-column
         caption="ADOC Class"
-        dataField="ClassName"
+        dataField="ADOCClass"
       ></dxi-column>
 
       <dxi-column
@@ -626,6 +626,7 @@
 
       <dxi-column
         caption="Remark"
+        dataField="Remarks"
       ></dxi-column>
 
       
@@ -634,8 +635,8 @@
 
   <!-- Net Total under Net Amount column -->
   <dxi-total-item
-    column="Amount"
-    showInColumn="Amount"
+    column="NetAmount"
+    showInColumn="NetAmount"
     summaryType="sum"
     displayFormat="Net Total : {0}"
     [valueFormat]="{
@@ -648,8 +649,8 @@
 
   <!-- Net Billable under Billable column -->
   <dxi-total-item
-    column="Billable"
-    showInColumn="Billable"
+    column="BillPrice"
+    showInColumn="BillPrice"
     summaryType="sum"
     displayFormat="Net Billable : {0}"
     [valueFormat]="{
@@ -687,19 +688,18 @@
 
   <div class="d-flex justify-content-end mt-3 gap-2">
 
+    <dx-button
+    text="Cancel"
+    type="normal"
+    stylingMode="outlined"
+    (onClick)="isRowPopupVisible = false"
+  >
+  </dx-button>
   <dx-button
     text="Process"
     type="default"
     stylingMode="contained"
     (onClick)="onProcessPopupData()"
-  >
-  </dx-button>
-
-  <dx-button
-    text="Cancel"
-    type="normal"
-    stylingMode="outlined"
-    (onClick)="isRowPopupVisible = false"
   >
   </dx-button>
 

@@ -351,7 +351,7 @@ selectedRowData: any = {};
       FacilityID: Array.isArray(this.selectedFacility)
         ? this.selectedFacility.join(',')
         : '',
-      SearchOn: this.selectedSearchOn,
+      // SearchOn: this.selectedSearchOn,
       DateFrom: formatDate(this.fromDate),
       DateTo: formatDate(this.toDate),
     };
