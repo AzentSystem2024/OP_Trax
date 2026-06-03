@@ -94,8 +94,15 @@
   font-size: 18px;
 }
 
-
-
 ::ng-deep .section-card .dx-tab.dx-tab-selected {
-    background: rgb(192, 218, 236);
+  background: rgb(192, 218, 236);
+}
+::ng-deep .latest-row {
+  // background-color: #eaf0f0 !important;
+  font-weight: 600;
+}
+
+::ng-deep .latest-row td {
+  border-top: 2px solid #008080 !important;
+  border-bottom: 2px solid #008080 !important;
 }

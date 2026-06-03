@@ -249,6 +249,29 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     this.IsWeightGlobal = data.cptWeightGlobal;
     this.IsPriceGlobal = data.cptPriceGlobal;
   }
+
+  //==========================
+  onRowPreparedWeightages(e: any) {
+    if (e.rowType !== 'data') return;
+    const data = this.newCptMasterData.CPTWeightages;
+    if (!data || data.length === 0) return;
+    const latestRow = data.reduce((a, b) =>
+      new Date(a.CreatedTime) > new Date(b.CreatedTime) ? a : b
+    );
+    if (e.data === latestRow) {
+      e.rowElement.classList.add('latest-row');
+    }
+  }
+
+  //================latesed  pricerow color change========================
+  onRowPreparedPrice(e: any) {
+    if (
+      e.rowType === 'data' &&
+      e.rowIndex === this.newCptMasterData.CPTPrices.length - 1
+    ) {
+      e.rowElement.classList.add('latest-row');
+    }
+  }
 }
 @NgModule({
   imports: [
