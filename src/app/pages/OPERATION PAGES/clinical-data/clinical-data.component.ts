@@ -262,6 +262,7 @@ selectedRowData: any = {};
     } catch (error) {
       console.error('Initialization error:', error);
     }
+    this.onApplyFilter();
   }
 
   //================ Year value change ===================
@@ -333,6 +334,7 @@ selectedRowData: any = {};
 
   initializeDefaults(): void {
     const today = new Date();
+    this.selectedYear = today.getFullYear();
     this.toDate = today;
     this.fromDate = new Date(today.getFullYear(), 0, 1);
     this.selectedSearchOn = 'EncounterEndDate';
