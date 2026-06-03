@@ -52,7 +52,7 @@ export class CPTWeightageComponent {
 
   isLoading: boolean = false;
   editedRows: any = [];
-  IsWeightGlobal: boolean = false
+  IsWeightGlobal: boolean = false;
 
   constructor(
     private masterService: MasterReportService,
@@ -78,7 +78,7 @@ export class CPTWeightageComponent {
 
     this.loadLookups();
     this.fetchCPTWeightageList();
-    this.get_local_storage_data()
+    this.get_local_storage_data();
   }
 
   loadLookups() {
@@ -109,92 +109,64 @@ export class CPTWeightageComponent {
     this.isLoading = true;
     this.masterService
       .get_CPT_Weightage_List(this.selectedFacilityID || '')
-      .subscribe((response: any) => {
-        if (response.flag === '1') {
-          const data = response.data || [];
-          this.cptWeightageData = data.map((item: any, index: number) => ({
-            ...item,
-            SerialNumber: index + 1,
-            NewWeightage: item.NewWeightage > 0 ? item.NewWeightage : null,
-
-          }));
-          this.originalCptWeightageData = JSON.parse(
-            JSON.stringify(this.cptWeightageData),
+      .subscribe(
+        (response: any) => {
+          if (response.flag === '1') {
+            const data = response.data || [];
+            this.cptWeightageData = data.map((item: any, index: number) => ({
+              ...item,
+              SerialNumber: index + 1,
+              NewWeightage: item.NewWeightage > 0 ? item.NewWeightage : null,
+            }));
+            this.originalCptWeightageData = JSON.parse(
+              JSON.stringify(this.cptWeightageData),
+            );
+            this.isLoading = false;
+          } else {
+            notify('Failed to load CPT Weightage List', 'error', 2000);
+            this.isLoading = false;
+          }
+        },
+        (error) => {
+          notify(
+            'An error occurred while fetching CPT Weightage List',
+            'error',
+            2000,
           );
           this.isLoading = false;
-        } else {
-          notify('Failed to load CPT Weightage List', 'error', 2000);
-          this.isLoading = false;
-        }
-      }, error => {
-        notify('An error occurred while fetching CPT Weightage List', 'error', 2000);
-        this.isLoading = false;
-      });
+        },
+      );
   }
 
   onEditorPreparing(e: any) {
     if (e.parentType === 'dataRow' && e.dataField === 'NewEffectFrom') {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      e.editorOptions.min = today;
-
-      const activeWeightage = e.row.data.ActiveWeightage;
-      const activeEffectFrom = e.row.data.ActiveEffectFrom;
-
-      // Initial Setup
-      if (!activeWeightage && !activeEffectFrom) {
-        return;
-      }
-
-      const activeDate = new Date(activeEffectFrom);
-      activeDate.setHours(0, 0, 0, 0);
-
-      // Optional: user can't select dates <= active date
-      const minDate = new Date(activeDate);
-      minDate.setDate(minDate.getDate() + 1);
-
-      if (minDate > today) {
-        e.editorOptions.min = minDate;
-      }
+      delete e.editorOptions.min;
     }
   }
 
   validateNewEffectFrom = (e: any) => {
     if (!e.value) {
-      return false;
+      return true;
     }
 
     const newEffectFrom = new Date(e.value);
     newEffectFrom.setHours(0, 0, 0, 0);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Never allow past dates
-    if (newEffectFrom < today) {
-      return false;
-    }
-
-    const activeWeightage = e.data?.ActiveWeightage ?? e.row?.data?.ActiveWeightage;
+    const activeWeightage =
+      e.data?.ActiveWeightage ?? e.row?.data?.ActiveWeightage;
 
     const activeEffectFrom =
       e.data?.ActiveEffectFrom ?? e.row?.data?.ActiveEffectFrom;
-
-    // Initial Setup
     if (!activeWeightage && !activeEffectFrom) {
+      return true;
+    }
+    if (!activeEffectFrom) {
       return true;
     }
 
     const activeDate = new Date(activeEffectFrom);
     activeDate.setHours(0, 0, 0, 0);
-
-    // Existing validation
-    if (newEffectFrom <= activeDate) {
-      return false;
-    }
-
-    return true;
+    return newEffectFrom > activeDate;
   };
 
   onRowUpdated(e: any) {
@@ -209,7 +181,7 @@ export class CPTWeightageComponent {
     const isModified =
       originalRow.NewWeightage !== e.data.NewWeightage ||
       new Date(originalRow.NewEffectFrom).getTime() !==
-      new Date(e.data.NewEffectFrom).getTime();
+        new Date(e.data.NewEffectFrom).getTime();
 
     e.data.IsModified = isModified;
   }
@@ -298,8 +270,8 @@ export class CPTWeightageComponent {
 
   //======================Logcal storage Data ======================
   get_local_storage_data() {
-    const data = JSON.parse(localStorage.getItem('logData') || '')
-    this.IsWeightGlobal = data.cptWeightGlobal
+    const data = JSON.parse(localStorage.getItem('logData') || '');
+    this.IsWeightGlobal = data.cptWeightGlobal;
   }
 }
 @NgModule({
@@ -319,4 +291,4 @@ export class CPTWeightageComponent {
   exports: [],
   declarations: [CPTWeightageComponent],
 })
-export class CPTWeightageListModule { }
+export class CPTWeightageListModule {}
