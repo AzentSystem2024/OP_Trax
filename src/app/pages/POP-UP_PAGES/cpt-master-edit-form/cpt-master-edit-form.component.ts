@@ -129,7 +129,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         this.getCpt_DropDown(),
         this.get_ADOC_CLASS_Dropdown(),
         this.get_ADOC_GROUP_Dropdown(),
-        this.get_local_storage_data()
+        this.get_local_storage_data(),
       ]);
 
       this.dropdownsLoaded = true;
@@ -242,12 +242,34 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     this.Facility_Value = null;
   }
 
-
   //======================Logcal storage Data ======================
   get_local_storage_data() {
     const data = JSON.parse(localStorage.getItem('logData') || '');
     this.IsWeightGlobal = data.cptWeightGlobal;
     this.IsPriceGlobal = data.cptPriceGlobal;
+  }
+
+  //==========================
+  onRowPreparedWeightages(e: any) {
+    if (e.rowType !== 'data') return;
+    const data = this.newCptMasterData.CPTWeightages;
+    if (!data || data.length === 0) return;
+    const latestRow = data.reduce((a: any, b: any) =>
+      new Date(a.CreatedTime) > new Date(b.CreatedTime) ? a : b,
+    );
+    if (e.data === latestRow) {
+      e.rowElement.classList.add('latest-row');
+    }
+  }
+
+  //================latesed  pricerow color change========================
+  onRowPreparedPrice(e: any) {
+    if (
+      e.rowType === 'data' &&
+      e.rowIndex === this.newCptMasterData.CPTPrices.length - 1
+    ) {
+      e.rowElement.classList.add('latest-row');
+    }
   }
 }
 @NgModule({
@@ -271,4 +293,4 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   declarations: [CptMasterEditFormComponent],
   exports: [CptMasterEditFormComponent],
 })
-export class CptMasterEditFormModule { }
+export class CptMasterEditFormModule {}

@@ -69,6 +69,7 @@ export class ClinicalDataComponent implements OnInit {
   clinicianEditComponent!: ClinicianEditFormComponent;
 
   @ViewChild('excelFileInput') excelFileInput!: any;
+
   @ViewChild('popupGrid', { static: false }) popupGrid: any;
 
   isAddFormPopupOpened: any = false;
@@ -176,28 +177,7 @@ export class ClinicalDataComponent implements OnInit {
   today: Date = new Date();
 
   dataSource!: DataSource<any, any>;
-  //  dataSource: DataSource<any> | any[] = [
-  //   {
-  //     FacilityID: 'FAC001',
-  //     ClaimNumber: 'CLM10001',
-  //     ClaimActivityNumber: 'ACT5001',
-  //     TransactionDate: '01-06-2026',
-  //     PatientID: 'PAT12345',
-  //     EncounterType: 'Outpatient',
-  //     EncounterStartDate: '01-06-2026',
-  //     EncounterEndDate: '01-06-2026',
-  //     Quantity: 2.0,
-  //     Qty_Weight: 1.5,
-  //     CPTCode: 'CPT99213',
-  //     OrderingClinician: 'Dr. John Mathew',
-  //     RenderingClinician: 'Dr. Sarah Thomas',
-  //     Amount: 1500.75,
-  //     Billable: 1500.75,
-  //     CostingDepartment: 'Radiology',
-  //     ProcessStatus: 'Pending',
-  //     pendingReason: 'Awaiting Approval',
-  //   },
-  // ];
+
   isRowPopupVisible: boolean = false;
   selectedRowData: any = {};
 
@@ -228,6 +208,11 @@ export class ClinicalDataComponent implements OnInit {
   FileName: any;
   popupGridData: any[] = [];
   isPopupProcessing: boolean = false;
+
+  exportFormats = [
+    { text: 'Excel', format: 'xlsx' },
+    { text: 'CSV', format: 'csv' },
+  ];
 
   constructor(
     private service: ReportService,
@@ -1028,7 +1013,6 @@ export class ClinicalDataComponent implements OnInit {
 
           console.log('Modified Data:', this.popupGridData);
 
-          this.onApplyFilter();
           this.isRowPopupVisible = true;
         } else {
           this.popupGridData = [];
@@ -1038,6 +1022,25 @@ export class ClinicalDataComponent implements OnInit {
       error: (err) => {
         console.error(err);
         notify('Error loading popup data', 'error', 3000);
+      },
+    });
+  }
+
+  ReRunGrouper() {
+    const payload = {
+      ClaimUID: this.selectedRowData?.ClaimUID || 0,
+      IsReprocess: true,
+    };
+    this.operationService.get_ReProcess_ClinicalDataInPopup(payload).subscribe({
+      next: (res: any) => {
+        if (res.flag === '1') {
+          this.getClinicalDataPopupData();
+          notify('Grouper re-run successfully', 'success', 3000);
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        notify('Error re-running grouper', 'error', 3000);
       },
     });
   }
@@ -1063,15 +1066,6 @@ export class ClinicalDataComponent implements OnInit {
     }, 500);
     this.onApplyFilter();
   }
-
-  ReRunGrouper(){
-   this.getClinicalDataPopupData();
-  }
-
-  exportFormats = [
-    { text: 'Excel', format: 'xlsx' },
-    { text: 'CSV', format: 'csv' },
-  ];
 
   async onExportClick(e: any) {
     const workbook = new Workbook();
