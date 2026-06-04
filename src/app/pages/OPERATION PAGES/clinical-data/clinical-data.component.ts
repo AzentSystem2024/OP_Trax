@@ -214,6 +214,8 @@ export class ClinicalDataComponent implements OnInit {
     { text: 'CSV', format: 'csv' },
   ];
 
+  billableTotal: any = 0;
+
   constructor(
     private service: ReportService,
     private router: Router,
@@ -1006,13 +1008,8 @@ export class ClinicalDataComponent implements OnInit {
     this.operationService.getClinicalDataInPopup(payload).subscribe({
       next: (res: any) => {
         if (res.flag === '1') {
-          this.popupGridData = (res.data || []).map((item: any) => ({
-            ...item,
-            BillPrice: item.Billable === false ? 0 : item.Price,
-          }));
-
-          console.log('Modified Data:', this.popupGridData);
-
+          this.popupGridData = res.data || [];
+          this.calculateBillableTotal();
           this.isRowPopupVisible = true;
         } else {
           this.popupGridData = [];
@@ -1025,6 +1022,24 @@ export class ClinicalDataComponent implements OnInit {
       },
     });
   }
+
+  calculateBillableTotal(): void {
+    this.billableTotal = (this.popupGridData || [])
+      .filter((item: any) => item.Billable === true)
+      .reduce(
+        (total: number, item: any) => total + Number(item.BillPrice || 0),
+        0,
+      );
+
+    console.log('Billable Total:', this.billableTotal);
+  }
+
+  billableSummaryText = () => {
+    return `Net Billable : AED ${this.billableTotal.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
 
   ReRunGrouper() {
     const payload = {
