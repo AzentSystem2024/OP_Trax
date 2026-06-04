@@ -54,7 +54,10 @@ export class PriceMasterComponent {
 
   isLoading: boolean = false;
   editedRows: any = [];
-  IsGlobarPrice: boolean = false;
+  IsGlobalPrice: boolean = false;
+
+  PriceHistoryData: any = [];
+  historyPopupVisible: boolean = false;
 
   constructor(
     private masterService: MasterReportService,
@@ -138,6 +141,21 @@ export class PriceMasterComponent {
           this.isLoading = false;
         },
       );
+  }
+
+  onHistoryClick(e: any) {
+    const ID = e.row.data.CPTID;
+    this.isLoading = true;
+    this.masterService.selectCptMaster(ID).subscribe((response: any) => {
+      if (response.flag === '1') {
+        this.PriceHistoryData = response.data[0].CPTPrices || [];
+        this.historyPopupVisible = true;
+        this.isLoading = false;
+      } else {
+        notify('Failed to load Price History', 'error', 2000);
+        this.isLoading = false;
+      }
+    });
   }
 
   onEditorPreparing(e: any) {
@@ -278,7 +296,7 @@ export class PriceMasterComponent {
   get_local_storage_data() {
     const data = JSON.parse(localStorage.getItem('logData') || '');
     console.log('Retrieved log data from local storage:', data);
-    this.IsGlobarPrice = data.cptPriceGlobal;
+    this.IsGlobalPrice = data.cptPriceGlobal;
   }
 }
 

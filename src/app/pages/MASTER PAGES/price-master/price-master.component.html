@@ -13,6 +13,7 @@
     [editing]="{
       mode: 'cell',
       allowUpdating: true,
+      startEditAction: 'dblClick',
     }"
     height="82vh"
     [allowColumnResizing]="true"
@@ -52,7 +53,7 @@
 
       <!-- Facility Dropdown -->
       <dxi-item
-        *ngIf="!IsGlobarPrice"
+        *ngIf="!IsGlobalPrice"
         location="after"
         widget="dxSelectBox"
         [options]="facilitySelectOptions"
@@ -184,7 +185,47 @@
         </dxi-validation-rule>
       </dxi-column>
     </dxi-column>
+
+    <dxi-column type="buttons" [width]="60">
+      <dxi-button
+        hint="View History Data"
+        icon="errorcircle"
+        [onClick]="onHistoryClick.bind(this)"
+      >
+      </dxi-button>
+    </dxi-column>
   </dx-data-grid>
+
+  <!-- =========== History Popup =========== -->
+  <dx-popup
+    [(visible)]="historyPopupVisible"
+    [width]="'60%'"
+    [height]="'60vh'"
+    title="CPT Price History"
+    [showCloseButton]="true"
+  >
+    <dx-data-grid
+      [dataSource]="PriceHistoryData"
+      [showBorders]="true"
+      height="50vh"
+    >
+      <dxi-column
+        dataField="FacilityID"
+        caption="Facility"
+        [visible]="!IsGlobalPrice"
+      ></dxi-column>
+      <dxi-column
+        dataField="Price"
+        caption="Price"
+        dataType="number"
+      ></dxi-column>
+
+      <dxi-column dataField="EffectFrom" caption="Effective From"></dxi-column>
+
+      <dxi-column dataField="EffectTo" caption="Effective To"></dxi-column>
+      <dxi-column dataField="CreatedTime" caption="Updated Time"></dxi-column>
+    </dx-data-grid>
+  </dx-popup>
 </div>
 <dx-load-panel
   [showPane]="false"

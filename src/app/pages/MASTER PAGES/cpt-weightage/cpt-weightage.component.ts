@@ -54,6 +54,9 @@ export class CPTWeightageComponent {
   editedRows: any = [];
   IsWeightGlobal: boolean = false;
 
+  historyPopupVisible:boolean = false;
+  weighategHistoryData:any = [];
+
   constructor(
     private masterService: MasterReportService,
     private service: ReportService,
@@ -64,6 +67,9 @@ export class CPTWeightageComponent {
       const fullUrl = segments.map((s) => s.path).join('/');
       this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
     });
+
+     const data = JSON.parse(localStorage.getItem('logData') || '');
+    this.IsWeightGlobal = data.cptWeightGlobal;
 
     this.saveButtonOptions = {
       class: 'ms-2',
@@ -136,6 +142,22 @@ export class CPTWeightageComponent {
           this.isLoading = false;
         },
       );
+  }
+
+   onHistoryClick(e: any) {
+    
+    const ID = e.row.data.CPTID;
+    this.isLoading = true;
+    this.masterService.selectCptMaster(ID).subscribe((response: any) => {
+      if (response.flag === '1') {
+        this.weighategHistoryData = response.data[0].CPTWeightages || [];
+        this.historyPopupVisible = true;
+        this.isLoading = false;
+      } else {
+        notify('Failed to load Weightage History', 'error', 2000);
+        this.isLoading = false;
+      }
+    });
   }
 
   onEditorPreparing(e: any) {

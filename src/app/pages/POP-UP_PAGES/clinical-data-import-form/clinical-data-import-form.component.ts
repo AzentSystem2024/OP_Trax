@@ -94,7 +94,7 @@ export class ClinicalDataImportFormComponent {
       IsNumeric: false,
     },
     {
-      dataField: 'ClaimNumber',
+      dataField: 'InvoiceNumber',
       caption: 'Invoice Number',
       IsMandatory: true,
       IsNumeric: false,
@@ -160,6 +160,12 @@ export class ClinicalDataImportFormComponent {
       IsNumeric: false,
     },
     {
+      dataField: 'PatientName',
+      caption: 'Patient Name',
+      IsMandatory: false,
+      IsNumeric: false,
+    },
+    {
       dataField: 'Speciality',
       caption: 'Speciality',
       visible: false,
@@ -209,7 +215,7 @@ export class ClinicalDataImportFormComponent {
       IsNumeric: false,
     },
     {
-      dataField: 'ClaimNumber',
+      dataField: 'InvoiceNumber',
       caption: 'Invoice Number',
       IsMandatory: true,
       IsNumeric: false,
@@ -236,7 +242,7 @@ export class ClinicalDataImportFormComponent {
       IsNumeric: false,
     },
     {
-      dataField: 'ClaimNumber',
+      dataField: 'InvoiceNumber',
       caption: 'Invoice Number',
       IsMandatory: true,
       IsNumeric: false,
@@ -308,7 +314,7 @@ export class ClinicalDataImportFormComponent {
       IsNumeric: false,
     },
     {
-      dataField: 'ClaimNumber',
+      dataField: 'InvoiceNumber',
       caption: 'Invoice Number',
       IsMandatory: true,
       IsNumeric: false,
