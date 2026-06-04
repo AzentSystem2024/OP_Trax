@@ -19,6 +19,7 @@ import {
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
+import { DataSource } from 'devextreme/common/data';
 
 @Component({
   selector: 'app-price-master',
@@ -111,36 +112,44 @@ export class PriceMasterComponent {
   }
 
   fetchCPTPriceList() {
-    this.isLoading = true;
-    this.masterService
-      .get_CPT_Price_List(this.selectedFacilityID || '')
-      .subscribe(
-        (response: any) => {
-          if (response.flag === '1') {
-            const data = response.data || [];
-            this.cptPriceData = data.map((item: any, index: number) => ({
-              ...item,
-              SerialNumber: index + 1,
-              NewPrice: item.NewPrice > 0 ? item.NewPrice : null,
-            }));
-            this.originalCptPriceData = JSON.parse(
-              JSON.stringify(this.cptPriceData),
-            );
-            this.isLoading = false;
-          } else {
-            notify('Failed to load CPT Price List', 'error', 2000);
-            this.isLoading = false;
-          }
-        },
-        (error) => {
-          notify(
-            'An error occurred while fetching CPT Price List',
-            'error',
-            2000,
-          );
-          this.isLoading = false;
-        },
-      );
+    this.cptPriceData = new DataSource({
+      load: () =>
+        new Promise((resolve, reject) => {
+          this.masterService
+            .get_CPT_Price_List(this.selectedFacilityID || '')
+            .subscribe({
+              next: (response: any) => {
+                if (response.flag === '1') {
+                  const data = (response.data || []).map(
+                    (item: any, index: number) => ({
+                      ...item,
+                      SerialNumber: index + 1,
+                      NewPrice: item.NewPrice > 0 ? item.NewPrice : null,
+                    }),
+                  );
+
+                  this.cptPriceData = data;
+
+                  this.originalCptPriceData = JSON.parse(JSON.stringify(data));
+
+                  resolve(data);
+                } else {
+                  notify('Failed to load CPT Price List', 'error', 2000);
+                  reject('Failed to load CPT Price List');
+                }
+              },
+              error: (error) => {
+                notify(
+                  'An error occurred while fetching CPT Price List',
+                  'error',
+                  2000,
+                );
+
+                reject(error);
+              },
+            });
+        }),
+    });
   }
 
   onHistoryClick(e: any) {
