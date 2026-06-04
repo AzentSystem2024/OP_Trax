@@ -128,6 +128,17 @@ export class ADOCClassComponent {
     this.addForm?.instance.reset();
   }
 
+
+  isDuplicateClassCode(code: string): boolean {
+
+  const gridData = this.dataGrid.instance.getDataSource().items();
+
+  return gridData.some((item: any) =>
+    item.ClassCode?.trim().toLowerCase() ===
+    code.trim().toLowerCase()
+  );
+}
+
   // =========== Save data  =========
   onDataSaving() {
     const result = validationEngine.validateGroup('adocClassValidation');
@@ -143,6 +154,22 @@ export class ADOCClassComponent {
       );
       return;
     }
+
+    // ===== Duplicate Check =====
+
+  if (this.isDuplicateClassCode(this.newADOCClass.Code)) {
+
+    notify(
+      {
+        message: 'Class Code already exists',
+        position: { at: 'top right', my: 'top right' },
+        displayTime: 1000,
+      },
+      'error',
+    );
+
+    return;
+  }
 
     this.masterService
       .Insert_adocClass_Data(
