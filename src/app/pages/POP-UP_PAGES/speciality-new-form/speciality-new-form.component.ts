@@ -39,6 +39,18 @@ export class SpecialityNewFormComponent {
     ...this.newSpecialityData,
     IsBillable: this.IsBillable
   });
+
+  resetForm() {
+    this.newSpecialityData = {
+      SpecialityCode: '',
+      SpecialityName: '',
+      SpecialityShortName: '',
+      Description: '',
+      IsBillable: false
+    };
+
+    this.IsBillable = true;
+  }
 }
 @NgModule({
   imports: [

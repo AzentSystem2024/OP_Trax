@@ -11,6 +11,7 @@ import {
   DxDataGridModule,
   DxDropDownButtonModule,
   DxLookupModule,
+  DxPopupModule,
   DxSelectBoxModule,
   DxTextBoxModule,
 } from 'devextreme-angular';
@@ -98,10 +99,41 @@ export class ClinicianProfessionComponent {
     const fileName = 'clinician_profession';
     this.service.exportDataGrid(event, fileName);
   }
+
+  isDuplicateProfession(
+  profession: string,
+  currentId: number = 0
+): boolean {
+
+  const gridData = this.dataGrid.instance.getDataSource().items();
+
+  return gridData.some((item: any) =>
+    item.Profession?.trim().toLowerCase() ===
+    profession.trim().toLowerCase() &&
+    item.ID !== currentId
+  );
+}
+
   //====================Add data ================================
   onClickSaveNewData = () => {
     const { ProfessionValue, DescriptionValue } =
       this.ClinicianProfession.getNewclinicianProfession();
+
+       // ===== Duplicate Check =====
+
+  if (this.isDuplicateProfession(ProfessionValue)) {
+
+    notify(
+      {
+        message: 'Profession already exists',
+        position: { at: 'top right', my: 'top right' },
+      },
+      'error'
+    );
+
+    return false;
+  }
+
     this.masterService
       .Insert_ClinicianProfession_Data(ProfessionValue, DescriptionValue)
       .subscribe((response: any) => {
@@ -166,6 +198,28 @@ export class ClinicianProfessionComponent {
     let Profession = combinedData.Profession;
     let Description = combinedData.Description;
 
+    // ===== Duplicate Check =====
+
+  if (
+    this.isDuplicateProfession(
+      combinedData.Profession,
+      combinedData.ID
+    )
+  ) {
+
+    notify(
+      {
+        message: 'Profession already exists',
+        position: { at: 'top right', my: 'top right' },
+      },
+      'error'
+    );
+
+    event.cancel = true;
+    return;
+  }
+
+
     this.masterService
       .update_ClinicianProfession_data(id, Profession, Description)
       .subscribe((data: any) => {
@@ -217,6 +271,7 @@ export class ClinicianProfessionComponent {
     DxLookupModule,
     FormPopupModule,
     ClinicianProfessionNewFormModule,
+    DxPopupModule
   ],
   providers: [],
   exports: [],

@@ -31,13 +31,7 @@
 
       <dxo-form [colCount]="2" labelMode="floating">
         <!-- Code -->
-        <dxi-item
-          dataField="SpecialityCode"
-          [colSpan]="2"
-          [editorOptions]="{
-            readOnly: true,
-          }"
-        >
+        <dxi-item dataField="SpecialityCode" [colSpan]="2">
           <dxi-validation-rule
             type="required"
             message="Speciality Code is required"

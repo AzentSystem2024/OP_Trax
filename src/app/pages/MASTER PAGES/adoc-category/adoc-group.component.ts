@@ -118,6 +118,17 @@ export class ADOCGroupComponent {
     this.addForm?.instance.reset();
   }
 
+
+  isDuplicateGroupCode(code: string, currentId: number = 0): boolean {
+
+  const gridData = this.dataGrid.instance.getDataSource().items();
+
+  return gridData.some((item: any) =>
+    item.GroupCode?.trim().toLowerCase() === code.trim().toLowerCase() &&
+    item.ID !== currentId
+  );
+}
+
   // =========== Save data  =========
   saveADOCGroup() {
     const result = validationEngine.validateGroup('adocGroupValidation');
@@ -133,6 +144,21 @@ export class ADOCGroupComponent {
       );
       return;
     }
+
+
+    if (this.isDuplicateGroupCode(this.newADOCGroup.GroupCode)) {
+
+    notify(
+      {
+        message: 'Code already exists',
+        position: { at: 'top right', my: 'top right' },
+        displayTime: 1000,
+      },
+      'error',
+    );
+
+    return;
+  }
 
     this.masterService
       .Insert_adocGroup_Data(
