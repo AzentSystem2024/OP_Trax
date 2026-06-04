@@ -14,6 +14,7 @@ import {
   DxTextBoxModule,
   DxLookupModule,
   DxDataGridComponent,
+  DxCheckBoxModule,
 } from 'devextreme-angular';
 import { FormPopupModule } from 'src/app/components';
 import { InsuranceNewFormModule } from '../../POP-UP_PAGES/insurance-new-form/insurance-new-form.component';
@@ -299,6 +300,7 @@ export class SpecialityComponent {
   clearSpecialityForm() {
     this.SpecialityNewForm.resetForm();
   }
+
 }
 @NgModule({
   imports: [
@@ -312,6 +314,7 @@ export class SpecialityComponent {
     DxLookupModule,
     FormPopupModule,
     SpecialityNewFormModule,
+    DxCheckBoxModule
   ],
   providers: [],
   exports: [],
