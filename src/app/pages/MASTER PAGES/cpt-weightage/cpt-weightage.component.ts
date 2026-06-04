@@ -17,6 +17,7 @@ import {
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
+import { DataSource } from 'devextreme/common/data';
 
 @Component({
   selector: 'app-cpt-weightage',
@@ -54,8 +55,8 @@ export class CPTWeightageComponent {
   editedRows: any = [];
   IsWeightGlobal: boolean = false;
 
-  historyPopupVisible:boolean = false;
-  weighategHistoryData:any = [];
+  historyPopupVisible: boolean = false;
+  weighategHistoryData: any = [];
 
   constructor(
     private masterService: MasterReportService,
@@ -68,7 +69,7 @@ export class CPTWeightageComponent {
       this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
     });
 
-     const data = JSON.parse(localStorage.getItem('logData') || '');
+    const data = JSON.parse(localStorage.getItem('logData') || '');
     this.IsWeightGlobal = data.cptWeightGlobal;
 
     this.saveButtonOptions = {
@@ -112,40 +113,48 @@ export class CPTWeightageComponent {
   }
 
   fetchCPTWeightageList() {
-    this.isLoading = true;
-    this.masterService
-      .get_CPT_Weightage_List(this.selectedFacilityID || '')
-      .subscribe(
-        (response: any) => {
-          if (response.flag === '1') {
-            const data = response.data || [];
-            this.cptWeightageData = data.map((item: any, index: number) => ({
-              ...item,
-              SerialNumber: index + 1,
-              NewWeightage: item.NewWeightage > 0 ? item.NewWeightage : null,
-            }));
-            this.originalCptWeightageData = JSON.parse(
-              JSON.stringify(this.cptWeightageData),
-            );
-            this.isLoading = false;
-          } else {
-            notify('Failed to load CPT Weightage List', 'error', 2000);
-            this.isLoading = false;
-          }
-        },
-        (error) => {
-          notify(
-            'An error occurred while fetching CPT Weightage List',
-            'error',
-            2000,
-          );
-          this.isLoading = false;
-        },
-      );
+    this.cptWeightageData = new DataSource({
+      load: () =>
+        new Promise((resolve, reject) => {
+          this.masterService
+            .get_CPT_Weightage_List(this.selectedFacilityID || '')
+            .subscribe({
+              next: (response: any) => {
+                if (response.flag === '1') {
+                  const data = (response.data || []).map(
+                    (item: any, index: number) => ({
+                      ...item,
+                      SerialNumber: index + 1,
+                      NewWeightage:
+                        item.NewWeightage > 0 ? item.NewWeightage : null,
+                    }),
+                  );
+
+                  this.cptWeightageData = data;
+                  this.originalCptWeightageData = JSON.parse(
+                    JSON.stringify(data),
+                  );
+
+                  resolve(data);
+                } else {
+                  notify('Failed to load CPT Weightage List', 'error', 2000);
+                  reject('Failed to load CPT Weightage List');
+                }
+              },
+              error: (error) => {
+                notify(
+                  'An error occurred while fetching CPT Weightage List',
+                  'error',
+                  2000,
+                );
+                reject(error);
+              },
+            });
+        }),
+    });
   }
 
-   onHistoryClick(e: any) {
-    
+  onHistoryClick(e: any) {
     const ID = e.row.data.CPTID;
     this.isLoading = true;
     this.masterService.selectCptMaster(ID).subscribe((response: any) => {
