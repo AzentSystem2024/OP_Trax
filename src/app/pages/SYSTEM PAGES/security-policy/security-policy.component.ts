@@ -53,7 +53,7 @@ export class SecurityPolicyComponent implements OnInit {
   minAllowedLength: number = 6;
   userId: any;
   currentPathName: any;
-  initialized: boolean;
+  initialized: boolean=false;
 
   MFAvalidationRequired: boolean = false;
   isGoogleAuthenticator: boolean = false;
@@ -249,11 +249,11 @@ export class SecurityPolicyComponent implements OnInit {
     this.customSMS = false;
     this.customEmail = false;
     this.customWhatsapp = false;
-    this.customSingleToken = null;
+    this.customSingleToken = false;
   }
 
   //========== only allow select one check box under the MFA ========
-  onCheckboxChanged(authType: string, isChecked: boolean): void {
+  onCheckboxChanged(authType: string, isChecked: any): void {
     if (!isChecked) return; // do nothing when unchecking
     this.isGoogleAuthenticator = authType === 'google';
     this.isMicrosoftAuthenticator = authType === 'microsoft';

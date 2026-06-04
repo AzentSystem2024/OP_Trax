@@ -68,6 +68,7 @@ export class AuthService {
   get isTokenValid(): boolean {
     try {
       const token = sessionStorage.getItem('AuthToken') || '';
+      console.log('Checking token validity:', token);
       return !!token;
     } catch {
       return false;
