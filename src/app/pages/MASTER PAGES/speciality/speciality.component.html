@@ -25,7 +25,7 @@
         title="Edit Speciality"
         [showTitle]="true"
         width="600"
-        height="450"
+        height="490"
       >
       </dxo-popup>
 
@@ -77,6 +77,16 @@
             type="required"
             message="Description is required"
           ></dxi-validation-rule>
+        </dxi-item>
+        <!-- Billable Checkbox -->
+        <dxi-item
+          dataField="IsBillable"
+          editorType="dxCheckBox"
+          [label]="{ visible: false }"
+          [editorOptions]="{
+            text: 'Billable',
+          }"
+        >
         </dxi-item>
       </dxo-form>
     </dxo-editing>
@@ -156,6 +166,12 @@
       caption="Short Name"
     ></dxi-column>
     <dxi-column dataField="Description" caption="Description"></dxi-column>
+    <dxi-column dataField="Billlable" caption="Billable"></dxi-column>
+    <dxi-column
+      dataField="IsBillable"
+      caption="Billable"
+      [visible]="false"
+    ></dxi-column>
   </dx-data-grid>
 
   <form-popup

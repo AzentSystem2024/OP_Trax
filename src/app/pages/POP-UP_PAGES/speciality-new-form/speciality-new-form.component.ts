@@ -7,6 +7,7 @@ import {
   DxValidatorModule,
   DxTextAreaModule,
   DxSelectBoxModule,
+  DxCheckBoxModule,
 } from 'devextreme-angular';
 import { FormTextboxModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
@@ -23,16 +24,21 @@ export class SpecialityNewFormComponent {
     SpecialityName: '',
     SpecialityShortName: '',
     Description: '',
+    IsBillable: false,
   };
+  IsBillable: boolean = false;
 
   newSpecialityData = this.SpecialityData;
-  constructor(private masterService: MasterReportService) {}
+  constructor(private masterService: MasterReportService) { }
 
- validateForm(): boolean {
-  return validationEngine.validateGroup('specialityValidation').isValid || false;
-}
+  validateForm(): boolean {
+    return validationEngine.validateGroup('specialityValidation').isValid || false;
+  }
 
-  getNewSpecialityData = () => ({ ...this.newSpecialityData });
+  getNewSpecialityData = () => ({
+    ...this.newSpecialityData,
+    IsBillable: this.IsBillable
+  });
 }
 @NgModule({
   imports: [
@@ -45,8 +51,9 @@ export class SpecialityNewFormComponent {
     ReactiveFormsModule,
     DxSelectBoxModule,
     DxTextAreaModule,
+    DxCheckBoxModule,
   ],
   declarations: [SpecialityNewFormComponent],
   exports: [SpecialityNewFormComponent],
 })
-export class SpecialityNewFormModule {}
+export class SpecialityNewFormModule { }

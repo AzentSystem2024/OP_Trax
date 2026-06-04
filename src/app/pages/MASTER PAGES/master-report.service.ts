@@ -19,7 +19,7 @@ export class MasterReportService {
   constructor(
     private http: HttpClient,
     private config: ConfigService,
-  ) {}
+  ) { }
 
   private get BASE_URL(): string {
     return this.config.apiBaseUrl;
@@ -104,6 +104,7 @@ export class MasterReportService {
     SpecialityName: any,
     SpecialityShortName: any,
     Description: any,
+    IsBillable: any
   ) {
     const url = `${this.BASE_URL}speciality/insert`;
     const reqBody = {
@@ -111,6 +112,7 @@ export class MasterReportService {
       SpecialityName: SpecialityName,
       SpecialityShortName: SpecialityShortName,
       Description: Description,
+      IsBillable: IsBillable
     };
 
     return this.http.post(url, reqBody);
@@ -123,6 +125,7 @@ export class MasterReportService {
     SpecialityName: any,
     SpecialityShortName: any,
     Description: any,
+    IsBillable: any
   ) {
     const url = `${this.BASE_URL}speciality/update`;
     const reqBody = {
@@ -131,6 +134,7 @@ export class MasterReportService {
       SpecialityName: SpecialityName,
       SpecialityShortName: SpecialityShortName,
       Description: Description,
+      IsBillable: IsBillable
     };
 
     return this.http.post(url, reqBody);
@@ -1248,7 +1252,7 @@ export class MasterReportService {
 
     return this.http.post(Url, reqBody);
   }
-  
+
   //=====Add ADCO Class data========
   Insert_adocClass_Data(Code: any, Name: any, GroupID: any, IsInactive: any) {
     const url = `${this.BASE_URL}ADOCClass/save`;
