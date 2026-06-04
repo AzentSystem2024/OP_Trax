@@ -485,9 +485,18 @@
     </div>
 
     <div class="d-flex justify-content-end mb-2 gap-2">
+       <dx-button
+    icon="refresh"
+    text=""
+    type="default"
+    stylingMode="contained"
+    (onClick)="ReRunGrouper()"
+  >
+  </dx-button>
+
       <dx-drop-down-button
         icon="export"
-        text="export"
+        text=""
         stylingMode="contained"
         type="default"
         [showArrowIcon]="false"
@@ -518,7 +527,7 @@
       <!-- Pagination -->
       <dxo-paging [pageSize]="10"> </dxo-paging>
       <dxo-pager
-        [visible]="true"
+        [visible]="false"
         [allowedPageSizes]="allowedPageSizes"
         [displayMode]="displayMode"
         [showPageSizeSelector]="showPageSizeSelector"
@@ -607,15 +616,26 @@
   </div>
 
   <div class="d-flex justify-content-end mt-3 gap-2">
-    
-    <dx-button
-     *ngIf="selectedRowData?.Status === 'Applied'"
-    text="Re-run Grouper"
-    type="default"
-    stylingMode="contained"
-    (onClick)="ReRunGrouper()"
+    <!-- <dx-drop-down-button
+  icon="export"
+  stylingMode="contained"
+  type="default"
+  text="export"
+  [showArrowIcon]="false"
+  [items]="exportFormats"
+  displayExpr="text"
+  keyExpr="format"
+  [elementAttr]="{ class: 'custom-export-btn' }"
+  (onItemClick)="onExportClick($event)">
+</dx-drop-down-button> -->
+    <!-- <dx-button
+    text="Cancel"
+    type="normal"
+    stylingMode="outlined"
+    (onClick)="isRowPopupVisible = false"
   >
-  </dx-button>
+  </dx-button> -->
+   
 
     <dx-load-panel
       [(visible)]="isPopupProcessing"
