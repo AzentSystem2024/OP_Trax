@@ -86,7 +86,6 @@ export class ClinicianComponent implements OnInit {
         onClick: () => {
           this.clinicianComponent.reset_newClinicianFormData();
           this.isAddClinicianPopupOpened = false;
-          // this.popupStateService.setPopupState('clinicianPopup', false);
         },
       },
       toolbar: 'bottom',
@@ -113,9 +112,8 @@ export class ClinicianComponent implements OnInit {
         stylingMode: 'outlined',
         type: 'normal',
         onClick: () => {
-          this.clinicianComponent.reset_newClinicianFormData();
+          this.clinicianEditComponent.reset_newClinicianFormData();
           this.isEditClinicianPopupOpened = false;
-          // this.popupStateService.setPopupState('clinicianPopup', false);
         },
       },
       toolbar: 'bottom',

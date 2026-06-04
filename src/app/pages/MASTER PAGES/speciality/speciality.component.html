@@ -31,13 +31,7 @@
 
       <dxo-form [colCount]="2" labelMode="floating">
         <!-- Code -->
-        <dxi-item
-          dataField="SpecialityCode"
-          [colSpan]="2"
-          [editorOptions]="{
-            readOnly: true,
-          }"
-        >
+        <dxi-item dataField="SpecialityCode" [colSpan]="2">
           <dxi-validation-rule
             type="required"
             message="Speciality Code is required"
@@ -73,10 +67,6 @@
             height: 120,
           }"
         >
-          <dxi-validation-rule
-            type="required"
-            message="Description is required"
-          ></dxi-validation-rule>
         </dxi-item>
         <!-- Billable Checkbox -->
         <dxi-item
@@ -166,12 +156,12 @@
       caption="Short Name"
     ></dxi-column>
     <dxi-column dataField="Description" caption="Description"></dxi-column>
-    <dxi-column dataField="Billlable" caption="Billable"></dxi-column>
     <dxi-column
-      dataField="IsBillable"
-      caption="Billable"
+      dataField="Billlable"
       [visible]="false"
+      caption="Billable"
     ></dxi-column>
+    <dxi-column dataField="IsBillable" caption="Billable"></dxi-column>
   </dx-data-grid>
 
   <form-popup

@@ -26,7 +26,7 @@ export class SpecialityNewFormComponent {
     Description: '',
     IsBillable: false,
   };
-  IsBillable: boolean = false;
+  IsBillable: boolean = true;
 
   newSpecialityData = this.SpecialityData;
   constructor(private masterService: MasterReportService) { }
@@ -39,6 +39,18 @@ export class SpecialityNewFormComponent {
     ...this.newSpecialityData,
     IsBillable: this.IsBillable
   });
+
+  resetForm() {
+    this.newSpecialityData = {
+      SpecialityCode: '',
+      SpecialityName: '',
+      SpecialityShortName: '',
+      Description: '',
+      IsBillable: false
+    };
+
+    this.IsBillable = true;
+  }
 }
 @NgModule({
   imports: [
