@@ -441,7 +441,7 @@
 <dx-popup
   [(visible)]="isRowPopupVisible"
   [width]="'95%'"
-  [height]="'90vh'"
+  [height]="'auto'"
   [showTitle]="true"
   title="ADOC Grouping & Applying Counting Rules"
   [dragEnabled]="true"
@@ -462,9 +462,14 @@
           <td><b>Patient ID : </b></td>
           <td>{{ selectedRowData?.PatientID }}</td>
         </tr>
+
+         <tr>
+          <td><b>Patient Name : </b></td>
+          <td>{{ selectedRowData?.PatientName }}</td>
+        </tr>
       </div>
 
-      <div class="col-md-6 d-flex justify-content-end">
+      <div class="col-md-6 d-flex justify-content-end align-items-start">
         <table>
           <tr>
             <td class="pe-3">
