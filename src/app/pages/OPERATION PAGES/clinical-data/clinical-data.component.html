@@ -592,10 +592,18 @@
         dataField="BillPrice"
         caption="Price(AED)"
         format="#,##0.00"
-      ></dxi-column>
+        cellTemplate="priceTemplate"
+      >
+      </dxi-column>
 
       <dxi-column caption="Billable" cellTemplate="billableTemplate">
       </dxi-column>
+
+      <div *dxTemplate="let data of 'priceTemplate'">
+        <span [ngClass]="data.data.Billable ? 'billable-yes' : 'billable-no'">
+          {{ data.value | number: "1.2-2" }}
+        </span>
+      </div>
 
       <div *dxTemplate="let data of 'billableTemplate'">
         <span *ngIf="data.data.Billable" class="billable-yes"> Yes </span>

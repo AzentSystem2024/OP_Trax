@@ -200,11 +200,13 @@
   <dx-popup
     [(visible)]="historyPopupVisible"
     [width]="'60%'"
-    [height]="'60vh'"
+    [height]="'auto'"
     title="CPT Price History"
     [showCloseButton]="true"
+    (onShown)="onHistoryPopupShown()"
   >
     <dx-data-grid
+      #historyGrid
       [dataSource]="PriceHistoryData"
       [showBorders]="true"
       height="50vh"

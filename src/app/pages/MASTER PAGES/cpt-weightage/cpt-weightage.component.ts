@@ -29,6 +29,9 @@ export class CPTWeightageComponent {
   @ViewChild('cptWeightageGrid', { static: false })
   cptWeightageGrid!: DxDataGridComponent;
 
+  @ViewChild('historyGrid', { static: false })
+  historyGrid!: DxDataGridComponent;
+
   readonly allowedPageSizes: any = [5, 10, 'all'];
 
   displayMode: any = 'full';
@@ -86,6 +89,12 @@ export class CPTWeightageComponent {
     this.loadLookups();
     this.fetchCPTWeightageList();
     this.get_local_storage_data();
+  }
+
+  onHistoryPopupShown() {
+    setTimeout(() => {
+      this.historyGrid?.instance?.updateDimensions();
+    }, 100);
   }
 
   loadLookups() {

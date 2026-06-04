@@ -31,6 +31,9 @@ export class PriceMasterComponent {
   @ViewChild('cptPriceGrid', { static: false })
   cptPriceGrid!: DxDataGridComponent;
 
+   @ViewChild('historyGrid', { static: false })
+  historyGrid!: DxDataGridComponent;
+
   readonly allowedPageSizes: any = [5, 10, 'all'];
 
   displayMode: any = 'full';
@@ -85,6 +88,13 @@ export class PriceMasterComponent {
     this.loadLookups();
     this.fetchCPTPriceList();
     this.get_local_storage_data();
+  }
+
+  
+  onHistoryPopupShown() {
+    setTimeout(() => {
+      this.historyGrid?.instance?.updateDimensions();
+    }, 100);
   }
 
   loadLookups() {
