@@ -172,8 +172,8 @@ export class ClinicalDataComponent implements OnInit {
   ];
 
   selectedSearchOn: any;
-  fromDate: Date | null = null;
-  toDate: Date | null = null;
+  fromDate: any | null = null;
+  toDate: any | null = null;
   today: Date = new Date();
 
   dataSource!: DataSource<any, any>;

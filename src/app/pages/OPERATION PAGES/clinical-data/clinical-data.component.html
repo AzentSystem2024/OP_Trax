@@ -257,7 +257,7 @@
         caption="Invoice No"
         [allowEditing]="false"
       ></dxi-column>
-     
+
       <dxi-column
         dataField="TransactionDate"
         caption="Transaction Date"
@@ -273,7 +273,7 @@
         caption="PatientID"
         [allowEditing]="false"
       ></dxi-column>
-      
+
       <dxi-column
         dataField="Status"
         caption="Grouper Status"
@@ -302,7 +302,6 @@
           </span>
         </div>
       </div>
-      
 
       <dxi-column type="buttons" [width]="100">
         <dxi-button
@@ -485,18 +484,20 @@
     </div>
 
     <div class="d-flex justify-content-end mb-2 gap-2">
-       <dx-button
-    icon="refresh"
-    text=""
-    type="default"
-    stylingMode="contained"
-    (onClick)="ReRunGrouper()"
-  >
-  </dx-button>
+      <dx-button
+        icon="refresh"
+        text=""
+        hint="Re-Run Grouper"
+        type="default"
+        stylingMode="contained"
+        (onClick)="ReRunGrouper()"
+      >
+      </dx-button>
 
       <dx-drop-down-button
         icon="export"
         text=""
+        hint="Export"
         stylingMode="contained"
         type="default"
         [showArrowIcon]="false"
@@ -611,32 +612,9 @@
         </dxi-total-item>
       </dxo-summary>
     </dx-data-grid>
-
-   
   </div>
 
   <div class="d-flex justify-content-end mt-3 gap-2">
-    <!-- <dx-drop-down-button
-  icon="export"
-  stylingMode="contained"
-  type="default"
-  text="export"
-  [showArrowIcon]="false"
-  [items]="exportFormats"
-  displayExpr="text"
-  keyExpr="format"
-  [elementAttr]="{ class: 'custom-export-btn' }"
-  (onItemClick)="onExportClick($event)">
-</dx-drop-down-button> -->
-    <!-- <dx-button
-    text="Cancel"
-    type="normal"
-    stylingMode="outlined"
-    (onClick)="isRowPopupVisible = false"
-  >
-  </dx-button> -->
-   
-
     <dx-load-panel
       [(visible)]="isPopupProcessing"
       [showIndicator]="true"
