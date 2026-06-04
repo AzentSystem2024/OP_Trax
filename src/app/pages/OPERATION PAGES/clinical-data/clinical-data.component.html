@@ -463,7 +463,7 @@
           <td>{{ selectedRowData?.PatientID }}</td>
         </tr>
 
-         <tr>
+        <tr>
           <td><b>Patient Name : </b></td>
           <td>{{ selectedRowData?.PatientName }}</td>
         </tr>
@@ -533,11 +533,12 @@
     >
       <!-- Header Filter -->
       <dxo-header-filter [visible]="true">
-        <dxo-search [enabled]="true"></dxo-search
-      ></dxo-header-filter>
+        <dxo-search [enabled]="true"></dxo-search>
+      </dxo-header-filter>
 
       <!-- Pagination -->
-      <dxo-paging [pageSize]="10"> </dxo-paging>
+      <dxo-paging [pageSize]="10"></dxo-paging>
+
       <dxo-pager
         [visible]="false"
         [allowedPageSizes]="allowedPageSizes"
@@ -547,35 +548,46 @@
         [showNavigationButtons]="showNavButtons"
       >
       </dxo-pager>
+
       <dxo-scrolling mode="virtual"></dxo-scrolling>
 
       <dxi-column
         dataField="ActivityNumber"
         caption="Activity Number"
       ></dxi-column>
+
       <dxi-column dataField="ActivityDate" caption="Date"></dxi-column>
+
       <dxi-column dataField="CPTType" caption="CPT Type"></dxi-column>
+
       <dxi-column dataField="CPTCode" caption="CPT Code"></dxi-column>
+
       <dxi-column
         dataField="CPTName"
         caption="CPT Description"
         [width]="250"
       ></dxi-column>
+
       <dxi-column
         dataField="OrderingClinician"
         caption="Ordering Clinician"
       ></dxi-column>
+
       <dxi-column dataField="Speciality" caption="Speciality"></dxi-column>
+
       <dxi-column
         dataField="NetAmount"
         caption="Net Amount(AED)"
         format="#,##0.00"
       ></dxi-column>
+
       <dxi-column caption="ADOC Category" dataField="ADOCCategory"></dxi-column>
+
       <dxi-column
         caption="ADOC Classification"
         dataField="ADOCClass"
       ></dxi-column>
+
       <dxi-column
         dataField="BillPrice"
         caption="Price(AED)"
@@ -594,11 +606,11 @@
       <dxi-column caption="Remark" dataField="Remarks"></dxi-column>
 
       <dxo-summary>
-        <!-- Net Total under Net Amount column -->
+        <!-- Net Amount Total -->
         <dxi-total-item
           column="NetAmount"
-          showInColumn="NetAmount"
           summaryType="sum"
+          showInColumn="NetAmount"
           displayFormat="Net Total : AED {0}"
           [valueFormat]="{
             type: 'fixedPoint',
@@ -608,16 +620,12 @@
         >
         </dxi-total-item>
 
-        <!-- Net Billable under Billable column -->
+        <!-- Billable Amount Total -->
         <dxi-total-item
           column="BillPrice"
-          showInColumn="BillPrice"
           summaryType="sum"
-          displayFormat="Net Billable : AED {0}"
-          [valueFormat]="{
-            type: 'fixedPoint',
-            precision: 2,
-          }"
+          showInColumn="BillPrice"
+          [customizeText]="billableSummaryText"
           alignment="right"
         >
         </dxi-total-item>

@@ -254,8 +254,8 @@ export class ClinicalDataImportFormComponent {
       IsNumeric: false,
     },
     {
-      dataField: 'ActivityStart',
-      caption: 'ActivityStart',
+      dataField: 'ActivityDate',
+      caption: 'Activity Date',
       IsMandatory: true,
       IsNumeric: false,
     },
@@ -513,7 +513,7 @@ export class ClinicalDataImportFormComponent {
           const diagnosisFormatted = this.formatDateFields(diagnosisRows, []);
 
           const activityFormatted = this.formatDateFields(activityRows, [
-            'ActivityStart',
+            'ActivityDate',
           ]);
 
           const observationFormatted = this.formatDateFields(
@@ -601,7 +601,7 @@ export class ClinicalDataImportFormComponent {
           ]);
           const diagnosisFormatted = this.formatDateFields(diagnosisRows, []);
           const activityFormatted = this.formatDateFields(activityRows, [
-            'ActivityStart',
+            'ActivityDate',
           ]);
           const observationFormatted = this.formatDateFields(
             observationRows,
