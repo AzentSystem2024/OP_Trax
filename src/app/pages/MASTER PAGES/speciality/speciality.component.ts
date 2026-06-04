@@ -46,6 +46,7 @@ export class SpecialityComponent {
   showNavButtons = true;
   facilityGroupDatasource: any;
   isAddFormPopupOpened: boolean = false;
+  list_Speciality: any[] = [];
 
   dataSource = new DataSource<any>({
     load: () =>
@@ -83,6 +84,10 @@ export class SpecialityComponent {
       onClick: () => this.show_new_Form(),
       elementAttr: { class: 'add-button' },
     };
+
+
+    this.get_speciality_List()
+
   }
 
   toggleFilterRow = () => {
@@ -91,10 +96,43 @@ export class SpecialityComponent {
   //========================show new popup=========================
   show_new_Form() {
     this.isAddFormPopupOpened = true;
+    this.clearSpecialityForm()
   }
 
+  // validateSpecialityForm = (): boolean => {
+  //   return this.SpecialityNewForm?.validateForm() ?? false;
+  // };
   validateSpecialityForm = (): boolean => {
-    return this.SpecialityNewForm?.validateForm() ?? false;
+    const isFormValid =
+      this.SpecialityNewForm?.validateForm() ?? false;
+
+    if (!isFormValid) {
+      return false;
+    }
+
+    const { SpecialityCode } =
+      this.SpecialityNewForm.getNewSpecialityData();
+
+    const duplicate = this.list_Speciality.some(
+      (item: any) =>
+        item.SpecialityCode?.trim().toLowerCase() ===
+        SpecialityCode?.trim().toLowerCase()
+    );
+
+    if (duplicate) {
+      notify(
+        {
+          message: 'Speciality Code already exists',
+          position: { at: 'top right', my: 'top right' },
+          displayTime: 2000,
+        },
+        'error'
+      );
+
+      return false;
+    }
+
+    return true;
   };
 
   //========================Get Datasource =======================
@@ -103,6 +141,8 @@ export class SpecialityComponent {
   onClickSaveNewData = () => {
     const { SpecialityCode, SpecialityName, SpecialityShortName, Description, IsBillable } =
       this.SpecialityNewForm.getNewSpecialityData();
+
+
     this.masterService
       .Insert_Speciality_Data(
         SpecialityCode,
@@ -172,17 +212,39 @@ export class SpecialityComponent {
 
   //===================RTow Data Update==========================
   onRowUpdating(event: any) {
-    console.log('Row updating event:', event);
+    console.log('Row updating event:', this.list_Speciality);
     const updataDate = event.newData;
     const oldData = event.oldData;
     console.log(updataDate, oldData);
     const combinedData = { ...oldData, ...updataDate };
+    console.log('Combined data for update:', combinedData);
     let id = combinedData.ID;
     let SpecialityCode = combinedData.SpecialityCode;
     let SpecialityName = combinedData.SpecialityName;
     let SpecialityShortName = combinedData.SpecialityShortName;
     let Description = combinedData.Description;
     let IsBillable = combinedData.IsBillable;
+    // Check duplicate SpecialityCode
+    const duplicate = this.list_Speciality.find(
+      (item: any) =>
+        item.SpecialityCode?.toLowerCase().trim() ===
+        combinedData.SpecialityCode?.toLowerCase().trim() &&
+        item.ID !== combinedData.ID
+    );
+
+    if (duplicate) {
+      notify(
+        {
+          message: 'Speciality Code already exists',
+          position: { at: 'top right', my: 'top right' },
+          displayTime: 2000,
+        },
+        'error'
+      );
+
+      event.cancel = true;
+      return;
+    }
 
     this.masterService
       .update_Speciality_data(
@@ -226,6 +288,17 @@ export class SpecialityComponent {
   refresh = () => {
     this.dataGrid.instance.refresh();
   };
+
+  //================take list for duplication checking=====================
+  get_speciality_List() {
+
+    this.masterService.get_Speciality_List().subscribe((response: any) => {
+      this.list_Speciality = response.data;
+    })
+  }
+  clearSpecialityForm() {
+    this.SpecialityNewForm.resetForm();
+  }
 }
 @NgModule({
   imports: [
