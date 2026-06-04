@@ -1,5 +1,196 @@
 <div class="view-wrapper list-page">
- 
+  <div class="h-80vh">
+    <div class="topDiv d-flex w-100 sticky-top justify-content-between">
+      <div class="d-flex align-items-center ps-3" style="font-size: 20px">
+        <div class="grid-header">Financial Impact Analyzer</div>
+      </div>
+
+      <div class="d-flex align-items-center h-100 me-2">
+        <dx-select-box
+          class="ms-2"
+          labelMode="floating"
+          labelLocation="left"
+          label="Year"
+          [(value)]="selectedYear"
+          [dataSource]="years"
+          (onValueChanged)="onYearChanged($event)"
+          placeholder="Year"
+          width="100"
+        ></dx-select-box>
+
+        <dx-select-box
+          class="ms-2"
+          labelMode="floating"
+          labelLocation="left"
+          label="month"
+          [dataSource]="monthDataSource"
+          displayExpr="name"
+          valueExpr="value"
+          [(value)]="selectedmonth"
+          (onValueChanged)="onMonthValueChanged($event)"
+          width="100"
+        >
+        </dx-select-box>
+
+        <dx-date-box
+          class="ms-2"
+          labelMode="floating"
+          labelLocation="left"
+          label="From Date"
+          [min]="minDate"
+          [max]="maxDate"
+          [(value)]="fromDate"
+          [displayFormat]="'dd/MM/yyyy'"
+          width="120"
+        ></dx-date-box>
+
+        <dx-date-box
+          class="ms-2"
+          labelMode="floating"
+          labelLocation="left"
+          label="To Date"
+          [min]="minDate"
+          [max]="maxDate"
+          [(value)]="toDate"
+          [displayFormat]="'dd/MM/yyyy'"
+          width="120"
+        ></dx-date-box>
+
+        <dx-button
+          class="ms-3 mt-2 p-2"
+          text="Apply"
+          hint="Apply"
+          type="default"
+          stylingMode="contained"
+          (onClick)="loadChartData()"
+        >
+        </dx-button>
+      </div>
+    </div>
+
+    <!-- Row 1: Two side-by-side charts -->
+    <div class="row h-40vh g-3 mx-0 firstChartDiv">
+      <div class="col-md-6 border">
+        <div class="p-2 h-100 chartDiv">
+          <dx-chart id="chart" [dataSource]="facilityDataSource">
+            <dxo-title
+              text="Facility Wise"
+              hint=""
+              class="grid-header"
+            ></dxo-title>
+
+            <dxi-series
+              valueField="Billable"
+              name="Billable"
+              color="rgba(67, 142, 222)"
+            ></dxi-series>
+            <dxi-series
+              valueField="Actual"
+              name="Actual"
+              color="rgb(35, 153, 72)"
+            ></dxi-series>
+            <dxi-value-axis position="left">
+              <dxo-label [visible]="false"></dxo-label>
+              <dxo-title text=""></dxo-title>
+            </dxi-value-axis>
+            <dxo-common-series-settings
+              argumentField="Facility"
+              type="stackedBar"
+            >
+            </dxo-common-series-settings>
+            <dxo-legend
+              verticalAlignment="bottom"
+              horizontalAlignment="center"
+              itemTextPosition="top"
+            >
+            </dxo-legend>
+            <dxo-export [enabled]="true"></dxo-export>
+            <dxo-tooltip [enabled]="true" location="edge"> </dxo-tooltip>
+          </dx-chart>
+        </div>
+      </div>
+      <div class="col-md-6 border ms-2">
+        <div class="p-2 h-100 chartDiv">
+          <dx-chart id="chart" [dataSource]="departmentDataSource">
+            <dxo-title
+              text="Speciality Wise"
+              hint=""
+              class="grid-header"
+            ></dxo-title>
+            <dxi-series
+              valueField="Billable"
+              name="Billable"
+              color="rgba(67, 142, 222)"
+            ></dxi-series>
+            <dxi-series
+              valueField="Actual"
+              name="Actual"
+              color="rgb(35, 153, 72)"
+            ></dxi-series>
+            <dxi-value-axis position="left">
+              <dxo-label [visible]="false"></dxo-label>
+              <dxo-title text=""></dxo-title>
+            </dxi-value-axis>
+            <dxo-common-series-settings
+              argumentField="Department"
+              type="stackedBar"
+            >
+            </dxo-common-series-settings>
+            <dxo-legend
+              verticalAlignment="bottom"
+              horizontalAlignment="center"
+              itemTextPosition="top"
+            >
+            </dxo-legend>
+            <dxo-export [enabled]="true"></dxo-export>
+            <dxo-tooltip [enabled]="true" location="edge"> </dxo-tooltip>
+          </dx-chart>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Full-width chart -->
+    <div class="row mx-0 firstChartDiv">
+      <div class="col-12 border">
+        <div class="p-2">
+          <dx-chart id="chart" [dataSource]="ClinicianDataSource">
+            <dxo-title
+              text="Top 10 Series"
+              hint=""
+              class="grid-header"
+            ></dxo-title>
+            <dxi-series
+              valueField="Billable"
+              name="Billable"
+              color="rgba(67, 142, 222)"
+            ></dxi-series>
+            <dxi-series
+              valueField="Actual"
+              name="Actual"
+              color="rgb(35, 153, 72)"
+            ></dxi-series>
+            <dxi-value-axis position="left">
+              <dxo-label [visible]="false"></dxo-label>
+              <dxo-title text=""></dxo-title>
+            </dxi-value-axis>
+            <dxo-common-series-settings
+              argumentField="Clinician"
+              type="stackedBar"
+            >
+            </dxo-common-series-settings>
+            <dxo-legend
+              verticalAlignment="bottom"
+              horizontalAlignment="center"
+              itemTextPosition="top"
+            >
+            </dxo-legend>
+            <dxo-export [enabled]="true"></dxo-export>
+            <dxo-tooltip [enabled]="true" location="edge"> </dxo-tooltip>
+          </dx-chart>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <dx-load-panel
   #loadPanel
