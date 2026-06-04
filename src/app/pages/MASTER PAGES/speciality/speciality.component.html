@@ -161,7 +161,17 @@
       [visible]="false"
       caption="Billable"
     ></dxi-column>
-    <dxi-column dataField="IsBillable" caption="Billable"></dxi-column>
+    <!-- <dxi-column dataField="IsBillable" caption="Billable"></dxi-column> -->
+    <dxi-column
+      dataField="IsBillable"
+      caption="Billable"
+      dataType="boolean"
+      [showEditorAlways]="false"
+      cellTemplate="billableCell"
+    ></dxi-column>
+    <div *dxTemplate="let cell of 'billableCell'" class="billable-cell">
+      <dx-check-box [value]="cell.value" [readOnly]="true"></dx-check-box>
+    </div>
   </dx-data-grid>
 
   <form-popup
