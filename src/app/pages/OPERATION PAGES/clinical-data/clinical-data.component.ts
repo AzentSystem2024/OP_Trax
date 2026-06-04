@@ -1125,8 +1125,8 @@ export class ClinicalDataComponent implements OnInit {
     customizeCell: ({ gridCell, excelCell }) => {
 
       if (
-        gridCell.rowType === 'data' &&
-        gridCell.column.caption === 'Billable'
+        gridCell?.rowType === 'data' &&
+        gridCell.column?.caption === 'Billable'
       ) {
 
         excelCell.value =
