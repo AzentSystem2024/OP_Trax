@@ -94,21 +94,21 @@ export class SpecialityComponent {
   }
 
   validateSpecialityForm = (): boolean => {
-  return this.SpecialityNewForm?.validateForm() ?? false;
-};
+    return this.SpecialityNewForm?.validateForm() ?? false;
+  };
 
   //========================Get Datasource =======================
 
   //====================Add data ================================
   onClickSaveNewData = () => {
-    const { SpecialityCode, SpecialityName, SpecialityShortName, Description } =
+    const { SpecialityCode, SpecialityName, SpecialityShortName, Description, IsBillable } =
       this.SpecialityNewForm.getNewSpecialityData();
     this.masterService
       .Insert_Speciality_Data(
         SpecialityCode,
         SpecialityName,
         SpecialityShortName,
-        Description
+        Description, IsBillable
       )
       .subscribe((response: any) => {
         if (response) {
@@ -172,14 +172,17 @@ export class SpecialityComponent {
 
   //===================RTow Data Update==========================
   onRowUpdating(event: any) {
+    console.log('Row updating event:', event);
     const updataDate = event.newData;
     const oldData = event.oldData;
+    console.log(updataDate, oldData);
     const combinedData = { ...oldData, ...updataDate };
     let id = combinedData.ID;
     let SpecialityCode = combinedData.SpecialityCode;
     let SpecialityName = combinedData.SpecialityName;
     let SpecialityShortName = combinedData.SpecialityShortName;
     let Description = combinedData.Description;
+    let IsBillable = combinedData.IsBillable;
 
     this.masterService
       .update_Speciality_data(
@@ -187,7 +190,8 @@ export class SpecialityComponent {
         SpecialityCode,
         SpecialityName,
         SpecialityShortName,
-        Description
+        Description,
+        IsBillable
       )
       .subscribe((data: any) => {
         if (data) {
@@ -240,4 +244,4 @@ export class SpecialityComponent {
   exports: [],
   declarations: [SpecialityComponent],
 })
-export class SpecialityModule {}
+export class SpecialityModule { }
