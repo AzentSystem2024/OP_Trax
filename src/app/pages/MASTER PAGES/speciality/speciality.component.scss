@@ -66,33 +66,33 @@
   height: 20px;
 }
 
-::ng-deep .dx-datagrid-rowsview .dx-row {
-  height: 36px !important;
-}
+// ::ng-deep .dx-datagrid-rowsview .dx-row {
+//   height: 36px !important;
+// }
 
-::ng-deep .dx-checkbox {
-  transform: scale(0.8);
-}
+// ::ng-deep .dx-checkbox {
+//   transform: scale(0.8);
+// }
 
-::ng-deep .dx-command-select,
-::ng-deep .dx-checkbox-cell {
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
-}
+// ::ng-deep .dx-command-select,
+// ::ng-deep .dx-checkbox-cell {
+//   padding-top: 4px !important;
+//   padding-bottom: 4px !important;
+// }
 
-:host ::ng-deep .dx-datagrid-rowsview .dx-row > td {
-  padding: 4px 8px !important;
-  line-height: 20px !important;
-}
+// :host ::ng-deep .dx-datagrid-rowsview .dx-row > td {
+//   padding: 4px 8px !important;
+//   line-height: 20px !important;
+// }
 
-:host ::ng-deep .dx-datagrid-headers .dx-header-row > td {
-  padding: 4px 8px !important;
-}
+// :host ::ng-deep .dx-datagrid-headers .dx-header-row > td {
+//   padding: 4px 8px !important;
+// }
 .billable-cell .dx-checkbox {
   display: inline-flex;
   vertical-align: middle;
 }
 .billable-cell .dx-checkbox-icon {
-  width: 16px;
+  width: 12px;
   // height: 16px;
 }
