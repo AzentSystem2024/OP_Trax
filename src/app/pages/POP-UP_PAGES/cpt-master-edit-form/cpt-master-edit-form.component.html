@@ -60,39 +60,6 @@
               </dx-text-box>
             </div>
           </dxi-item>
-
-          <dxi-item>
-            <div *dxTemplate>
-              <dx-select-box
-                label="ADOC Category"
-                labelMode="floating"
-                [(value)]="newCptMasterData.ADOCGroupID"
-                [items]="ADOCgroupDataSource"
-                displayExpr="DESCRIPTION"
-                valueExpr="ID"
-                [searchEnabled]="true"
-                [showClearButton]="true"
-                (onValueChanged)="onADOCGroupChanged($event)"
-              >
-              </dx-select-box>
-            </div>
-          </dxi-item>
-
-          <dxi-item>
-            <div *dxTemplate>
-              <dx-select-box
-                label="ADOC Classification"
-                labelMode="floating"
-                [(value)]="newCptMasterData.ADOCClassID"
-                [items]="ADOCClassDataSource"
-                displayExpr="DESCRIPTION"
-                valueExpr="ID"
-                [searchEnabled]="true"
-                [disabled]="!newCptMasterData.ADOCGroupID"
-              >
-              </dx-select-box>
-            </div>
-          </dxi-item>
         </dxi-item>
       </dx-form>
     </div>
@@ -112,7 +79,79 @@
       [stylingMode]="'secondary'"
       (onSelectionChanged)="onTabSelectionChanged($event)"
     ></dx-tabs>
+
     <div *ngIf="selectedTabIndex === 0" class="grid-container">
+      <div *ngIf="selectedTabIndex === 0" class="grid-container">
+        <dx-data-grid
+          class="custom-grid"
+          [dataSource]="newCptMasterData.CPTADOCMappings"
+          [showBorders]="false"
+          [columnAutoWidth]="true"
+          [rowAlternationEnabled]="true"
+          [hoverStateEnabled]="true"
+          [showRowLines]="true"
+          [showColumnLines]="false"
+          (onEditorPreparing)="onEditorPreparingADOC($event)"
+          (onRowUpdated)="onADOCMappingRowUpdated($event)"
+          height="350"
+        >
+          <dxo-editing
+            mode="cell"
+            [allowUpdating]="true"
+            [allowAdding]="true"
+            [allowDeleting]="true"
+          >
+          </dxo-editing>
+
+          <!-- Specialty -->
+          <dxi-column
+            dataField="SpecialityID"
+            caption="Specialty"
+            [lookup]="{
+              dataSource: specialityDataSource,
+              valueExpr: 'ID',
+              displayExpr: 'DESCRIPTION',
+            }"
+          >
+            <dxi-validation-rule
+              type="required"
+              message="Specialty is required"
+            ></dxi-validation-rule>
+          </dxi-column>
+
+          <!-- ADOC Class -->
+          <dxi-column
+            dataField="ADOCClassID"
+            caption="ADOC Class"
+            [lookup]="{
+              dataSource: allADOCClassDataSource,
+              valueExpr: 'ID',
+              displayExpr: 'DESCRIPTION',
+            }"
+          >
+            <dxi-validation-rule
+              type="required"
+              message="ADOC Class is required"
+            ></dxi-validation-rule>
+          </dxi-column>
+
+          <!-- Auto Filled -->
+          <dxi-column
+            dataField="ADOCCategoryID"
+            caption="ADOC Category"
+            [allowEditing]="false"
+            [lookup]="{
+              dataSource: ADOCgroupDataSource,
+              valueExpr: 'ID',
+              displayExpr: 'DESCRIPTION',
+            }"
+          >
+          </dxi-column>
+        </dx-data-grid>
+      </div>
+    </div>
+
+    <div *ngIf="selectedTabIndex === 1" class="grid-container">
       <dx-data-grid
         class="custom-grid"
         [dataSource]="newCptMasterData.CPTPrices"
@@ -146,7 +185,7 @@
       </dx-data-grid>
     </div>
 
-    <div *ngIf="selectedTabIndex === 1" class="grid-container">
+    <div *ngIf="selectedTabIndex === 2" class="grid-container">
       <dx-data-grid
         class="custom-grid"
         [dataSource]="newCptMasterData.CPTWeightages"

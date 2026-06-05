@@ -2,11 +2,8 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
-  Input,
   NgModule,
-  OnChanges,
   OnInit,
-  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -15,6 +12,7 @@ import {
   DxButtonModule,
   DxDataGridComponent,
   DxDataGridModule,
+  DxDateBoxModule,
   DxDropDownBoxComponent,
   DxDropDownBoxModule,
   DxFormModule,
@@ -29,9 +27,7 @@ import {
 import { FormTextboxModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import { firstValueFrom } from 'rxjs';
-import { ReportService } from 'src/app/services/Report-data.service';
 import { DataService } from 'src/app/services';
-import notify from 'devextreme/ui/notify';
 
 @Component({
   selector: 'app-cpt-master-new-form',
@@ -39,183 +35,99 @@ import notify from 'devextreme/ui/notify';
   styleUrls: ['./cpt-master-new-form.component.scss'],
 })
 export class CptMasterNewFormComponent implements OnInit {
-  @ViewChild('gridRef', { static: false }) grid!: DxDataGridComponent;
+  CptType_DropDownData: any;
 
-  @ViewChild(DxDropDownBoxComponent, { static: false })
-  facilityDropDownBox!: DxDropDownBoxComponent;
-
-  @ViewChild('facilityGrid', { static: false })
-  facilityGrid!: DxDataGridComponent;
-
-  @ViewChild('CostdataGrid', { static: false })
-  dataGrid!: DxDataGridComponent;
-
-  @ViewChild('facilityValidator', { static: false }) facilityValidator: any;
-
-  @ViewChild('encounterGrid', { static: false })
-  encounterGrid!: DxDataGridComponent;
-
-  CptMasterData: any = {
-    ID: '',
-    CPTTypeID: '',
+  newCptMasterData: any = {
     CPTCode: '',
+    CPTTypeID: '',
     CPTName: '',
-    Description: '',
-    CPTGroup: '',
-    DepartmentID: '',
-    CPTDepartmentID: '',
-    CostDepartmentID: '',
-    FixedQuantity: 0,
-    CostDriveID: 0,
-    IsDifferentCPTDepartment: 0,
-    IsDifferentLedger: 0,
-    selectedLedgerID: '',
-    CPTEncounterDepartments: [],
-    ADOCClassID: 0,
-    ADOCGroupID: 0,
-    data: [],
+    CPTPrice: null,
+    PriceEffectFrom: null,
+    CPTWeightage: null,
+    WeightageEffectFrom: null,
+    CPTADOCMappings: [],
   };
 
-  department_DropDownData: any;
-  Subdepartment_DropDownData: any;
-  Costdepartment_DropDownData: any;
-  CptType_DropDownData: any;
-  CostDrive_DropDownData: any;
-  Facility_DataSource: any[] = [];
-  Facility_Value: any;
-  ClinicianRVUDataSource: any[] = [];
-  CostTypeDataSource: any;
-  CostBucketDataSource: any;
-  ClinicianDataSource: any;
-  ClinicianRoleDataSource: any;
-  selectedMasterRow: any = null;
+  IsWeightGlobal = false;
+  IsPriceGlobal = false;
 
-  departmentMode: 0 | 1 = 0;
-
-  encounterDepartmentData: any[] = [];
-
-  ledgerModeOptions = [
-    { value: 0, text: 'All Ledgers' },
-    { value: 1, text: 'Selected Ledger' },
-  ];
-
-  ledgerMode: 0 | 1 = 0;
-
-  // Ledger master list
-  ledgerList: any[] = [];
-  // Selected ledger IDs
-  selectedLedgerIds: number[] = [];
-
-  newCptMasterData: any = this.CptMasterData;
-  ADOCgroupDataSource: any[] = [];
+  specialityDataSource: any[] = [];
   ADOCClassDataSource: any[] = [];
-  allADOCClassDataSource: any[] = [];
+  ADOCgroupDataSource: any[] = [];
+  allADOCClassDataSource: any;
+
+  selectedTabIndex = 0;
+  dropdownsLoaded = false;
 
   constructor(
     private masterService: MasterReportService,
     private dataService: DataService,
-    private cdRef: ChangeDetectorRef,
-  ) {
-    this.getDepartment_DropDown();
-    this.getCostDepartment_DropDown();
-    this.getCpt_DropDown();
-    this.get_ADOC_CLASS_Dropdown();
-    this.get_ADOC_GROUP_Dropdown();
-    this.getCostDrive_DropDown();
-    this.getClinicianRole_DropDown();
-  }
+  ) {}
 
-  async ngOnInit() {
+  getNewCptMasterData = () => ({
+    ...this.newCptMasterData,
+    CPTADOCMappings: (this.newCptMasterData.CPTADOCMappings || []).filter(
+      (x: any) =>
+        x.SpecialityID != null &&
+        x.ADOCClassID != null &&
+        x.ADOCCategoryID != null,
+    ),
+  });
+
+  async ngOnInit(): Promise<void> {
     try {
-      await this.get_Facility_dataList();
-      await this.get_CostBucket_Dropdown();
-      await this.get_CostType_Dropdown();
-      await this.get_Clinician_Dropdown();
-      await this.loadEncounterTypes();
-      await this.loadLedger();
+      await Promise.all([
+        this.getCpt_DropDown(),
+        this.getSpecialityDropdown(),
+        this.get_ADOC_CLASS_Dropdown(),
+        this.get_ADOC_GROUP_Dropdown(),
+      ]);
+
+      if (!this.newCptMasterData.CPTADOCMappings.length) {
+        this.newCptMasterData.CPTADOCMappings = [
+          {
+            SpecialityID: null,
+            ADOCClassID: null,
+            ADOCCategoryID: null,
+          },
+        ];
+      }
     } catch (error) {
       console.error('Initialization error:', error);
-    } finally {
     }
   }
 
-  async get_Facility_dataList(): Promise<void> {
-    try {
-      const res: any = await firstValueFrom(
-        this.dataService.Get_User_Facility_List_Data(),
-      );
-      if (res && res.data) {
-        this.Facility_DataSource = res.data;
-        console.log(this.Facility_DataSource, 'facilityDatasource');
-        this.newCptMasterData.data = this.Facility_DataSource.map(
-          (fac: any) => ({
-            FacilityID: fac.FacilityLicense,
-            RVU_Doctor: 0,
-            RVU_Nurse: 0,
-            RVU_Allied: 0,
-            RVU_Cost: 0,
-          }),
-        );
-
-        console.log(this.CptMasterData, 'cptmasterdata');
-      }
-    } catch (error) {}
-  }
-
-  async get_CostBucket_Dropdown(): Promise<void> {
-    const dropdownType = 'COST_BUCKET';
-    const response = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType),
-    );
-    if (response) {
-      this.CostBucketDataSource = response;
-      console.log(this.CostBucketDataSource, 'costbucketDatasource');
-    }
-  }
-
-  async get_CostType_Dropdown(): Promise<void> {
-    const dropdownType = 'COST_TYPE';
-    const response = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType),
-    );
-    if (response) {
-      this.CostTypeDataSource = response;
-      console.log(this.CostBucketDataSource, 'costTypeDatasource');
-    }
-  }
-
-  async get_Clinician_Dropdown(): Promise<void> {
-    const dropdownType = 'CLINICIAN';
+  async getSpecialityDropdown(): Promise<void> {
     const response: any = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType),
+      this.dataService.Get_GropDown('CPT_SPECIALITY'),
     );
-    if (response) {
-      // Prepend 'All' option
-      this.ClinicianDataSource = [{ ID: -1, DESCRIPTION: 'All' }, ...response];
-    }
+
+    this.specialityDataSource = response || [];
+  }
+
+  async getCpt_DropDown(): Promise<void> {
+    const response: any = await firstValueFrom(
+      this.masterService.Get_GropDown('CPTTYPE'),
+    );
+
+    this.CptType_DropDownData = response || [];
   }
 
   async get_ADOC_GROUP_Dropdown(): Promise<void> {
-    const dropdownType = 'ADOC_GROUP';
     const response: any = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType),
+      this.dataService.Get_GropDown('ADOC_GROUP'),
     );
-    if (response) {
-      // Prepend 'All' option
-      this.ADOCgroupDataSource = response;
-    }
+
+    this.ADOCgroupDataSource = response || [];
   }
 
   async get_ADOC_CLASS_Dropdown(): Promise<void> {
-    const dropdownType = 'ADOC_CLASS';
     const response: any = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType),
+      this.dataService.Get_GropDown('ADOC_CLASS'),
     );
 
-    if (response) {
-      this.allADOCClassDataSource = response;
-      this.ADOCClassDataSource = response;
-    }
+    this.allADOCClassDataSource = response || [];
+    this.ADOCClassDataSource = [...this.allADOCClassDataSource];
   }
 
   onADOCGroupChanged(e: any) {
@@ -235,74 +147,9 @@ export class CptMasterNewFormComponent implements OnInit {
       .charAt(0)
       .toUpperCase();
 
-    this.ADOCClassDataSource = this.allADOCClassDataSource.filter((x) =>
+    this.ADOCClassDataSource = this.allADOCClassDataSource.filter((x: any) =>
       x.DESCRIPTION?.trim().toUpperCase().startsWith(prefix),
     );
-  }
-
-  async loadEncounterTypes() {
-    const res: any = await firstValueFrom(
-      this.dataService.Get_GropDown('ENCOUNTER_TYPE'),
-    );
-
-    this.newCptMasterData.CPTEncounterDepartments = res.map((e: any) => ({
-      EncounterType: e.DESCRIPTION,
-      DepartmentID: null,
-    }));
-  }
-
-  async loadLedger() {
-    const res: any = await firstValueFrom(
-      this.dataService.Get_GropDown('AC_HEAD'),
-    );
-
-    if (res) {
-      this.ledgerList = res;
-    }
-  }
-
-  getNewCptMasterData = () => ({ ...this.newCptMasterData });
-
-  getDepartment_DropDown() {
-    this.masterService.Get_GropDown('DEPARTMENT').subscribe((data: any) => {
-      this.department_DropDownData = data;
-    });
-  }
-  getSubDepartment_DropDown() {
-    this.masterService.Get_GropDown('SUB_DEPARTMENT').subscribe((data: any) => {
-      this.Subdepartment_DropDownData = data;
-    });
-  }
-  getCostDepartment_DropDown() {
-    this.masterService
-      .Get_GropDown('COST_DEPARTMENT')
-      .subscribe((data: any) => {
-        this.Costdepartment_DropDownData = data;
-      });
-  }
-
-  getCpt_DropDown() {
-    this.masterService.Get_GropDown('CPTTYPE').subscribe((data: any) => {
-      this.CptType_DropDownData = data;
-    });
-  }
-
-  getCostDrive_DropDown() {
-    this.masterService.Get_GropDown('COST_DRIVE').subscribe((data: any) => {
-      this.CostDrive_DropDownData = data;
-    });
-  }
-
-  getCostBucket_DropDown() {
-    this.masterService.Get_GropDown('COST_BUCKET').subscribe((data: any) => {
-      this.CostBucketDataSource = data;
-    });
-  }
-
-  getClinicianRole_DropDown() {
-    this.masterService.Get_GropDown('CLINICIAN_ROLE').subscribe((data: any) => {
-      this.ClinicianRoleDataSource = data;
-    });
   }
 
   checkDuplicateCPTCode = (params: any): Promise<boolean> => {
@@ -327,192 +174,102 @@ export class CptMasterNewFormComponent implements OnInit {
     });
   };
 
-  onDepartmentChanged(e: any) {
-    const selectedDepartmentId = e.value;
+  onEditorPreparingADOC(e: any) {
+    // Prevent duplicate Specialty selection
+    if (e.parentType === 'dataRow' && e.dataField === 'SpecialityID') {
+      const currentRow = e.row?.data;
 
-    if (selectedDepartmentId) {
-      this.masterService
-        .getSubDepartmentDropDownData(selectedDepartmentId)
-        .subscribe({
-          next: (response: any) => {
-            console.log('Sub departments:', response);
-            this.Subdepartment_DropDownData = response.data; // or however you want to use it
-          },
-          error: (err) => {
-            console.error('Error fetching sub departments:', err);
-          },
-        });
+      e.editorOptions.dataSource = this.specialityDataSource.filter(
+        (speciality: any) => {
+          return !this.newCptMasterData.CPTADOCMappings.some(
+            (row: any) =>
+              row !== currentRow && row.SpecialityID === speciality.ID,
+          );
+        },
+      );
     }
+
+    // Auto populate ADOC Category when ADOC Class changes
+    if (e.parentType === 'dataRow' && e.dataField === 'ADOCClassID') {
+      const originalHandler = e.editorOptions.onValueChanged;
+
+      e.editorOptions.onValueChanged = (args: any) => {
+        originalHandler?.(args);
+
+        const selectedClass = this.allADOCClassDataSource.find(
+          (x: any) => x.ID === args.value,
+        );
+
+        if (!selectedClass?.DESCRIPTION) {
+          e.component.cellValue(e.row.rowIndex, 'ADOCCategoryID', null);
+          return;
+        }
+
+        const prefix = selectedClass.DESCRIPTION.trim().charAt(0).toUpperCase();
+
+        const category = this.ADOCgroupDataSource.find(
+          (x: any) => x.DESCRIPTION?.trim().charAt(0).toUpperCase() === prefix,
+        );
+
+        // Update category
+        e.component.cellValue(
+          e.row.rowIndex,
+          'ADOCCategoryID',
+          category?.ID ?? null,
+        );
+
+        // Commit row immediately
+        setTimeout(() => {
+          e.component.saveEditData();
+        }, 10);
+      };
+    }
+  }
+
+  onADOCMappingRowUpdated(e: any) {
+    const row = e.data;
+
+    const isCompleted =
+      row?.SpecialityID != null &&
+      row?.ADOCClassID != null &&
+      row?.ADOCCategoryID != null;
+
+    if (!isCompleted) {
+      return;
+    }
+
+    const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
+      (x: any) =>
+        x.SpecialityID == null &&
+        x.ADOCClassID == null &&
+        x.ADOCCategoryID == null,
+    );
+
+    if (hasEmptyRow) {
+      return;
+    }
+
+    this.newCptMasterData.CPTADOCMappings.push({
+      SpecialityID: null,
+      ADOCClassID: null,
+      ADOCCategoryID: null,
+    });
+
+    this.newCptMasterData.CPTADOCMappings = [
+      ...this.newCptMasterData.CPTADOCMappings,
+    ];
   }
 
   clearForm() {
     this.newCptMasterData = {
       CPTCode: '',
       CPTName: '',
-      Description: '',
       CPTTypeID: null,
-      CPTGroup: '',
-      CostDriveID: 0,
-      FixedQuantity: 0,
-      DepartmentID: null,
-      CPTDepartmentID: null,
-      CostDepartmentID: null,
-      IsDifferentCPTDepartment: 0,
-      IsDifferentLedger: 0,
-      CPTEncounterDepartments: [],
-      ADOCClassID: 0,
-      ADOCGroupID: 0,
-      data: [],
+      CPTPrices: [],
+      CPTWeightages: [],
+      CPTADOCMappings: [],
     };
-    this.CptMasterData.data = [];
-    this.CptMasterData.CPTEncounterDepartments = [];
-    this.CptMasterData = {
-      ID: '',
-      CPTTypeID: '',
-      CPTCode: '',
-      CPTName: '',
-      Description: '',
-      CPTGroup: '',
-      DepartmentID: '',
-      CPTDepartmentID: '',
-      CostDepartmentID: '',
-      CostDriveID: 0,
-      FixedQuantity: 0,
-      IsDifferentCPTDepartment: 0,
-      IsDifferentLedger: 0,
-      selectedLedgerID: '',
-      CPTEncounterDepartments: [],
-      ADOCClassID: 0,
-      ADOCGroupID: 0,
-      data: [],
-    };
-
-    this.Facility_Value = null;
   }
-
-  onCostCenterChanged(e: any) {
-    // Reset radio selection
-    this.departmentMode = 0;
-
-    // Clear COMMON selections
-    this.newCptMasterData.DepartmentID = null;
-    this.newCptMasterData.CPTDepartmentID = null;
-
-    // Clear SEPARATE grid selections
-    if (Array.isArray(this.newCptMasterData.CPTEncounterDepartments)) {
-      this.newCptMasterData.CPTEncounterDepartments.forEach((row: any) => {
-        row.DepartmentID = null;
-      });
-    }
-  }
-
-  onRadioButtonChanged(e: any) {
-    const selectedMode = e.value;
-
-    if (selectedMode == 1) {
-      // Clear SEPARATE values (grid)
-      this.newCptMasterData.IsDifferentCPTDepartment = 1;
-      if (Array.isArray(this.newCptMasterData.CPTEncounterDepartments)) {
-        this.newCptMasterData.CPTEncounterDepartments.forEach((row: any) => {
-          row.DepartmentID = null;
-        });
-      }
-    }
-
-    if (selectedMode == 0) {
-      // Clear COMMON values
-      this.newCptMasterData.IsDifferentCPTDepartment = 0;
-      this.newCptMasterData.DepartmentID = null;
-      this.newCptMasterData.CPTDepartmentID = null;
-    }
-  }
-
-  validateDepartment = (e: any): boolean => {
-    // e.value is DepartmentID
-    return e.value !== null && e.value !== undefined && e.value !== '';
-  };
-
-  validateForm(): boolean {
-    // 🔴 Ledger validation
-    if (
-      this.ledgerMode === 1 &&
-      (!this.selectedLedgerIds || !this.selectedLedgerIds.length)
-    ) {
-      return false;
-    }
-
-    // 2️⃣ SEPARATE mode validation
-    if (this.departmentMode === 1) {
-      const rows = this.newCptMasterData.CPTEncounterDepartments || [];
-
-      let isValid = true;
-
-      rows.forEach((row: any, index: any) => {
-        if (!row.DepartmentID) {
-          isValid = false;
-
-          // 🔥 Force grid validation error
-          this.encounterGrid.instance.cellValue(index, 'DepartmentID', null);
-        }
-      });
-
-      if (!isValid) {
-        // 🔥 This makes grid show red error message
-        this.encounterGrid.instance.repaint();
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  ledgerDisplayFormatter = (selectedIds: number[]) => {
-    if (!selectedIds?.length) {
-      return '';
-    }
-
-    return this.ledgerList
-      .filter((l) => selectedIds.includes(l.ID))
-      .map((l) => l.DESCRIPTION)
-      .join(', ');
-  };
-
-  get selectedLedgerTooltip(): string {
-    if (!this.selectedLedgerIds?.length) {
-      return '';
-    }
-
-    return this.ledgerList
-      .filter((l) => this.selectedLedgerIds.includes(l.ID))
-      .map((l) => l.DESCRIPTION)
-      .join(', ');
-  }
-
-  onledgerRadioButtonChanged(e: any) {
-    const selectedMode = e.value;
-
-    if (selectedMode == 1) {
-      // Clear SEPARATE values (grid)
-      this.newCptMasterData.IsDifferentLedger = 1;
-    }
-
-    if (selectedMode == 0) {
-      // Clear COMMON values
-      this.newCptMasterData.IsDifferentLedger = 0;
-      this.newCptMasterData.selectedLedgerID = null;
-    }
-  }
-
-  validateSelectedLedger = (): boolean => {
-    // Validation only applies when Selected Ledger mode is ON
-    if (this.ledgerMode === 1) {
-      return (
-        Array.isArray(this.selectedLedgerIds) &&
-        this.selectedLedgerIds.length > 0
-      );
-    }
-    return true; // All Ledger → always valid
-  };
 }
 @NgModule({
   imports: [
@@ -531,6 +288,7 @@ export class CptMasterNewFormComponent implements OnInit {
     DxDropDownBoxModule,
     DxButtonModule,
     DxRadioGroupModule,
+    DxDateBoxModule,
   ],
   declarations: [CptMasterNewFormComponent],
   exports: [CptMasterNewFormComponent],

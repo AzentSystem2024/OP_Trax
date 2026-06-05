@@ -37,11 +37,11 @@ export class UserLevelNewFormComponent implements OnInit {
 
   selectedTab = 0;
   selectedTabData: any[] = [];
-  selectedRows: { [key: number]: any[] } = {};
+  selectedRows: any = {};
   allSelectedRows: any[] = [];
 
   MenuDatasource: any;
-  UserLevelValue = null;
+  UserLevelValue:any = null;
   isErrorVisible = false;
   UserListdataSource: any;
   userRoles: any;
@@ -82,7 +82,7 @@ export class UserLevelNewFormComponent implements OnInit {
     this.canUploadCostingData = this.editValue.canUploadCostingData;
     this.canVerifyCostingData = this.editValue.canVerifyCostingData;
     this.canReprocessCostingData = this.editValue.canReprocessCostingData;
-    this.MenuDatasource.forEach((tab, index) => {
+    this.MenuDatasource.forEach((tab:any, index:any) => {
       const selectedRowKeys: any[] = [];
 
       tab.Menus.forEach((menu: any) => {
@@ -111,7 +111,7 @@ export class UserLevelNewFormComponent implements OnInit {
     this.selectedTabData = this.MenuDatasource[this.selectedTab].Menus;
 
     setTimeout(() => {
-      const keys = this.selectedRows[this.selectedTab].map((m) => m.MenuId);
+      const keys = this.selectedRows[this.selectedTab].map((m:any) => m.MenuId);
       this.dataGrid?.instance?.selectRows(keys, true);
     }, 0);
   }
@@ -158,7 +158,7 @@ export class UserLevelNewFormComponent implements OnInit {
       ['canAdd', 'canEdit', 'canDelete'].includes(e.dataField)
     ) {
       const isSelected = this.selectedRows[this.selectedTab]?.some(
-        (row) => row === e.row.data
+        (row:any) => row === e.row.data
       );
 
       // If not selected, make the cell read-only
@@ -178,7 +178,7 @@ export class UserLevelNewFormComponent implements OnInit {
       }
 
       // Clear selected copy user in UI
-      this.CopiedUserLevelValue = null; // Add this line
+      this.CopiedUserLevelValue = ''; // Add this line
 
       return;
     }
@@ -287,7 +287,7 @@ export class UserLevelNewFormComponent implements OnInit {
     Object.keys(this.selectedRows)
       .filter((key) => this.selectedRows[key]?.length)
       .forEach((key) => {
-        const menus = this.selectedRows[key].map((menu) => ({
+        const menus = this.selectedRows[key].map((menu:any) => ({
           MenuId: menu.MenuId,
           canAdd: menu.canAdd,
           canEdit: menu.canEdit,
@@ -319,7 +319,7 @@ export class UserLevelNewFormComponent implements OnInit {
 
   // ======= reset all form fields to initial stage =======
   resetFormValues() {
-    this.UserLevelValue = '';
+    this.UserLevelValue = null;
     this.selectedTab = 0;
     this.selectedTabData = [];
     this.selectedRows = {};

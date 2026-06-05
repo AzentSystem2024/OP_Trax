@@ -123,61 +123,33 @@ export class CPTMasterComponent {
       return;
     }
 
-    const {
-      CPTTypeID,
-      CPTCode,
-      CPTName,
-      Description,
-      CPTGroup,
-      DepartmentID,
-      CPTDepartmentID,
-      CostDepartmentID,
-      CostDriveID,
-      FixedQuantity,
-      IsDifferentCPTDepartment,
-      IsDifferentLedger,
-      selectedLedgerID,
-      CPTEncounterDepartments,
-      ADOCClassID,
-      ADOCGroupID,
-      data,
-    } = this.CptNewFormComponent.getNewCptMasterData();
+    const { CPTTypeID, CPTCode, CPTName,CPTPrice,PriceEffectFrom,CPTWeightage,WeightageEffectFrom,CPTADOCMappings} =
+      this.CptNewFormComponent.getNewCptMasterData();
 
     this.masterService
       .Insert_CptMaster_Data(
         CPTTypeID,
         CPTCode,
-        CPTName,
-        Description,
-        CPTGroup,
-        DepartmentID,
-        CPTDepartmentID,
-        CostDepartmentID,
-        CostDriveID,
-        FixedQuantity,
-        IsDifferentCPTDepartment,
-        IsDifferentLedger,
-        selectedLedgerID,
-        CPTEncounterDepartments,
-        ADOCClassID,
-        ADOCGroupID,
-        data,
+        CPTName,CPTPrice,PriceEffectFrom,CPTWeightage,WeightageEffectFrom,
+        CPTADOCMappings,
       )
       .subscribe((response: any) => {
         if (response) {
           this.dataGrid.instance.refresh();
+
           notify(
             {
-              message: `New Cpt Master Saved Successfully`,
+              message: 'New Cpt Master Saved Successfully',
               position: { at: 'top right', my: 'top right' },
             },
             'success',
           );
+
           this.CptNewFormComponent.clearForm();
         } else {
           notify(
             {
-              message: `Your Data Not Saved`,
+              message: 'Your Data Not Saved',
               position: { at: 'top right', my: 'top right' },
             },
             'error',
@@ -188,26 +160,8 @@ export class CPTMasterComponent {
 
   //======= Update data ==========
   onClickUpdateNewCptType = () => {
-    const {
-      ID,
-      CPTTypeID,
-      CPTCode,
-      CPTName,
-      Description,
-      CPTGroup,
-      DepartmentID,
-      CPTDepartmentID,
-      CostDepartmentID,
-      CostDriveID,
-      FixedQuantity,
-      IsDifferentCPTDepartment,
-      IsDifferentLedger,
-      selectedLedgerID,
-      CPTEncounterDepartments,
-      ADOCClassID,
-      ADOCGroupID,
-      data,
-    } = this.CptEditFormComponent.getUpdateCptMasterData();
+    const { ID, CPTTypeID, CPTCode, CPTName,CPTADOCMappings } =
+      this.CptEditFormComponent.getUpdateCptMasterData();
 
     this.masterService
       .update_CptMaster_data(
@@ -215,36 +169,25 @@ export class CPTMasterComponent {
         CPTTypeID,
         CPTCode,
         CPTName,
-        Description,
-        CPTGroup,
-        DepartmentID,
-        CPTDepartmentID,
-        CostDepartmentID,
-        CostDriveID,
-        FixedQuantity,
-        IsDifferentCPTDepartment,
-        IsDifferentLedger,
-        selectedLedgerID,
-        CPTEncounterDepartments,
-        ADOCClassID,
-        ADOCGroupID,
-        data,
+        CPTADOCMappings
       )
       .subscribe((response: any) => {
         if (response) {
           this.dataGrid.instance.refresh();
+
           notify(
             {
-              message: `Cpt Master Updated Successfully`,
+              message: 'Cpt Master Updated Successfully',
               position: { at: 'top right', my: 'top right' },
             },
             'success',
           );
+
           this.resetCptForm();
         } else {
           notify(
             {
-              message: `Your Data Not Updated`,
+              message: 'Your Data Not Updated',
               position: { at: 'top right', my: 'top right' },
             },
             'error',
@@ -302,8 +245,6 @@ export class CPTMasterComponent {
   clearEditForm() {
     this.CptEditFormComponent.clearForm();
   }
-
- 
 }
 @NgModule({
   imports: [

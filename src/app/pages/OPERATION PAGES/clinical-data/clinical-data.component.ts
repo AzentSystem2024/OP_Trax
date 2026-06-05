@@ -511,76 +511,6 @@ export class ClinicalDataComponent implements OnInit {
     // }
   }
 
-  // =========== update Cpt data ===========
-  onClickUpdateNewCptType = () => {
-    this.CptEditFormComponent.newCptMasterData.selectedLedgerID =
-      this.CptEditFormComponent.ledgerMode === 1
-        ? this.CptEditFormComponent.selectedLedgerIds.join(',')
-        : '';
-    const {
-      ID,
-      CPTTypeID,
-      CPTCode,
-      CPTName,
-      Description,
-      CPTGroup,
-      DepartmentID,
-      CPTDepartmentID,
-      CostDepartmentID,
-      CostDriveID,
-      FixedQuantity,
-      IsDifferentCPTDepartment,
-      IsDifferentLedger,
-      selectedLedgerID,
-      CPTEncounterDepartments,
-      ADOCClassID,
-      ADOCGroupID,
-      data,
-    } = this.CptEditFormComponent.getUpdateCptMasterData();
-
-    this.masterService
-      .update_CptMaster_data(
-        ID,
-        CPTTypeID,
-        CPTCode,
-        CPTName,
-        Description,
-        CPTGroup,
-        DepartmentID,
-        CPTDepartmentID,
-        CostDepartmentID,
-        CostDriveID,
-        FixedQuantity,
-        IsDifferentCPTDepartment,
-        IsDifferentLedger,
-        selectedLedgerID,
-        CPTEncounterDepartments,
-        ADOCClassID,
-        ADOCGroupID,
-        data,
-      )
-      .subscribe((response: any) => {
-        if (response) {
-          this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: `Cpt Master Updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success',
-          );
-        } else {
-          notify(
-            {
-              message: `Your Data Not Updated`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error',
-          );
-        }
-      });
-  };
-
   // =========== update oredering clinician =========
   onClickUpdateNewClinician = () => {
     const data = this.clinicianEditComponent.getnewClinicianData();
@@ -981,7 +911,7 @@ export class ClinicalDataComponent implements OnInit {
     this.dataGrid.instance.refresh();
   }
 
-  //========================Export data ==========================
+  //===== Export data ============
   onExporting(event: any) {
     const fileName = 'clinical_data';
     this.service.exportDataGrid(event, fileName);
@@ -1082,88 +1012,48 @@ export class ClinicalDataComponent implements OnInit {
     this.onApplyFilter();
   }
 
-  // async onExportClick(e: any) {
-  //   const workbook = new Workbook();
-  //   const worksheet = workbook.addWorksheet('ADOC Report');
-  //   await exportDataGrid({
-  //     component: this.popupGrid.instance,
-  //     worksheet: worksheet,
-  //   });
-
-  //   // Excel Export
-  //   if (e.itemData.format === 'xlsx') {
-  //     const buffer = await workbook.xlsx.writeBuffer();
-  //     saveAs(
-  //       new Blob([buffer], {
-  //         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  //       }),
-  //       'ADOC_Report.xlsx',
-  //     );
-  //   }
-
-  //   // CSV Export
-  //   if (e.itemData.format === 'csv') {
-  //     const csvBuffer = await workbook.csv.writeBuffer();
-  //     saveAs(
-  //       new Blob([csvBuffer], {
-  //         type: 'text/csv;charset=utf-8;',
-  //       }),
-  //       'ADOC_Report.csv',
-  //     );
-  //   }
-  // }
-
   async onExportClick(e: any) {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('ADOC Report');
 
-  const workbook = new Workbook();
-  const worksheet = workbook.addWorksheet('ADOC Report');
+    await exportDataGrid({
+      component: this.popupGrid.instance,
+      worksheet: worksheet,
 
-  await exportDataGrid({
-    component: this.popupGrid.instance,
-    worksheet: worksheet,
+      customizeCell: ({ gridCell, excelCell }) => {
+        if (
+          gridCell?.rowType === 'data' &&
+          gridCell.column?.caption === 'Billable'
+        ) {
+          excelCell.value = gridCell.data?.Billable === true ? 'Yes' : 'No';
+        }
+      },
+    });
 
-    customizeCell: ({ gridCell, excelCell }) => {
+    // Excel Export
+    if (e.itemData.format === 'xlsx') {
+      const buffer = await workbook.xlsx.writeBuffer();
 
-      if (
-        gridCell.rowType === 'data' &&
-        gridCell.column.caption === 'Billable'
-      ) {
+      saveAs(
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+        'ADOC_Report.xlsx',
+      );
+    }
 
-        excelCell.value =
-          gridCell.data?.Billable === true
-            ? 'Yes'
-            : 'No';
-      }
-    },
-  });
+    // CSV Export
+    if (e.itemData.format === 'csv') {
+      const csvBuffer = await workbook.csv.writeBuffer();
 
-  // Excel Export
-  if (e.itemData.format === 'xlsx') {
-
-    const buffer = await workbook.xlsx.writeBuffer();
-
-    saveAs(
-      new Blob([buffer], {
-        type:
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      }),
-      'ADOC_Report.xlsx',
-    );
+      saveAs(
+        new Blob([csvBuffer], {
+          type: 'text/csv;charset=utf-8;',
+        }),
+        'ADOC_Report.csv',
+      );
+    }
   }
-
-  // CSV Export
-  if (e.itemData.format === 'csv') {
-
-    const csvBuffer = await workbook.csv.writeBuffer();
-
-    saveAs(
-      new Blob([csvBuffer], {
-        type: 'text/csv;charset=utf-8;',
-      }),
-      'ADOC_Report.csv',
-    );
-  }
-}
 }
 @NgModule({
   imports: [
