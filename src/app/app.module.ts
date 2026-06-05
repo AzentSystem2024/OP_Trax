@@ -33,6 +33,7 @@ import { CustomReuseStrategy } from './custom-reuse-strategy';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { DepartmentListModule } from './pages/MASTER PAGES/department/department-list.component';
 import { ConfigService } from './services/config.service';
+import { AdocCountingRulesModule } from './pages/MASTER PAGES/adoc-counting-rules/adoc-counting-rules.component';
 
 export function initializeApp(configService: ConfigService) {
   return () => configService.load(); // Angular waits for this before bootstrapping
@@ -65,6 +66,7 @@ export function initializeApp(configService: ConfigService) {
     ImportMasterDataFormModule,
     ViewImportedMasterDataFormModule,
     DepartmentListModule,
+    AdocCountingRulesModule,
   ],
   providers: [
     AuthService,

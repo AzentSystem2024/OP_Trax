@@ -156,7 +156,25 @@
       dataType="boolean"
       [visible]="false"
     ></dxi-column>
-    <dxi-column dataField="Status" caption="Status"></dxi-column>
+     <dxi-column
+  dataField="Status"
+  caption="Status"
+  [cellTemplate]="'statusTemplate'"
+  alignment="center"
+>
+</dxi-column>
+
+<div *dxTemplate="let cell of 'statusTemplate'">
+  <span
+    [ngStyle]="{
+      color: cell.data.Status === 'Active' ? 'green' : 'red'
+    }"
+    [title]="cell.data.Status"
+    style="font-size: 20px ;cursor: pointer;"
+  >
+    ⚑
+  </span>
+</div>
   </dx-data-grid>
 
   <!-- ========= new form popup ========= -->

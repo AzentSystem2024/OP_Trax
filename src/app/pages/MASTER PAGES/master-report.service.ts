@@ -1398,4 +1398,10 @@ export class MasterReportService {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
+
+
+    get_ADOC_CountingRule_List() {
+    const Url = `${this.BASE_URL}ADOCGroup/adoc-rule-list`;
+    return this.http.post(Url, {});
+  }
 }

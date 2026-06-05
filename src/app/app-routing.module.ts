@@ -53,6 +53,7 @@ import { ADOCClassComponent } from './pages/MASTER PAGES/adoc-class/adoc-class.c
 import { PriceMasterComponent } from './pages/MASTER PAGES/price-master/price-master.component';
 import { ADOCGroupComponent } from './pages/MASTER PAGES/adoc-category/adoc-group.component';
 import { CPTWeightageComponent } from './pages/MASTER PAGES/cpt-weightage/cpt-weightage.component';
+import { AdocCountingRulesComponent } from './pages/MASTER PAGES/adoc-counting-rules/adoc-counting-rules.component';
 
 const routes: Routes = [
   {
@@ -280,6 +281,11 @@ const routes: Routes = [
       {
         path: 'adoc-group',
         component: ADOCGroupComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'adoc-counting-rules',
+        component: AdocCountingRulesComponent,
         canActivate: [AuthGuardService],
       },
       {
