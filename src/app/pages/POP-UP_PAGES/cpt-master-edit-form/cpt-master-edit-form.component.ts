@@ -106,7 +106,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
       CPTADOCMappings: [...(this.formData.CPTADOC || [])],
     };
 
-    // Always keep one empty row at the top
+    // Keep exactly one blank row at the bottom
     const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
       (row: any) =>
         row.SpecialityID == null &&
@@ -115,18 +115,29 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     );
 
     if (!hasEmptyRow) {
-      this.newCptMasterData.CPTADOCMappings.unshift({
+      this.newCptMasterData.CPTADOCMappings.push({
         SpecialityID: null,
         ADOCClassID: null,
         ADOCCategoryID: null,
       });
     }
 
+    // Force datasource refresh
+    this.newCptMasterData.CPTADOCMappings = [
+      ...this.newCptMasterData.CPTADOCMappings,
+    ];
+
     this.selectedTabIndex = 0;
   }
 
   getUpdateCptMasterData = () => ({
     ...this.newCptMasterData,
+    CPTADOCMappings: (this.newCptMasterData.CPTADOCMappings || []).filter(
+      (x: any) =>
+        x.SpecialityID != null &&
+        x.ADOCClassID != null &&
+        x.ADOCCategoryID != null,
+    ),
   });
 
   onTabSelectionChanged(e: any) {
@@ -242,12 +253,13 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     );
 
     if (!hasEmptyRow) {
-      this.newCptMasterData.CPTADOCMappings.unshift({
+      this.newCptMasterData.CPTADOCMappings.push({
         SpecialityID: null,
         ADOCClassID: null,
         ADOCCategoryID: null,
       });
 
+      // Force Angular refresh
       this.newCptMasterData.CPTADOCMappings = [
         ...this.newCptMasterData.CPTADOCMappings,
       ];
@@ -286,7 +298,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
     const data = this.newCptMasterData.CPTWeightages;
 
-    if (!data || data.length === 0) return;
+    if (!data || data.length <= 1) return;
 
     const latestRow = data.reduce((a: any, b: any) =>
       new Date(a.CreatedTime) > new Date(b.CreatedTime) ? a : b,
@@ -302,7 +314,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
     const data = this.newCptMasterData.CPTPrices;
 
-    if (!data || data.length === 0) return;
+    if (!data || data.length <= 1) return;
 
     const latestRow = data.reduce((a: any, b: any) =>
       new Date(a.CreatedTime) > new Date(b.CreatedTime) ? a : b,

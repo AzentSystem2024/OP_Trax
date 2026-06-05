@@ -393,6 +393,10 @@ export class MasterReportService {
     CPTTypeID: any,
     CPTCode: any,
     CPTName: any,
+    CPTPrice: any,
+    PriceEffectFrom: any,
+    CPTWeightage: any,
+    WeightageEffectFrom: any,
     CPTADOCMappings: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/insert`;
@@ -401,6 +405,10 @@ export class MasterReportService {
       CPTTypeID,
       CPTCode,
       CPTName,
+      CPTPrice,
+      PriceEffectFrom,
+      CPTWeightage,
+      WeightageEffectFrom,
 
       // Default values
       Description: '',
@@ -422,7 +430,7 @@ export class MasterReportService {
         (x: any) =>
           x.SpecialityID != null &&
           x.ADOCClassID != null &&
-          x.ADOCGroupID != null,
+          x.ADOCCategoryID != null,
       ),
     };
 

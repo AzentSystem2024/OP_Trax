@@ -1,105 +1,226 @@
-<dx-form class="plain-styled-form no-padding-form">
-  <dxi-item itemType="group">
-    <dxo-col-count-by-screen
-      [xs]="1"
-      [sm]="1"
-      [md]="1"
-      [lg]="1"
-    ></dxo-col-count-by-screen>
+<div class="cpt-master-container">
+  <!-- CPT Details Section -->
+  <div class="section-card">
+    <div class="section-title">CPT Information</div>
+    <div class="section-body">
+      <dx-form class="plain-styled-form no-padding-form">
+        <dxi-item itemType="group" [colCount]="2">
+          <dxi-item>
+            <div *dxTemplate>
+              <dx-text-box
+                label="CPT Code"
+                [(value)]="newCptMasterData.CPTCode"
+                labelMode="floating"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="CPT Code is required"
+                  ></dxi-validation-rule>
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-text-box
-          label="CPT Code"
-          [(value)]="newCptMasterData.CPTCode"
-          labelMode="floating"
-        >
-          <dx-validator>
-            <dxi-validation-rule
-              type="required"
-              message="CPT Code is required"
-            ></dxi-validation-rule>
-            <dxi-validation-rule
-              type="async"
-              [validationCallback]="checkDuplicateCPTCode"
-              message="CPT Code already exists"
-            >
-            </dxi-validation-rule>
-          </dx-validator>
-        </dx-text-box>
-      </div>
-    </dxi-item>
+                  <dxi-validation-rule
+                    type="async"
+                    [validationCallback]="checkDuplicateCPTCode"
+                    message="CPT Code already exists"
+                  >
+                  </dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </div>
+          </dxi-item>
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-text-box
-          label="CPT Name"
-          labelMode="floating"
-          [(value)]="newCptMasterData.CPTName"
-        >
-          <dx-validator>
-            <dxi-validation-rule
-              type="required"
-              message="CPT Name is required"
-            ></dxi-validation-rule>
-          </dx-validator>
-        </dx-text-box>
-      </div>
-    </dxi-item>
+          <dxi-item>
+            <div *dxTemplate>
+              <dx-select-box
+                label="CPT Type"
+                labelMode="floating"
+                [(value)]="newCptMasterData.CPTTypeID"
+                [items]="CptType_DropDownData"
+                displayExpr="DESCRIPTION"
+                valueExpr="ID"
+                [searchEnabled]="true"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="CPT Type is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-select-box>
+            </div>
+          </dxi-item>
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
-          label="CPT Type"
-          labelMode="floating"
-          [(value)]="newCptMasterData.CPTTypeID"
-          [items]="CptType_DropDownData"
-          displayExpr="DESCRIPTION"
-          valueExpr="ID"
-          [searchEnabled]="true"
-        >
-          <dx-validator>
-            <dxi-validation-rule
-              type="required"
-              message="CPT Type is required"
-            ></dxi-validation-rule>
-          </dx-validator>
-        </dx-select-box>
-      </div>
-    </dxi-item>
+          <dxi-item [colSpan]="2">
+            <div *dxTemplate>
+              <dx-text-box
+                label="CPT Name"
+                [(value)]="newCptMasterData.CPTName"
+                labelMode="floating"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="CPT Name is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-text-box>
+            </div>
+          </dxi-item>
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
-          label="ADOC Category"
-          [(value)]="newCptMasterData.ADOCGroupID"
-          labelMode="floating"
-          [items]="ADOCgroupDataSource"
-          displayExpr="DESCRIPTION"
-          [searchEnabled]="true"
-          valueExpr="ID"
-          [showClearButton]="true"
-          (onValueChanged)="onADOCGroupChanged($event)"
-        >
-        </dx-select-box>
-      </div>
-    </dxi-item>
+          <!-- Price -->
 
-    <dxi-item>
-      <div *dxTemplate>
-        <dx-select-box
-          label="ADOC Classification"
-          [(value)]="newCptMasterData.ADOCClassID"
-          labelMode="floating"
-          [items]="ADOCClassDataSource"
-          displayExpr="DESCRIPTION"
-          [searchEnabled]="true"
-          valueExpr="ID"
-          [showClearButton]="true"
-          [disabled]="!newCptMasterData.ADOCGroupID"
+          <dxi-item>
+            <div *dxTemplate>
+              <dx-number-box
+                label="Price"
+                labelMode="floating"
+                [(value)]="newCptMasterData.CPTPrice"
+                [min]="0"
+                [showSpinButtons]="true"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="Price is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-number-box>
+            </div>
+          </dxi-item>
+
+          <dxi-item>
+            <div *dxTemplate>
+              <dx-date-box
+                label="Price Effective From"
+                labelMode="floating"
+                type="date"
+                displayFormat="dd/MM/yyyy"
+                [(value)]="newCptMasterData.PriceEffectFrom"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="Price Effective From is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-date-box>
+            </div>
+          </dxi-item>
+
+          <!-- Weightage -->
+
+          <dxi-item>
+            <div *dxTemplate>
+              <dx-number-box
+                label="Weightage"
+                labelMode="floating"
+                [(value)]="newCptMasterData.CPTWeightage"
+                [min]="0"
+                [showSpinButtons]="true"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="Weightage is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-number-box>
+            </div>
+          </dxi-item>
+
+          <dxi-item>
+            <div *dxTemplate>
+              <dx-date-box
+                label="Weightage Effective From"
+                labelMode="floating"
+                type="date"
+                displayFormat="dd/MM/yyyy"
+                [(value)]="newCptMasterData.WeightageEffectFrom"
+              >
+                <dx-validator>
+                  <dxi-validation-rule
+                    type="required"
+                    message="Weightage Effective From is required"
+                  ></dxi-validation-rule>
+                </dx-validator>
+              </dx-date-box>
+            </div>
+          </dxi-item>
+        </dxi-item>
+      </dx-form>
+    </div>
+  </div>
+
+  <!-- Tabs Section -->
+  <div class="section-card">
+    <div class="grid-container">
+      <dx-data-grid
+        class="custom-grid"
+        [dataSource]="newCptMasterData.CPTADOCMappings"
+        [showBorders]="false"
+        [columnAutoWidth]="true"
+        [rowAlternationEnabled]="true"
+        [hoverStateEnabled]="true"
+        [showRowLines]="true"
+        [showColumnLines]="false"
+        (onEditorPreparing)="onEditorPreparingADOC($event)"
+        (onRowUpdated)="onADOCMappingRowUpdated($event)"
+        height="350"
+      >
+        <dxo-editing
+          mode="cell"
+          [allowUpdating]="true"
+          [allowAdding]="true"
+          [allowDeleting]="true"
+          newRowPosition="last"
         >
-        </dx-select-box>
-      </div>
-    </dxi-item>
-  </dxi-item>
-</dx-form>
+        </dxo-editing>
+
+        <!-- Specialty -->
+        <dxi-column
+          dataField="SpecialityID"
+          caption="Specialty"
+          [lookup]="{
+            dataSource: specialityDataSource,
+            valueExpr: 'ID',
+            displayExpr: 'DESCRIPTION',
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Specialty is required"
+          ></dxi-validation-rule>
+        </dxi-column>
+
+        <!-- ADOC Class -->
+        <dxi-column
+          dataField="ADOCClassID"
+          caption="ADOC Class"
+          [lookup]="{
+            dataSource: allADOCClassDataSource,
+            valueExpr: 'ID',
+            displayExpr: 'DESCRIPTION',
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="ADOC Class is required"
+          ></dxi-validation-rule>
+        </dxi-column>
+
+        <!-- Auto Filled -->
+        <dxi-column
+          dataField="ADOCCategoryID"
+          caption="ADOC Category"
+          [allowEditing]="false"
+          [lookup]="{
+            dataSource: ADOCgroupDataSource,
+            valueExpr: 'ID',
+            displayExpr: 'DESCRIPTION',
+          }"
+        >
+        </dxi-column>
+      </dx-data-grid>
+    </div>
+  </div>
+</div>

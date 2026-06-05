@@ -123,15 +123,15 @@ export class CPTMasterComponent {
       return;
     }
 
-    const { CPTTypeID, CPTCode, CPTName,CPTADOCMappings} =
+    const { CPTTypeID, CPTCode, CPTName,CPTPrice,PriceEffectFrom,CPTWeightage,WeightageEffectFrom,CPTADOCMappings} =
       this.CptNewFormComponent.getNewCptMasterData();
 
     this.masterService
       .Insert_CptMaster_Data(
         CPTTypeID,
         CPTCode,
-        CPTName,
-        CPTADOCMappings
+        CPTName,CPTPrice,PriceEffectFrom,CPTWeightage,WeightageEffectFrom,
+        CPTADOCMappings,
       )
       .subscribe((response: any) => {
         if (response) {
