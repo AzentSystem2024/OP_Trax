@@ -19,7 +19,7 @@ export class MasterReportService {
   constructor(
     private http: HttpClient,
     private config: ConfigService,
-  ) { }
+  ) {}
 
   private get BASE_URL(): string {
     return this.config.apiBaseUrl;
@@ -104,7 +104,7 @@ export class MasterReportService {
     SpecialityName: any,
     SpecialityShortName: any,
     Description: any,
-    IsBillable: any
+    IsBillable: any,
   ) {
     const url = `${this.BASE_URL}speciality/insert`;
     const reqBody = {
@@ -112,7 +112,7 @@ export class MasterReportService {
       SpecialityName: SpecialityName,
       SpecialityShortName: SpecialityShortName,
       Description: Description,
-      IsBillable: IsBillable
+      IsBillable: IsBillable,
     };
 
     return this.http.post(url, reqBody);
@@ -125,7 +125,7 @@ export class MasterReportService {
     SpecialityName: any,
     SpecialityShortName: any,
     Description: any,
-    IsBillable: any
+    IsBillable: any,
   ) {
     const url = `${this.BASE_URL}speciality/update`;
     const reqBody = {
@@ -134,7 +134,7 @@ export class MasterReportService {
       SpecialityName: SpecialityName,
       SpecialityShortName: SpecialityShortName,
       Description: Description,
-      IsBillable: IsBillable
+      IsBillable: IsBillable,
     };
 
     return this.http.post(url, reqBody);
@@ -387,45 +387,43 @@ export class MasterReportService {
 
     return this.http.post(Url, reqBody);
   }
+
   //======Add Cpt Master data========
   Insert_CptMaster_Data(
     CPTTypeID: any,
     CPTCode: any,
     CPTName: any,
-    description: any,
-    CPTGroup: any,
-    DepartmentID: any,
-    CPTDepartmentID: any,
-    CostDepartmentID: any,
-    CostDriveID: any,
-    FixedQuantity: any,
-    IsDifferentCPTDepartment: any,
-    IsDifferentLedger: any,
-    selectedLedgerID: any,
-    CPTEncounterDepartments: any,
-    ADOCClassID: any,
-    ADOCGroupID: any,
-    data: any,
+    CPTADOCMappings: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/insert`;
+
     const reqBody = {
-      CPTTypeID: CPTTypeID,
-      CPTCode: CPTCode,
-      CPTName: CPTName,
-      Description: description,
-      CPTGroup: CPTGroup,
-      DepartmentID: DepartmentID,
-      CPTDepartmentID: CPTDepartmentID,
-      CostDepartmentID: CostDepartmentID,
-      CostDriveID: CostDriveID,
-      FixedQuantity: FixedQuantity,
-      IsDifferentCPTDepartment: IsDifferentCPTDepartment,
-      IsDifferentLedger: IsDifferentLedger,
-      SelectedLedgerID: selectedLedgerID,
-      CPTEncounterDepartments: CPTEncounterDepartments,
-      ADOCClassID: ADOCClassID,
-      ADOCGroupID: ADOCGroupID,
-      data: data,
+      CPTTypeID,
+      CPTCode,
+      CPTName,
+
+      // Default values
+      Description: '',
+      CPTGroup: '',
+      DepartmentID: null,
+      CPTDepartmentID: null,
+      CostDepartmentID: null,
+      CostDriveID: 0,
+      FixedQuantity: 0,
+      IsDifferentCPTDepartment: 0,
+      IsDifferentLedger: 0,
+      SelectedLedgerID: null,
+      CPTEncounterDepartments: [],
+      ADOCClassID: null,
+      ADOCGroupID: null,
+      data: [],
+      // New mapping table
+      CPTADOC: (CPTADOCMappings || []).filter(
+        (x: any) =>
+          x.SpecialityID != null &&
+          x.ADOCClassID != null &&
+          x.ADOCGroupID != null,
+      ),
     };
 
     return this.http.post(url, reqBody);
@@ -437,62 +435,35 @@ export class MasterReportService {
     CPTTypeID: any,
     CPTCode: any,
     CPTName: any,
-    description: any,
-    CPTGroup: any,
-    DepartmentID: any,
-    CPTDepartmentID: any,
-    CostDepartmentID: any,
-    CostDriveID: any,
-    FixedQuantity: any,
-    IsDifferentCPTDepartment: any,
-    IsDifferentLedger: any,
-    selectedLedgerID: any,
-    CPTEncounterDepartments: any,
-    ADOCClassID: any,
-    ADOCGroupID: any,
-    data: any,
+    CPTADOCMappings: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/update`;
 
-    /* ===============================
-     NORMALIZE PAYLOAD (IMPORTANT)
-     =============================== */
-
-    let finalDepartmentID = DepartmentID;
-    let finalCPTDepartmentID = CPTDepartmentID;
-    let finalEncounterDepartments = CPTEncounterDepartments;
-    let finalIsDifferent = IsDifferentCPTDepartment;
-
-    // COMMON department selected
-    if (finalIsDifferent === 0) {
-      finalEncounterDepartments = [];
-    }
-
-    // SEPARATE department selected
-    if (finalIsDifferent === 1) {
-      finalDepartmentID = null;
-      finalCPTDepartmentID = null;
-    }
-
     const reqBody = {
       ID: id,
-      CPTTypeID: CPTTypeID,
-      CPTCode: CPTCode,
-      CPTName: CPTName,
-      Description: description,
-      CPTGroup: CPTGroup,
-      DepartmentID: finalDepartmentID,
-      CPTDepartmentID: finalCPTDepartmentID,
-      CostDepartmentID: CostDepartmentID,
-      CostDriveID: CostDriveID,
-      FixedQuantity: FixedQuantity,
-      IsDifferentCPTDepartment: finalIsDifferent,
-      IsDifferentLedger: IsDifferentLedger,
-      SelectedLedgerID: selectedLedgerID,
-      CPTEncounterDepartments: finalEncounterDepartments || [],
-      ADOCClassID: ADOCClassID,
-      ADOCGroupID: ADOCGroupID,
-      data: data,
+      CPTTypeID,
+      CPTCode,
+      CPTName,
+      // Default values
+      Description: '',
+      CPTGroup: '',
+      DepartmentID: null,
+      CPTDepartmentID: null,
+      CostDepartmentID: null,
+      CostDriveID: 0,
+      FixedQuantity: 0,
+      IsDifferentCPTDepartment: 0,
+      IsDifferentLedger: 0,
+      SelectedLedgerID: null,
+      CPTEncounterDepartments: [],
+      data: [],
+      // New mapping table
+      CPTADOC: (CPTADOCMappings || []).filter(
+        (x: any) =>
+          x.SpecialityID != null &&
+          x.ADOCClassID != null &&
+          x.ADOCCategoryID != null,
+      ),
     };
 
     return this.http.post(url, reqBody);
@@ -1267,7 +1238,13 @@ export class MasterReportService {
   }
 
   //=====Update ADCO Class data======
-  update_adocClass_data(id: any, Code: any, Name: any, GroupID: any, IsInactive: any) {
+  update_adocClass_data(
+    id: any,
+    Code: any,
+    Name: any,
+    GroupID: any,
+    IsInactive: any,
+  ) {
     const url = `${this.BASE_URL}ADOCClass/update`;
     const reqBody = {
       ID: id,

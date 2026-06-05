@@ -36,92 +36,40 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./cpt-master-edit-form.component.scss'],
 })
 export class CptMasterEditFormComponent implements OnChanges, OnInit {
-  @ViewChild(DxDropDownBoxComponent, { static: false })
-  facilityDropDownBox!: DxDropDownBoxComponent;
-
-  @ViewChild('facilityGrid', { static: false })
-  facilityGrid!: DxDataGridComponent;
-
-  @ViewChild('CostdataGrid', { static: false })
-  dataGrid!: DxDataGridComponent;
-
-  @ViewChild('facilityValidator', { static: false }) facilityValidator: any;
-
-  @ViewChild('encounterGrid', { static: false })
-  encounterGrid!: DxDataGridComponent;
-
   @Input() formData: any;
 
-  department_DropDownData: any;
-  Subdepartment_DropDownData: any;
-  Costdepartment_DropDownData: any;
   CptType_DropDownData: any;
-  CostDrive_DropDownData: any;
-  CostTypeDataSource: any;
-  CostBucketDataSource: any;
-  ClinicianDataSource: any;
-  Facility_DataSource: any[] = [];
-  Facility_Value: any;
-  facilityDataMap: { [facilityId: string]: any[] } = {};
 
   newCptMasterData: any = {
-    ID: '',
-    CPTTypeID: '',
     CPTCode: '',
+    CPTTypeID: '',
     CPTName: '',
-    Description: '',
-    CPTGroup: '',
-    DepartmentID: '',
-    CPTDepartmentID: '',
-    CostDepartmentID: '',
-    CostDriveID: 0,
-    FixedQuantity: 0,
-    IsDifferentCPTDepartment: 0,
-    IsDifferentLedger: 0,
-    selectedLedgerID: '',
-    CPTEncounterDepartments: [],
-    ADOCClassID: null,
-    ADOCGroupID: null,
-    data: [],
     CPTPrices: [],
     CPTWeightages: [],
+    CPTADOCMappings: [],
   };
-  ClinicianRoleDataSource: any;
-  IsWeightGlobal: boolean = false;
-  IsPriceGlobal: boolean = false;
-  ledgerModeOptions = [
-    { value: 0, text: 'All Ledgers' },
-    { value: 1, text: 'Selected Ledger' },
+
+  IsWeightGlobal = false;
+  IsPriceGlobal = false;
+
+  tabsWithText = [
+    { id: 0, text: 'CPT - ADOC Mapping' },
+    { id: 1, text: 'Price Data' },
+    { id: 2, text: 'Weightage Data' },
   ];
 
-  departmentMode: 0 | 1 = 0;
-
-  encounterDepartmentData: any[] = [];
-
-  ledgerMode: 0 | 1 = 0;
-  selectedLedgerIds: number[] = [];
-  ledgerList: any[] = [];
-
+  specialityDataSource: any[] = [];
   ADOCClassDataSource: any[] = [];
   ADOCgroupDataSource: any[] = [];
   allADOCClassDataSource: any;
 
-  priceDataSource: any[] = [];
-  weightageDataSource: any[] = [];
-  tabsWithText: any = [
-    { id: 0, text: 'Price Data' },
-    { id: 1, text: 'Weightage Data' },
-  ];
-
   selectedTabIndex = 0;
-  dropdownsLoaded: boolean = false;
+  dropdownsLoaded = false;
 
   constructor(
     private masterService: MasterReportService,
     private dataService: DataService,
-  ) {
-    this.selectedTabIndex = 0;
-  }
+  ) {}
 
   async ngOnInit() {
     try {
@@ -129,11 +77,11 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         this.getCpt_DropDown(),
         this.get_ADOC_CLASS_Dropdown(),
         this.get_ADOC_GROUP_Dropdown(),
+        this.getSpecialityDropdown(),
         this.get_local_storage_data(),
       ]);
 
       this.dropdownsLoaded = true;
-
       this.bindFormData();
     } catch (error) {
       console.error(error);
@@ -155,20 +103,42 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
     this.newCptMasterData = {
       ...this.formData,
+      CPTADOCMappings: [...(this.formData.CPTADOC || [])],
     };
 
-    this.selectedTabIndex = 0;
+    // Always keep one empty row at the top
+    const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
+      (row: any) =>
+        row.SpecialityID == null &&
+        row.ADOCClassID == null &&
+        row.ADOCCategoryID == null,
+    );
 
-    if (this.newCptMasterData.ADOCGroupID) {
-      this.onADOCGroupChanged({
-        value: this.newCptMasterData.ADOCGroupID,
+    if (!hasEmptyRow) {
+      this.newCptMasterData.CPTADOCMappings.unshift({
+        SpecialityID: null,
+        ADOCClassID: null,
+        ADOCCategoryID: null,
       });
     }
+
+    this.selectedTabIndex = 0;
   }
-  getUpdateCptMasterData = () => ({ ...this.newCptMasterData });
+
+  getUpdateCptMasterData = () => ({
+    ...this.newCptMasterData,
+  });
 
   onTabSelectionChanged(e: any) {
     this.selectedTabIndex = e.addedItems[0].id;
+  }
+
+  async getSpecialityDropdown(): Promise<void> {
+    const response: any = await firstValueFrom(
+      this.dataService.Get_GropDown('CPT_SPECIALITY'),
+    );
+
+    this.specialityDataSource = response || [];
   }
 
   async getCpt_DropDown(): Promise<void> {
@@ -180,25 +150,107 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   }
 
   async get_ADOC_GROUP_Dropdown(): Promise<void> {
-    const dropdownType = 'ADOC_GROUP';
     const response: any = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType),
+      this.dataService.Get_GropDown('ADOC_GROUP'),
     );
+
     if (response) {
-      // Prepend 'All' option
       this.ADOCgroupDataSource = response;
     }
   }
 
   async get_ADOC_CLASS_Dropdown(): Promise<void> {
-    const dropdownType = 'ADOC_CLASS';
     const response: any = await firstValueFrom(
-      this.dataService.Get_GropDown(dropdownType),
+      this.dataService.Get_GropDown('ADOC_CLASS'),
     );
 
     if (response) {
       this.allADOCClassDataSource = response;
       this.ADOCClassDataSource = response;
+    }
+  }
+
+  onEditorPreparingADOC(e: any) {
+    // Prevent duplicate Specialty selection
+    if (e.parentType === 'dataRow' && e.dataField === 'SpecialityID') {
+      const currentRow = e.row?.data;
+
+      e.editorOptions.dataSource = this.specialityDataSource.filter(
+        (speciality: any) => {
+          return !this.newCptMasterData.CPTADOCMappings.some(
+            (row: any) =>
+              row !== currentRow && row.SpecialityID === speciality.ID,
+          );
+        },
+      );
+    }
+
+    // Auto populate ADOC Category when ADOC Class changes
+    if (e.parentType === 'dataRow' && e.dataField === 'ADOCClassID') {
+      const originalHandler = e.editorOptions.onValueChanged;
+
+      e.editorOptions.onValueChanged = (args: any) => {
+        originalHandler?.(args);
+
+        const selectedClass = this.allADOCClassDataSource.find(
+          (x: any) => x.ID === args.value,
+        );
+
+        if (!selectedClass?.DESCRIPTION) {
+          e.component.cellValue(e.row.rowIndex, 'ADOCCategoryID', null);
+          return;
+        }
+
+        const prefix = selectedClass.DESCRIPTION.trim().charAt(0).toUpperCase();
+
+        const category = this.ADOCgroupDataSource.find(
+          (x: any) => x.DESCRIPTION?.trim().charAt(0).toUpperCase() === prefix,
+        );
+
+        // Update category
+        e.component.cellValue(
+          e.row.rowIndex,
+          'ADOCCategoryID',
+          category?.ID ?? null,
+        );
+
+        // Commit row immediately
+        setTimeout(() => {
+          e.component.saveEditData();
+        }, 10);
+      };
+    }
+  }
+
+  onADOCMappingRowUpdated(e: any) {
+    const row = e.data;
+
+    const isCompleted =
+      row?.SpecialityID != null &&
+      row?.ADOCClassID != null &&
+      row?.ADOCCategoryID != null;
+
+    if (!isCompleted) {
+      return;
+    }
+
+    const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
+      (x: any) =>
+        x.SpecialityID == null &&
+        x.ADOCClassID == null &&
+        x.ADOCCategoryID == null,
+    );
+
+    if (!hasEmptyRow) {
+      this.newCptMasterData.CPTADOCMappings.unshift({
+        SpecialityID: null,
+        ADOCClassID: null,
+        ADOCCategoryID: null,
+      });
+
+      this.newCptMasterData.CPTADOCMappings = [
+        ...this.newCptMasterData.CPTADOCMappings,
+      ];
     }
   }
 
@@ -209,7 +261,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     }
 
     const selectedGroup = this.ADOCgroupDataSource.find(
-      (x) => x.ID === e.value,
+      (x: any) => x.ID === e.value,
     );
 
     const prefix = selectedGroup.DESCRIPTION.split('-')[0]
@@ -222,54 +274,54 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     );
   }
 
-  clearForm() {
-    this.newCptMasterData = {
-      CPTCode: '',
-      CPTName: '',
-      Description: '',
-      CPTTypeID: null,
-      CPTGroup: '',
-      CostDriveID: 0,
-      FixedQuantity: 0,
-      DepartmentID: null,
-      CPTDepartmentID: null,
-      CostDepartmentID: null,
-      ADOCClassID: 0,
-      ADOCGroupID: 0,
-      data: [],
-    };
-
-    this.Facility_Value = null;
-  }
-
-  //======================Logcal storage Data ======================
   get_local_storage_data() {
-    const data = JSON.parse(localStorage.getItem('logData') || '');
+    const data = JSON.parse(localStorage.getItem('logData') || '{}');
+
     this.IsWeightGlobal = data.cptWeightGlobal;
     this.IsPriceGlobal = data.cptPriceGlobal;
   }
 
-  //==========================
   onRowPreparedWeightages(e: any) {
     if (e.rowType !== 'data') return;
+
     const data = this.newCptMasterData.CPTWeightages;
+
     if (!data || data.length === 0) return;
+
     const latestRow = data.reduce((a: any, b: any) =>
       new Date(a.CreatedTime) > new Date(b.CreatedTime) ? a : b,
     );
+
     if (e.data === latestRow) {
       e.rowElement.classList.add('latest-row');
     }
   }
 
-  //================latesed  pricerow color change========================
   onRowPreparedPrice(e: any) {
-    if (
-      e.rowType === 'data' &&
-      e.rowIndex === this.newCptMasterData.CPTPrices.length - 1
-    ) {
+    if (e.rowType !== 'data') return;
+
+    const data = this.newCptMasterData.CPTPrices;
+
+    if (!data || data.length === 0) return;
+
+    const latestRow = data.reduce((a: any, b: any) =>
+      new Date(a.CreatedTime) > new Date(b.CreatedTime) ? a : b,
+    );
+
+    if (e.data === latestRow) {
       e.rowElement.classList.add('latest-row');
     }
+  }
+
+  clearForm() {
+    this.newCptMasterData = {
+      CPTCode: '',
+      CPTName: '',
+      CPTTypeID: null,
+      CPTPrices: [],
+      CPTWeightages: [],
+      CPTADOCMappings: [],
+    };
   }
 }
 @NgModule({
