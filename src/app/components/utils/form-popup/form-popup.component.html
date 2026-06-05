@@ -3,7 +3,7 @@
   [(visible)]="visible"
   [fullScreen]="!!(screen.xSmallScreenChanged | async)"
   [width]="width"
-  [wrapperAttr]="getWrapperAttrs | apply : wrapperAttr"
+  [wrapperAttr]="getWrapperAttrs | apply: wrapperAttr"
   (onHidden)="close()"
   [height]="height"
   [shading]="true"
@@ -19,17 +19,17 @@
       [class.flex-buttons]="width <= 360"
     >
       <dx-button
-        text="Cancel"
-        stylingMode="outlined"
-        type="normal"
-        (onClick)="close()"
-      ></dx-button>
-      <dx-button
         [text]="saveButtonText"
         stylingMode="contained"
         type="default"
         [disabled]="isSaveDisabled"
         (onClick)="onSaveClick()"
+      ></dx-button>
+      <dx-button
+        text="Cancel"
+        stylingMode="outlined"
+        type="normal"
+        (onClick)="close()"
       ></dx-button>
     </div>
   </dxi-toolbar-item>
