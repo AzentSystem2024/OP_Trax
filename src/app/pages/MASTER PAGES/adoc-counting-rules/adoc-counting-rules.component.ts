@@ -37,34 +37,6 @@ export class AdocCountingRulesComponent {
   @ViewChild(DxDataGridComponent, { static: false })
 dataGrid!: DxDataGridComponent;
 
-  dataSource:any[]=[]
-//   dataSource: any[] = [
-//   {
-//     ADOC_RULE: 'Interventional Procedures',
-//     IsInactive: false,
-//     Status: 'Active'
-//   },
-//   {
-//     ADOC_RULE: 'Specialist Consultations',
-//     IsInactive: false,
-//     Status: 'Active'
-//   },
-//   {
-//     ADOC_RULE: 'Diagnostic Services',
-//     IsInactive: true,
-//     Status: 'Inactive'
-//   },
-//   {
-//     ADOC_RULE: 'Support Services',
-//     IsInactive: false,
-//     Status: 'Active'
-//   },
-//   {
-//     ADOC_RULE: 'Emergency Procedures',
-//     IsInactive: true,
-//     Status: 'Inactive'
-//   }
-// ];
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
   displayMode: any = 'full';
@@ -75,50 +47,31 @@ dataGrid!: DxDataGridComponent;
   isFilterRowVisible = false;
   isAddPopupVisible = false;
 
-    toggleFilterRow = () => {
-    this.isFilterRowVisible = !this.isFilterRowVisible;
-  };
-
-    refresh = () => {
-    this.loadList();
-  this.dataGrid.instance.refresh();
-  };
-
+  
+  dataSource = new DataSource<any>({
+    load: () =>
+      new Promise((resolve, reject) => {
+        this.masterService.get_ADOC_CountingRule_List().subscribe({
+          next: (response: any) => resolve(response.data),
+          error: (error: any) => reject(error.message),
+        });
+      }),
+  });
 
    constructor(
     private service: ReportService,
     private masterService: MasterReportService,
     private route: ActivatedRoute,
     private dataService: DataService,
-  ) {
-    // this.route.url.subscribe((segments) => {
-    //   const fullUrl = segments.map((s) => s.path).join('/');
-    //   console.log(fullUrl);
-    //   this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
-    // });
-  }
+  ) {}
 
-  ngOnInit() {
-  this.loadList();
-}
+    toggleFilterRow = () => {
+    this.isFilterRowVisible = !this.isFilterRowVisible;
+  };
 
-  loadList() {
-  this.masterService.get_ADOC_CountingRule_List().subscribe({
-    next: (res: any) => {
-      this.dataSource = res.data;
-    },
-    error: () => {
-      notify(
-        {
-          message: 'Failed to load data',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'error'
-      );
-    },
-  });
-}
+    refresh = () => {
+  this.dataGrid.instance.refresh();
+  };
 
     //========================Export data ==========================
   onExporting(event: any) {
