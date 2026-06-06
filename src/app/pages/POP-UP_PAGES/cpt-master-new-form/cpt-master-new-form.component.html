@@ -156,6 +156,7 @@
     <div class="grid-container">
       <dx-data-grid
         class="custom-grid"
+        height="350"
         [dataSource]="newCptMasterData.CPTADOCMappings"
         [showBorders]="false"
         [columnAutoWidth]="true"
@@ -164,9 +165,8 @@
         [showRowLines]="true"
         [showColumnLines]="false"
         (onEditorPreparing)="onEditorPreparingADOC($event)"
-        (onRowUpdated)="onADOCMappingRowUpdated($event)"
-        (onCellValueChanged)="onADOCCellValueChanged($event)"
-        height="350"
+        (onRowRemoving)="onADOCRowRemoving($event)"
+        
       >
         <dxo-editing
           mode="cell"

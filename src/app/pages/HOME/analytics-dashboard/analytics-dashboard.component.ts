@@ -139,6 +139,31 @@ export class AnalyticsDashboardComponent {
     });
   }
 
+  customizePiePoint = (pointInfo: any) => {
+    switch (pointInfo.argument) {
+      case 'C - Specialist Consultations':
+        return { color: 'rgb(79, 70, 229)' };
+
+      case 'D - Diagnostic Services':
+        return { color: 'rgb(14, 165, 233)' };
+
+      case 'P - Interventional Procedures':
+        return { color: 'rgb(139, 92, 246)' };
+
+      case 'S - Support Services':
+        return { color: 'rgb(16, 185, 129)' };
+
+      case 'Not Classified':
+        return { color: 'rgb(148, 163, 184)' };
+
+      case 'Unmapped':
+        return { color: 'rgb(245, 158, 11)' };
+
+      default:
+        return { color: 'rgb(203, 213, 225)' };
+    }
+  };
+
   customizePieTooltip = (arg: any) => {
     return {
       html: `
@@ -154,6 +179,7 @@ export class AnalyticsDashboardComponent {
   percentAxisLabel = (e: any) => {
     return `${e.value}%`;
   };
+
   customizeSpecialityTooltip = (arg: any) => {
     return {
       html: `

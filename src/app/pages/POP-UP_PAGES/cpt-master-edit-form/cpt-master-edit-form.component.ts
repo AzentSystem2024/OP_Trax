@@ -181,45 +181,6 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     }
   }
 
-  onADOCCellValueChanged(e: any) {
-    if (e.dataField !== 'ICDCode') {
-      return;
-    }
-
-    const row = e.data;
-
-    const isCompleted =
-      row?.SpecialityID != null &&
-      row?.ADOCClassID != null &&
-      row?.ADOCCategoryID != null;
-
-    if (!isCompleted) {
-      return;
-    }
-
-    const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
-      (x: any) =>
-        x.SpecialityID == null &&
-        x.ADOCClassID == null &&
-        x.ADOCCategoryID == null,
-    );
-
-    if (hasEmptyRow) {
-      return;
-    }
-
-    this.newCptMasterData.CPTADOCMappings.push({
-      SpecialityID: null,
-      ICDCode: '',
-      ADOCClassID: null,
-      ADOCCategoryID: null,
-    });
-
-    this.newCptMasterData.CPTADOCMappings = [
-      ...this.newCptMasterData.CPTADOCMappings,
-    ];
-  }
-
   onEditorPreparingADOC(e: any) {
     // Prevent duplicate Specialty selection
     if (e.parentType === 'dataRow' && e.dataField === 'SpecialityID') {
@@ -235,7 +196,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
       );
     }
 
-    // Auto populate ADOC Category when ADOC Class changes
+    // ADOC Class
     if (e.parentType === 'dataRow' && e.dataField === 'ADOCClassID') {
       const originalHandler = e.editorOptions.onValueChanged;
 
@@ -257,54 +218,70 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
           (x: any) => x.DESCRIPTION?.trim().charAt(0).toUpperCase() === prefix,
         );
 
-        // Update category
         e.component.cellValue(
           e.row.rowIndex,
           'ADOCCategoryID',
           category?.ID ?? null,
         );
 
-        // Move focus to ICD Code column
         setTimeout(() => {
           e.component.editCell(e.row.rowIndex, 'ICDCode');
         }, 10);
       };
     }
-  }
 
-  onADOCMappingRowUpdated(e: any) {
-    const row = e.data;
+    // ICD Code
+    if (e.parentType === 'dataRow' && e.dataField === 'ICDCode') {
+      const originalKeyDown = e.editorOptions.onKeyDown;
 
-    const isCompleted =
-      row?.SpecialityID != null &&
-      row?.ADOCClassID != null &&
-      row?.ADOCCategoryID != null;
+      e.editorOptions.onKeyDown = (args: any) => {
+        originalKeyDown?.(args);
 
-    if (!isCompleted) {
-      return;
+        if (args.event.key !== 'Enter') {
+          return;
+        }
+
+        // Save edited ICD value first
+        e.component.saveEditData();
+
+        const rowIndex = e.row.rowIndex;
+        const lastRowIndex = this.newCptMasterData.CPTADOCMappings.length - 1;
+
+        // Existing row edit -> just save
+        if (rowIndex !== lastRowIndex) {
+          return;
+        }
+
+        setTimeout(() => {
+          const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
+            (x: any) =>
+              x.SpecialityID == null &&
+              x.ADOCClassID == null &&
+              x.ADOCCategoryID == null,
+          );
+
+          if (!hasEmptyRow) {
+            this.newCptMasterData.CPTADOCMappings.push({
+              SpecialityID: null,
+              ICDCode: '',
+              ADOCClassID: null,
+              ADOCCategoryID: null,
+            });
+
+            this.newCptMasterData.CPTADOCMappings = [
+              ...this.newCptMasterData.CPTADOCMappings,
+            ];
+
+            setTimeout(() => {
+              const newRowIndex =
+                this.newCptMasterData.CPTADOCMappings.length - 1;
+
+              e.component.editCell(newRowIndex, 'SpecialityID');
+            }, 50);
+          }
+        }, 50);
+      };
     }
-
-    const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
-      (x: any) =>
-        x.SpecialityID == null &&
-        x.ADOCClassID == null &&
-        x.ADOCCategoryID == null,
-    );
-
-    if (hasEmptyRow) {
-      return;
-    }
-
-    this.newCptMasterData.CPTADOCMappings.push({
-      SpecialityID: null,
-      ICDCode: '',
-      ADOCClassID: null,
-      ADOCCategoryID: null,
-    });
-
-    this.newCptMasterData.CPTADOCMappings = [
-      ...this.newCptMasterData.CPTADOCMappings,
-    ];
   }
 
   get_local_storage_data() {

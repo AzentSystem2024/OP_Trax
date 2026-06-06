@@ -88,6 +88,7 @@
             id="chart"
             [dataSource]="CPTVolumeBySeries"
             palette="Soft Pastel"
+            [customizePoint]="customizePiePoint"
           >
             <dxo-title text="Activity Count" class="grid-header"></dxo-title>
 
@@ -126,7 +127,7 @@
               valueField="CPTRevenue"
               name="CPT Revenue"
               type="bar"
-              color="rgb(0,128,128)"
+              color="rgb(59, 130, 246)"
             >
             </dxi-series>
 
@@ -135,7 +136,7 @@
               valueField="ADOCRevenue"
               name="ADOC Revenue"
               type="bar"
-              color="rgb(30,58,95)"
+              color="rgb(30, 58, 138)"
             >
             </dxi-series>
 
@@ -145,7 +146,7 @@
               name="Impact Percent"
               type="line"
               axis="percentAxis"
-              color="rgb(34,139,34)"
+              color="rgb(245, 158, 11)"
             >
             </dxi-series>
 
@@ -179,9 +180,7 @@
     <div class="row h-40vh g-3 mx-0 firstChartDiv ExportDiv3">
       <div class="col-md-6 border">
         <div class="p-2 h-100 chartDiv">
-          <div class="datagrid-title">
-            Top CPT Codes by ADOC Revenue Impact
-          </div>
+          <div class="datagrid-title">Top CPT Codes by ADOC Revenue Impact</div>
           <dx-data-grid
             [dataSource]="TopCPTImpact"
             [showBorders]="false"
@@ -288,9 +287,7 @@
       </div>
       <div class="col-md-6 border ms-2">
         <div class="p-2 h-100 chartDiv">
-           <div class="datagrid-title">
-            Clinician Specialty Impact Analysis
-          </div>
+          <div class="datagrid-title">Clinician Specialty Impact Analysis</div>
           <dx-data-grid
             [dataSource]="ClinicianSpecialityImpact"
             [showBorders]="false"
