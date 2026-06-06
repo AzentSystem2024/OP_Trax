@@ -4,13 +4,16 @@ import { DataService } from 'src/app/services';
 import {
   DxButtonModule,
   DxChartModule,
+  DxDataGridModule,
   DxDateBoxModule,
   DxLoadPanelModule,
+  DxPieChartModule,
   DxSelectBoxModule,
 } from 'devextreme-angular';
 import notify from 'devextreme/ui/notify';
 import { ReportService } from 'src/app/services/Report-data.service';
-
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 @Component({
   templateUrl: './analytics-dashboard.component.html',
   styleUrls: ['./analytics-dashboard.component.scss'],
@@ -22,94 +25,11 @@ export class AnalyticsDashboardComponent {
   fromDate: Date;
   toDate: Date;
 
-  facilityDataSource: any = [
-    {
-      Facility: 'MF1234',
-      Actual: 100,
-      Billable: 75,
-    },
-  ];
-
-  departmentDataSource: any = [
-    {
-      Department: 'Neurology',
-      Actual: 100,
-      Billable: 88,
-    },
-    {
-      Department: 'Internal Medicine',
-      Actual: 100,
-      Billable: 72,
-    },
-    {
-      Department: 'Cardiology',
-      Actual: 100,
-      Billable: 65,
-    },
-    {
-      Department: 'Gastroenterology',
-      Actual: 100,
-      Billable: 81,
-    },
-    {
-      Department: 'Endocrinology',
-      Actual: 100,
-      Billable: 54,
-    },
-  ];
-
-  ClinicianDataSource: any = [
-    {
-      Clinician: 'CL0003',
-      Actual: 100,
-      Billable: 90,
-    },
-    {
-      Clinician: 'CL0005',
-      Actual: 100,
-      Billable: 89,
-    },
-    {
-      Clinician: 'CL0009',
-      Actual: 100,
-      Billable: 85,
-    },
-    {
-      Clinician: 'CL0010',
-      Actual: 100,
-      Billable: 83,
-    },
-    {
-      Clinician: 'CL0002',
-      Actual: 100,
-      Billable: 77,
-    },
-    {
-      Clinician: 'CL0004',
-      Actual: 100,
-      Billable: 74,
-    },
-    {
-      Clinician: 'CL0015',
-      Actual: 100,
-      Billable: 70,
-    },
-    {
-      Clinician: 'CL0012',
-      Actual: 100,
-      Billable: 68,
-    },
-    {
-      Clinician: 'CL0006',
-      Actual: 100,
-      Billable: 62,
-    },
-    {
-      Clinician: 'CL0007',
-      Actual: 100,
-      Billable: 58,
-    },
-  ];
+  CPTVolumeBySeries: any;
+  SpecialityImpact: any;
+  TopCPTImpact: any;
+  ClinicianSpecialityImpact: any;
+  MonthlyTrend: any;
 
   loadingVisible = false;
 
@@ -193,29 +113,72 @@ export class AnalyticsDashboardComponent {
 
   // ============== load chart data =============
   loadChartData() {
-    // this.loadingVisible = true;
-    // const inputData = {
-    //   DateFrom: this.formatDate(this.fromDate),
-    //   DateTo: this.formatDate(this.toDate),
-    // };
-    // this.dataService.fetch_chart_data_List(inputData).subscribe({
-    //   next: (res: any) => {
-    //     this.loadingVisible = false;
-    //     if (res.flag === '1') {
-    //       this.ClinicianDataSource = res.clinician;
-    //       this.facilityDataSource = res.facility;
-    //       this.departmentDataSource = res.department;
-    //     } else {
-    //       this.showError(res.message);
-    //     }
-    //   },
-    //   error: (err) => {
-    //     this.loadingVisible = false;
-    //     this.showError('Failed to load chart data.');
-    //     console.error(err);
-    //   },
-    // });
+    this.loadingVisible = true;
+    const inputData = {
+      DateFrom: this.formatDate(this.fromDate),
+      DateTo: this.formatDate(this.toDate),
+    };
+    this.dataService.fetch_chart_data_List(inputData).subscribe({
+      next: (res: any) => {
+        this.loadingVisible = false;
+        if (res.flag === '1') {
+          this.CPTVolumeBySeries = res.CPTVolumeBySeries;
+          this.SpecialityImpact = res.SpecialityImpact;
+          this.TopCPTImpact = res.TopCPTImpact;
+          this.ClinicianSpecialityImpact = res.ClinicianSpecialityImpact;
+          this.MonthlyTrend = res.MonthlyTrend;
+        } else {
+          this.showError(res.message);
+        }
+      },
+      error: (err) => {
+        this.loadingVisible = false;
+        this.showError('Failed to load chart data.');
+        console.error(err);
+      },
+    });
   }
+
+  customizePieTooltip = (arg: any) => {
+    return {
+      html: `
+      <div style="padding:5px;">
+        <b>${arg.argument}</b><br/>
+        Count : ${arg.value} (${arg.percentText})<br/>
+        
+      </div>
+    `,
+    };
+  };
+
+  percentAxisLabel = (e: any) => {
+    return `${e.value}%`;
+  };
+  customizeSpecialityTooltip = (arg: any) => {
+    return {
+      html: `
+      <div style="padding:6px;min-width:180px">
+        <div><b>${arg.argument}</b></div>
+        <hr style="margin:4px 0">
+        <div>Series: <b>${arg.seriesName}</b></div>
+        <div>Value: <b>${arg.valueText}</b></div>
+      </div>
+    `,
+    };
+  };
+
+  customizeMonthlyTrendTooltip = (arg: any) => {
+    return {
+      html: `
+      <div style="padding:6px;min-width:180px">
+        <div><b>${arg.argument}</b></div>
+        <hr style="margin:4px 0">
+        <div>Series: <b>${arg.seriesName}</b></div>
+        <div>Value: <b>AED ${Number(arg.value).toLocaleString()}</b></div>
+      </div>
+    `,
+    };
+  };
 
   // ============== helper notify ============
   private showError(message: string) {
@@ -233,6 +196,98 @@ export class AnalyticsDashboardComponent {
     const day = ('0' + date.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
   }
+
+  //==================== Export to PDF ====================
+  export() {
+    this.loadingVisible = true;
+
+    const elements: HTMLElement[] = [];
+
+    document
+      .querySelectorAll('.ExportDiv1, .ExportDiv2, .ExportDiv3, .ExportDiv4')
+      .forEach((x) => {
+        if (x) {
+          elements.push(x as HTMLElement);
+        }
+      });
+
+    this.exportGraphData('Financial Impact Analyzer', elements)
+      .then(() => {
+        this.loadingVisible = false;
+      })
+      .catch((error) => {
+        this.loadingVisible = false;
+        console.error('Export failed:', error);
+      });
+  }
+
+  // ============== export pdf charts ================
+  async exportGraphData(
+    reportname: string,
+    elements: HTMLElement[],
+  ): Promise<void> {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    let yPos = 15;
+
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(reportname, pageWidth / 2, 10, {
+      align: 'center',
+    });
+
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements[i];
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+
+      const imgWidth = pageWidth - 10;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      if (yPos + imgHeight > pageHeight - 10) {
+        pdf.addPage();
+
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(reportname, pageWidth / 2, 10, {
+          align: 'center',
+        });
+
+        yPos = 15;
+      }
+
+      pdf.addImage(imgData, 'PNG', 5, yPos, imgWidth, imgHeight);
+
+      yPos += imgHeight + 5;
+    }
+
+    // Add footer to every page
+    const pageCount = pdf.getNumberOfPages();
+
+    const exportTime = new Date().toLocaleString();
+
+    for (let page = 1; page <= pageCount; page++) {
+      pdf.setPage(page);
+
+      pdf.setFontSize(7);
+
+      pdf.text(`Exported on: ${exportTime}`, 5, pageHeight - 5);
+
+      pdf.text(`Page ${page} of ${pageCount}`, pageWidth - 25, pageHeight - 5);
+    }
+
+    pdf.save(`${reportname}.pdf`);
+  }
 }
 
 @NgModule({
@@ -243,6 +298,8 @@ export class AnalyticsDashboardComponent {
     DxButtonModule,
     DxLoadPanelModule,
     DxSelectBoxModule,
+    DxPieChartModule,
+    DxDataGridModule,
   ],
   providers: [],
   exports: [],

@@ -22,7 +22,7 @@
       [allowAdding]="menuPrevilage.CanAdd"
     >
       <dxo-popup
-        title="Edit Speciality"
+        title="Edit Specialty"
         [showTitle]="true"
         width="600"
         height="490"
@@ -31,18 +31,18 @@
 
       <dxo-form [colCount]="2" labelMode="floating">
         <!-- Code -->
-        <dxi-item dataField="SpecialityCode" [colSpan]="2">
+        <dxi-item dataField="SpecialityCode" caption="Specialty Code" [colSpan]="2">
           <dxi-validation-rule
             type="required"
-            message="Speciality Code is required"
+            message="Specialty Code is required"
           ></dxi-validation-rule>
         </dxi-item>
 
         <!-- Name -->
-        <dxi-item dataField="SpecialityName">
+        <dxi-item dataField="SpecialtyName">
           <dxi-validation-rule
             type="required"
-            message="Speciality Name is required"
+            message="Specialty Name is required"
           ></dxi-validation-rule>
         </dxi-item>
 
@@ -108,7 +108,7 @@
 
     <dxo-toolbar>
       <dxi-item location="before">
-        <div class="grid-header">Speciality</div>
+        <div class="grid-header">Specialty</div>
       </dxi-item>
       <dxi-item
         location="after"
@@ -178,7 +178,7 @@
     class="formPopupClass"
     [(visible)]="isAddFormPopupOpened"
     (save)="onClickSaveNewData()"
-    titleText="New Speciality"
+    titleText="New Specialty"
     [height]="'auto'"
     [customValidate]="validateSpecialityForm"
   >

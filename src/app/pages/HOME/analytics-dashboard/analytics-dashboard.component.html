@@ -1,6 +1,8 @@
 <div class="view-wrapper list-page">
   <div class="h-80vh">
-    <div class="topDiv d-flex w-100 sticky-top justify-content-between">
+    <div
+      class="topDiv d-flex w-100 sticky-top justify-content-between firstChartDiv ExportDiv1"
+    >
       <div class="d-flex align-items-center ps-3" style="font-size: 20px">
         <div class="grid-header">Financial Impact Analyzer</div>
       </div>
@@ -65,130 +67,355 @@
           (onClick)="loadChartData()"
         >
         </dx-button>
+
+        <dx-button
+          class="ms-3 mt-2 p-2"
+          text="Export"
+          hint="Export To PDF"
+          type="default"
+          stylingMode="contained"
+          (onClick)="export()"
+        >
+        </dx-button>
       </div>
     </div>
 
     <!-- Row 1: Two side-by-side charts -->
-    <div class="row h-40vh g-3 mx-0 firstChartDiv">
+    <div class="row h-40vh g-3 mx-0 firstChartDiv ExportDiv2">
       <div class="col-md-6 border">
         <div class="p-2 h-100 chartDiv">
-          <dx-chart id="chart" [dataSource]="facilityDataSource">
-            <dxo-title
-              text="Facility Wise"
-              hint=""
-              class="grid-header"
-            ></dxo-title>
+          <dx-pie-chart
+            id="chart"
+            [dataSource]="CPTVolumeBySeries"
+            palette="Soft Pastel"
+          >
+            <dxo-title text="Activity Count" class="grid-header"></dxo-title>
 
-            <dxi-series
-              valueField="Billable"
-              name="Billable"
-              color="rgb(0, 128, 128)"
-            ></dxi-series>
+            <dxi-series argumentField="CategoryName" valueField="TotalCount">
+              <dxo-label [visible]="false" position="columns"> </dxo-label>
+            </dxi-series>
 
-            <dxi-series
-              valueField="Actual"
-              name="Actual"
-              color="rgb(30, 58, 95)"
-            ></dxi-series>
-            <dxi-value-axis position="left">
-              <dxo-label [visible]="false"></dxo-label>
-              <dxo-title text=""></dxo-title>
-            </dxi-value-axis>
-            <dxo-common-series-settings
-              argumentField="Facility"
-              type="stackedBar"
-            >
-            </dxo-common-series-settings>
             <dxo-legend
-              verticalAlignment="bottom"
+              orientation="horizontal"
               horizontalAlignment="center"
-              itemTextPosition="top"
+              verticalAlignment="bottom"
             >
             </dxo-legend>
-            <dxo-export [enabled]="true"></dxo-export>
-            <dxo-tooltip [enabled]="true" location="edge"> </dxo-tooltip>
-          </dx-chart>
+
+            <dxo-tooltip
+              [enabled]="true"
+              [customizeTooltip]="customizePieTooltip"
+            >
+            </dxo-tooltip>
+
+            <dxo-export [enabled]="false"></dxo-export>
+          </dx-pie-chart>
         </div>
       </div>
       <div class="col-md-6 border ms-2">
         <div class="p-2 h-100 chartDiv">
-          <dx-chart id="chart" [dataSource]="departmentDataSource">
-            <dxo-title
-              text="Speciality Wise"
-              hint=""
-              class="grid-header"
-            ></dxo-title>
-            <dxi-series
-              valueField="Billable"
-              name="Billable"
-              color="rgb(0, 128, 128)"
-            ></dxi-series>
+          <dx-chart id="chart" [dataSource]="SpecialityImpact">
+            <dxo-title text="Specialty Impact Analysis" class="grid-header">
+            </dxo-title>
 
+            <dxo-common-series-settings argumentField="SpecialityName">
+            </dxo-common-series-settings>
+
+            <!-- CPT Revenue -->
             <dxi-series
-              valueField="Actual"
-              name="Actual"
-              color="rgb(30, 58, 95)"
-            ></dxi-series>
-            <dxi-value-axis position="left">
-              <dxo-label [visible]="false"></dxo-label>
+              valueField="CPTRevenue"
+              name="CPT Revenue"
+              type="bar"
+              color="rgb(0,128,128)"
+            >
+            </dxi-series>
+
+            <!-- ADOC Revenue -->
+            <dxi-series
+              valueField="ADOCRevenue"
+              name="ADOC Revenue"
+              type="bar"
+              color="rgb(30,58,95)"
+            >
+            </dxi-series>
+
+            <!-- Impact % Line -->
+            <dxi-series
+              valueField="ImpactPercent"
+              name="Impact Percent"
+              type="line"
+              axis="percentAxis"
+              color="rgb(34,139,34)"
+            >
+            </dxi-series>
+
+            <!-- Revenue Axis -->
+            <dxi-value-axis name="revenueAxis" position="left">
               <dxo-title text=""></dxo-title>
             </dxi-value-axis>
-            <dxo-common-series-settings
-              argumentField="Department"
-              type="stackedBar"
+
+            <!-- Percentage Axis -->
+            <dxi-value-axis name="percentAxis" position="right">
+              <dxo-grid [visible]="false"></dxo-grid>
+
+              <dxo-label [customizeText]="percentAxisLabel"> </dxo-label>
+            </dxi-value-axis>
+
+            <dxo-tooltip
+              [enabled]="true"
+              [customizeTooltip]="customizeSpecialityTooltip"
             >
-            </dxo-common-series-settings>
-            <dxo-legend
-              verticalAlignment="bottom"
-              horizontalAlignment="center"
-              itemTextPosition="top"
-            >
+            </dxo-tooltip>
+
+            <dxo-legend verticalAlignment="bottom" horizontalAlignment="center">
             </dxo-legend>
-            <dxo-export [enabled]="true"></dxo-export>
-            <dxo-tooltip [enabled]="true" location="edge"> </dxo-tooltip>
+
+            <dxo-export [enabled]="false"></dxo-export>
           </dx-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="row h-40vh g-3 mx-0 firstChartDiv ExportDiv3">
+      <div class="col-md-6 border">
+        <div class="p-2 h-100 chartDiv">
+          <div class="datagrid-title">
+            Top CPT Codes by ADOC Revenue Impact
+          </div>
+          <dx-data-grid
+            [dataSource]="TopCPTImpact"
+            [showBorders]="false"
+            [rowAlternationEnabled]="true"
+            [hoverStateEnabled]="true"
+            [columnAutoWidth]="true"
+            [showRowLines]="true"
+            [showColumnLines]="false"
+            height="400"
+            class="impact-grid"
+          >
+            <dxo-scrolling mode="virtual"></dxo-scrolling>
+
+            <dxo-header-filter [visible]="false"></dxo-header-filter>
+            <dxo-filter-row [visible]="false"></dxo-filter-row>
+
+            <dxi-column dataField="CPT" caption="CPT" alignment="left">
+            </dxi-column>
+
+            <dxi-column dataField="Description" caption="Description">
+            </dxi-column>
+
+            <!-- Series Badge -->
+            <dxi-column
+              dataField="Series"
+              caption="Series"
+              cellTemplate="seriesTemplate"
+              width="90"
+              alignment="center"
+            >
+            </dxi-column>
+
+            <dxi-column
+              dataField="Volume"
+              caption="Volume"
+              alignment="center"
+              width="90"
+            >
+            </dxi-column>
+
+            <dxi-column
+              dataField="CPTValue"
+              caption="CPT Value"
+              format="currency"
+              cellTemplate="cptValueTemplate"
+            >
+            </dxi-column>
+
+            <dxi-column
+              dataField="ADOCValue"
+              caption="ADOC Value"
+              cellTemplate="adocValueTemplate"
+            >
+            </dxi-column>
+
+            <!-- Impact -->
+            <dxi-column
+              dataField="ImpactValue"
+              caption="Δ Impact"
+              cellTemplate="impactTemplate"
+            >
+            </dxi-column>
+
+            <!-- Series Badge -->
+            <div *dxTemplate="let cell of 'seriesTemplate'">
+              <span
+                class="series-badge"
+                [ngClass]="{
+                  'series-c': cell.data.Series === 'C',
+                  'series-p': cell.data.Series === 'P',
+                  'series-s': cell.data.Series === 'S',
+                  'series-d': cell.data.Series === 'D',
+                }"
+              >
+                {{ cell.data.Series }}
+              </span>
+            </div>
+
+            <!-- CPT Value -->
+            <div *dxTemplate="let cell of 'cptValueTemplate'">
+              AED {{ cell.value | number: "1.0-2" }}
+            </div>
+
+            <!-- ADOC Value -->
+            <div *dxTemplate="let cell of 'adocValueTemplate'">
+              AED {{ cell.value | number: "1.0-2" }}
+            </div>
+
+            <!-- Impact -->
+            <div *dxTemplate="let cell of 'impactTemplate'">
+              <span
+                [ngClass]="{
+                  'impact-positive': cell.value > 0,
+                  'impact-negative': cell.value < 0,
+                  'impact-zero': cell.value === 0,
+                }"
+              >
+                {{ cell.value > 0 ? "+" : "" }}AED
+                {{ cell.value | number: "1.0-2" }}
+              </span>
+            </div>
+          </dx-data-grid>
+        </div>
+      </div>
+      <div class="col-md-6 border ms-2">
+        <div class="p-2 h-100 chartDiv">
+           <div class="datagrid-title">
+            Clinician Specialty Impact Analysis
+          </div>
+          <dx-data-grid
+            [dataSource]="ClinicianSpecialityImpact"
+            [showBorders]="false"
+            [rowAlternationEnabled]="true"
+            [hoverStateEnabled]="true"
+            [columnAutoWidth]="true"
+            [showRowLines]="true"
+            [showColumnLines]="false"
+            height="400"
+            class="impact-grid"
+          >
+            <dxi-column dataField="ADOCGroup" caption="ADOC Group" width="120">
+            </dxi-column>
+
+            <dxi-column dataField="Description" caption="Description">
+            </dxi-column>
+
+            <dxi-column
+              dataField="Encounters"
+              caption="Encounters"
+              alignment="center"
+              width="120"
+            >
+            </dxi-column>
+
+            <dxi-column
+              dataField="CPTRevenue"
+              caption="CPT Revenue"
+              alignment="right"
+              cellTemplate="cptRevenueTemplate"
+            >
+            </dxi-column>
+
+            <dxi-column
+              dataField="ADOCRevenue"
+              caption="ADOC Revenue"
+              alignment="right"
+              cellTemplate="adocRevenueTemplate"
+            >
+            </dxi-column>
+
+            <dxi-column
+              dataField="ImpactValue"
+              caption="Impact"
+              alignment="right"
+              cellTemplate="impactTemplate"
+            >
+            </dxi-column>
+
+            <!-- CPT Revenue -->
+            <div *dxTemplate="let cell of 'cptRevenueTemplate'">
+              AED {{ cell.value | number: "1.0-2" }}
+            </div>
+
+            <!-- ADOC Revenue -->
+            <div *dxTemplate="let cell of 'adocRevenueTemplate'">
+              AED {{ cell.value | number: "1.0-2" }}
+            </div>
+
+            <!-- Impact -->
+            <div *dxTemplate="let cell of 'impactTemplate'">
+              <span
+                [ngClass]="{
+                  'impact-positive': cell.value > 0,
+                  'impact-negative': cell.value < 0,
+                  'impact-zero': cell.value === 0,
+                }"
+              >
+                {{ cell.value > 0 ? "+" : "" }}AED
+                {{ cell.value | number: "1.0-2" }}
+              </span>
+            </div>
+          </dx-data-grid>
         </div>
       </div>
     </div>
 
     <!-- Row 2: Full-width chart -->
-    <div class="row mx-0 firstChartDiv">
+    <div class="row mx-0 firstChartDiv ExportDiv4">
       <div class="col-12 border">
         <div class="p-2">
-          <dx-chart id="chart" [dataSource]="ClinicianDataSource">
-            <dxo-title
-              text="Top 10 Series"
-              hint=""
-              class="grid-header"
-            ></dxo-title>
-            <dxi-series
-              valueField="Billable"
-              name="Billable"
-              color="rgb(0, 128, 128)"
-            ></dxi-series>
+          <dx-chart id="chart" [dataSource]="MonthlyTrend">
+            <dxo-title text="Monthly Trend" class="grid-header"> </dxo-title>
+
+            <dxo-common-series-settings argumentField="Month" type="line">
+              <dxo-point [visible]="true"></dxo-point>
+            </dxo-common-series-settings>
 
             <dxi-series
-              valueField="Actual"
-              name="Actual"
+              valueField="CPTValue"
+              name="CPT Value"
+              color="rgb(0, 128, 128)"
+            >
+            </dxi-series>
+
+            <dxi-series
+              valueField="ADOCValue"
+              name="ADOC Value"
               color="rgb(30, 58, 95)"
-            ></dxi-series>
+            >
+            </dxi-series>
+
             <dxi-value-axis position="left">
-              <dxo-label [visible]="false"></dxo-label>
               <dxo-title text=""></dxo-title>
             </dxi-value-axis>
-            <dxo-common-series-settings
-              argumentField="Clinician"
-              type="stackedBar"
-            >
-            </dxo-common-series-settings>
+
+            <dxo-argument-axis>
+              <dxo-label [rotationAngle]="-45" overlappingBehavior="rotate">
+              </dxo-label>
+            </dxo-argument-axis>
+
             <dxo-legend
               verticalAlignment="bottom"
               horizontalAlignment="center"
-              itemTextPosition="top"
+              itemTextPosition="right"
             >
             </dxo-legend>
-            <dxo-export [enabled]="true"></dxo-export>
-            <dxo-tooltip [enabled]="true" location="edge"> </dxo-tooltip>
+
+            <dxo-tooltip
+              [enabled]="true"
+              [customizeTooltip]="customizeMonthlyTrendTooltip"
+            >
+            </dxo-tooltip>
+
+            <dxo-export [enabled]="false"></dxo-export>
           </dx-chart>
         </div>
       </div>

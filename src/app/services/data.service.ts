@@ -39,9 +39,9 @@ export class DataService {
   }
 
   // =============== get dashboard chart data list ===============
-  fetch_chart_data_List(inputData: any) {
+  fetch_chart_data_List(payload: any) {
     const url = `${this.BaseURL}Dashboard/getDashboardData`;
-    const reqBody = inputData;
+    const reqBody = payload;
     return this.http.post(url, reqBody);
   }
 
