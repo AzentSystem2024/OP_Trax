@@ -70,11 +70,11 @@
         </dxi-item>
         <!-- Billable Checkbox -->
         <dxi-item
-          dataField="IsBillable"
+          dataField="IsADOCExcluded"
           editorType="dxCheckBox"
           [label]="{ visible: false }"
           [editorOptions]="{
-            text: 'ADOC Applicable',
+            text: 'ADOC Excluded',
           }"
         >
         </dxi-item>
@@ -163,8 +163,8 @@
     ></dxi-column>
     <!-- <dxi-column dataField="IsBillable" caption="Billable"></dxi-column> -->
     <dxi-column
-      dataField="IsBillable"
-      caption="Billable"
+      dataField="IsADOCExcluded"
+      caption="ADOCExcluded"
       dataType="boolean"
       [showEditorAlways]="false"
       cellTemplate="billableCell"

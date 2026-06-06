@@ -17,7 +17,6 @@
       [allowDeleting]="false"
       [allowAdding]="false"
     >
-
     </dxo-editing>
 
     <dxo-paging [pageSize]="10"></dxo-paging>
@@ -85,36 +84,38 @@
       ></dxi-item>
     </dxo-toolbar>
 
-    <dxi-column dataField="RuleOrder" caption="Sl No" alignment="left"></dxi-column>
+    <dxi-column
+      dataField="RuleOrder"
+      caption="Sl No"
+      alignment="left"
+    ></dxi-column>
     <dxi-column dataField="RuleDescription" caption="ADOC Rule"></dxi-column>
- 
+    <dxi-column dataField="Remarks" caption="Description"></dxi-column>
+
     <dxi-column
       dataField="IsInactive"
       caption="Inactive"
       dataType="boolean"
       [visible]="false"
     ></dxi-column>
-     <dxi-column
-  dataField="Status"
-  caption="Status"
-  [cellTemplate]="'statusTemplate'"
-  alignment="center"
->
-</dxi-column>
+    <dxi-column
+      dataField="Status"
+      caption="Status"
+      [cellTemplate]="'statusTemplate'"
+      alignment="center"
+    >
+    </dxi-column>
 
-<div *dxTemplate="let cell of 'statusTemplate'">
-  <span
-    [ngStyle]="{
-      color: cell.data.Status === 'Active' ? 'green' : 'red'
-    }"
-    [title]="cell.data.Status"
-    style="font-size: 20px ;cursor: pointer;"
-  >
-    ⚑
-  </span>
-</div>
+    <div *dxTemplate="let cell of 'statusTemplate'">
+      <span
+        [ngStyle]="{
+          color: cell.data.Status === 'Active' ? 'green' : 'red',
+        }"
+        [title]="cell.data.Status"
+        style="font-size: 20px; cursor: pointer"
+      >
+        ⚑
+      </span>
+    </div>
   </dx-data-grid>
-
 </div>
-
-

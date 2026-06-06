@@ -93,6 +93,7 @@
           [showColumnLines]="false"
           (onEditorPreparing)="onEditorPreparingADOC($event)"
           (onRowUpdated)="onADOCMappingRowUpdated($event)"
+           (onCellValueChanged)="onADOCCellValueChanged($event)"
           height="350"
         >
           <dxo-editing
@@ -147,6 +148,11 @@
             }"
           >
           </dxi-column>
+          <dxi-column
+            dataField="ICDCode"
+            caption="ICD Code"
+            dataType="string"
+          ></dxi-column>
         </dx-data-grid>
       </div>
     </div>

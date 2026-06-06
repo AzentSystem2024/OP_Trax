@@ -12,20 +12,15 @@ import {
   DxCheckBoxModule,
   DxDataGridComponent,
   DxFormModule,
-  DxFormComponent,
 } from 'devextreme-angular';
 import { DataSource } from 'devextreme/common/data';
-import notify from 'devextreme/ui/notify';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
-import { firstValueFrom } from 'rxjs';
 import {
   DxValidatorModule,
   DxValidationSummaryModule,
 } from 'devextreme-angular';
-import validationEngine from 'devextreme/ui/validation_engine';
-
 
 @Component({
   selector: 'app-adoc-counting-rules',
@@ -35,8 +30,7 @@ import validationEngine from 'devextreme/ui/validation_engine';
 })
 export class AdocCountingRulesComponent {
   @ViewChild(DxDataGridComponent, { static: false })
-dataGrid!: DxDataGridComponent;
-
+  dataGrid!: DxDataGridComponent;
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
   displayMode: any = 'full';
@@ -47,7 +41,6 @@ dataGrid!: DxDataGridComponent;
   isFilterRowVisible = false;
   isAddPopupVisible = false;
 
-  
   dataSource = new DataSource<any>({
     load: () =>
       new Promise((resolve, reject) => {
@@ -58,27 +51,26 @@ dataGrid!: DxDataGridComponent;
       }),
   });
 
-   constructor(
+  constructor(
     private service: ReportService,
     private masterService: MasterReportService,
     private route: ActivatedRoute,
     private dataService: DataService,
   ) {}
 
-    toggleFilterRow = () => {
+  toggleFilterRow = () => {
     this.isFilterRowVisible = !this.isFilterRowVisible;
   };
 
-    refresh = () => {
-  this.dataGrid.instance.refresh();
+  refresh = () => {
+    this.dataGrid.instance.refresh();
   };
 
-    //========================Export data ==========================
+  //========================Export data ==========================
   onExporting(event: any) {
     const fileName = 'ADOC-counting-rules';
     this.service.exportDataGrid(event, fileName);
   }
-
 }
 @NgModule({
   imports: [

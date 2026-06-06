@@ -87,6 +87,7 @@ export class CptMasterNewFormComponent implements OnInit {
         this.newCptMasterData.CPTADOCMappings = [
           {
             SpecialityID: null,
+            ICDCode: '',
             ADOCClassID: null,
             ADOCCategoryID: null,
           },
@@ -174,6 +175,45 @@ export class CptMasterNewFormComponent implements OnInit {
     });
   };
 
+  onADOCCellValueChanged(e: any) {
+    if (e.dataField !== 'ICDCode') {
+      return;
+    }
+
+    const row = e.data;
+
+    const isCompleted =
+      row?.SpecialityID != null &&
+      row?.ADOCClassID != null &&
+      row?.ADOCCategoryID != null;
+
+    if (!isCompleted) {
+      return;
+    }
+
+    const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
+      (x: any) =>
+        x.SpecialityID == null &&
+        x.ADOCClassID == null &&
+        x.ADOCCategoryID == null,
+    );
+
+    if (hasEmptyRow) {
+      return;
+    }
+
+    this.newCptMasterData.CPTADOCMappings.push({
+      SpecialityID: null,
+      ICDCode: '',
+      ADOCClassID: null,
+      ADOCCategoryID: null,
+    });
+
+    this.newCptMasterData.CPTADOCMappings = [
+      ...this.newCptMasterData.CPTADOCMappings,
+    ];
+  }
+  
   onEditorPreparingADOC(e: any) {
     // Prevent duplicate Specialty selection
     if (e.parentType === 'dataRow' && e.dataField === 'SpecialityID') {
@@ -218,9 +258,9 @@ export class CptMasterNewFormComponent implements OnInit {
           category?.ID ?? null,
         );
 
-        // Commit row immediately
+        // Move focus to ICD Code column
         setTimeout(() => {
-          e.component.saveEditData();
+          e.component.editCell(e.row.rowIndex, 'ICDCode');
         }, 10);
       };
     }
@@ -251,6 +291,7 @@ export class CptMasterNewFormComponent implements OnInit {
 
     this.newCptMasterData.CPTADOCMappings.push({
       SpecialityID: null,
+      ICDCode: '',
       ADOCClassID: null,
       ADOCCategoryID: null,
     });

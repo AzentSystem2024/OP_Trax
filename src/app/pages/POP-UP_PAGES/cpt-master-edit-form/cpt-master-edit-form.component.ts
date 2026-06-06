@@ -71,6 +71,16 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     private dataService: DataService,
   ) {}
 
+  getUpdateCptMasterData = () => ({
+    ...this.newCptMasterData,
+    CPTADOCMappings: (this.newCptMasterData.CPTADOCMappings || []).filter(
+      (x: any) =>
+        x.SpecialityID != null &&
+        x.ADOCClassID != null &&
+        x.ADOCCategoryID != null,
+    ),
+  });
+
   async ngOnInit() {
     try {
       await Promise.all([
@@ -106,10 +116,10 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
       CPTADOCMappings: [...(this.formData.CPTADOC || [])],
     };
 
-    // Keep exactly one blank row at the bottom
     const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
       (row: any) =>
         row.SpecialityID == null &&
+        row.ICDCode == null &&
         row.ADOCClassID == null &&
         row.ADOCCategoryID == null,
     );
@@ -117,28 +127,18 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     if (!hasEmptyRow) {
       this.newCptMasterData.CPTADOCMappings.push({
         SpecialityID: null,
+        ICDCode: null,
         ADOCClassID: null,
         ADOCCategoryID: null,
       });
     }
 
-    // Force datasource refresh
     this.newCptMasterData.CPTADOCMappings = [
       ...this.newCptMasterData.CPTADOCMappings,
     ];
 
     this.selectedTabIndex = 0;
   }
-
-  getUpdateCptMasterData = () => ({
-    ...this.newCptMasterData,
-    CPTADOCMappings: (this.newCptMasterData.CPTADOCMappings || []).filter(
-      (x: any) =>
-        x.SpecialityID != null &&
-        x.ADOCClassID != null &&
-        x.ADOCCategoryID != null,
-    ),
-  });
 
   onTabSelectionChanged(e: any) {
     this.selectedTabIndex = e.addedItems[0].id;
@@ -179,6 +179,45 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
       this.allADOCClassDataSource = response;
       this.ADOCClassDataSource = response;
     }
+  }
+
+  onADOCCellValueChanged(e: any) {
+    if (e.dataField !== 'ICDCode') {
+      return;
+    }
+
+    const row = e.data;
+
+    const isCompleted =
+      row?.SpecialityID != null &&
+      row?.ADOCClassID != null &&
+      row?.ADOCCategoryID != null;
+
+    if (!isCompleted) {
+      return;
+    }
+
+    const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
+      (x: any) =>
+        x.SpecialityID == null &&
+        x.ADOCClassID == null &&
+        x.ADOCCategoryID == null,
+    );
+
+    if (hasEmptyRow) {
+      return;
+    }
+
+    this.newCptMasterData.CPTADOCMappings.push({
+      SpecialityID: null,
+      ICDCode: '',
+      ADOCClassID: null,
+      ADOCCategoryID: null,
+    });
+
+    this.newCptMasterData.CPTADOCMappings = [
+      ...this.newCptMasterData.CPTADOCMappings,
+    ];
   }
 
   onEditorPreparingADOC(e: any) {
@@ -225,9 +264,9 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
           category?.ID ?? null,
         );
 
-        // Commit row immediately
+        // Move focus to ICD Code column
         setTimeout(() => {
-          e.component.saveEditData();
+          e.component.editCell(e.row.rowIndex, 'ICDCode');
         }, 10);
       };
     }
@@ -252,38 +291,20 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         x.ADOCCategoryID == null,
     );
 
-    if (!hasEmptyRow) {
-      this.newCptMasterData.CPTADOCMappings.push({
-        SpecialityID: null,
-        ADOCClassID: null,
-        ADOCCategoryID: null,
-      });
-
-      // Force Angular refresh
-      this.newCptMasterData.CPTADOCMappings = [
-        ...this.newCptMasterData.CPTADOCMappings,
-      ];
-    }
-  }
-
-  onADOCGroupChanged(e: any) {
-    if (!e.value) {
-      this.ADOCClassDataSource = [];
+    if (hasEmptyRow) {
       return;
     }
 
-    const selectedGroup = this.ADOCgroupDataSource.find(
-      (x: any) => x.ID === e.value,
-    );
+    this.newCptMasterData.CPTADOCMappings.push({
+      SpecialityID: null,
+      ICDCode: '',
+      ADOCClassID: null,
+      ADOCCategoryID: null,
+    });
 
-    const prefix = selectedGroup.DESCRIPTION.split('-')[0]
-      .trim()
-      .charAt(0)
-      .toUpperCase();
-
-    this.ADOCClassDataSource = this.allADOCClassDataSource.filter((x: any) =>
-      x.DESCRIPTION?.trim().toUpperCase().startsWith(prefix),
-    );
+    this.newCptMasterData.CPTADOCMappings = [
+      ...this.newCptMasterData.CPTADOCMappings,
+    ];
   }
 
   get_local_storage_data() {

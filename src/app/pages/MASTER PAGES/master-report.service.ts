@@ -98,13 +98,14 @@ export class MasterReportService {
 
     return this.http.post(Url, reqBody);
   }
+
   //=====Add Insurance data========
   Insert_Speciality_Data(
     SpecialityCode: any,
     SpecialityName: any,
     SpecialityShortName: any,
     Description: any,
-    IsBillable: any,
+    IsADOCExcluded: any,
   ) {
     const url = `${this.BASE_URL}speciality/insert`;
     const reqBody = {
@@ -112,7 +113,7 @@ export class MasterReportService {
       SpecialityName: SpecialityName,
       SpecialityShortName: SpecialityShortName,
       Description: Description,
-      IsBillable: IsBillable,
+      IsADOCExcluded: IsADOCExcluded,
     };
 
     return this.http.post(url, reqBody);
@@ -125,7 +126,7 @@ export class MasterReportService {
     SpecialityName: any,
     SpecialityShortName: any,
     Description: any,
-    IsBillable: any,
+    IsADOCExcluded: any,
   ) {
     const url = `${this.BASE_URL}speciality/update`;
     const reqBody = {
@@ -134,7 +135,7 @@ export class MasterReportService {
       SpecialityName: SpecialityName,
       SpecialityShortName: SpecialityShortName,
       Description: Description,
-      IsBillable: IsBillable,
+      IsADOCExcluded: IsADOCExcluded,
     };
 
     return this.http.post(url, reqBody);

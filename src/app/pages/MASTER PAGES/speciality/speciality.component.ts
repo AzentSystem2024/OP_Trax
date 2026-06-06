@@ -140,7 +140,7 @@ export class SpecialityComponent {
 
   //====================Add data ================================
   onClickSaveNewData = () => {
-    const { SpecialityCode, SpecialityName, SpecialityShortName, Description, IsBillable } =
+    const { SpecialityCode, SpecialityName, SpecialityShortName, Description, IsADOCExcluded } =
       this.SpecialityNewForm.getNewSpecialityData();
 
 
@@ -149,7 +149,7 @@ export class SpecialityComponent {
         SpecialityCode,
         SpecialityName,
         SpecialityShortName,
-        Description, IsBillable
+        Description, IsADOCExcluded
       )
       .subscribe((response: any) => {
         if (response) {
@@ -218,13 +218,13 @@ export class SpecialityComponent {
     const oldData = event.oldData;
     console.log(updataDate, oldData);
     const combinedData = { ...oldData, ...updataDate };
-    console.log('Combined data for update:', combinedData);
+    
     let id = combinedData.ID;
     let SpecialityCode = combinedData.SpecialityCode;
     let SpecialityName = combinedData.SpecialityName;
     let SpecialityShortName = combinedData.SpecialityShortName;
     let Description = combinedData.Description;
-    let IsBillable = combinedData.IsBillable;
+    let IsADOCExcluded = combinedData.IsADOCExcluded;
     // Check duplicate SpecialityCode
     const duplicate = this.list_Speciality.find(
       (item: any) =>
@@ -254,7 +254,7 @@ export class SpecialityComponent {
         SpecialityName,
         SpecialityShortName,
         Description,
-        IsBillable
+        IsADOCExcluded
       )
       .subscribe((data: any) => {
         if (data) {

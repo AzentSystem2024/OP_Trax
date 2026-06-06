@@ -24,9 +24,9 @@ export class SpecialityNewFormComponent {
     SpecialityName: '',
     SpecialityShortName: '',
     Description: '',
-    IsBillable: false,
+    IsADOCExcluded: false,
   };
-  IsBillable: boolean = true;
+  IsADOCExcluded: boolean = true;
 
   newSpecialityData = this.SpecialityData;
   constructor(private masterService: MasterReportService) { }
@@ -37,7 +37,7 @@ export class SpecialityNewFormComponent {
 
   getNewSpecialityData = () => ({
     ...this.newSpecialityData,
-    IsBillable: this.IsBillable
+    IsADOCExcluded: this.IsADOCExcluded
   });
 
   resetForm() {
@@ -46,10 +46,10 @@ export class SpecialityNewFormComponent {
       SpecialityName: '',
       SpecialityShortName: '',
       Description: '',
-      IsBillable: false
+      IsADOCExcluded: false
     };
 
-    this.IsBillable = true;
+    this.IsADOCExcluded = true;
   }
 }
 @NgModule({
