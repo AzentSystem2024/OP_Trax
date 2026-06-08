@@ -81,80 +81,81 @@
     ></dx-tabs>
 
     <div *ngIf="selectedTabIndex === 0" class="grid-container">
-      <div *ngIf="selectedTabIndex === 0" class="grid-container">
-        <dx-data-grid
-          class="custom-grid"
-          [dataSource]="newCptMasterData.CPTADOCMappings"
-          [showBorders]="false"
-          [columnAutoWidth]="true"
-          [rowAlternationEnabled]="true"
-          [hoverStateEnabled]="true"
-          [showRowLines]="true"
-          [showColumnLines]="false"
-          (onEditorPreparing)="onEditorPreparingADOC($event)"
-          height="350"
+      <dx-data-grid
+        class="custom-grid"
+        [dataSource]="newCptMasterData.CPTADOCMappings"
+        [showBorders]="false"
+        [columnAutoWidth]="true"
+        [rowAlternationEnabled]="true"
+        [hoverStateEnabled]="true"
+        [showRowLines]="true"
+        [showColumnLines]="false"
+        (onEditorPreparing)="onEditorPreparingADOC($event)"
+        height="350"
+      >
+        <dxo-scrolling mode="virtual"></dxo-scrolling>
+        <dxo-header-filter [visible]="true">
+          <dxo-search [enabled]="true"></dxo-search>
+        </dxo-header-filter>
+        <dxo-editing
+          mode="cell"
+          [allowUpdating]="true"
+          [allowAdding]="true"
+          [allowDeleting]="true"
+          newRowPosition="last"
         >
-          <dxo-scrolling mode="virtual"></dxo-scrolling>
-          <dxo-editing
-            mode="cell"
-            [allowUpdating]="true"
-            [allowAdding]="true"
-            [allowDeleting]="true"
-            newRowPosition="last"
-          >
-          </dxo-editing>
+        </dxo-editing>
 
-          <!-- Specialty -->
-          <dxi-column
-            dataField="SpecialityID"
-            caption="Specialty"
-            [lookup]="{
-              dataSource: specialityDataSource,
-              valueExpr: 'ID',
-              displayExpr: 'DESCRIPTION',
-            }"
-          >
-            <dxi-validation-rule
-              type="required"
-              message="Specialty is required"
-            ></dxi-validation-rule>
-          </dxi-column>
+        <!-- Specialty -->
+        <dxi-column
+          dataField="SpecialityID"
+          caption="Specialty"
+          [lookup]="{
+            dataSource: specialityDataSource,
+            valueExpr: 'ID',
+            displayExpr: 'DESCRIPTION',
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Specialty is required"
+          ></dxi-validation-rule>
+        </dxi-column>
 
-          <!-- ADOC Class -->
-          <dxi-column
-            dataField="ADOCClassID"
-            caption="ADOC Class"
-            [lookup]="{
-              dataSource: allADOCClassDataSource,
-              valueExpr: 'ID',
-              displayExpr: 'DESCRIPTION',
-            }"
-          >
-            <dxi-validation-rule
-              type="required"
-              message="ADOC Class is required"
-            ></dxi-validation-rule>
-          </dxi-column>
+        <!-- ADOC Class -->
+        <dxi-column
+          dataField="ADOCClassID"
+          caption="ADOC Class"
+          [lookup]="{
+            dataSource: allADOCClassDataSource,
+            valueExpr: 'ID',
+            displayExpr: 'DESCRIPTION',
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="ADOC Class is required"
+          ></dxi-validation-rule>
+        </dxi-column>
 
-          <!-- Auto Filled -->
-          <dxi-column
-            dataField="ADOCCategoryID"
-            caption="ADOC Category"
-            [allowEditing]="false"
-            [lookup]="{
-              dataSource: ADOCgroupDataSource,
-              valueExpr: 'ID',
-              displayExpr: 'DESCRIPTION',
-            }"
-          >
-          </dxi-column>
-          <dxi-column
-            dataField="ICDCode"
-            caption="ICD Code"
-            dataType="string"
-          ></dxi-column>
-        </dx-data-grid>
-      </div>
+        <!-- Auto Filled -->
+        <dxi-column
+          dataField="ADOCCategoryID"
+          caption="ADOC Category"
+          [allowEditing]="false"
+          [lookup]="{
+            dataSource: ADOCgroupDataSource,
+            valueExpr: 'ID',
+            displayExpr: 'DESCRIPTION',
+          }"
+        >
+        </dxi-column>
+        <dxi-column
+          dataField="ICDCode"
+          caption="ICD Code"
+          dataType="string"
+        ></dxi-column>
+      </dx-data-grid>
     </div>
 
     <div *ngIf="selectedTabIndex === 1" class="grid-container">
@@ -179,6 +180,7 @@
           dataField="Price"
           caption="Price"
           dataType="number"
+          format="#,##0.00"
         ></dxi-column>
 
         <dxi-column

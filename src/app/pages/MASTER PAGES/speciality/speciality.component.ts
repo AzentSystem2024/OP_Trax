@@ -297,6 +297,7 @@ export class SpecialityComponent {
       this.list_Speciality = response.data;
     })
   }
+  
   clearSpecialityForm() {
     this.SpecialityNewForm.resetForm();
   }

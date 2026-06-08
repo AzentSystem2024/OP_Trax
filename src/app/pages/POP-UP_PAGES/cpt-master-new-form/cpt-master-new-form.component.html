@@ -166,8 +166,11 @@
         [showColumnLines]="false"
         (onEditorPreparing)="onEditorPreparingADOC($event)"
         (onRowRemoving)="onADOCRowRemoving($event)"
-        
       >
+        <dxo-header-filter [visible]="true">
+          <dxo-search [enabled]="true"></dxo-search>
+        </dxo-header-filter>
+        <dxo-scrolling mode="virtual"></dxo-scrolling>
         <dxo-editing
           mode="cell"
           [allowUpdating]="true"

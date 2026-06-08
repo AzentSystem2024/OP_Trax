@@ -971,6 +971,7 @@ export class ClinicalDataComponent implements OnInit {
 
   getClinicalDataPopupData() {
     this.isLoading = true;
+
     const payload = {
       ClaimUID: this.selectedRowData?.ClaimUID || 0,
     };
@@ -979,9 +980,13 @@ export class ClinicalDataComponent implements OnInit {
       next: (res: any) => {
         if (res.flag === '1') {
           this.popupGridData = res.data || [];
+
           this.calculateBillableTotal();
-          this.isRowPopupVisible = true;
-          this.isLoading = false;
+
+          setTimeout(() => {
+            this.isRowPopupVisible = true;
+            this.isLoading = false;
+          }, 0);
         } else {
           this.popupGridData = [];
           this.isLoading = false;
@@ -996,23 +1001,31 @@ export class ClinicalDataComponent implements OnInit {
     });
   }
 
-  calculateBillableTotal(): void {
-    this.billableTotal = (this.popupGridData || [])
-      .filter((item: any) => item.Billable === true)
-      .reduce(
-        (total: number, item: any) => total + Number(item.BillPrice || 0),
-        0,
-      );
+calculateBillableTotal(): void {
+  this.isLoading = true;
 
-    console.log('Billable Total:', this.billableTotal);
+  this.billableTotal = (this.popupGridData || [])
+    .filter((item: any) => item.Billable === true)
+    .reduce(
+      (total: number, item: any) => total + Number(item.BillPrice || 0),
+      0
+    );
+
+  this.isLoading = false;
+
+  console.log('Billable Total:', this.billableTotal);
+}
+
+billableSummaryText = () => {
+  if (this.isLoading) {
+    return 'Calculating...';
   }
 
-  billableSummaryText = () => {
-    return `Net Billable : AED ${this.billableTotal.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-  };
+  return `Net Billable : AED ${this.billableTotal.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
 
   ReRunGrouper() {
     const payload = {
