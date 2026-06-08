@@ -193,6 +193,7 @@
         <div class="p-2 h-100 chartDiv">
           <div class="datagrid-title">Top CPT Codes by ADOC Revenue Impact</div>
           <dx-data-grid
+            #topCPTGrid
             [dataSource]="TopCPTImpact"
             [showBorders]="false"
             [rowAlternationEnabled]="true"
@@ -200,7 +201,7 @@
             [columnAutoWidth]="true"
             [showRowLines]="true"
             [showColumnLines]="false"
-            height="400"
+            [height]="TopCPTImpact?.length > 10 ? 400 : '400'"
             class="impact-grid"
           >
             <dxo-scrolling mode="standard"></dxo-scrolling>
@@ -300,6 +301,7 @@
         <div class="p-2 h-100 chartDiv">
           <div class="datagrid-title">Clinician Specialty Impact Analysis</div>
           <dx-data-grid
+            #topClinicianGrid
             [dataSource]="ClinicianSpecialityImpact"
             [showBorders]="false"
             [rowAlternationEnabled]="true"
@@ -307,7 +309,7 @@
             [columnAutoWidth]="true"
             [showRowLines]="true"
             [showColumnLines]="false"
-            height="400"
+            [height]="ClinicianSpecialityImpact?.length > 10 ? 400 : '400'"
             class="impact-grid"
           >
             <dxo-scrolling mode="standard"></dxo-scrolling>
@@ -395,7 +397,7 @@
             >
             </dxi-series>
 
-            <dxi-value-axis position="left"  [visualRange]="{ startValue: 0 }">
+            <dxi-value-axis position="left" [visualRange]="{ startValue: 0 }">
               <dxo-title text=""></dxo-title>
             </dxi-value-axis>
 

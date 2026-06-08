@@ -1,9 +1,10 @@
-import { Component, NgModule } from '@angular/core';
+import { Component, NgModule, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from 'src/app/services';
 import {
   DxButtonModule,
   DxChartModule,
+  DxDataGridComponent,
   DxDataGridModule,
   DxDateBoxModule,
   DxLoadPanelModule,
@@ -21,6 +22,8 @@ import jsPDF from 'jspdf';
   providers: [DataService, ReportService],
 })
 export class AnalyticsDashboardComponent {
+  @ViewChild('topCPTGrid') topCPTGrid!: DxDataGridComponent;
+  @ViewChild('topClinicianGrid') topClinicianGrid!: DxDataGridComponent;
   numberFormat = { type: 'thousands' };
 
   fromDate: Date;
@@ -128,6 +131,11 @@ export class AnalyticsDashboardComponent {
           this.TopCPTImpact = res.TopCPTImpact;
           this.ClinicianSpecialityImpact = res.ClinicianSpecialityImpact;
           this.MonthlyTrend = res.MonthlyTrend;
+
+          this.topCPTGrid.instance.repaint();
+          this.topCPTGrid.instance.updateDimensions();
+          this.topClinicianGrid.instance.repaint();
+          this.topClinicianGrid.instance.updateDimensions();
         } else {
           this.showError(res.message);
         }
