@@ -118,10 +118,12 @@
       <div class="col-md-6 border ms-2">
         <div class="p-2 h-100 chartDiv">
           <dx-chart id="chart" [dataSource]="SpecialityImpact">
-            <dxo-title text="Specialty Impact Analysis" class="grid-header">
-            </dxo-title>
+            <dxo-title text="Specialty Impact Analysis"></dxo-title>
 
-            <dxo-common-series-settings argumentField="SpecialityName">
+            <dxo-common-series-settings
+              argumentField="SpecialityName"
+              [barPadding]="0.01"
+            >
             </dxo-common-series-settings>
 
             <!-- CPT Revenue -->
@@ -130,6 +132,7 @@
               name="CPT Revenue"
               type="bar"
               color="rgb(59, 130, 246)"
+              axis="revenueAxis"
             >
             </dxi-series>
 
@@ -139,6 +142,7 @@
               name="ADOC Revenue"
               type="bar"
               color="rgb(30, 58, 138)"
+              axis="revenueAxis"
             >
             </dxi-series>
 
@@ -160,8 +164,7 @@
             <!-- Percentage Axis -->
             <dxi-value-axis name="percentAxis" position="right">
               <dxo-grid [visible]="false"></dxo-grid>
-
-              <dxo-label [customizeText]="percentAxisLabel"> </dxo-label>
+              <dxo-label [customizeText]="percentAxisLabel"></dxo-label>
             </dxi-value-axis>
 
             <dxo-tooltip
