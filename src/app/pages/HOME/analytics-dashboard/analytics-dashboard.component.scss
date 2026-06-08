@@ -111,3 +111,10 @@
   cursor: default;
   padding-bottom: 5px;
 }
+::ng-deep .topDiv .d-flex .dx-button.dx-button-default {
+    border-radius: 8px !important;
+    background-color: teal !important;
+    padding: 4px 10px !important;
+    color: #fff !important;
+}
+

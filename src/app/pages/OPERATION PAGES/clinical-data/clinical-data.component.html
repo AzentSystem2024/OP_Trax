@@ -344,7 +344,7 @@
     </dx-popup>
 
     <!-- ============Cpt code editing popup ============= -->
-    <!-- <form-popup
+    <form-popup
       class="formPopupClass"
       [(visible)]="isCptEditFormPopupOpened"
       (save)="onClickUpdateNewCptType()"
@@ -356,7 +356,7 @@
         *ngIf="isCptEditFormPopupOpened"
         [formData]="selectedCptCodeData"
       ></app-cpt-master-edit-form>
-    </form-popup> -->
+    </form-popup>
 
     <!--  ============Ordering Clinician code editing popup ============= -->
     <dx-popup
@@ -411,7 +411,7 @@
     [showIndicator]="true"
     [showPane]="true"
     [shading]="true"
-    message="Allocating..."
+    message="Loading..."
   ></dx-load-panel>
 
   <dx-load-panel
@@ -530,6 +530,7 @@
       [showRowLines]="true"
       [showColumnLines]="true"
       height="500"
+      (onCellDblClick)="onCellClick($event)"
     >
       <!-- Header Filter -->
       <dxo-header-filter [visible]="true">
@@ -537,9 +538,9 @@
       </dxo-header-filter>
 
       <!-- Pagination -->
-      <dxo-paging [pageSize]="10"></dxo-paging>
+      <!-- <dxo-paging [pageSize]="10"></dxo-paging> -->
 
-      <dxo-pager
+      <!-- <dxo-pager
         [visible]="false"
         [allowedPageSizes]="allowedPageSizes"
         [displayMode]="displayMode"
@@ -547,7 +548,7 @@
         [showInfo]="showInfo"
         [showNavigationButtons]="showNavButtons"
       >
-      </dxo-pager>
+      </dxo-pager> -->
 
       <dxo-scrolling mode="virtual"></dxo-scrolling>
 

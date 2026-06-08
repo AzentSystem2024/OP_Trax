@@ -9,6 +9,7 @@ import {
   DxLoadPanelModule,
   DxPieChartModule,
   DxSelectBoxModule,
+  DxToolbarModule,
 } from 'devextreme-angular';
 import notify from 'devextreme/ui/notify';
 import { ReportService } from 'src/app/services/Report-data.service';
@@ -326,6 +327,7 @@ export class AnalyticsDashboardComponent {
     DxSelectBoxModule,
     DxPieChartModule,
     DxDataGridModule,
+    DxToolbarModule
   ],
   providers: [],
   exports: [],

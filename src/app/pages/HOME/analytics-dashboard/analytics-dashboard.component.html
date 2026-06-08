@@ -59,8 +59,9 @@
         ></dx-date-box>
 
         <dx-button
-          class="ms-3 mt-2 p-2"
-          text="Apply"
+          class="ms-3 mt-2"
+          [width]="'auto'"
+          icon="refresh"
           hint="Apply"
           type="default"
           stylingMode="contained"
@@ -69,10 +70,11 @@
         </dx-button>
 
         <dx-button
-          class="ms-3 mt-2 p-2"
-          text="Export"
+          class="ms-3 mt-2"
+          icon="export"
           hint="Export To PDF"
           type="default"
+          [width]="'auto'"
           stylingMode="contained"
           (onClick)="export()"
         >
@@ -239,7 +241,7 @@
             <!-- Impact -->
             <dxi-column
               dataField="ImpactValue"
-              caption="Δ Impact"
+              caption="Impact"
               cellTemplate="impactTemplate"
             >
             </dxi-column>
@@ -261,12 +263,12 @@
 
             <!-- CPT Value -->
             <div *dxTemplate="let cell of 'cptValueTemplate'">
-              AED {{ cell.value | number: "1.0-2" }}
+              {{ cell.value | number: "1.2-2" }}
             </div>
 
             <!-- ADOC Value -->
             <div *dxTemplate="let cell of 'adocValueTemplate'">
-              AED {{ cell.value | number: "1.0-2" }}
+              {{ cell.value | number: "1.2-2" }}
             </div>
 
             <!-- Impact -->
@@ -278,8 +280,8 @@
                   'impact-zero': cell.value === 0,
                 }"
               >
-                {{ cell.value > 0 ? "+" : "" }}AED
-                {{ cell.value | number: "1.0-2" }}
+                {{ cell.value > 0 ? "+" : "" }}
+                {{ cell.value | number: "1.2-2" }}
               </span>
             </div>
           </dx-data-grid>
@@ -299,7 +301,13 @@
             height="400"
             class="impact-grid"
           >
-            <dxi-column dataField="ADOCGroup" caption="ADOC Group" width="120">
+            <dxi-column
+              dataField="ADOCGroup"
+              caption="ADOC Group"
+              cellTemplate="seriesTemplate"
+              width="110"
+              alignment="center"
+            >
             </dxi-column>
 
             <dxi-column dataField="Description" caption="Description">
@@ -309,7 +317,7 @@
               dataField="Encounters"
               caption="Encounters"
               alignment="center"
-              width="120"
+              width="100"
             >
             </dxi-column>
 
@@ -318,6 +326,7 @@
               caption="CPT Revenue"
               alignment="right"
               cellTemplate="cptRevenueTemplate"
+              width="120"
             >
             </dxi-column>
 
@@ -326,6 +335,7 @@
               caption="ADOC Revenue"
               alignment="right"
               cellTemplate="adocRevenueTemplate"
+              width="120"
             >
             </dxi-column>
 
@@ -334,17 +344,32 @@
               caption="Impact"
               alignment="right"
               cellTemplate="impactTemplate"
+              width="90"
             >
             </dxi-column>
 
+            <div *dxTemplate="let cell of 'seriesTemplate'">
+              <span
+                class="series-badge"
+                [ngClass]="{
+                  'series-c': cell.data.ADOCGroup === 'C',
+                  'series-p': cell.data.ADOCGroup === 'P',
+                  'series-s': cell.data.ADOCGroup === 'S',
+                  'series-d': cell.data.ADOCGroup === 'D',
+                }"
+              >
+                {{ cell.data.ADOCGroup }}
+              </span>
+            </div>
+
             <!-- CPT Revenue -->
             <div *dxTemplate="let cell of 'cptRevenueTemplate'">
-              AED {{ cell.value | number: "1.0-2" }}
+              {{ cell.value | number: "1.2-2" }}
             </div>
 
             <!-- ADOC Revenue -->
             <div *dxTemplate="let cell of 'adocRevenueTemplate'">
-              AED {{ cell.value | number: "1.0-2" }}
+              {{ cell.value | number: "1.0-2" }}
             </div>
 
             <!-- Impact -->
@@ -356,8 +381,8 @@
                   'impact-zero': cell.value === 0,
                 }"
               >
-                {{ cell.value > 0 ? "+" : "" }}AED
-                {{ cell.value | number: "1.0-2" }}
+                {{ cell.value > 0 ? "+" : "" }}
+                {{ cell.value | number: "1.2-2" }}
               </span>
             </div>
           </dx-data-grid>

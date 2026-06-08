@@ -443,38 +443,40 @@ export class ClinicalDataComponent implements OnInit {
 
   // ======= cpt code and ordering clinician edit function ============
   onCellClick(e: any) {
-    // if (!e.column || e.rowType !== 'data') {
-    //   return;
-    // }
-    // if (e.rowType === 'group') return;
-    // const dataField = e.column.dataField;
-    // // --- Helper to avoid repeated notify options---
-    // const showError = (message: string) => {
-    //   notify(message, 'error', 3000);
-    // };
-    // // ===== Check for Claim Number click =====
+    if (!e.column || e.rowType !== 'data') {
+      return;
+    }
+    if (e.rowType === 'group') return;
+    const dataField = e.column.dataField;
+    // --- Helper to avoid repeated notify options---
+    const showError = (message: string) => {
+      notify(message, 'error', 3000);
+    };
+    // ===== Check for Claim Number click =====
     // if (dataField === 'ClaimNumber') {
     //   this.clickedCellRowData = e.data;
     //   this.isSingleClaimDetailsVisible = true;
     //   return;
     // }
-    // if (dataField === 'CPTCode') {
-    //   const code = e.data?.CPTCode;
-    //   if (!code) {
-    //     showError('CPT Code is empty');
-    //     return;
-    //   }
-    //   this.operationService
-    //     .fetch_selected_CptCode_Data(code)
-    //     .subscribe((res: any) => {
-    //       if (res.flag === '1' && res.data?.[0]) {
-    //         this.selectedCptCodeData = res.data[0];
-    //         this.isCptEditFormPopupOpened = true;
-    //       } else {
-    //         showError('No CPT Code data found');
-    //       }
-    //     });
-    // }
+
+    if (dataField === 'CPTCode') {
+      const code = e.data?.CPTCode;
+      if (!code) {
+        showError('CPT Code is empty');
+        return;
+      }
+      this.operationService
+        .fetch_selected_CptCode_Data(code)
+        .subscribe((res: any) => {
+          if (res.flag === '1' && res.data?.[0]) {
+            this.selectedCptCodeData = res.data[0];
+            this.isCptEditFormPopupOpened = true;
+          } else {
+            showError('No CPT Code data found');
+          }
+        });
+    }
+
     // if (dataField === 'OrderingClinician') {
     //   const clinicianId = e.data?.OrderingClinician;
     //   if (!clinicianId) {
@@ -492,6 +494,7 @@ export class ClinicalDataComponent implements OnInit {
     //       }
     //     });
     // }
+
     // if (dataField === 'RenderingClinician') {
     //   const clinicianId = e.data?.RenderingClinician;
     //   if (!clinicianId) {
@@ -509,6 +512,42 @@ export class ClinicalDataComponent implements OnInit {
     //       }
     //     });
     // }
+  }
+
+  //======= Update data ==========
+  onClickUpdateNewCptType = () => {
+    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings } =
+      this.CptEditFormComponent.getUpdateCptMasterData();
+
+    this.masterService
+      .update_CptMaster_data(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings)
+      .subscribe((response: any) => {
+        if (response) {
+          this.dataGrid.instance.refresh();
+
+          notify(
+            {
+              message: 'Cpt Master Updated Successfully',
+              position: { at: 'top right', my: 'top right' },
+            },
+            'success',
+          );
+
+          this.resetCptForm();
+        } else {
+          notify(
+            {
+              message: 'Your Data Not Updated',
+              position: { at: 'top right', my: 'top right' },
+            },
+            'error',
+          );
+        }
+      });
+  };
+
+  resetCptForm() {
+    this.CptEditFormComponent.clearForm();
   }
 
   // =========== update oredering clinician =========
@@ -931,6 +970,7 @@ export class ClinicalDataComponent implements OnInit {
   };
 
   getClinicalDataPopupData() {
+    this.isLoading = true;
     const payload = {
       ClaimUID: this.selectedRowData?.ClaimUID || 0,
     };
@@ -941,12 +981,15 @@ export class ClinicalDataComponent implements OnInit {
           this.popupGridData = res.data || [];
           this.calculateBillableTotal();
           this.isRowPopupVisible = true;
+          this.isLoading = false;
         } else {
           this.popupGridData = [];
+          this.isLoading = false;
           notify('No data found', 'warning', 3000);
         }
       },
       error: (err) => {
+        this.isLoading = false;
         console.error(err);
         notify('Error loading popup data', 'error', 3000);
       },
@@ -1002,13 +1045,8 @@ export class ClinicalDataComponent implements OnInit {
   };
 
   onPopupHidden() {
-    setTimeout(() => {
-      this.isExcelLoading = true;
-
-      setTimeout(() => {
-        this.isExcelLoading = false;
-      }, 500);
-    }, 500);
+    this.isRowPopupVisible = false;
+    this.popupGridData = [];
     this.onApplyFilter();
   }
 

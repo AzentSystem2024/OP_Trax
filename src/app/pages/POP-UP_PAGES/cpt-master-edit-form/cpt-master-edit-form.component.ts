@@ -54,8 +54,8 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
   tabsWithText = [
     { id: 0, text: 'CPT - ADOC Mapping' },
-    { id: 1, text: 'Price Data' },
-    { id: 2, text: 'Weightage Data' },
+    { id: 1, text: 'Price History' },
+    { id: 2, text: 'Weightage History' },
   ];
 
   specialityDataSource: any[] = [];
