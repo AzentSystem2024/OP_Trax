@@ -182,26 +182,38 @@ export class AnalyticsDashboardComponent {
   };
 
   customizeSpecialityTooltip = (arg: any) => {
-    return {
-      html: `
-      <div style="padding:6px;min-width:180px">
-        <div><b>${arg.argument}</b></div>
-        <hr style="margin:4px 0">
-        <div>Series: <b>${arg.seriesName}</b></div>
-        <div>Value: <b>${arg.valueText}</b></div>
-      </div>
-    `,
-    };
+    const data = arg.point?.data;
+
+    let html = `
+    <div style="padding:6px;min-width:180px">
+      <div><b>${arg.argument}</b></div>
+      <hr style="margin:4px 0">
+      <div>Series: <b>${arg.seriesName}</b></div>
+      <div>Value: <b>${Number(arg.value).toLocaleString()}</b></div>
+  `;
+
+    if (arg.seriesName === 'ADOC Revenue') {
+      html += `
+      <div>Impact : <b>${Number(data?.ImpactPercent || 0).toFixed(2)}%</b></div>
+    `;
+    }
+
+    html += `</div>`;
+
+    return { html };
   };
 
   customizeMonthlyTrendTooltip = (arg: any) => {
+    const data = arg.point?.data || {};
+
     return {
       html: `
-      <div style="padding:6px;min-width:180px">
+      <div style="padding:6px;min-width:200px">
         <div><b>${arg.argument}</b></div>
         <hr style="margin:4px 0">
-        <div>Series: <b>${arg.seriesName}</b></div>
-        <div>Value: <b>AED ${Number(arg.value).toLocaleString()}</b></div>
+        <div>CPT : <b>AED ${Number(data.CPTValue).toLocaleString()}</b></div>
+        <div>ADOC : <b>AED ${Number(data.ADOCValue).toLocaleString()}</b></div>
+        <div>Impact : <b>${Number(data.ImpactPercent).toFixed(2)}%</b></div>
       </div>
     `,
     };
@@ -327,7 +339,7 @@ export class AnalyticsDashboardComponent {
     DxSelectBoxModule,
     DxPieChartModule,
     DxDataGridModule,
-    DxToolbarModule
+    DxToolbarModule,
   ],
   providers: [],
   exports: [],

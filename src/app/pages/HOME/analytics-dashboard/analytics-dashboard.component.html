@@ -131,7 +131,7 @@
               valueField="CPTRevenue"
               name="CPT Revenue"
               type="bar"
-              color="rgb(59, 130, 246)"
+              color="rgb(30, 58, 138)"
               axis="revenueAxis"
             >
             </dxi-series>
@@ -141,20 +141,20 @@
               valueField="ADOCRevenue"
               name="ADOC Revenue"
               type="bar"
-              color="rgb(30, 58, 138)"
+              color="rgb(245, 158, 11)"
               axis="revenueAxis"
             >
             </dxi-series>
 
             <!-- Impact % Line -->
-            <dxi-series
+            <!-- <dxi-series
               valueField="ImpactPercent"
               name="Impact Percent"
               type="line"
               axis="percentAxis"
-              color="rgb(245, 158, 11)"
+               color="rgb(59, 130, 246)"
             >
-            </dxi-series>
+            </dxi-series> -->
 
             <!-- Revenue Axis -->
             <dxi-value-axis name="revenueAxis" position="left">
@@ -162,10 +162,15 @@
             </dxi-value-axis>
 
             <!-- Percentage Axis -->
-            <dxi-value-axis name="percentAxis" position="right">
+            <!-- <dxi-value-axis
+              name="percentAxis"
+              position="right"
+              [visualRange]="[0, 100]"
+              [tickInterval]="20"
+            >
               <dxo-grid [visible]="false"></dxo-grid>
               <dxo-label [customizeText]="percentAxisLabel"></dxo-label>
-            </dxi-value-axis>
+            </dxi-value-axis> -->
 
             <dxo-tooltip
               [enabled]="true"
@@ -182,6 +187,7 @@
       </div>
     </div>
 
+    <!-- Row 2: two different datagrid Views -->
     <div class="row h-40vh g-3 mx-0 firstChartDiv ExportDiv3">
       <div class="col-md-6 border">
         <div class="p-2 h-100 chartDiv">
@@ -304,15 +310,6 @@
             height="400"
             class="impact-grid"
           >
-            <dxi-column
-              dataField="ADOCGroup"
-              caption="ADOC Group"
-              cellTemplate="seriesTemplate"
-              width="110"
-              alignment="center"
-            >
-            </dxi-column>
-
             <dxi-column dataField="Description" caption="Description">
             </dxi-column>
 
@@ -351,20 +348,6 @@
             >
             </dxi-column>
 
-            <div *dxTemplate="let cell of 'seriesTemplate'">
-              <span
-                class="series-badge"
-                [ngClass]="{
-                  'series-c': cell.data.ADOCGroup === 'C',
-                  'series-p': cell.data.ADOCGroup === 'P',
-                  'series-s': cell.data.ADOCGroup === 'S',
-                  'series-d': cell.data.ADOCGroup === 'D',
-                }"
-              >
-                {{ cell.data.ADOCGroup }}
-              </span>
-            </div>
-
             <!-- CPT Revenue -->
             <div *dxTemplate="let cell of 'cptRevenueTemplate'">
               {{ cell.value | number: "1.2-2" }}
@@ -393,7 +376,7 @@
       </div>
     </div>
 
-    <!-- Row 2: Full-width chart -->
+    <!-- Row 3: Full-width chart -->
     <div class="row mx-0 firstChartDiv ExportDiv4">
       <div class="col-12 border">
         <div class="p-2">
@@ -405,16 +388,9 @@
             </dxo-common-series-settings>
 
             <dxi-series
-              valueField="CPTValue"
-              name="CPT Value"
-              color="rgb(0, 128, 128)"
-            >
-            </dxi-series>
-
-            <dxi-series
-              valueField="ADOCValue"
-              name="ADOC Value"
-              color="rgb(30, 58, 95)"
+              valueField="ImpactPercent"
+              name="Impact Percent"
+              color="rgb(245, 158, 11)"
             >
             </dxi-series>
 
