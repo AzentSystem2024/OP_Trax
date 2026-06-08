@@ -538,19 +538,6 @@
         <dxo-search [enabled]="true"></dxo-search>
       </dxo-header-filter>
 
-      <!-- Pagination -->
-      <!-- <dxo-paging [pageSize]="10"></dxo-paging> -->
-
-      <!-- <dxo-pager
-        [visible]="false"
-        [allowedPageSizes]="allowedPageSizes"
-        [displayMode]="displayMode"
-        [showPageSizeSelector]="showPageSizeSelector"
-        [showInfo]="showInfo"
-        [showNavigationButtons]="showNavButtons"
-      >
-      </dxo-pager> -->
-
       <dxo-scrolling mode="virtual"></dxo-scrolling>
 
       <dxi-column
@@ -562,7 +549,12 @@
 
       <dxi-column dataField="CPTType" caption="CPT Type"></dxi-column>
 
-      <dxi-column dataField="CPTCode" caption="CPT Code"></dxi-column>
+      <dxi-column
+        dataField="CPTCode"
+        caption="CPT Code"
+        cellTemplate="cptCodeTemplate"
+      >
+      </dxi-column>
 
       <dxi-column
         dataField="CPTName"
@@ -600,6 +592,12 @@
 
       <dxi-column caption="Billable" cellTemplate="billableTemplate">
       </dxi-column>
+
+      <div *dxTemplate="let cell of 'cptCodeTemplate'">
+        <span class="cpt-link" title="'Double click for CPT details'">
+          {{ cell.value }}
+        </span>
+      </div>
 
       <div *dxTemplate="let data of 'priceTemplate'">
         <span [ngClass]="data.data.Billable ? 'billable-yes' : 'billable-no'">

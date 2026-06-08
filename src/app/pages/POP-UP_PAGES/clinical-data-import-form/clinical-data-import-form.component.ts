@@ -790,7 +790,7 @@ export class ClinicalDataImportFormComponent {
     });
   }
 
-  //validate rows of imported excel
+  // Validate rows of imported excel
   validateAndSort(data: any[], columnMeta: any[]): any[] {
     const validRows: any[] = [];
     const invalidRows: any[] = [];
@@ -799,23 +799,45 @@ export class ClinicalDataImportFormComponent {
       let isValid = true;
 
       for (const col of columnMeta) {
-        const val = row[col.dataField];
+        let val = row[col.dataField];
 
-        if (col.IsMandatory && !val) {
+        // Mandatory validation
+        if (
+          col.IsMandatory &&
+          (val === null || val === undefined || val === '')
+        ) {
           isValid = false;
           break;
         }
 
-        if (col.IsNumeric && val && isNaN(val)) {
-          isValid = false;
-          break;
+        // Numeric validation
+        if (col.IsNumeric && val !== null && val !== undefined && val !== '') {
+          // Handle comma-separated values and currency symbols
+          const cleanedValue = String(val)
+            .trim()
+            .replace(/,/g, '')
+            .replace(/[^0-9.-]/g, '');
+
+          const numericValue = Number(cleanedValue);
+
+          if (isNaN(numericValue)) {
+            isValid = false;
+            break;
+          }
+
+          // Store normalized numeric value back into row
+          row[col.dataField] = numericValue;
         }
       }
 
-      if (isValid) validRows.push(row);
-      else invalidRows.push(row);
+      if (isValid) {
+        validRows.push(row);
+      } else {
+        invalidRows.push(row);
+      }
     }
 
+    // Invalid rows first, valid rows after
     return [...invalidRows, ...validRows];
   }
 

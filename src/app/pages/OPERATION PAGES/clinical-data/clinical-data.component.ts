@@ -452,66 +452,23 @@ export class ClinicalDataComponent implements OnInit {
     const showError = (message: string) => {
       notify(message, 'error', 3000);
     };
-    // ===== Check for Claim Number click =====
-    // if (dataField === 'ClaimNumber') {
-    //   this.clickedCellRowData = e.data;
-    //   this.isSingleClaimDetailsVisible = true;
-    //   return;
-    // }
 
     if (dataField === 'CPTCode') {
-      const code = e.data?.CPTCode;
+      const code = e.data.CPTID;
+      console.log('clicked row data', code);
       if (!code) {
         showError('CPT Code is empty');
         return;
       }
-      this.operationService
-        .fetch_selected_CptCode_Data(code)
-        .subscribe((res: any) => {
-          if (res.flag === '1' && res.data?.[0]) {
-            this.selectedCptCodeData = res.data[0];
-            this.isCptEditFormPopupOpened = true;
-          } else {
-            showError('No CPT Code data found');
-          }
-        });
+      this.masterService.selectCptMaster(code).subscribe((res: any) => {
+        if (res.flag === '1' && res.data?.[0]) {
+          this.selectedCptCodeData = res.data[0];
+          this.isCptEditFormPopupOpened = true;
+        } else {
+          showError('No CPT Code data found');
+        }
+      });
     }
-
-    // if (dataField === 'OrderingClinician') {
-    //   const clinicianId = e.data?.OrderingClinician;
-    //   if (!clinicianId) {
-    //     showError('Ordering Clinician is empty');
-    //     return;
-    //   }
-    //   this.operationService
-    //     .fetch_selected_orderingClinician_Data(clinicianId)
-    //     .subscribe((res: any) => {
-    //       if (res.flag === '1' && res.data?.[0]) {
-    //         this.selectedClinicianData = res.data[0];
-    //         this.isEditClinicianPopupOpened = true;
-    //       } else {
-    //         showError('No Ordering Clinician data found');
-    //       }
-    //     });
-    // }
-
-    // if (dataField === 'RenderingClinician') {
-    //   const clinicianId = e.data?.RenderingClinician;
-    //   if (!clinicianId) {
-    //     showError('Rendering Clinician is empty');
-    //     return;
-    //   }
-    //   this.operationService
-    //     .fetch_selected_orderingClinician_Data(clinicianId)
-    //     .subscribe((res: any) => {
-    //       if (res.flag === '1' && res.data?.[0]) {
-    //         this.selectedClinicianData = res.data[0];
-    //         this.isEditClinicianPopupOpened = true;
-    //       } else {
-    //         showError('No Rendering Clinician data found');
-    //       }
-    //     });
-    // }
   }
 
   //======= Update data ==========
@@ -1001,31 +958,31 @@ export class ClinicalDataComponent implements OnInit {
     });
   }
 
-calculateBillableTotal(): void {
-  this.isLoading = true;
+  calculateBillableTotal(): void {
+    this.isLoading = true;
 
-  this.billableTotal = (this.popupGridData || [])
-    .filter((item: any) => item.Billable === true)
-    .reduce(
-      (total: number, item: any) => total + Number(item.BillPrice || 0),
-      0
-    );
+    this.billableTotal = (this.popupGridData || [])
+      .filter((item: any) => item.Billable === true)
+      .reduce(
+        (total: number, item: any) => total + Number(item.BillPrice || 0),
+        0,
+      );
 
-  this.isLoading = false;
+    this.isLoading = false;
 
-  console.log('Billable Total:', this.billableTotal);
-}
-
-billableSummaryText = () => {
-  if (this.isLoading) {
-    return 'Calculating...';
+    console.log('Billable Total:', this.billableTotal);
   }
 
-  return `Net Billable : AED ${this.billableTotal.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
-};
+  billableSummaryText = () => {
+    if (this.isLoading) {
+      return 'Calculating...';
+    }
+
+    return `Net Billable : AED ${this.billableTotal.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
 
   ReRunGrouper() {
     const payload = {

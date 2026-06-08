@@ -69,7 +69,6 @@
   color: #0056b3;
 }
 
-
 ::ng-deep .custom-export-btn .dx-button-content {
   padding: 4px !important;
 }
@@ -107,4 +106,8 @@
 .billable-no {
   color: red;
   font-weight: 600;
+}
+
+.cpt-link {
+  cursor: pointer;
 }
