@@ -9,6 +9,9 @@
     [allowColumnReordering]="true"
     [rowAlternationEnabled]="true"
     rowAlternationInterval="2"
+    [wordWrapEnabled]="true"
+    [columnAutoWidth]="true"
+    width="100%"
     (onExporting)="onExporting($event)"
   >
     <dxo-editing
@@ -88,9 +91,10 @@
       dataField="RuleOrder"
       caption="Sl No"
       alignment="left"
+      width="60"
     ></dxi-column>
     <dxi-column dataField="RuleDescription" caption="ADOC Rule"></dxi-column>
-    <dxi-column dataField="Remarks" caption="Description"></dxi-column>
+    <dxi-column dataField="Remarks" caption="Description" [visibleIndex]="2"></dxi-column>
 
     <dxi-column
       dataField="IsInactive"
@@ -103,6 +107,7 @@
       caption="Status"
       [cellTemplate]="'statusTemplate'"
       alignment="center"
+      width="150"
     >
     </dxi-column>
 
@@ -115,7 +120,7 @@
         style="font-size: 20px; cursor: pointer"
       >
         ⚑
-      </span>
+      </span> 
     </div>
   </dx-data-grid>
 </div>
