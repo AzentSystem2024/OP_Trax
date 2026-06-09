@@ -241,7 +241,11 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
           return;
         }
 
-        // Save edited ICD value first
+        // Commit current editor value immediately
+        e.setValue(args.component.option('value'));
+        e.component.closeEditCell();
+
+        // Save edited ICD value
         e.component.saveEditData();
 
         const rowIndex = e.row.rowIndex;
