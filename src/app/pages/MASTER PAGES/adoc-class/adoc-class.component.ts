@@ -13,6 +13,7 @@ import {
   DxDataGridComponent,
   DxFormModule,
   DxFormComponent,
+  DxLoadPanelModule,
 } from 'devextreme-angular';
 import { DataSource } from 'devextreme/common/data';
 import notify from 'devextreme/ui/notify';
@@ -75,6 +76,8 @@ export class ADOCClassComponent {
   DetailedClassData: any[] = [];
   isDetailPopupVisible: boolean = false;
   DetailedPopupTitle: any;
+
+  loadingVisible: boolean = false;
 
   constructor(
     private service: ReportService,
@@ -312,17 +315,19 @@ export class ADOCClassComponent {
   viewDetails = (e: any) => {
     const ID = e.row.data.ID;
     this.DetailedPopupTitle = `${e.row.data?.ClassCode ?? ''} - ${e.row.data?.ClassName ?? ''}`;
-
+    this.loadingVisible = true;
     this.masterService.fetch_ADOC_Detailed_data(ID).subscribe((res: any) => {
       if (res && res.flag === '1') {
         this.DetailedClassData = res.data;
         this.isDetailPopupVisible = true;
+        this.loadingVisible = false;
 
         setTimeout(() => {
           this.detailGrid?.instance.repaint();
           this.detailGrid?.instance.updateDimensions();
         }, 100);
       } else {
+        this.loadingVisible = false;
         notify(
           {
             message: 'No data available',
@@ -356,6 +361,7 @@ export class ADOCClassComponent {
     DxFormModule,
     DxValidatorModule,
     DxValidationSummaryModule,
+    DxLoadPanelModule,
   ],
   declarations: [ADOCClassComponent],
 })

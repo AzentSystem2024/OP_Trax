@@ -273,7 +273,7 @@
         [columnAutoWidth]="true"
         [wordWrapEnabled]="true"
         [rowAlternationEnabled]="true"
-        [wordWrapEnabled]="true"
+        [wordWrapEnabled]="false"
         height="100%"
       >
         <dxo-paging [pageSize]="10"></dxo-paging>
@@ -318,3 +318,14 @@
 
   <!-- ============ detailed view popup ========== -->
 </div>
+<dx-load-panel
+  #loadPanel
+  [position]="{ of: '.view-wrapper', at: 'center', my: 'center' }"
+  shadingColor="rgba(0,0,0,0)"
+  [(visible)]="loadingVisible"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="true"
+  [message]="'Loading...'"
+>
+</dx-load-panel>
