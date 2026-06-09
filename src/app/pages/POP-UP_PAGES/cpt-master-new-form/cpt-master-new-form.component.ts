@@ -235,43 +235,49 @@ export class CptMasterNewFormComponent implements OnInit {
           return;
         }
 
-        args.event.preventDefault();
+        // Commit current editor value immediately
+        e.setValue(args.component.option('value'));
+        e.component.closeEditCell();
 
-        const rowData = e.row.data;
+        // Save edited ICD value
+        e.component.saveEditData();
 
-        if (
-          rowData.SpecialityID == null ||
-          rowData.ADOCClassID == null ||
-          rowData.ADOCCategoryID == null
-        ) {
+        const rowIndex = e.row.rowIndex;
+        const lastRowIndex = this.newCptMasterData.CPTADOCMappings.length - 1;
+
+        // Existing row edit -> just save
+        if (rowIndex !== lastRowIndex) {
           return;
         }
 
-        const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
-          (x: any) =>
-            x.SpecialityID == null &&
-            x.ADOCClassID == null &&
-            x.ADOCCategoryID == null,
-        );
-
-        if (!hasEmptyRow) {
-          this.newCptMasterData.CPTADOCMappings.push({
-            SpecialityID: null,
-            ICDCode: '',
-            ADOCClassID: null,
-            ADOCCategoryID: null,
-          });
-
-          this.newCptMasterData.CPTADOCMappings = [
-            ...this.newCptMasterData.CPTADOCMappings,
-          ];
-        }
-
         setTimeout(() => {
-          const newRowIndex = this.newCptMasterData.CPTADOCMappings.length - 1;
+          const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
+            (x: any) =>
+              x.SpecialityID == null &&
+              x.ADOCClassID == null &&
+              x.ADOCCategoryID == null,
+          );
 
-          e.component.editCell(newRowIndex, 'SpecialityID');
-        }, 100);
+          if (!hasEmptyRow) {
+            this.newCptMasterData.CPTADOCMappings.push({
+              SpecialityID: null,
+              ICDCode: '',
+              ADOCClassID: null,
+              ADOCCategoryID: null,
+            });
+
+            this.newCptMasterData.CPTADOCMappings = [
+              ...this.newCptMasterData.CPTADOCMappings,
+            ];
+
+            setTimeout(() => {
+              const newRowIndex =
+                this.newCptMasterData.CPTADOCMappings.length - 1;
+
+              e.component.editCell(newRowIndex, 'SpecialityID');
+            }, 50);
+          }
+        }, 50);
       };
     }
   }
