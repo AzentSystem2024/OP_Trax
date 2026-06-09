@@ -90,7 +90,6 @@
     </dxo-header-filter>
     <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
     <dxo-column-chooser [enabled]="true" [height]="400"></dxo-column-chooser>
-    <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
     <dxo-export
       [enabled]="true"
       [allowExportSelectedData]="false"
@@ -156,25 +155,37 @@
       dataType="boolean"
       [visible]="false"
     ></dxi-column>
-     <dxi-column
-  dataField="Status"
-  caption="Status"
-  [cellTemplate]="'statusTemplate'"
-  alignment="center"
->
-</dxi-column>
+    <dxi-column
+      dataField="Status"
+      caption="Status"
+      [cellTemplate]="'statusTemplate'"
+      alignment="center"
+    >
+    </dxi-column>
 
-<div *dxTemplate="let cell of 'statusTemplate'">
-  <span
-    [ngStyle]="{
-      color: cell.data.Status === 'Active' ? 'green' : 'red'
-    }"
-    [title]="cell.data.Status"
-    style="font-size: 20px ;cursor: pointer;"
-  >
-    ⚑
-  </span>
-</div>
+    <dxi-column type="buttons" caption=" " width="150">
+      <dxi-button name="edit"></dxi-button>
+
+      <dxi-button
+        hint="View Details"
+        icon="errorcircle"
+        [onClick]="viewDetails"
+      ></dxi-button>
+
+      <dxi-button name="delete"></dxi-button>
+    </dxi-column>
+
+    <div *dxTemplate="let cell of 'statusTemplate'">
+      <span
+        [ngStyle]="{
+          color: cell.data.Status === 'Active' ? 'green' : 'red',
+        }"
+        [title]="cell.data.Status"
+        style="font-size: 20px; cursor: pointer"
+      >
+        ⚑
+      </span>
+    </div>
   </dx-data-grid>
 
   <!-- ========= new form popup ========= -->
@@ -185,7 +196,7 @@
     [height]="'auto'"
     [showCloseButton]="true"
     [hideOnOutsideClick]="false"
-     (onHiding)="onPopupHiding()"
+    (onHiding)="onPopupHiding()"
   >
     <div *dxTemplate="let data of 'content'">
       <dx-form
@@ -243,4 +254,67 @@
       </div>
     </div>
   </dx-popup>
+
+  <dx-popup
+    [(visible)]="isDetailPopupVisible"
+    [width]="1200"
+    [height]="'85vh'"
+    [title]="DetailedPopupTitle"
+    [showTitle]="true"
+    [dragEnabled]="true"
+    [hideOnOutsideClick]="false"
+    (onHiding)="onPopupHiding()"
+  >
+    <div *dxTemplate="let data of 'content'">
+      <dx-data-grid
+        #detailGrid
+        [dataSource]="DetailedClassData"
+        [showBorders]="true"
+        [columnAutoWidth]="true"
+        [wordWrapEnabled]="true"
+        [rowAlternationEnabled]="true"
+        [wordWrapEnabled]="true"
+        height="100%"
+      >
+        <dxo-paging [pageSize]="10"></dxo-paging>
+        <dxo-pager
+          [visible]="true"
+          [allowedPageSizes]="allowedPageSizes"
+          [displayMode]="displayMode"
+          [showPageSizeSelector]="showPageSizeSelector"
+          [showInfo]="showInfo"
+          [showNavigationButtons]="showNavButtons"
+        >
+        </dxo-pager>
+        <dxo-filter-row [visible]="true"></dxo-filter-row>
+        <dxo-load-panel [showPane]="true"></dxo-load-panel>
+        <dxo-scrolling mode="virtual"></dxo-scrolling>
+        <dxo-sorting mode="multiple"></dxo-sorting>
+        <dxo-header-filter [visible]="true">
+          <dxo-search [enabled]="true"></dxo-search>
+        </dxo-header-filter>
+
+        <dxi-column
+          dataField="SlNo"
+          caption="Sl No"
+          alignment="center"
+          [width]="'auto'"
+        >
+        </dxi-column>
+
+        <dxi-column dataField="CPTCode" caption="CPT Code" width="120">
+        </dxi-column>
+
+        <dxi-column dataField="CPTName" caption="CPT Name" width="500">
+        </dxi-column>
+
+        <dxi-column dataField="Speciality" caption="Speciality"> </dxi-column>
+
+        <dxi-column dataField="ICDCode" caption="ICD Code" width="150">
+        </dxi-column>
+      </dx-data-grid>
+    </div>
+  </dx-popup>
+
+  <!-- ============ detailed view popup ========== -->
 </div>

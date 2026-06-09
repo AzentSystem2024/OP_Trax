@@ -1271,6 +1271,15 @@ export class MasterReportService {
     return this.http.post(`${this.BASE_URL}ADOCClass/delete/${id}`, {});
   }
 
+  //============ ADOC detailed data fetching ========
+  fetch_ADOC_Detailed_data(Id: any) {
+    const url = `${this.BASE_URL}ADOCClass/cptlist`;
+    const reqBody = {
+      ADOCClassID: Id,
+    };
+
+    return this.http.post(url, reqBody);
+  }
   // ================= Price Master =================
   // ===== Get Price Master List =====
   get_PriceMaster_List() {
@@ -1385,8 +1394,7 @@ export class MasterReportService {
     return `${year}-${month}-${day}`;
   }
 
-
-    get_ADOC_CountingRule_List() {
+  get_ADOC_CountingRule_List() {
     const Url = `${this.BASE_URL}ADOCGroup/adoc-rule-list`;
     return this.http.post(Url, {});
   }

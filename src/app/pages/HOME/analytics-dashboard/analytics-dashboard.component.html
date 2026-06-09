@@ -201,8 +201,9 @@
             [columnAutoWidth]="true"
             [showRowLines]="true"
             [showColumnLines]="false"
-            [height]="TopCPTImpact?.length > 10 ? 400 : '400'"
+            [height]="350"
             class="impact-grid"
+            (onContentReady)="onGridContentReady($event)"
           >
             <dxo-scrolling mode="standard"></dxo-scrolling>
 
@@ -297,6 +298,7 @@
           </dx-data-grid>
         </div>
       </div>
+
       <div class="col-md-6 border ms-2">
         <div class="p-2 h-100 chartDiv">
           <div class="datagrid-title">Clinician Specialty Impact Analysis</div>
@@ -309,8 +311,9 @@
             [columnAutoWidth]="true"
             [showRowLines]="true"
             [showColumnLines]="false"
-            [height]="ClinicianSpecialityImpact?.length > 10 ? 400 : '400'"
+            [height]="350"
             class="impact-grid"
+            (onContentReady)="onGridContentReady($event)"
           >
             <dxo-scrolling mode="standard"></dxo-scrolling>
             <dxi-column dataField="Description" caption="Description">

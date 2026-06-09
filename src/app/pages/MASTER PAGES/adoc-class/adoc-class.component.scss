@@ -37,12 +37,10 @@
 
       .dx-datagrid-content .dx-row {
         cursor: pointer;
-
       }
       .dx-datagrid .dx-row {
         cursor: pointer;
-        height: 10px
-
+        height: 10px;
       }
     }
 
@@ -57,10 +55,23 @@
 }
 
 .dx-datagrid {
-    height: 85vh;
+  height: 85vh;
 }
 
 .grid .dx-row {
-    height: 10px;
-  }
- 
+  height: 10px;
+}
+
+.cpt-wrap-cell {
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+  padding: 4px 0;
+  width: 100%;
+}
+
+/* Optional: Better row appearance */
+::ng-deep .dx-data-row td {
+  vertical-align: top;
+}

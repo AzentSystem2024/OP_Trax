@@ -136,6 +136,13 @@ export class AnalyticsDashboardComponent {
           this.topCPTGrid.instance.updateDimensions();
           this.topClinicianGrid.instance.repaint();
           this.topClinicianGrid.instance.updateDimensions();
+
+          setTimeout(() => {
+            this.topCPTGrid.instance.repaint();
+            this.topCPTGrid.instance.updateDimensions();
+            this.topClinicianGrid.instance.repaint();
+            this.topClinicianGrid.instance.updateDimensions();
+          }, 100);
         } else {
           this.showError(res.message);
         }
@@ -146,6 +153,10 @@ export class AnalyticsDashboardComponent {
         console.error(err);
       },
     });
+  }
+
+  onGridContentReady(e: any) {
+    e.component.updateDimensions();
   }
 
   customizePiePoint = (pointInfo: any) => {

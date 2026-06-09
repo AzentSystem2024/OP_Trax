@@ -38,6 +38,9 @@ export class ADOCClassComponent {
   @ViewChild('addForm', { static: false })
   addForm!: DxFormComponent;
 
+  @ViewChild('detailGrid')
+  detailGrid!: DxDataGridComponent;
+
   readonly allowedPageSizes: any = [5, 10, 'all'];
   displayMode: any = 'full';
   showPageSizeSelector = true;
@@ -68,6 +71,10 @@ export class ADOCClassComponent {
   };
 
   ADOC_Category_List: any[] = [];
+
+  DetailedClassData: any[] = [];
+  isDetailPopupVisible: boolean = false;
+  DetailedPopupTitle: any;
 
   constructor(
     private service: ReportService,
@@ -126,18 +133,19 @@ export class ADOCClassComponent {
     };
 
     this.addForm?.instance.reset();
+    this.DetailedClassData = [];
+    this.isDetailPopupVisible = false;
+    this.DetailedPopupTitle = '';
   }
 
-
   isDuplicateClassCode(code: string): boolean {
+    const gridData = this.dataGrid.instance.getDataSource().items();
 
-  const gridData = this.dataGrid.instance.getDataSource().items();
-
-  return gridData.some((item: any) =>
-    item.ClassCode?.trim().toLowerCase() ===
-    code.trim().toLowerCase()
-  );
-}
+    return gridData.some(
+      (item: any) =>
+        item.ClassCode?.trim().toLowerCase() === code.trim().toLowerCase(),
+    );
+  }
 
   // =========== Save data  =========
   onDataSaving() {
@@ -157,19 +165,18 @@ export class ADOCClassComponent {
 
     // ===== Duplicate Check =====
 
-  if (this.isDuplicateClassCode(this.newADOCClass.Code)) {
+    if (this.isDuplicateClassCode(this.newADOCClass.Code)) {
+      notify(
+        {
+          message: 'Class Code already exists',
+          position: { at: 'top right', my: 'top right' },
+          displayTime: 1000,
+        },
+        'error',
+      );
 
-    notify(
-      {
-        message: 'Class Code already exists',
-        position: { at: 'top right', my: 'top right' },
-        displayTime: 1000,
-      },
-      'error',
-    );
-
-    return;
-  }
+      return;
+    }
 
     this.masterService
       .Insert_adocClass_Data(
@@ -300,6 +307,33 @@ export class ADOCClassComponent {
         this.dataGrid.instance.refresh();
       });
   }
+
+  // =========== detailed view click ==========
+  viewDetails = (e: any) => {
+    const ID = e.row.data.ID;
+    this.DetailedPopupTitle = `${e.row.data?.ClassCode ?? ''} - ${e.row.data?.ClassName ?? ''}`;
+
+    this.masterService.fetch_ADOC_Detailed_data(ID).subscribe((res: any) => {
+      if (res && res.flag === '1') {
+        this.DetailedClassData = res.data;
+        this.isDetailPopupVisible = true;
+
+        setTimeout(() => {
+          this.detailGrid?.instance.repaint();
+          this.detailGrid?.instance.updateDimensions();
+        }, 100);
+      } else {
+        notify(
+          {
+            message: 'No data available',
+            position: { at: 'top right', my: 'top right' },
+            displayTime: 400,
+          },
+          'error',
+        );
+      }
+    });
+  };
 
   //========================Export data ==========================
   onExporting(event: any) {
