@@ -126,7 +126,7 @@
     <dx-data-grid
       height="78vh"
       class="grid theme-dependent"
-      noDataText="No data available"
+      noDataText=" "
       [dataSource]="dataSource"
       [showBorders]="true"
       [showColumnLines]="true"
@@ -265,13 +265,6 @@
         dataField="PatientName"
         caption="Patient Name"
         [allowEditing]="false"
-      ></dxi-column>
-
-      <dxi-column
-        dataField="Diagnosis"
-        caption="Diagnosis"
-        [allowEditing]="false"
-        width="250"
       ></dxi-column>
 
       <dxi-column
