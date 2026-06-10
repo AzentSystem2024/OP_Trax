@@ -210,6 +210,7 @@ export class AnalyticsDashboardComponent {
 
     return words[0] + '\n' + words.slice(1).join(' ');
   };
+  
   customizeSpecialityTooltip = (arg: any) => {
     const data = arg.point?.data;
 
