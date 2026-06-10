@@ -216,6 +216,7 @@ export class ClinicalDataComponent implements OnInit {
 
   billableTotal: any = 0;
   selectedRowIndex: any;
+  isLookupLoading: boolean=false;
 
   constructor(
     private service: ReportService,
@@ -334,6 +335,12 @@ export class ClinicalDataComponent implements OnInit {
 
   // ================= load grid data by using filter values ==============
   onApplyFilter() {
+    if (this.isLookupLoading) {
+      return; // Prevent multiple API calls
+    }
+
+    this.isLookupLoading = true;
+
     const formatDate = (date: Date | null) =>
       date ? this.datePipe.transform(date, 'yyyy-MM-dd') : null;
 
@@ -341,7 +348,6 @@ export class ClinicalDataComponent implements OnInit {
       FacilityID: Array.isArray(this.selectedFacility)
         ? this.selectedFacility.join(',')
         : '',
-      // SearchOn: this.selectedSearchOn,
       DateFrom: formatDate(this.fromDate),
       DateTo: formatDate(this.toDate),
     };
@@ -351,6 +357,8 @@ export class ClinicalDataComponent implements OnInit {
         new Promise((resolve, reject) => {
           this.operationService.getClinicalData(payload).subscribe({
             next: (res: any) => {
+              this.isLookupLoading = false;
+
               if (res?.flag === '1') {
                 resolve(res.data ?? []);
               } else {
@@ -358,6 +366,8 @@ export class ClinicalDataComponent implements OnInit {
               }
             },
             error: (err) => {
+              this.isLookupLoading = false;
+
               console.error('Error loading data:', err.message || err);
               reject(err.message || 'Error loading data');
             },
@@ -972,7 +982,7 @@ export class ClinicalDataComponent implements OnInit {
       },
     });
   }
-  
+
   calculateBillableTotal(): void {
     this.isLoading = true;
 

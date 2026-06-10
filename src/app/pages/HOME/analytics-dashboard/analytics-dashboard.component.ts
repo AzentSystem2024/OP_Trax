@@ -200,6 +200,11 @@ export class AnalyticsDashboardComponent {
     return `${e.value}%`;
   };
 
+  customizeSpecialityLabel = (arg: any) => {
+    const text = arg.valueText || '';
+    return text.length > 10 ? text.substring(0, 10) + '...' : text;
+  };
+
   customizeSpecialityTooltip = (arg: any) => {
     const data = arg.point?.data;
 
@@ -207,6 +212,7 @@ export class AnalyticsDashboardComponent {
     <div style="padding:6px;min-width:180px">
       <div><b>${arg.argument}</b></div>
       <hr style="margin:4px 0">
+      <div>Specialty: <b>${data?.SpecialityName}</b></div>
       <div>Series: <b>${arg.seriesName}</b></div>
       <div>Value: <b>${Number(arg.value).toLocaleString()}</b></div>
   `;

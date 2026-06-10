@@ -121,7 +121,7 @@
             <dxo-title text="Specialty Impact Analysis"></dxo-title>
 
             <dxo-common-series-settings
-              argumentField="SpecialityName"
+              argumentField="SpecialityCode"
               [barPadding]="0.01"
             >
             </dxo-common-series-settings>
@@ -145,33 +145,20 @@
               axis="revenueAxis"
             >
             </dxi-series>
-
-            <!-- Impact % Line -->
-            <!-- <dxi-series
-              valueField="ImpactPercent"
-              name="Impact Percent"
-              type="line"
-              axis="percentAxis"
-               color="rgb(59, 130, 246)"
-            >
-            </dxi-series> -->
-
             <!-- Revenue Axis -->
             <dxi-value-axis name="revenueAxis" position="left">
               <dxo-title text=""></dxo-title>
             </dxi-value-axis>
 
-            <!-- Percentage Axis -->
-            <!-- <dxi-value-axis
-              name="percentAxis"
-              position="right"
-              [visualRange]="[0, 100]"
-              [tickInterval]="20"
-            >
-              <dxo-grid [visible]="false"></dxo-grid>
-              <dxo-label [customizeText]="percentAxisLabel"></dxo-label>
-            </dxi-value-axis> -->
-
+            <dxo-argument-axis>
+              <dxo-label
+                [customizeText]="customizeSpecialityLabel"
+                [overlappingBehavior]="'rotate'"
+                [rotationAngle]="-60"
+              >
+              </dxo-label>
+            </dxo-argument-axis>
+            
             <dxo-tooltip
               [enabled]="true"
               [customizeTooltip]="customizeSpecialityTooltip"
@@ -201,11 +188,11 @@
             [columnAutoWidth]="true"
             [showRowLines]="true"
             [showColumnLines]="false"
-            [height]="350"
+            [height]="400"
             class="impact-grid"
             (onContentReady)="onGridContentReady($event)"
           >
-            <dxo-scrolling mode="standard"></dxo-scrolling>
+            <dxo-scrolling mode="virtual"></dxo-scrolling>
 
             <dxo-header-filter [visible]="false"></dxo-header-filter>
             <dxo-filter-row [visible]="false"></dxo-filter-row>
@@ -213,7 +200,11 @@
             <dxi-column dataField="CPT" caption="CPT" alignment="left">
             </dxi-column>
 
-            <dxi-column dataField="Description" caption="Description">
+            <dxi-column
+              dataField="Description"
+              caption="Description"
+              width="120"
+            >
             </dxi-column>
 
             <!-- Series Badge -->
@@ -311,19 +302,22 @@
             [columnAutoWidth]="true"
             [showRowLines]="true"
             [showColumnLines]="false"
-            [height]="350"
+            [height]="400"
             class="impact-grid"
             (onContentReady)="onGridContentReady($event)"
           >
-            <dxo-scrolling mode="standard"></dxo-scrolling>
-            <dxi-column dataField="Description" caption="Description">
+            <dxo-scrolling mode="virtual"></dxo-scrolling>
+            <dxi-column
+              dataField="Description"
+              caption="Description"
+              width="130"
+            >
             </dxi-column>
 
             <dxi-column
               dataField="Encounters"
               caption="Encounters"
               alignment="center"
-              width="100"
             >
             </dxi-column>
 
@@ -350,7 +344,6 @@
               caption="Impact"
               alignment="right"
               cellTemplate="impactTemplate"
-              width="90"
             >
             </dxi-column>
 
