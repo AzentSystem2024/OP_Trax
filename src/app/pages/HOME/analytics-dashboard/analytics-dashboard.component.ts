@@ -202,9 +202,14 @@ export class AnalyticsDashboardComponent {
 
   customizeSpecialityLabel = (arg: any) => {
     const text = arg.valueText || '';
-    return text.length > 10 ? text.substring(0, 10) + '...' : text;
-  };
+    const words = text.trim().split(/\s+/);
 
+    if (words.length <= 1) {
+      return text;
+    }
+
+    return words[0] + '\n' + words.slice(1).join(' ');
+  };
   customizeSpecialityTooltip = (arg: any) => {
     const data = arg.point?.data;
 
