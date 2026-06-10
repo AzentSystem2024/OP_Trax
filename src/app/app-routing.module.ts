@@ -41,14 +41,12 @@ import { NotificationSettingsComponent } from './pages/SYSTEM PAGES/notificarion
 import { EmailLogDataComponent } from './pages/SYSTEM PAGES/Report-Email-Schedule/email-log-data.component';
 import { SubDepartmentListComponent } from './pages/MASTER PAGES/Sub-department/sub-department-list.component';
 
-import { FinanceDataComponent } from './pages/OPERATION PAGES/finance-data/finance-data.component';
-import { ProcessComponent } from './pages/OPERATION PAGES/process/process.component';
 import { AccountsListComponent } from './pages/ACCOUNTS/accounts-list/accounts-list.component';
 import { TwoStepVerificationComponent } from './components/library/two-step-verification/two-step-verification.component';
 import { AboutPageComponent } from './pages/about-page/about-page.component';
 import { CPTCostingDepartmentAllocationComponent } from './pages/MASTER PAGES/cpt-costing-department-allocation/cpt-costing-department-allocation.component';
 import { LedgerGroupComponent } from './pages/ACCOUNTS/ledger-group/ledger-group.component';
-import { ClinicalDataComponent } from './pages/OPERATION PAGES/clinical-data/clinical-data.component';
+import { ClinicalDataComponent } from './pages/OPERATION PAGES/Billing-info/clinical-data.component';
 import { ADOCClassComponent } from './pages/MASTER PAGES/adoc-class/adoc-class.component';
 import { PriceMasterComponent } from './pages/MASTER PAGES/price-master/price-master.component';
 import { ADOCGroupComponent } from './pages/MASTER PAGES/adoc-category/adoc-group.component';
@@ -261,16 +259,6 @@ const routes: Routes = [
       {
         path: 'clinical-data',
         component: ClinicalDataComponent,
-        canActivate: [AuthGuardService],
-      },
-      {
-        path: 'finance-data',
-        component: FinanceDataComponent,
-        canActivate: [AuthGuardService],
-      },
-      {
-        path: 'process',
-        component: ProcessComponent,
         canActivate: [AuthGuardService],
       },
       {

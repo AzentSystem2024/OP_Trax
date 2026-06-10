@@ -192,19 +192,6 @@
           <div class="grid-header">Billing Info</div>
         </dxi-item>
 
-        <!-- <dxi-item
-          name="updateButton"
-          location="after"
-          widget="dxButton"
-          [options]="updateButtonOptions"
-        ></dxi-item> -->
-
-        <!-- <dxi-item
-          name="processButton"
-          location="after"
-          widget="dxButton"
-          [options]="processButtonOptions"
-        ></dxi-item> -->
         <dxi-item
           location="after"
           locateInMenu="auto"
@@ -278,6 +265,13 @@
         dataField="PatientName"
         caption="Patient Name"
         [allowEditing]="false"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="Diagnosis"
+        caption="Diagnosis"
+        [allowEditing]="false"
+        width="250"
       ></dxi-column>
 
       <dxi-column
@@ -450,75 +444,67 @@
   (onHidden)="onPopupHidden()"
 >
   <div class="container-fluid p-3">
-    <!-- Top Details Section -->
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <tr>
-          <td><b>Invoice No/Visit ID : </b></td>
-          <td>{{ selectedRowData?.ClaimNumber }}</td>
-        </tr>
+    <!-- Header Section -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="d-flex">
+          <!-- Left Section -->
+          <div>
+            <div class="mb-2">
+              <strong>Invoice No / Visit ID :</strong>
+              {{ selectedRowData?.ClaimNumber }}
+            </div>
 
-        <tr>
-          <td><b>Patient ID : </b></td>
-          <td>{{ selectedRowData?.PatientID }}</td>
-        </tr>
+            <div class="mb-2">
+              <strong>Patient ID :</strong>
+              {{ selectedRowData?.PatientID }}
+            </div>
 
-        <tr>
-          <td><b>Patient Name : </b></td>
-          <td>{{ selectedRowData?.PatientName }}</td>
-        </tr>
-      </div>
+            <div>
+              <strong>Diagnosis :</strong>
+              {{ selectedRowData?.Diagnosis }}
+            </div>
+          </div>
 
-      <div class="col-md-6 d-flex justify-content-end align-items-start">
-        <table>
-          <tr>
-            <td class="pe-3">
-              <b>Transaction Date :</b>
-            </td>
-
-            <td>
+          <!-- Right Section -->
+          <div class="ms-auto text-start">
+            <div class="mb-2">
+              <strong>Transaction Date :</strong>
               {{ selectedRowData?.TransactionDate }}
-            </td>
-          </tr>
+            </div>
 
-          <tr>
-            <td class="pe-3">
-              <b>Encounter Type :</b>
-            </td>
-
-            <td>
+            <div class="mb-3">
+              <strong>Encounter Type :</strong>
               {{ selectedRowData?.EncounterType }}
-            </td>
-          </tr>
-        </table>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <dx-button
+                icon="refresh"
+                hint="Re-Run Grouper"
+                type="default"
+                stylingMode="contained"
+                (onClick)="ReRunGrouper()"
+              >
+              </dx-button>
+
+              <dx-drop-down-button
+                icon="export"
+                hint="Export"
+                stylingMode="contained"
+                type="default"
+                [showArrowIcon]="false"
+                [items]="exportFormats"
+                displayExpr="text"
+                keyExpr="format"
+                [elementAttr]="{ class: 'custom-export-btn' }"
+                (onItemClick)="onExportClick($event)"
+              >
+              </dx-drop-down-button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <div class="d-flex justify-content-end mb-2 gap-2">
-      <dx-button
-        icon="refresh"
-        text=""
-        hint="Re-Run Grouper"
-        type="default"
-        stylingMode="contained"
-        (onClick)="ReRunGrouper()"
-      >
-      </dx-button>
-
-      <dx-drop-down-button
-        icon="export"
-        text=""
-        hint="Export"
-        stylingMode="contained"
-        type="default"
-        [showArrowIcon]="false"
-        [items]="exportFormats"
-        displayExpr="text"
-        keyExpr="format"
-        [elementAttr]="{ class: 'custom-export-btn' }"
-        (onItemClick)="onExportClick($event)"
-      >
-      </dx-drop-down-button>
     </div>
 
     <!-- Details Grid -->
@@ -568,6 +554,10 @@
       ></dxi-column>
 
       <dxi-column dataField="Speciality" caption="Specialty"></dxi-column>
+      <dxi-column
+        dataField="PrimaryDiagnosis"
+        caption="Primary Diagnosis"
+      ></dxi-column>
 
       <dxi-column
         dataField="NetAmount"

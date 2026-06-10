@@ -215,6 +215,7 @@ export class ClinicalDataComponent implements OnInit {
   ];
 
   billableTotal: any = 0;
+  selectedRowIndex: any;
 
   constructor(
     private service: ReportService,
@@ -926,6 +927,14 @@ export class ClinicalDataComponent implements OnInit {
     return `${item.FacilityLicense} - ${item.FacilityName}`;
   };
 
+  onViewClick(e: any) {
+    this.selectedRowData = e.row.data;
+    this.selectedRowIndex = e.row.rowIndex;
+
+    this.isRowPopupVisible = true;
+    this.getClinicalDataPopupData();
+  }
+
   getClinicalDataPopupData() {
     this.isLoading = true;
 
@@ -937,6 +946,12 @@ export class ClinicalDataComponent implements OnInit {
       next: (res: any) => {
         if (res.flag === '1') {
           this.popupGridData = res.data || [];
+
+          // Update status in the row object
+          this.selectedRowData.Status = 'Applied';
+
+          // Repaint only the affected row
+          this.dataGrid.instance.repaintRows([this.selectedRowIndex]);
 
           this.calculateBillableTotal();
 
@@ -957,7 +972,7 @@ export class ClinicalDataComponent implements OnInit {
       },
     });
   }
-
+  
   calculateBillableTotal(): void {
     this.isLoading = true;
 
@@ -1003,13 +1018,6 @@ export class ClinicalDataComponent implements OnInit {
     });
   }
 
-  onViewClick(e: any) {
-    console.log(e);
-    this.selectedRowData = e.row.data;
-    this.isRowPopupVisible = true;
-    this.getClinicalDataPopupData();
-  }
-
   billableText = (rowData: any) => {
     return rowData.Billable ? 'Yes' : 'No';
   };
@@ -1017,7 +1025,6 @@ export class ClinicalDataComponent implements OnInit {
   onPopupHidden() {
     this.isRowPopupVisible = false;
     this.popupGridData = [];
-    this.onApplyFilter();
   }
 
   async onExportClick(e: any) {
