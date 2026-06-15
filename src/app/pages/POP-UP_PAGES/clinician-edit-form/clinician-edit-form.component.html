@@ -85,5 +85,19 @@
         ></dx-select-box>
       </div>
     </dxi-item>
+
+    <dxi-item>
+      <div *dxTemplate>
+        <dx-select-box
+          [items]="clinicianCategoryDatasource"
+          displayExpr="DESCRIPTION"
+          valueExpr="ID"
+          placeholder="Select a value"
+          [(value)]="newClinician.CategoryID"
+          label="Category"
+          labelMode="floating"
+        ></dx-select-box>
+      </div>
+    </dxi-item>
   </dxi-item>
 </dx-form>

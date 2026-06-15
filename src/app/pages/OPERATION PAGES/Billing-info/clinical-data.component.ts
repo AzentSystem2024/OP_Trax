@@ -217,6 +217,7 @@ export class ClinicalDataComponent implements OnInit {
   billableTotal: any = 0;
   selectedRowIndex: any;
   isLookupLoading: boolean=false;
+  isReRunProcessing = false;
 
   constructor(
     private service: ReportService,
@@ -946,7 +947,7 @@ export class ClinicalDataComponent implements OnInit {
   }
 
   getClinicalDataPopupData() {
-    this.isLoading = true;
+    this.popupGrid?.instance.beginCustomLoading('Loading...');
 
     const payload = {
       ClaimUID: this.selectedRowData?.ClaimUID || 0,
@@ -967,16 +968,16 @@ export class ClinicalDataComponent implements OnInit {
 
           setTimeout(() => {
             this.isRowPopupVisible = true;
-            this.isLoading = false;
+            this.popupGrid?.instance.endCustomLoading();
           }, 0);
         } else {
           this.popupGridData = [];
-          this.isLoading = false;
+         this.popupGrid?.instance.endCustomLoading();
           notify('No data found', 'warning', 3000);
         }
       },
       error: (err) => {
-        this.isLoading = false;
+        this.popupGrid?.instance.endCustomLoading();
         console.error(err);
         notify('Error loading popup data', 'error', 3000);
       },
@@ -1010,6 +1011,7 @@ export class ClinicalDataComponent implements OnInit {
   };
 
   ReRunGrouper() {
+    this.isReRunProcessing = true;
     const payload = {
       ClaimUID: this.selectedRowData?.ClaimUID || 0,
       IsReprocess: true,
@@ -1020,10 +1022,12 @@ export class ClinicalDataComponent implements OnInit {
           this.getClinicalDataPopupData();
           notify('Grouper re-run successfully', 'success', 3000);
         }
+        this.isReRunProcessing = false;
       },
       error: (err) => {
         console.error(err);
         notify('Error re-running grouper', 'error', 3000);
+        this.isReRunProcessing = false;
       },
     });
   }
