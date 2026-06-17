@@ -161,6 +161,7 @@
           dataField="ADOCApplicationID"
           caption="ADOC Application"
           [width]="150"
+          [editorOptions]="{ dropDownOptions: { width: 'auto' } }"
           [lookup]="{
             dataSource: ADOCApplicationDataSource,
             valueExpr: 'ID',

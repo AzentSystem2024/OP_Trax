@@ -1077,7 +1077,7 @@ export class ClinicalDataImportFormComponent {
       }
       const payload = {
         ...baseData,
-        IMPORT_DATA: importData.slice(
+        CLAIM_DATA: importData.slice(
           index * chunkSize,
           (index + 1) * chunkSize,
         ),
@@ -1122,7 +1122,8 @@ export class ClinicalDataImportFormComponent {
       BatchNo: batchNo,
       FileName: 'test',
       Action: 2,
-      isApplygrouper: this.isApplygrouper,
+      CLAIM_DATA: [],
+      IsApplyGrouper: this.isApplygrouper,
     };
     this.operationservice
       .Insert_Clinical_Data_Excel_Import(finalData)
