@@ -91,6 +91,7 @@
         [showRowLines]="true"
         [showColumnLines]="false"
         (onEditorPreparing)="onEditorPreparingADOC($event)"
+        (onInitNewRow)="onInitNewRowADOC($event)"
         height="350"
       >
         <dxo-scrolling mode="virtual"></dxo-scrolling>
@@ -155,6 +156,22 @@
           caption="ICD Code"
           dataType="string"
         ></dxi-column>
+        <!-- ADOC Application -->
+        <dxi-column
+          dataField="ADOCApplicationID"
+          caption="ADOC Application"
+          [width]="150"
+          [lookup]="{
+            dataSource: ADOCApplicationDataSource,
+            valueExpr: 'ID',
+            displayExpr: 'DESCRIPTION',
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="ADOC Application is required"
+          ></dxi-validation-rule>
+        </dxi-column>
       </dx-data-grid>
     </div>
 

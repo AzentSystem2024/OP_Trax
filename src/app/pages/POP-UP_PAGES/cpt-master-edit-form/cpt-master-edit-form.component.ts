@@ -62,6 +62,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   ADOCClassDataSource: any[] = [];
   ADOCgroupDataSource: any[] = [];
   allADOCClassDataSource: any;
+  ADOCApplicationDataSource: any[] = [];
 
   selectedTabIndex = 0;
   dropdownsLoaded = false;
@@ -73,12 +74,17 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
   getUpdateCptMasterData = () => ({
     ...this.newCptMasterData,
-    CPTADOCMappings: (this.newCptMasterData.CPTADOCMappings || []).filter(
-      (x: any) =>
-        x.SpecialityID != null &&
-        x.ADOCClassID != null &&
-        x.ADOCCategoryID != null,
-    ),
+    CPTADOCMappings: (this.newCptMasterData.CPTADOCMappings || [])
+      .filter(
+        (x: any) =>
+          x.SpecialityID != null &&
+          x.ADOCClassID != null &&
+          x.ADOCCategoryID != null,
+      )
+      .map((x: any) => {
+        const { __KEY__, ...rest } = x;
+        return rest;
+      }),
   });
 
   async ngOnInit() {
@@ -89,6 +95,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         this.get_ADOC_GROUP_Dropdown(),
         this.getSpecialityDropdown(),
         this.get_local_storage_data(),
+        this.get_ADOC_Application_Dropdown(),
       ]);
 
       this.dropdownsLoaded = true;
@@ -118,20 +125,21 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
     const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
       (row: any) =>
-        row.SpecialityID == null &&
-        row.ICDCode == null &&
-        row.ADOCClassID == null &&
-        row.ADOCCategoryID == null,
+        (row.SpecialityID == null || row.SpecialityID === '') &&
+        (row.ADOCClassID == null || row.ADOCClassID === '') &&
+        (row.ADOCCategoryID == null || row.ADOCCategoryID === '') &&
+        (row.ICDCode == null || row.ICDCode === ''),
     );
 
-    if (!hasEmptyRow) {
-      this.newCptMasterData.CPTADOCMappings.push({
-        SpecialityID: null,
-        ICDCode: null,
-        ADOCClassID: null,
-        ADOCCategoryID: null,
-      });
-    }
+    // if (!hasEmptyRow) {
+    //   this.newCptMasterData.CPTADOCMappings.push({
+    //     SpecialityID: null,
+    //     ICDCode: null,
+    //     ADOCClassID: null,
+    //     ADOCCategoryID: null,
+    //     ADOCApplicationID: 0,
+    //   });
+    // }
 
     this.newCptMasterData.CPTADOCMappings = [
       ...this.newCptMasterData.CPTADOCMappings,
@@ -179,6 +187,14 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
       this.allADOCClassDataSource = response;
       this.ADOCClassDataSource = response;
     }
+  }
+
+  async get_ADOC_Application_Dropdown(): Promise<void> {
+    const response: any = await firstValueFrom(
+      this.dataService.Get_GropDown('ADOC_APPLICATION'),
+    );
+
+    this.ADOCApplicationDataSource = response || [];
   }
 
   onEditorPreparingADOC(e: any) {
@@ -259,9 +275,10 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         setTimeout(() => {
           const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
             (x: any) =>
-              x.SpecialityID == null &&
-              x.ADOCClassID == null &&
-              x.ADOCCategoryID == null,
+              (x.SpecialityID == null || x.SpecialityID === '') &&
+              (x.ADOCClassID == null || x.ADOCClassID === '') &&
+              (x.ADOCCategoryID == null || x.ADOCCategoryID === '') &&
+              (x.ICDCode == null || x.ICDCode === ''),
           );
 
           if (!hasEmptyRow) {
@@ -270,6 +287,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
               ICDCode: '',
               ADOCClassID: null,
               ADOCCategoryID: null,
+              ADOCApplicationID: 0,
             });
 
             this.newCptMasterData.CPTADOCMappings = [
@@ -286,6 +304,14 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         }, 50);
       };
     }
+  }
+
+  onInitNewRowADOC(e: any) {
+    e.data.SpecialityID = null;
+    e.data.ICDCode = '';
+    e.data.ADOCClassID = null;
+    e.data.ADOCCategoryID = null;
+    e.data.ADOCApplicationID = 0;
   }
 
   get_local_storage_data() {

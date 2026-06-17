@@ -53,6 +53,8 @@ export class CptMasterNewFormComponent implements OnInit {
   selectedTabIndex = 0;
   dropdownsLoaded = false;
 
+  ADOCApplicationDataSource: any[] = [];
+
   constructor(
     private masterService: MasterReportService,
     private dataService: DataService,
@@ -60,12 +62,17 @@ export class CptMasterNewFormComponent implements OnInit {
 
   getNewCptMasterData = () => ({
     ...this.newCptMasterData,
-    CPTADOCMappings: (this.newCptMasterData.CPTADOCMappings || []).filter(
-      (x: any) =>
-        x.SpecialityID != null &&
-        x.ADOCClassID != null &&
-        x.ADOCCategoryID != null,
-    ),
+    CPTADOCMappings: (this.newCptMasterData.CPTADOCMappings || [])
+      .filter(
+        (x: any) =>
+          x.SpecialityID != null &&
+          x.ADOCClassID != null &&
+          x.ADOCCategoryID != null,
+      )
+      .map((x: any) => {
+        const { __KEY__, ...rest } = x;
+        return rest;
+      }),
   });
 
   async ngOnInit(): Promise<void> {
@@ -75,6 +82,7 @@ export class CptMasterNewFormComponent implements OnInit {
         this.getSpecialityDropdown(),
         this.get_ADOC_CLASS_Dropdown(),
         this.get_ADOC_GROUP_Dropdown(),
+        this.get_ADOC_Application_Dropdown(),
       ]);
 
       if (!this.newCptMasterData.CPTADOCMappings.length) {
@@ -84,6 +92,7 @@ export class CptMasterNewFormComponent implements OnInit {
             ICDCode: '',
             ADOCClassID: null,
             ADOCCategoryID: null,
+            ADOCApplicationID: 0,
           },
         ];
       }
@@ -123,6 +132,14 @@ export class CptMasterNewFormComponent implements OnInit {
 
     this.allADOCClassDataSource = response || [];
     this.ADOCClassDataSource = [...this.allADOCClassDataSource];
+  }
+
+  async get_ADOC_Application_Dropdown(): Promise<void> {
+    const response: any = await firstValueFrom(
+      this.dataService.Get_GropDown('ADOC_APPLICATION'),
+    );
+
+    this.ADOCApplicationDataSource = response || [];
   }
 
   onADOCGroupChanged(e: any) {
@@ -247,9 +264,10 @@ export class CptMasterNewFormComponent implements OnInit {
         setTimeout(() => {
           const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
             (x: any) =>
-              x.SpecialityID == null &&
-              x.ADOCClassID == null &&
-              x.ADOCCategoryID == null,
+              (x.SpecialityID == null || x.SpecialityID === '') &&
+              (x.ADOCClassID == null || x.ADOCClassID === '') &&
+              (x.ADOCCategoryID == null || x.ADOCCategoryID === '') &&
+              (x.ICDCode == null || x.ICDCode === '')
           );
 
           if (!hasEmptyRow) {
@@ -258,6 +276,7 @@ export class CptMasterNewFormComponent implements OnInit {
               ICDCode: '',
               ADOCClassID: null,
               ADOCCategoryID: null,
+              ADOCApplicationID: 0,
             });
 
             this.newCptMasterData.CPTADOCMappings = [
@@ -289,6 +308,14 @@ export class CptMasterNewFormComponent implements OnInit {
     if (isEmptyRow) {
       e.cancel = true;
     }
+  }
+
+  onInitNewRowADOC(e: any) {
+    e.data.SpecialityID = null;
+    e.data.ICDCode = '';
+    e.data.ADOCClassID = null;
+    e.data.ADOCCategoryID = null;
+    e.data.ADOCApplicationID = 0;
   }
 
   clearForm() {

@@ -169,6 +169,8 @@ export class CPTMasterComponent {
     const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings } =
       this.CptEditFormComponent.getUpdateCptMasterData();
 
+    console.log(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings);
+
     this.masterService
       .update_CptMaster_data(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings)
       .subscribe((response: any) => {
