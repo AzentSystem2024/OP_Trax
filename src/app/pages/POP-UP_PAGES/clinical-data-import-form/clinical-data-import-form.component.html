@@ -1,1 +1,260 @@
-<dx-form class="plain-styled-form">  <dxi-item itemType="group">    <dxo-col-count-by-screen      [xs]="1"      [sm]="1"      [md]="1"      [lg]="1"    ></dxo-col-count-by-screen>    <dxi-item>      <dx-tag-box        label="Facility"        [items]="facilityData"        valueExpr="FacilityLicense"        displayExpr="FacilityLicense"        labelMode="floating"        [searchEnabled]="true"        [dropDownOptions]="{ height: 250 }"        [(value)]="selectedFacilityIDs"        [showSelectionControls]="true"        [showClearButton]="true"        selectAllMode="allPages"        [multiline]="false"        applyValueMode="instantly"      >        <dx-validator>          <dxi-validation-rule            type="required"            message="Facility required before import"          ></dxi-validation-rule>        </dx-validator>      </dx-tag-box>    </dxi-item>    <dxi-item>      <dx-radio-group        [items]="['Import Excel File']"        [(value)]="selectedOption"        layout="vertical"      >      </dx-radio-group>    </dxi-item>    <!-- File Browse Button - visible only if 'Import XML File' is selected -->    <dxi-item>      <ng-template dxTemplate="content">        <div class="file-upload-container">          <!-- Hidden File Input -->          <input            #fileInput            style="display: none"            id="xml-file"            type="file"            (change)="onFileSelected($event, fileInput)"            [attr.accept]="getAcceptFileTypes()"            multiple          />        </div>      </ng-template>    </dxi-item>    <!-- Bottom Right Button Row -->    <dxi-item itemType="simple">      <div class="button-row">        <dx-button          text="Cancel"          type="normal"          stylingMode="outlined"          (onClick)="close()"        ></dx-button>        <dx-button          text="Import"          type="default"          [disabled]="selectedFacilityIDs.length === 0"          (onClick)="onImport()"        ></dx-button>      </div>    </dxi-item>  </dxi-item></dx-form><!-- import claim xml --><dx-popup  class="formPopupClass"  [(visible)]="isResponsePopupOpened"  title="Import Claim XML Files"  height="100vh"  width="75vw">  <div *dxTemplate="let data of 'content'" style="height: 100%">    <dx-data-grid      [dataSource]="importResults"      [showBorders]="true"      [columnAutoWidth]="true"      [height]="'90%'"      (onExporting)="onExporting($event)"      (onCellPrepared)="onStatusCellPrepared($event)"      [allowColumnResizing]="true"      [allowColumnReordering]="true"      [rowAlternationEnabled]="true"      rowAlternationInterval="2"    >      <dxo-export        [enabled]="true"        [allowExportSelectedData]="false"        [formats]="['xlsx']"      >      </dxo-export>      <dxo-toolbar>        <dxi-item location="before">          <dx-tag-box            label="Facility"            [items]="facilityData"            valueExpr="FacilityLicense"            displayExpr="FacilityName"            labelMode="floating"            [dropDownOptions]="{ height: 250 }"            width="600"            [(value)]="selectedFacilityIDs"            [multiline]="false"            [readOnly]="true"          >          </dx-tag-box>        </dxi-item>        <dxi-item          name="exportButton"          location="after"          cssClass="custom-export-button"        ></dxi-item>      </dxo-toolbar>      <dxo-pager        [visible]="true"        [allowedPageSizes]="allowedPageSizes"        [displayMode]="displayMode"        [showPageSizeSelector]="showPageSizeSelector"        [showInfo]="showInfo"        [showNavigationButtons]="showNavButtons"      >      </dxo-pager>      <dxo-scrolling mode="virtual"></dxo-scrolling>      <dxo-load-panel [enabled]="true"> </dxo-load-panel>      <dxo-header-filter [visible]="true">        <dxo-search [enabled]="true"></dxo-search>      </dxo-header-filter>      <dxo-filter-row [visible]="true"></dxo-filter-row>      <!-- Define columns explicitly -->      <dxi-column dataField="FacilityID" caption="Facility ID"></dxi-column>      <dxi-column dataField="ReceiverID" caption="Receiver ID"></dxi-column>      <dxi-column        dataField="TransactionDate"        caption="Transaction Date"      ></dxi-column>      <dxi-column dataField="RecordCount" caption="Record Count"></dxi-column>      <dxi-column dataField="XMLFileName" caption="File Name"></dxi-column>      <dxi-column dataField="Status" caption="Status" width="auto"></dxi-column>      <dxi-column dataField="FailedReason" caption="Failed Reason"></dxi-column>    </dx-data-grid>    <div style="padding-top: 10px">      <dx-progress-bar        id="progress-bar-status"        width="100%"        [min]="0"        [max]="totalFiles"        [value]="progressValue"        [statusFormat]="format"        style="margin: 10px auto"      >      </dx-progress-bar>    </div>  </div></dx-popup><!-- import claim excel file --><dx-popup  class="formPopupClass"  [(visible)]="isExcelpopupOpened"  title="Import Claim Excel Files"  height="100vh"  width="90vw"  (onHidden)="CloseExcelForm()">  <div    *dxTemplate="let data of 'content'"    style="height: 100%; display: flex; flex-direction: column"  >    <dx-data-grid      [dataSource]="combinedDataSource"      [columns]="combinedColumnMeta"      [showBorders]="true"      [columnAutoWidth]="true"      [height]="'79vh'"      [allowColumnResizing]="true"      [allowColumnReordering]="true"      [rowAlternationEnabled]="true"      (onCellPrepared)="onCellPrepared($event)"    >      <dxo-paging [pageSize]="10"></dxo-paging>      <dxo-pager        [visible]="true"        [allowedPageSizes]="allowedPageSizes"        [showPageSizeSelector]="true"        [showInfo]="true"        [showNavigationButtons]="true"      >      </dxo-pager>      <dxo-scrolling mode="virtual"></dxo-scrolling>      <dxo-header-filter [visible]="true">        <dxo-search [enabled]="true"></dxo-search>      </dxo-header-filter>      <dxo-filter-row [visible]="true"></dxo-filter-row>    </dx-data-grid>    <!-- Action buttons below the grid -->    <div style="text-align: right; padding: 15px 0 10px">      <dx-button        text="Cancel"        type="normal"        stylingMode="outlined"        class="mx-2"        (onClick)="CloseExcelForm()"      ></dx-button>      <dx-button        text="Save"        type="default"        (onClick)="onSaveClick()"      ></dx-button>    </div>  </div></dx-popup><dx-load-panel  #loadPanel  shadingColor="rgba(0,0,0,0.4)"  [position]="{ of: '#dataGrid' }"  [(visible)]="isLoading"  [showIndicator]="true"  [showPane]="true"  [shading]="true"  message="Saving..."></dx-load-panel><dx-load-panel  #loadPanel  shadingColor="rgba(0,0,0,0.4)"  [position]="{ of: '#dataGrid' }"  [(visible)]="isExcelLoading"  [showIndicator]="true"  [showPane]="true"  [shading]="true"  message="Loading..."></dx-load-panel>
+<dx-form class="plain-styled-form">
+  <dxi-item itemType="group">
+    <dxo-col-count-by-screen
+      [xs]="1"
+      [sm]="1"
+      [md]="1"
+      [lg]="1"
+    ></dxo-col-count-by-screen>
+    <dxi-item>
+      <dx-tag-box
+        label="Facility"
+        [items]="facilityData"
+        valueExpr="FacilityLicense"
+        displayExpr="FacilityLicense"
+        labelMode="floating"
+        [searchEnabled]="true"
+        [dropDownOptions]="{ height: 250 }"
+        [(value)]="selectedFacilityIDs"
+        [showSelectionControls]="true"
+        [showClearButton]="true"
+        selectAllMode="allPages"
+        [multiline]="false"
+        applyValueMode="instantly"
+      >
+        <dx-validator>
+          <dxi-validation-rule
+            type="required"
+            message="Facility required before import"
+          ></dxi-validation-rule>
+        </dx-validator>
+      </dx-tag-box>
+    </dxi-item>
+    
+    <dxi-item>
+      <dx-radio-group
+        [items]="['Import XML File', 'Import Excel File']"
+        [(value)]="selectedOption"
+        layout="vertical"
+      >
+      </dx-radio-group>
+    </dxi-item>
+
+    <dxi-item>
+      <dx-check-box
+        [(value)]="isApplygrouper"
+        text="Apply Grouper"
+      ></dx-check-box>
+    </dxi-item>
+
+    <!-- File Browse Button - visible only if 'Import XML File' is selected -->
+    <dxi-item>
+      <ng-template dxTemplate="content">
+        <div class="file-upload-container">
+          <!-- Hidden File Input -->
+          <input
+            #fileInput
+            style="display: none"
+            id="xml-file"
+            type="file"
+            (change)="onFileSelected($event, fileInput)"
+            [attr.accept]="getAcceptFileTypes()"
+            multiple
+          />
+        </div>
+      </ng-template>
+    </dxi-item>
+
+    <!-- Bottom Right Button Row -->
+    <dxi-item itemType="simple">
+      <div class="button-row">
+        <dx-button
+          text="Cancel"
+          type="normal"
+          stylingMode="outlined"
+          (onClick)="close()"
+        ></dx-button>
+        <dx-button
+          text="Import"
+          type="default"
+          [disabled]="selectedFacilityIDs.length === 0"
+          (onClick)="onImport()"
+        ></dx-button>
+      </div>
+    </dxi-item>
+  </dxi-item>
+</dx-form>
+
+<!-- import claim xml -->
+<dx-popup
+  class="formPopupClass"
+  [(visible)]="isResponsePopupOpened"
+  title="Import Claim XML Files"
+  height="100vh"
+  width="75vw"
+  [showCloseButton]="!isExcelLoading"
+  [closeOnOutsideClick]="!isExcelLoading"
+  (onHiding)="onXmlPopupHiding($event)"
+  (onHidden)="onXmlImportClose()"
+>
+  <div *dxTemplate="let data of 'content'" style="height: 100%">
+    <dx-data-grid
+      [dataSource]="importResults"
+      [showBorders]="true"
+      [columnAutoWidth]="true"
+      [height]="'90%'"
+      (onExporting)="onExporting($event)"
+      (onCellPrepared)="onStatusCellPrepared($event)"
+      [allowColumnResizing]="true"
+      [allowColumnReordering]="true"
+      [rowAlternationEnabled]="true"
+      rowAlternationInterval="2"
+    >
+      <dxo-export
+        [enabled]="true"
+        [allowExportSelectedData]="false"
+        [formats]="['xlsx']"
+      >
+      </dxo-export>
+      <dxo-toolbar>
+        <dxi-item location="before">
+          <dx-tag-box
+            label="Facility"
+            [items]="facilityData"
+            valueExpr="FacilityLicense"
+            displayExpr="FacilityName"
+            labelMode="floating"
+            [dropDownOptions]="{ height: 250 }"
+            width="600"
+            [(value)]="selectedFacilityIDs"
+            [multiline]="false"
+            [readOnly]="true"
+          >
+          </dx-tag-box>
+        </dxi-item>
+        <dxi-item
+          name="exportButton"
+          location="after"
+          cssClass="custom-export-button"
+        ></dxi-item>
+      </dxo-toolbar>
+      <dxo-pager
+        [visible]="true"
+        [allowedPageSizes]="allowedPageSizes"
+        [displayMode]="displayMode"
+        [showPageSizeSelector]="showPageSizeSelector"
+        [showInfo]="showInfo"
+        [showNavigationButtons]="showNavButtons"
+      >
+      </dxo-pager>
+      <dxo-scrolling mode="virtual"></dxo-scrolling>
+      <dxo-load-panel [enabled]="true"> </dxo-load-panel>
+      <dxo-header-filter [visible]="true">
+        <dxo-search [enabled]="true"></dxo-search>
+      </dxo-header-filter>
+      <dxo-filter-row [visible]="true"></dxo-filter-row>
+      <!-- Define columns explicitly -->
+      <dxi-column dataField="FacilityID" caption="Facility ID"></dxi-column>
+      <dxi-column dataField="ReceiverID" caption="Receiver ID"></dxi-column>
+      <dxi-column
+        dataField="TransactionDate"
+        caption="Transaction Date"
+      ></dxi-column>
+      <dxi-column dataField="RecordCount" caption="Record Count"></dxi-column>
+      <dxi-column dataField="XMLFileName" caption="File Name"></dxi-column>
+      <dxi-column dataField="Status" caption="Status" width="auto"></dxi-column>
+      <dxi-column dataField="FailedReason" caption="Failed Reason"></dxi-column>
+    </dx-data-grid>
+    <div style="padding-top: 10px">
+      <dx-progress-bar
+        id="progress-bar-status"
+        width="100%"
+        [min]="0"
+        [max]="totalFiles"
+        [value]="progressValue"
+        [statusFormat]="format"
+        style="margin: 10px auto"
+      >
+      </dx-progress-bar>
+    </div>
+  </div>
+</dx-popup>
+
+<!-- import claim excel file -->
+<dx-popup
+  class="formPopupClass"
+  [(visible)]="isExcelpopupOpened"
+  title="Import Claim Excel Files"
+  height="100vh"
+  width="90vw"
+  (onHidden)="CloseExcelForm()"
+>
+  <div
+    *dxTemplate="let data of 'content'"
+    style="height: 100%; display: flex; flex-direction: column"
+  >
+    <dx-data-grid
+      [dataSource]="combinedDataSource"
+      [columns]="combinedColumnMeta"
+      [showBorders]="true"
+      [columnAutoWidth]="true"
+      [height]="'79vh'"
+      [allowColumnResizing]="true"
+      [allowColumnReordering]="true"
+      [rowAlternationEnabled]="true"
+      (onCellPrepared)="onCellPrepared($event)"
+    >
+      <dxo-paging [pageSize]="10"></dxo-paging>
+      <dxo-pager
+        [visible]="true"
+        [allowedPageSizes]="allowedPageSizes"
+        [showPageSizeSelector]="true"
+        [showInfo]="true"
+        [showNavigationButtons]="true"
+      >
+      </dxo-pager>
+      <dxo-scrolling mode="virtual"></dxo-scrolling>
+      <dxo-header-filter [visible]="true">
+        <dxo-search [enabled]="true"></dxo-search>
+      </dxo-header-filter>
+      <dxo-filter-row [visible]="true"></dxo-filter-row>
+    </dx-data-grid>
+    <!-- Action buttons below the grid -->
+    <div style="text-align: right; padding: 15px 0 10px">
+      <dx-button
+        text="Cancel"
+        type="normal"
+        stylingMode="outlined"
+        class="mx-2"
+        (onClick)="CloseExcelForm()"
+      ></dx-button>
+      <dx-button
+        text="Save"
+        type="default"
+        (onClick)="onSaveClick()"
+      ></dx-button>
+    </div>
+  </div>
+</dx-popup>
+
+<dx-load-panel
+  #loadPanel
+  shadingColor="rgba(0,0,0,0.4)"
+  [position]="{ of: '#dataGrid' }"
+  [(visible)]="isLoading"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="true"
+  message="Saving..."
+></dx-load-panel>
+
+<dx-load-panel
+  #loadPanel
+  shadingColor="rgba(0,0,0,0.4)"
+  [position]="{ of: '#dataGrid' }"
+  [(visible)]="isExcelLoading"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="true"
+  message="Loading..."
+></dx-load-panel>

@@ -4,7 +4,6 @@ import {
   ElementRef,
   EventEmitter,
   NgModule,
-  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -26,6 +25,7 @@ import {
   DxTabsModule,
   DxValidationGroupComponent,
   DxLoadPanelModule,
+  DxCheckBoxModule,
 } from 'devextreme-angular';
 import { FormTextboxModule, FormPhotoUploaderModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
@@ -35,17 +35,20 @@ import { OperationReportService } from '../../OPERATION PAGES/operation-report.s
 import { ReportService } from 'src/app/services/Report-data.service';
 import { firstValueFrom } from 'rxjs';
 import { InactivityService } from 'src/app/services/inactivity.service';
+
 @Component({
   selector: 'app-clinical-data-import-form',
   templateUrl: './clinical-data-import-form.component.html',
   styleUrls: ['./clinical-data-import-form.component.scss'],
 })
+
 export class ClinicalDataImportFormComponent {
   @Output() closeForm = new EventEmitter();
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
-  @ViewChild('validationGroup', { static: true })
   validationGroup!: DxValidationGroupComponent;
+
   selectedOption: string = 'Import Excel File';
+  isApplygrouper: boolean = false;
   selectedXmlFile: any | null = null;
   importResults: any[] = [];
   isResponsePopupOpened: boolean = false;
@@ -75,7 +78,7 @@ export class ClinicalDataImportFormComponent {
   importedFileName: any;
   cptCodeList: any;
   clinicianLicenseList: any;
-  
+
   combinedDataSource: any[] = [];
 
   combinedColumnMeta: any = [
@@ -525,6 +528,7 @@ export class ClinicalDataImportFormComponent {
   };
 
   newclinicianMajor = this.clinicianMajor;
+
   constructor(
     private service: MasterReportService,
     private operationservice: OperationReportService,
@@ -545,6 +549,7 @@ export class ClinicalDataImportFormComponent {
       console.error('Error loading initial data:', error);
     }
   }
+
   // ================== cpt code list ==================
   async loadcptCodeList(): Promise<void> {
     try {
@@ -556,6 +561,7 @@ export class ClinicalDataImportFormComponent {
       console.error('Error fetching cpt code list:', error);
     }
   }
+
   // ================== cpt clicician list ==================
   async loadclinicianLicenseList(): Promise<void> {
     try {
@@ -571,6 +577,7 @@ export class ClinicalDataImportFormComponent {
   displayFacility(item: any): string {
     return item ? `${item.FacilityLicense} - ${item.FacilityName}` : '';
   }
+
   getUserFacilityData() {
     this.service
       .Get_User_Facility_List_Data(this.userID)
@@ -587,7 +594,6 @@ export class ClinicalDataImportFormComponent {
     ...this.newclinicianMajor,
   });
 
-
   reset_newclinicianMajorFormData() {
     this.newclinicianMajor.MajorValue = '';
     this.newclinicianMajor.DescriptionValue = '';
@@ -602,6 +608,8 @@ export class ClinicalDataImportFormComponent {
     this.hasError = false;
     this.importResults = [];
     this.isExcelLoading = true;
+    console.log(this.selectedFacilityIDs, 'selectedFacility');
+
     const files = event.target.files || [];
     this.totalFiles = files.length;
     this.uploadedCount = 0;
@@ -612,8 +620,59 @@ export class ClinicalDataImportFormComponent {
       this.isExcelLoading = false;
       return;
     }
+
+    this.selectedXmlFile = [];
+
+    // Helper to process one XML file sequentially
+    const processXmlFile = (file: File): Promise<void> => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64String = (reader.result as string).split(',')[1];
+          const filePayload: any = {
+            facilityID: this.selectedFacilityIDs.join(','),
+            fileName: file.name,
+            fileData: base64String,
+            userID: this.userID || 1,
+            IsApplyGrouper: this.isApplygrouper,
+          };
+
+          this.selectedXmlFile.push(filePayload);
+          this.isResponsePopupOpened = true;
+
+          this.service.ImportClinicalData(filePayload).subscribe({
+            next: (res: any) => {
+              this.uploadedCount++;
+              if (res.message === 'Success') this.successCount++;
+              else if (res.message === 'File already imported.')
+                this.alreadyImportedCount++;
+              else this.failCount++;
+
+              if (Array.isArray(res.data)) {
+                this.importResults.push(...res.data);
+                console.log(this.importResults, 'import response');
+              }
+            },
+            error: (err: any) => {
+              console.error('Import error:', err);
+              this.failCount++;
+            },
+            complete: () => resolve(),
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+
     for (const file of files) {
       const fileName = file.name.toLowerCase();
+
+      // XML import (sequential)
+      if (fileName.endsWith('.xml')) {
+        await processXmlFile(file);
+        continue;
+      }
+
       // File Type Validation
       if (
         !fileName.endsWith('.xlsx') &&
@@ -622,7 +681,19 @@ export class ClinicalDataImportFormComponent {
       ) {
         notify(
           {
-            message: `Invalid file type: ${file.name}. Supported types: XLS, XLSX, CSV`,
+            message: `Invalid file type: ${file.name}. Supported types: XML, XLS, XLSX, CSV`,
+            position: { at: 'top right', my: 'top right' },
+          },
+          'error',
+        );
+        continue;
+      }
+
+      // File Size Validation (50MB limit)
+      if (file.size > 50 * 1024 * 1024) {
+        notify(
+          {
+            message: `File size exceeds 50MB limit: ${file.name}`,
             position: { at: 'top right', my: 'top right' },
           },
           'error',
@@ -690,6 +761,21 @@ export class ClinicalDataImportFormComponent {
               },
             },
             'warning',
+          );
+          continue;
+        }
+
+        // Row Count Validation
+        if (rows.length > 50000) {
+          notify(
+            {
+              message: 'Selected file contains more than 50,000 rows.',
+              position: {
+                at: 'top right',
+                my: 'top right',
+              },
+            },
+            'error',
           );
           continue;
         }
@@ -772,7 +858,6 @@ export class ClinicalDataImportFormComponent {
     this.isExcelLoading = false;
     fileInput.value = '';
   }
-
 
   formatNumber(value: any): string {
     if (value === null || value === undefined || value === '') return '';
@@ -983,6 +1068,7 @@ export class ClinicalDataImportFormComponent {
       FileName: this.importedFileName,
       BatchNo: batchNo,
       Action: 1,
+      IsApplyGrouper: this.isApplygrouper,
     };
     const sendChunk = (index: number) => {
       if (index >= maxChunks) {
@@ -1036,6 +1122,7 @@ export class ClinicalDataImportFormComponent {
       BatchNo: batchNo,
       FileName: 'test',
       Action: 2,
+      isApplygrouper: this.isApplygrouper,
     };
     this.operationservice
       .Insert_Clinical_Data_Excel_Import(finalData)
@@ -1138,13 +1225,32 @@ export class ClinicalDataImportFormComponent {
     this.closeForm.emit();
   }
 
+  onXmlPopupHiding(e: any) {
+    if (this.isExcelLoading) {
+      e.cancel = true;
+      notify(
+        {
+          message: 'Please wait until the file upload process is complete.',
+          position: { at: 'top right', my: 'top right' },
+        },
+        'warning',
+      );
+    }
+  }
+
+  onXmlImportClose() {
+    this.isResponsePopupOpened = false;
+    this.importResults = [];
+    this.closeForm.emit();
+  }
+
   CloseExcelForm() {
     this.clearHighlightedHeaders();
     this.isExcelpopupOpened = false;
     this.hasError = false;
     this.closeForm.emit();
   }
-  
+
   clearHighlightedHeaders() {
     this.highlightedHeaderIds.forEach((headerId) => {
       const headerCell = document.getElementById(headerId);
@@ -1291,7 +1397,7 @@ export class ClinicalDataImportFormComponent {
       tooltip.style.display = 'none'; // Hide tooltip
     });
   }
-  
+
   //export
   onExporting(event: any) {
     const fileName = 'Imported_xml_status';
@@ -1320,6 +1426,7 @@ export class ClinicalDataImportFormComponent {
     DxTabPanelModule,
     DxTabsModule,
     DxLoadPanelModule,
+    DxCheckBoxModule,
   ],
   declarations: [ClinicalDataImportFormComponent],
   exports: [ClinicalDataImportFormComponent],
