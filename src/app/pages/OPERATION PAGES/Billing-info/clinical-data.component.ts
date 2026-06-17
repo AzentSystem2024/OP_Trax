@@ -323,7 +323,7 @@ export class ClinicalDataComponent implements OnInit {
     const today = new Date();
     this.selectedYear = today.getFullYear();
     this.toDate = today;
-    this.fromDate = new Date(today.getFullYear(), 0, 1);
+    this.fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
     this.selectedSearchOn = 'EncounterEndDate';
 
     const defaultFacility = this.facilityListDataSource.find(
