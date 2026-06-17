@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, NgModule, ViewChild } from '@angular/core';
 import {
   DxDataGridModule,
   DxButtonModule,
@@ -123,14 +117,26 @@ export class CPTMasterComponent {
       return;
     }
 
-    const { CPTTypeID, CPTCode, CPTName,CPTPrice,PriceEffectFrom,CPTWeightage,WeightageEffectFrom,CPTADOCMappings} =
-      this.CptNewFormComponent.getNewCptMasterData();
+    const {
+      CPTTypeID,
+      CPTCode,
+      CPTName,
+      CPTPrice,
+      PriceEffectFrom,
+      CPTWeightage,
+      WeightageEffectFrom,
+      CPTADOCMappings,
+    } = this.CptNewFormComponent.getNewCptMasterData();
 
     this.masterService
       .Insert_CptMaster_Data(
         CPTTypeID,
         CPTCode,
-        CPTName,CPTPrice,PriceEffectFrom,CPTWeightage,WeightageEffectFrom,
+        CPTName,
+        CPTPrice,
+        PriceEffectFrom,
+        CPTWeightage,
+        WeightageEffectFrom,
         CPTADOCMappings,
       )
       .subscribe((response: any) => {
@@ -160,17 +166,11 @@ export class CPTMasterComponent {
 
   //======= Update data ==========
   onClickUpdateNewCptType = () => {
-    const { ID, CPTTypeID, CPTCode, CPTName,CPTADOCMappings } =
+    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings } =
       this.CptEditFormComponent.getUpdateCptMasterData();
 
     this.masterService
-      .update_CptMaster_data(
-        ID,
-        CPTTypeID,
-        CPTCode,
-        CPTName,
-        CPTADOCMappings
-      )
+      .update_CptMaster_data(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings)
       .subscribe((response: any) => {
         if (response) {
           this.dataGrid.instance.refresh();

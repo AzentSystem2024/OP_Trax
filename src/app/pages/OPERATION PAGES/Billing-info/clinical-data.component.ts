@@ -216,7 +216,7 @@ export class ClinicalDataComponent implements OnInit {
 
   billableTotal: any = 0;
   selectedRowIndex: any;
-  isLookupLoading: boolean=false;
+  isLookupLoading: boolean = false;
   isReRunProcessing = false;
 
   constructor(
@@ -670,14 +670,6 @@ export class ClinicalDataComponent implements OnInit {
   };
 
   openQtyUpdateImportPopup = () => {
-    // const input = document.createElement('input');
-    // input.type = 'file';
-    // input.accept = '.xlsx,.xls';
-
-    // input.addEventListener('change', (event: any) => {
-    //   this.onExcelFileSelected(event);
-    // });
-
     // input.click();
     this.excelFileInput.nativeElement.value = '';
     this.excelFileInput.nativeElement.click();
@@ -688,7 +680,7 @@ export class ClinicalDataComponent implements OnInit {
     if (!file) return;
 
     this.FileName = file.name;
-    this.isExcelLoading = true; // 🔄 start loader
+    this.isExcelLoading = true; // start loader
 
     const reader = new FileReader();
 
@@ -704,13 +696,13 @@ export class ClinicalDataComponent implements OnInit {
           defval: '',
         });
 
-        // ❌ Empty file check
+        //  Empty file check
         if (!jsonData.length) {
           notify('Excel file is empty', 'warning', 3000);
           return;
         }
 
-        // ✅ Expected template columns
+        // Expected template columns
         const expectedColumns = [
           'FacilityID',
           'ClaimNumber',
@@ -719,20 +711,20 @@ export class ClinicalDataComponent implements OnInit {
           'QuantityWeightage',
         ];
 
-        // ✅ Columns from uploaded Excel
+        // Columns from uploaded Excel
         const actualColumns = Object.keys(jsonData[0]);
 
-        // ❌ Missing columns
+        //  Missing columns
         const missingColumns = expectedColumns.filter(
           (col) => !actualColumns.includes(col),
         );
 
-        // ❌ Extra columns (optional – usually better to block)
+        //  Extra columns (optional – usually better to block)
         const extraColumns = actualColumns.filter(
           (col) => !expectedColumns.includes(col),
         );
 
-        // ❌ Validation failed
+        //  Validation failed
         if (missingColumns.length || extraColumns.length) {
           let message = 'Invalid Excel Template';
 
@@ -748,7 +740,7 @@ export class ClinicalDataComponent implements OnInit {
           return;
         }
 
-        // ❌ Column count mismatch (extra safety)
+        // Column count mismatch (extra safety)
         if (actualColumns.length !== expectedColumns.length) {
           notify(
             `Invalid column count. Expected ${expectedColumns.length} but found ${actualColumns.length}`,
@@ -758,14 +750,14 @@ export class ClinicalDataComponent implements OnInit {
           return;
         }
 
-        // ✅ Passed validation
+        // Passed validation
         this.QtyUpdateGridData = jsonData;
         this.isQtyWeightUpdatePopupOpened = true;
       } catch (err) {
         console.error(err);
         notify('Failed to read Excel file', 'error', 3000);
       } finally {
-        this.isExcelLoading = false; // ✅ stop loader ALWAYS
+        this.isExcelLoading = false; // stop loader ALWAYS
       }
     };
 
@@ -788,7 +780,7 @@ export class ClinicalDataComponent implements OnInit {
 
     let gridData = [...this.QtyUpdateGridData];
 
-    // 🔥 Generate unique BatchNo only ONCE
+    // Generate unique BatchNo only ONCE
     const batchNo = (() => {
       const now = new Date();
       return 'Q' + now.toISOString().replace(/[-:.]/g, '').slice(0, 14);
@@ -916,7 +908,7 @@ export class ClinicalDataComponent implements OnInit {
 
   CloseForm() {
     this.isAddFormPopupOpened = false;
-    this.dataGrid.instance.refresh();
+    // this.dataGrid.instance.refresh();
   }
 
   //===== Export data ============
@@ -972,7 +964,7 @@ export class ClinicalDataComponent implements OnInit {
           }, 0);
         } else {
           this.popupGridData = [];
-         this.popupGrid?.instance.endCustomLoading();
+          this.popupGrid?.instance.endCustomLoading();
           notify('No data found', 'warning', 3000);
         }
       },

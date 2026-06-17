@@ -118,6 +118,10 @@
   animation: spinClockwise 1s linear infinite;
 }
 
+::ng-deep .apply-btn-container .dx-button.dx-button-default .dx-icon {
+     color: #fbfbfb; 
+}
+
 @keyframes spinClockwise {
   from {
     transform: rotate(0deg);

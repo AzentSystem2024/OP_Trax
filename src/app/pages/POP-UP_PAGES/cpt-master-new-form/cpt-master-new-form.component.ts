@@ -1,20 +1,14 @@
 import { CommonModule } from '@angular/common';
 import {
-  ChangeDetectorRef,
   Component,
   NgModule,
-  OnInit,
-  ViewChild,
+  OnInit
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   DxBoxModule,
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDateBoxModule,
-  DxDropDownBoxComponent,
-  DxDropDownBoxModule,
+  DxButtonModule, DxDataGridModule,
+  DxDateBoxModule, DxDropDownBoxModule,
   DxFormModule,
   DxNumberBoxModule,
   DxRadioGroupModule,
@@ -22,7 +16,7 @@ import {
   DxTagBoxModule,
   DxTextAreaModule,
   DxTextBoxModule,
-  DxValidatorModule,
+  DxValidatorModule
 } from 'devextreme-angular';
 import { FormTextboxModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
