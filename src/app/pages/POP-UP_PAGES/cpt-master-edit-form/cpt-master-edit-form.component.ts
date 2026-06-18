@@ -199,18 +199,18 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
   onEditorPreparingADOC(e: any) {
     // Prevent duplicate Specialty selection
-    if (e.parentType === 'dataRow' && e.dataField === 'SpecialityID') {
-      const currentRow = e.row?.data;
+    // if (e.parentType === 'dataRow' && e.dataField === 'SpecialityID') {
+    //   const currentRow = e.row?.data;
 
-      e.editorOptions.dataSource = this.specialityDataSource.filter(
-        (speciality: any) => {
-          return !this.newCptMasterData.CPTADOCMappings.some(
-            (row: any) =>
-              row !== currentRow && row.SpecialityID === speciality.ID,
-          );
-        },
-      );
-    }
+    //   e.editorOptions.dataSource = this.specialityDataSource.filter(
+    //     (speciality: any) => {
+    //       return !this.newCptMasterData.CPTADOCMappings.some(
+    //         (row: any) =>
+    //           row !== currentRow && row.SpecialityID === speciality.ID,
+    //       );
+    //     },
+    //   );
+    // }
 
     // ADOC Class
     if (e.parentType === 'dataRow' && e.dataField === 'ADOCClassID') {
