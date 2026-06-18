@@ -608,6 +608,11 @@ export class ClinicalDataImportFormComponent {
     this.hasError = false;
     this.importResults = [];
     this.isExcelLoading = true;
+    this.inactivityService.setApiInProgress(true);
+
+    // Yield to the event loop so the loading spinner can render before heavy processing
+    await new Promise(resolve => setTimeout(resolve, 50));
+
     console.log(this.selectedFacilityIDs, 'selectedFacility');
 
     const files = event.target.files || [];
@@ -618,6 +623,7 @@ export class ClinicalDataImportFormComponent {
     this.failCount = 0;
     if (!files.length) {
       this.isExcelLoading = false;
+      this.inactivityService.setApiInProgress(false);
       return;
     }
 
@@ -856,6 +862,7 @@ export class ClinicalDataImportFormComponent {
       }
     }
     this.isExcelLoading = false;
+    this.inactivityService.setApiInProgress(false);
     fileInput.value = '';
   }
 

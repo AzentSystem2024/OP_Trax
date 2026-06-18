@@ -97,7 +97,16 @@
   (onHiding)="onXmlPopupHiding($event)"
   (onHidden)="onXmlImportClose()"
 >
-  <div *dxTemplate="let data of 'content'" style="height: 100%">
+  <div *dxTemplate="let data of 'content'" id="xml-popup-content" style="height: 100%; position: relative;">
+    <dx-load-panel
+      shadingColor="rgba(0,0,0,0.1)"
+      [position]="{ of: '#xml-popup-content' }"
+      [(visible)]="isExcelLoading"
+      [showIndicator]="true"
+      [showPane]="true"
+      [shading]="true"
+      message="Importing XML..."
+    ></dx-load-panel>
     <dx-data-grid
       [dataSource]="importResults"
       [showBorders]="true"
@@ -240,7 +249,7 @@
 <dx-load-panel
   #loadPanel
   shadingColor="rgba(0,0,0,0.4)"
-  [position]="{ of: '#dataGrid' }"
+  [position]="{ of: 'window' }"
   [(visible)]="isLoading"
   [showIndicator]="true"
   [showPane]="true"
@@ -249,9 +258,9 @@
 ></dx-load-panel>
 
 <dx-load-panel
-  #loadPanel
+  #loadPanelExcel
   shadingColor="rgba(0,0,0,0.4)"
-  [position]="{ of: '#dataGrid' }"
+  [position]="{ of: 'window' }"
   [(visible)]="isExcelLoading"
   [showIndicator]="true"
   [showPane]="true"
