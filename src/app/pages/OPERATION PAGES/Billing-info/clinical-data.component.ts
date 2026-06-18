@@ -34,15 +34,7 @@ import {
   CptMasterEditFormModule,
 } from '../../POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
-import {
-  ClinicianEditFormModule,
-  ClinicianEditFormComponent,
-} from '../../POP-UP_PAGES/clinician-edit-form/clinician-edit-form.component';
 
-import {
-  SingleClaimDetailsComponent,
-  SingleClaimDetailsModule,
-} from '../../REPORT POPUP PAGES/single-claim-details/single-claim-details.component';
 import { NotificationService } from 'src/app/services/notification.service';
 import { InactivityService } from 'src/app/services/inactivity.service';
 import { ReportEngineService } from '../../REPORT PAGES/report-engine.service';
@@ -65,11 +57,6 @@ export class ClinicalDataComponent implements OnInit {
   @ViewChild(CptMasterEditFormComponent, { static: false })
   CptEditFormComponent!: CptMasterEditFormComponent;
 
-  @ViewChild(ClinicianEditFormComponent, { static: false })
-  clinicianEditComponent!: ClinicianEditFormComponent;
-
-  @ViewChild('excelFileInput') excelFileInput!: any;
-
   @ViewChild('popupGrid', { static: false }) popupGrid: any;
 
   isAddFormPopupOpened: any = false;
@@ -79,11 +66,7 @@ export class ClinicalDataComponent implements OnInit {
   showPageSizeSelector = true;
   showInfo = true;
   showNavButtons = true;
-  facilityGroupDatasource: any;
   isFilterRowVisible: boolean = false;
-  userID: any;
-
-  isProcessDisabled = true;
 
   addButtonOptions = {
     icon: 'import',
@@ -99,79 +82,15 @@ export class ClinicalDataComponent implements OnInit {
     text: 'Process',
     type: 'default',
     stylingMode: 'contained',
-    hint: 'Import',
+    hint: 'Process Selected',
     onClick: () => this.process_selected_Data(),
     elementAttr: { class: 'add-button' },
     disabled: true,
   };
 
-  updateButtonOptions = {
-    icon: 'columnproperties', // this becomes: dx-icon dx-icon-update-table
-    type: 'default',
-    stylingMode: 'text',
-    hint: 'Update Qty Weightage',
-    disabled: false,
-    elementAttr: { class: 'add-button' },
-    onClick: () => this.onClickUpdateQtyWeight(),
-  };
-
-  toolbarEditItems: any = [
-    {
-      widget: 'dxButton',
-      options: {
-        text: 'Cancel',
-        stylingMode: 'outlined',
-        type: 'normal',
-        onClick: () => {
-          this.isEditClinicianPopupOpened = false;
-        },
-      },
-      toolbar: 'bottom',
-      location: 'after',
-    },
-    {
-      widget: 'dxButton',
-      options: {
-        text: 'Save',
-        type: 'default',
-        stylingMode: 'contained',
-        onClick: () => this.onClickUpdateNewClinician(),
-      },
-      toolbar: 'bottom',
-      location: 'after',
-    },
-  ];
-
-  popupToolbar = [
-    {
-      location: 'after',
-      widget: 'dxButton',
-      options: {
-        icon: 'exportxlsx',
-        hint: 'Download Excel',
-        stylingMode: 'text',
-      },
-    },
-    {
-      location: 'after',
-      widget: 'dxButton',
-      options: {
-        icon: 'upload',
-        hint: 'Import File',
-        stylingMode: 'text',
-      },
-    },
-  ];
-
   facilityListDataSource: any;
   selectedFacility: any[] = [];
-  searchOnDataSource = [
-    { id: 'EncounterStartDate', name: 'Encounter Start Date' },
-    { id: 'EncounterEndDate', name: 'Encounter End Date' },
-    { id: 'TransactionDate', name: 'Transaction Date' },
-  ];
 
-  selectedSearchOn: any;
   fromDate: any | null = null;
   toDate: any | null = null;
   today: Date = new Date();
@@ -182,9 +101,7 @@ export class ClinicalDataComponent implements OnInit {
   selectedRowData: any = {};
 
   selectedCptCodeData: any;
-  selectedClinicianData: any;
   isCptEditFormPopupOpened: boolean = false;
-  isEditClinicianPopupOpened: boolean = false;
 
   selectedmonth: any = '';
   selectedYear: any = null;
@@ -194,18 +111,7 @@ export class ClinicalDataComponent implements OnInit {
   years: number[] = [];
 
   isLoading: boolean = false;
-  clickedCellRowData: any;
-  isSingleClaimDetailsVisible: boolean = false;
 
-  isQtyWeightUpdatePopupOpened: boolean = false;
-
-  QtyUpdateGridData: any;
-
-  isExcelLoading: boolean = false;
-
-  isUpdating: boolean = false;
-
-  FileName: any;
   popupGridData: any[] = [];
   isPopupProcessing: boolean = false;
 
@@ -256,6 +162,8 @@ export class ClinicalDataComponent implements OnInit {
 
   //================ Year value change ===================
   onYearChanged(e: any): void {
+    if (!e.event) return; // Prevent programmatic changes from overwriting dates
+
     this.selectedYear = e.value;
     this.selectedmonth = '';
     const currentYear = new Date().getFullYear();
@@ -272,6 +180,8 @@ export class ClinicalDataComponent implements OnInit {
 
   //================Month value change ===================
   onMonthValueChanged(e: any) {
+    if (!e.event) return; // Prevent programmatic changes from overwriting dates
+
     this.selectedmonth = e.value ?? '';
 
     const today = new Date();
@@ -309,21 +219,12 @@ export class ClinicalDataComponent implements OnInit {
     }
   }
 
-  qtyWeightFormatter = (value: any) => {
-    if (value === 0 || value === '0' || value == null) {
-      return '';
-    }
-    return Number(value).toFixed(2);
-  };
-
-  // ========= show edit edit ========
-  canEditRow = (e: any) => {
-    return e.row?.data?.IsCostingProcessed === false;
-  };
+ 
 
   initializeDefaults(): void {
     const today = new Date();
     this.selectedYear = today.getFullYear();
+    this.selectedmonth = today.getMonth();
     this.toDate = today;
     this.fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
 
@@ -355,26 +256,19 @@ export class ClinicalDataComponent implements OnInit {
     };
 
     this.dataSource = new DataSource<any>({
-      load: () =>
-        new Promise((resolve, reject) => {
-          this.operationService.getClinicalData(payload).subscribe({
-            next: (res: any) => {
-              this.isLookupLoading = false;
-
-              if (res?.flag === '1') {
-                resolve(res.data ?? []);
-              } else {
-                resolve([]);
-              }
-            },
-            error: (err) => {
-              this.isLookupLoading = false;
-
-              console.error('Error loading data:', err.message || err);
-              reject(err.message || 'Error loading data');
-            },
-          });
-        }),
+      load: async () => {
+        try {
+          const res: any = await firstValueFrom(
+            this.operationService.getClinicalData(payload)
+          );
+          this.isLookupLoading = false;
+          return res?.flag === '1' ? (res.data ?? []) : [];
+        } catch (err: any) {
+          this.isLookupLoading = false;
+          console.error('Error loading data:', err.message || err);
+          throw err.message || 'Error loading data';
+        }
+      },
     });
   }
 
@@ -508,106 +402,6 @@ export class ClinicalDataComponent implements OnInit {
     this.CptEditFormComponent.clearForm();
   }
 
-  // =========== update oredering clinician =========
-  onClickUpdateNewClinician = () => {
-    const data = this.clinicianEditComponent.getnewClinicianData();
-    const {
-      ID,
-      ClinicianLicense,
-      ClinicianName,
-      ClinicianShortName,
-      SpecialityID,
-      MajorID,
-      ProfessionID,
-      CategoryID,
-      Gender,
-      DepartmentID,
-    } = this.clinicianEditComponent.getnewClinicianData() || {};
-
-    this.masterService
-      .update_Clinician_data(
-        ID,
-        ClinicianLicense,
-        ClinicianName,
-        ClinicianShortName,
-        SpecialityID,
-        MajorID,
-        ProfessionID,
-        CategoryID,
-        Gender,
-        DepartmentID,
-      )
-      .subscribe((response: any) => {
-        if (response) {
-          notify(
-            {
-              message: `Clinician updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success',
-          );
-          this.isEditClinicianPopupOpened = false;
-          this.dataGrid.instance.refresh();
-        } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error',
-          );
-        }
-      });
-  };
-
-  onRowUpdating(e: any) {
-    const logData = JSON.parse(localStorage.getItem('logData') || '{}');
-    const userID = logData.UserID;
-    const sessionID = logData.SessionID;
-    const row = e.oldData;
-    const updated = e.newData;
-
-    if (updated.Qty_Weight !== undefined) {
-      const payload = {
-        UserID: userID,
-        SessionID: sessionID,
-        ClaimActivityUID: row.ClaimActivityUID,
-        Qty_Weight: updated.Qty_Weight,
-      };
-
-      // Stop default update so grid does not commit automatically
-      e.cancel = true;
-
-      this.reportengine
-        .update_Claim_Activity_Qty_Weight(payload)
-        .subscribe((response: any) => {
-          if (response.flag === '1') {
-            this.dataGrid.instance.refresh();
-
-            // Close the edit mode (hides Save/Cancel buttons)
-            e.component.cancelEditData();
-
-            notify(
-              {
-                message: response.message,
-                position: { at: 'top right', my: 'top right' },
-              },
-              'success',
-            );
-          } else {
-            // if failed, keep edit mode active
-            notify(
-              {
-                message: response.message,
-                position: { at: 'top right', my: 'top right' },
-              },
-              'error',
-            );
-          }
-        });
-    }
-  }
-
   //========= Page refreshing =========
   refresh = () => {
     this.dataGrid.instance.refresh();
@@ -621,280 +415,6 @@ export class ClinicalDataComponent implements OnInit {
     this.isAddFormPopupOpened = true;
   }
 
-  onClickUpdateQtyWeight() {
-    this.isQtyWeightUpdatePopupOpened = true;
-  }
-
-  downloadQtyTemplate = () => {
-    // Column headers with empty values
-    const headers = [
-      {
-        FacilityID: '',
-        ClaimNumber: '',
-        ActivityNumber: '',
-        CPTCode: '',
-        QuantityWeightage: '',
-      },
-    ];
-
-    // Convert JSON → Worksheet
-    const worksheet = XLSX.utils.json_to_sheet(headers);
-
-    // Create workbook
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'QtyWeightTemplate');
-
-    // Generate Excel buffer
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-
-    // Save file
-    const blob = new Blob([excelBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-
-    saveAs(blob, 'Qty_Weightage_Update_Template.xlsx');
-  };
-
-  openQtyUpdateImportPopup = () => {
-    // input.click();
-    this.excelFileInput.nativeElement.value = '';
-    this.excelFileInput.nativeElement.click();
-  };
-
-  onExcelFileSelected = (event: any) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    this.FileName = file.name;
-    this.isExcelLoading = true; // start loader
-
-    const reader = new FileReader();
-
-    reader.onload = (e: any) => {
-      try {
-        const excelData = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(excelData, { type: 'array' });
-
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-
-        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, {
-          defval: '',
-        });
-
-        //  Empty file check
-        if (!jsonData.length) {
-          notify('Excel file is empty', 'warning', 3000);
-          return;
-        }
-
-        // Expected template columns
-        const expectedColumns = [
-          'FacilityID',
-          'ClaimNumber',
-          'ActivityNumber',
-          'CPTCode',
-          'QuantityWeightage',
-        ];
-
-        // Columns from uploaded Excel
-        const actualColumns = Object.keys(jsonData[0]);
-
-        //  Missing columns
-        const missingColumns = expectedColumns.filter(
-          (col) => !actualColumns.includes(col),
-        );
-
-        //  Extra columns (optional – usually better to block)
-        const extraColumns = actualColumns.filter(
-          (col) => !expectedColumns.includes(col),
-        );
-
-        //  Validation failed
-        if (missingColumns.length || extraColumns.length) {
-          let message = 'Invalid Excel Template';
-
-          if (missingColumns.length) {
-            message += '\n\nMissing Columns:\n' + missingColumns.join(', ');
-          }
-
-          if (extraColumns.length) {
-            message += '\n\nUnexpected Columns:\n' + extraColumns.join(', ');
-          }
-
-          notify(message, 'error', 5000);
-          return;
-        }
-
-        // Column count mismatch (extra safety)
-        if (actualColumns.length !== expectedColumns.length) {
-          notify(
-            `Invalid column count. Expected ${expectedColumns.length} but found ${actualColumns.length}`,
-            'error',
-            4000,
-          );
-          return;
-        }
-
-        // Passed validation
-        this.QtyUpdateGridData = jsonData;
-        this.isQtyWeightUpdatePopupOpened = true;
-      } catch (err) {
-        console.error(err);
-        notify('Failed to read Excel file', 'error', 3000);
-      } finally {
-        this.isExcelLoading = false; // stop loader ALWAYS
-      }
-    };
-
-    reader.readAsArrayBuffer(file);
-  };
-
-  updateImportedQtyWeightage() {
-    if (!this.QtyUpdateGridData || this.QtyUpdateGridData.length === 0) {
-      notify(
-        {
-          message: 'Please import a file before updating.',
-          position: { at: 'top right', my: 'top right' },
-        },
-        'error',
-      );
-      return;
-    }
-
-    this.isUpdating = true;
-
-    let gridData = [...this.QtyUpdateGridData];
-
-    // Generate unique BatchNo only ONCE
-    const batchNo = (() => {
-      const now = new Date();
-      return 'Q' + now.toISOString().replace(/[-:.]/g, '').slice(0, 14);
-    })();
-
-    const logData = JSON.parse(localStorage.getItem('logData') || '{}');
-    const userID = logData.UserID;
-
-    const basePayload: any = {
-      UserID: userID,
-      BatchNo: batchNo,
-      FileName: this.FileName, // set this when importing file
-      Action: 1,
-    };
-
-    // ============= SEND ONE CHUNK =============
-    const sendChunk = (chunkData: any[], index: number) => {
-      const payload = {
-        ...basePayload,
-        data: chunkData, // UDT table data
-      };
-
-      this.operationService.Import_QtyWeight_Update(payload).subscribe({
-        next: (res: any) => {
-          if (res.flag === '1') {
-            if (gridData.length > 0) {
-              sendNextChunk(); // Continue sending other chunks
-            } else {
-              //  All chunks uploaded → commit final update
-              this.sendQtyFinalCommit(batchNo);
-            }
-          } else {
-            notify(
-              {
-                message: res.message || 'Error saving data.',
-                position: { at: 'top right', my: 'top right' },
-              },
-              'error',
-            );
-            this.isUpdating = false;
-          }
-        },
-        error: (err) => {
-          notify(
-            {
-              message: 'Failed uploading data',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error',
-          );
-          console.error('Chunk error:', err);
-          this.isUpdating = false;
-        },
-      });
-    };
-
-    // ============= SEND THE NEXT CHUNK =============
-    const sendNextChunk = () => {
-      const chunkSize = 15000; // safe for 1 lakh rows
-      const chunk = gridData.slice(0, chunkSize);
-      gridData = gridData.slice(chunkSize);
-
-      const uploadedIndex =
-        Math.ceil(this.QtyUpdateGridData.length / chunkSize) -
-        Math.ceil(gridData.length / chunkSize);
-
-      sendChunk(chunk, uploadedIndex);
-    };
-
-    // Start
-    sendNextChunk();
-  }
-
-  sendQtyFinalCommit(batchNo: string) {
-    const logData = JSON.parse(localStorage.getItem('logData') || '{}');
-    const userID = logData.UserID;
-
-    const payload = {
-      UserID: userID,
-      BatchNo: batchNo,
-      Action: 2,
-    };
-
-    this.operationService.Import_QtyWeight_Update(payload).subscribe({
-      next: (res: any) => {
-        this.isUpdating = false;
-
-        if (res.flag === '1') {
-          notify(
-            {
-              message: res.message,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success',
-          );
-          this.isQtyWeightUpdatePopupOpened = false;
-        } else {
-          notify(
-            {
-              message: res.message || 'update failed.',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error',
-          );
-        }
-      },
-      error: (err) => {
-        this.isUpdating = false;
-
-        notify(
-          {
-            message: 'Error during update',
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error',
-        );
-        console.error('update error:', err);
-      },
-    });
-  }
-
-  CloseQtyUpdatePopUp() {
-    this.QtyUpdateGridData = [];
-  }
-
   CloseForm() {
     this.isAddFormPopupOpened = false;
     // this.dataGrid.instance.refresh();
@@ -906,26 +426,18 @@ export class ClinicalDataComponent implements OnInit {
     this.service.exportDataGrid(event, fileName);
   }
 
-  usNumberFormat = (value: number) => {
-    if (value == null) return '';
-    return value.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
-
   displayFacility = (item: any) => {
     if (!item) return '';
     return `${item.FacilityLicense} - ${item.FacilityName}`;
   };
 
-  onViewClick(e: any) {
+  onViewClick = (e: any) => {
     this.selectedRowData = e.row.data;
     this.selectedRowIndex = e.row.rowIndex;
 
     this.isRowPopupVisible = true;
     this.getClinicalDataPopupData();
-  }
+  };
 
   getClinicalDataPopupData() {
     this.popupGrid?.instance.beginCustomLoading('Loading...');
@@ -1013,10 +525,6 @@ export class ClinicalDataComponent implements OnInit {
     });
   }
 
-  billableText = (rowData: any) => {
-    return rowData.Billable ? 'Yes' : 'No';
-  };
-
   onPopupHidden() {
     this.isRowPopupVisible = false;
     this.popupGridData = [];
@@ -1081,9 +589,7 @@ export class ClinicalDataComponent implements OnInit {
     DxDateBoxModule,
     DxDropDownBoxModule,
     CptMasterEditFormModule,
-    ClinicianEditFormModule,
     DxLoadPanelModule,
-    SingleClaimDetailsModule,
     DxoSummaryModule,
   ],
   providers: [],
