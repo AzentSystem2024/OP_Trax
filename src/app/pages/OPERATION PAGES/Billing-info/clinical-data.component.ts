@@ -218,6 +218,8 @@ export class ClinicalDataComponent implements OnInit {
   selectedRowIndex: any;
   isLookupLoading: boolean = false;
   isReRunProcessing = false;
+  isMultiProcessing: boolean = false;
+  processProgressMessage: string = '0/0 completed';
 
   constructor(
     private service: ReportService,
@@ -324,7 +326,6 @@ export class ClinicalDataComponent implements OnInit {
     this.selectedYear = today.getFullYear();
     this.toDate = today;
     this.fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
-    this.selectedSearchOn = 'EncounterEndDate';
 
     const defaultFacility = this.facilityListDataSource.find(
       (f: any) => f.ID === 16,
@@ -391,66 +392,54 @@ export class ClinicalDataComponent implements OnInit {
   }
 
   // ============ Process selected row data ===========
-  process_selected_Data(): void {
-    this.isLoading = true;
+  async process_selected_Data() {
     const selectedRows = this.dataGrid.instance.getSelectedRowsData();
 
     if (!selectedRows.length) {
-      this.isLoading = false; // stop loader if no selection
       this.notificationService.showNotification(
-        'Please select at least one row to Allocate.',
+        'Please select at least one row to process.',
         'warning',
       );
       return;
     }
 
-    // 🔹 Remove duplicate ClaimUID
+    // Remove duplicate ClaimUID
     const uniqueClaimUIDs = [
       ...new Map(selectedRows.map((row) => [row.ClaimUID, row])).values(),
     ];
 
-    const payload = {
-      Items: uniqueClaimUIDs.map((row) => ({
-        ClaimUID: row.ClaimUID,
-      })),
-    };
+    const total = uniqueClaimUIDs.length;
+    let completed = 0;
 
-    // Mark API as in progress to prevent inactivity logout
+    this.isMultiProcessing = true;
+    this.processProgressMessage = `0/${total} completed`;
+
     this.inactivityService.setApiInProgress(true);
 
-    this.operationService.allocate_Clinical_Data(payload).subscribe({
-      next: (res: any) => {
-        this.isLoading = false;
-
-        if (res.flag === '1') {
-          this.notificationService.showNotification(
-            'Data Allocated successfully.',
-            'success',
-          );
-          this.onApplyFilter();
-        } else {
-          this.notificationService.showNotification(
-            res.message || 'Allocation failed. Please try again.',
-            'error',
-          );
-        }
-
-        // Mark API as finished
-        this.inactivityService.setApiInProgress(false);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        console.error('Error Allocation data:', err);
-
-        this.notificationService.showNotification(
-          'An error occurred while allocating data.',
-          'error',
+    for (const row of uniqueClaimUIDs) {
+      const payload = { ClaimUID: row.ClaimUID || 0 };
+      
+      try {
+        const res: any = await firstValueFrom(
+          this.operationService.getClinicalDataInPopup(payload)
         );
+        // We only process the API, no need to show popup or change status manually
+      } catch (err) {
+        console.error(`Error processing ClaimUID ${row.ClaimUID}:`, err);
+      }
 
-        // Mark API as finished
-        this.inactivityService.setApiInProgress(false);
-      },
-    });
+      completed++;
+      this.processProgressMessage = `${completed}/${total} completed`;
+    }
+
+    this.isMultiProcessing = false;
+    this.inactivityService.setApiInProgress(false);
+
+    this.notificationService.showNotification(
+      'Processing completed successfully.',
+      'success',
+    );
+    this.onApplyFilter(); // Refresh grid
   }
 
   // ======= cpt code and ordering clinician edit function ============

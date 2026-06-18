@@ -150,7 +150,10 @@
         [showNavigationButtons]="showNavButtons"
       >
       </dxo-pager>
-      <!-- <dxo-selection mode="multiple"></dxo-selection> -->
+      <dxo-selection
+        mode="multiple"
+        showCheckBoxesMode="always"
+      ></dxo-selection>
       <dxo-load-panel [showPane]="false"></dxo-load-panel>
       <dxo-scrolling mode="virtual"></dxo-scrolling>
       <dxo-sorting mode="multiple"></dxo-sorting>
@@ -213,6 +216,13 @@
         ></dxi-item>
 
         <dxi-item
+          name="processButton"
+          location="after"
+          widget="dxButton"
+          [options]="processButtonOptions"
+        ></dxi-item>
+
+        <dxi-item
           location="after"
           widget="dxButton"
           [options]="addButtonOptions"
@@ -248,11 +258,11 @@
         [allowEditing]="false"
       ></dxi-column>
 
-      <dxi-column
+      <!-- <dxi-column
         dataField="Specialty"
         caption="Specialty"
         [allowEditing]="false"
-      ></dxi-column>
+      ></dxi-column> -->
 
       <dxi-column
         dataField="Status"
@@ -303,6 +313,16 @@
         ></dxi-total-item>
       </dxo-summary>
     </dx-data-grid>
+
+    <dx-load-panel
+      #processLoadPanel
+      [position]="{ of: '.grid' }"
+      [visible]="isMultiProcessing"
+      [showIndicator]="true"
+      [showPane]="true"
+      [shading]="true"
+      [message]="processProgressMessage"
+    ></dx-load-panel>
 
     <!-- ============== import file popup ================= -->
     <dx-popup
