@@ -281,3 +281,64 @@
 }
 
 
+.link-cell {
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.link-cell:hover {
+  color: #0056b3;
+}
+
+::ng-deep .custom-export-btn .dx-button-content {
+  padding: 4px !important;
+}
+
+::ng-deep .custom-export-btn .dx-button {
+  min-width: 32px !important;
+}
+
+.flag-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.status-flag {
+  font-size: 22px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.pending-flag {
+  color: #f1c40f;
+}
+
+.applied-flag {
+  color: #28a745;
+}
+
+.billable-yes {
+  color: green;
+  font-weight: 600;
+}
+
+.billable-no {
+  color: red;
+  font-weight: 600;
+}
+
+.cpt-link {
+  cursor: pointer;
+}
+
+
+.rotate-icon {
+  display: inline-block;
+  animation: spinClockwise 1s linear infinite;
+}
+
+::ng-deep .apply-btn-container .dx-button.dx-button-default .dx-icon {
+     color: #fbfbfb; 
+}

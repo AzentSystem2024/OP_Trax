@@ -189,7 +189,7 @@
           icon="detailslayout"
           text="Details"
           hint="View Details"
-          [onClick]="handleRowDrillDownClick"
+          [onClick]="onViewClick"
         ></dxi-button>
       </dxi-column>
 
@@ -381,3 +381,235 @@
   [message]="'Loading...'"
 >
 </dx-load-panel>
+
+<!-- ------------Row Detail Popup---------------- -->
+<dx-popup
+  [(visible)]="isRowPopupVisible"
+  [width]="'95%'"
+  [height]="'auto'"
+  [showTitle]="true"
+  title="ADOC Grouping & Applying Counting Rules"
+  [dragEnabled]="true"
+  [closeOnOutsideClick]="false"
+  [showCloseButton]="true"
+  (onHidden)="onPopupHidden()"
+>
+  <div class="container-fluid p-3">
+    <!-- Header Section -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="d-flex">
+          <!-- Left Section -->
+          <div>
+            <div class="mb-2">
+              <strong>Invoice No / Visit ID :</strong>
+              {{ selectedRowData?.ClaimNumber }}
+            </div>
+
+            <div class="mb-2">
+              <strong>Patient ID :</strong>
+              {{ selectedRowData?.PatientID }}
+            </div>
+
+            <div>
+              <strong>Diagnosis :</strong>
+              {{ selectedRowData?.SecondaryDiagnosis }}
+            </div>
+          </div>
+
+          <!-- Right Section -->
+          <div class="ms-auto text-start">
+            <div class="mb-2">
+              <strong>Transaction Date :</strong>
+              {{ selectedRowData?.TransactionDate }}
+            </div>
+
+            <div class="mb-3">
+              <strong>Encounter Type :</strong>
+              {{ selectedRowData?.EncounterType }}
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <dx-button
+                hint="Re-Run Grouper"
+                type="default"
+                stylingMode="contained"
+                (onClick)="ReRunGrouper()"
+              >
+                <div *dxTemplate="let data of 'content'">
+                  <i
+                    class="dx-icon dx-icon-refresh"
+                    [class.rotate-icon]="isReRunProcessing"
+                  ></i>
+                </div>
+              </dx-button>
+              <dx-drop-down-button
+                icon="export"
+                hint="Export"
+                stylingMode="contained"
+                type="default"
+                [showArrowIcon]="false"
+                [items]="exportFormats"
+                displayExpr="text"
+                keyExpr="format"
+                [elementAttr]="{ class: 'custom-export-btn' }"
+                (onItemClick)="onExportClick($event)"
+              >
+              </dx-drop-down-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details Grid -->
+    <dx-data-grid
+      #popupGrid
+      noDataText=" "
+      [dataSource]="popupGridData"
+      [showBorders]="true"
+      [columnAutoWidth]="true"
+      [showRowLines]="true"
+      [showColumnLines]="true"
+      height="500"
+      (onCellDblClick)="onCellClick($event)"
+    >
+      <!-- Header Filter -->
+      <dxo-header-filter [visible]="true">
+        <dxo-search [enabled]="true"></dxo-search>
+      </dxo-header-filter>
+
+      <dxo-scrolling mode="virtual"></dxo-scrolling>
+
+      <dxi-column
+        dataField="ActivityNumber"
+        caption="Activity Number"
+      ></dxi-column>
+
+      <dxi-column dataField="ActivityDate" caption="Date"></dxi-column>
+
+      <dxi-column dataField="CPTType" caption="CPT Type"></dxi-column>
+
+      <dxi-column
+        dataField="CPTCode"
+        caption="CPT Code"
+        cellTemplate="cptCodeTemplate"
+      >
+      </dxi-column>
+
+      <dxi-column
+        dataField="CPTName"
+        caption="CPT Description"
+        [width]="250"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="OrderingClinician"
+        caption="Ordering Clinician"
+      ></dxi-column>
+
+      <dxi-column dataField="Speciality" caption="Specialty"></dxi-column>
+      <dxi-column
+        dataField="PrimaryDiagnosis"
+        caption="Primary Diagnosis"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="NetAmount"
+        caption="Net Amount(AED)"
+        format="#,##0.00"
+      ></dxi-column>
+
+      <dxi-column caption="ADOC Category" dataField="ADOCCategory"></dxi-column>
+
+      <dxi-column
+        caption="ADOC Classification"
+        dataField="ADOCClass"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="BillPrice"
+        caption="Price(AED)"
+        format="#,##0.00"
+        cellTemplate="priceTemplate"
+      >
+      </dxi-column>
+
+      <dxi-column caption="Billable" cellTemplate="billableTemplate">
+      </dxi-column>
+
+      <div *dxTemplate="let cell of 'cptCodeTemplate'">
+        <span class="cpt-link" title="'Double click for CPT details'">
+          {{ cell.value }}
+        </span>
+      </div>
+
+      <div *dxTemplate="let data of 'priceTemplate'">
+        <span [ngClass]="data.data.Billable ? 'billable-yes' : 'billable-no'">
+          {{ data.value | number: "1.2-2" }}
+        </span>
+      </div>
+
+      <div *dxTemplate="let data of 'billableTemplate'">
+        <span *ngIf="data.data.Billable" class="billable-yes"> Yes </span>
+
+        <span *ngIf="!data.data.Billable" class="billable-no"> No </span>
+      </div>
+
+      <dxi-column caption="Remark" dataField="Remarks"></dxi-column>
+
+      <dxo-summary>
+        <!-- Net Amount Total -->
+        <dxi-total-item
+          column="NetAmount"
+          summaryType="sum"
+          showInColumn="NetAmount"
+          displayFormat="Net Total : AED {0}"
+          [valueFormat]="{
+            type: 'fixedPoint',
+            precision: 2,
+          }"
+          alignment="right"
+        >
+        </dxi-total-item>
+
+        <!-- Billable Amount Total -->
+        <dxi-total-item
+          column="BillPrice"
+          summaryType="sum"
+          showInColumn="BillPrice"
+          [customizeText]="billableSummaryText"
+          alignment="right"
+        >
+        </dxi-total-item>
+      </dxo-summary>
+    </dx-data-grid>
+  </div>
+
+  <div class="d-flex justify-content-end mt-3 gap-2">
+    <dx-load-panel
+      [(visible)]="isPopupProcessing"
+      [showIndicator]="true"
+      [showPane]="true"
+      [shading]="true"
+      shadingColor="rgba(0,0,0,0.4)"
+      message="Processing..."
+    >
+    </dx-load-panel>
+  </div>
+</dx-popup>
+
+<!-- ============Cpt code editing popup ============= -->
+<form-popup
+  class="formPopupClass"
+  [(visible)]="isCptEditFormPopupOpened"
+  (save)="onClickUpdateNewCptType()"
+  titleText="Edit CPT Master"
+  [width]="'70%'"
+  height="auto"
+>
+  <app-cpt-master-edit-form
+    *ngIf="isCptEditFormPopupOpened"
+    [formData]="selectedCptCodeData"
+  ></app-cpt-master-edit-form>
+</form-popup>

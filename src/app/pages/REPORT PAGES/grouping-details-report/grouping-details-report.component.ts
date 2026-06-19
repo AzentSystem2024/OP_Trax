@@ -50,12 +50,27 @@ import CustomStore from 'devextreme/data/custom_store';
 import { PopupStateService } from 'src/app/popupStateService.service';
 import * as XLSX from 'xlsx';
 import validationEngine from 'devextreme/ui/validation_engine';
+import { OperationReportService } from '../../OPERATION PAGES/operation-report.service';
+import { Workbook } from 'exceljs';
+import { exportDataGrid } from 'devextreme/excel_exporter';
+import { saveAs } from 'file-saver';
+import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
+import {
+  CptMasterEditFormComponent,
+  CptMasterEditFormModule,
+} from '../../POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
 
 @Component({
   selector: 'app-grouping-details-report',
   templateUrl: './grouping-details-report.component.html',
   styleUrl: './grouping-details-report.component.scss',
-  providers: [ReportService, ReportEngineService, DatePipe, DataService],
+  providers: [
+    ReportService,
+    ReportEngineService,
+    DatePipe,
+    DataService,
+    OperationReportService,
+  ],
 })
 export class GroupingDetailsReportComponent implements OnInit {
   @ViewChild(DxDataGridComponent, { static: true })
@@ -67,10 +82,32 @@ export class GroupingDetailsReportComponent implements OnInit {
   @ViewChild(DxTreeViewComponent, { static: false })
   treeView: DxTreeViewComponent;
 
+  @ViewChild('popupGrid', { static: false }) popupGrid: any;
+
+  @ViewChild(CptMasterEditFormComponent, { static: false })
+  CptEditFormComponent!: CptMasterEditFormComponent;
+
+  isCptEditFormPopupOpened: boolean = false;
+  selectedCptCodeData: any;
+
+  isRowPopupVisible: boolean = false;
+  selectedRowData: any = {};
+  popupGridData: any[] = [];
+  isPopupProcessing: boolean = false;
+
+  exportFormats = [
+    { text: 'Excel', format: 'xlsx' },
+    { text: 'CSV', format: 'csv' },
+  ];
+
+  billableTotal: any = 0;
+  selectedRowIndex: any;
+  isReRunProcessing = false;
+  isLoading: boolean = false;
+
   //=================DataSource for data Grid Table========
   dataGrid_DataSource: DataSource<any>;
-
-  columnsConfig: any; //==============Column data storing variable
+  columnsConfig: any; // Column data storing variable
 
   //================Variables for Storing DataSource========
   Facility_DataSource: any;
@@ -112,22 +149,9 @@ export class GroupingDetailsReportComponent implements OnInit {
   MemoriseReportName: any;
   isSaveMemorisedOpened: boolean = false;
   personalReportData: any;
-  isDrillDownPopupOpened: boolean = false;
-  clickedRowData: any;
   loadingVisible: boolean = false;
   columnFixed: boolean = true;
   initialized: boolean;
-
-  popupWidth: any = '90%';
-  popupHeight: any = '90vh';
-  popupPosition: any = { my: 'center', at: 'center' };
-  isPopupMinimised: boolean = false;
-
-  //============Custom close button for drilldown popup============
-  toolbarItems: any;
-  drilldownPopups: any[];
-  isCloseButtonClicked: boolean = false;
-  closedPopupsSet: Set<string> = new Set();
 
   constructor(
     private service: ReportService,
@@ -137,6 +161,7 @@ export class GroupingDetailsReportComponent implements OnInit {
     private masterService: MasterReportService,
     private popupStateService: PopupStateService,
     private cdr: ChangeDetectorRef,
+    private operationService: OperationReportService,
   ) {
     // this.loadingVisible = true;
 
@@ -150,23 +175,6 @@ export class GroupingDetailsReportComponent implements OnInit {
     //=============month field datasource============
     this.monthDataSource = this.service.getMonths();
     this.get_searchParameters_Dropdown_Values();
-    // this.updateToolbarItems();
-    if (this.drilldownPopups && this.drilldownPopups.length > 0) {
-      this.drilldownPopups.forEach((popup) => {
-        this.updateToolbarItems(popup.id); // Pass the popupId when calling this method
-      });
-    }
-    // Add the subscription to NavigationStart here
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationStart) {
-        this.hidePopupsOnNavigation();
-      }
-
-      // Listen for NavigationEnd event to restore visibility
-      if (event instanceof NavigationEnd) {
-        this.restorePopupsOnNavigation();
-      }
-    });
   }
 
   ngOnInit(): void {
@@ -176,141 +184,92 @@ export class GroupingDetailsReportComponent implements OnInit {
 
     this.selectedYear = today.getFullYear();
     this.selectedmonth = today.getMonth();
-
-    this.popupStateService.getPopupState('groupingDetailsDrillDownPopup');
   }
 
-  //=============Resize the popup drill down============
-  onResizeEnd(event: any) {
-    this.popupWidth = event.width;
-    this.popupHeight = event.height;
-  }
-
-  updateToolbarItems(popupId: string) {
-    const popup = this.drilldownPopups.find((p) => p.id === popupId); // Get the full popup object by its ID
-
-    if (popup) {
-      this.toolbarItems = [
-        {
-          widget: 'dxButton',
-          options: {
-            text: '',
-            icon: popup.isPopupMinimised ? 'expandform' : 'minus', // Toggle icon based on minimize state
-            type: 'normal',
-            stylingMode: 'contained',
-            onClick: () => this.minimisePopup(popupId), // Pass the popupId to minimize the popup
-          },
-          toolbar: 'top',
-          location: 'after',
-        },
-        {
-          widget: 'dxButton',
-          options: {
-            text: '',
-            icon: 'close', // Close icon for the button
-            type: 'normal',
-            stylingMode: 'contained',
-            onClick: () => this.closePopup1(popupId), // Pass only the popupId to close it
-          },
-          toolbar: 'top',
-          location: 'after',
-        },
-      ];
-    }
-  }
-
-  //============= minimise popup ==========
-  minimisePopup(popupId: string): void {
-    const popup = this.drilldownPopups.find((p) => p.id === popupId);
-    if (popup) {
-      popup.isPopupMinimised = !popup.isPopupMinimised;
-
-      // Adjust the size and position based on minimize state
-      if (popup.isPopupMinimised) {
-        popup.width = '20%';
-        popup.height = '10%';
-        // popup.icon = 'minus';
-        popup.icon = 'expand-icon';
-        // popup.position = { my: 'center', at: 'center', of: '.view-wrapper' }; // Example position
-        popup.position = {
-          my: 'bottom right', // Align the popup's top-right corner
-          at: 'bottom right', // Align the popup's top-right corner to the right side
-          offset: '20 10px', // Add a 20px gap from the top and right edges
-          of: window, // Reference the entire window as the parent
-        };
-      } else {
-        popup.width = '100%';
-        popup.height = '90vh';
-        popup.position = { my: 'center', at: 'center' }; // Example position
-        popup.icon = 'minimize-icon';
-      }
-
-      // Re-render the popup
-      this.cdr.detectChanges(); // Trigger change detection
-      this.updateToolbarItems(popupId); // Update toolbar items after minimizing
-    }
-  }
-
-  //========Remove closing popup from the popup array=====
-  closePopup() {
-    this.popupStateService.setPopupState('claimDetaisDrillDownPopup', false);
-    this.isDrillDownPopupOpened = false;
-  }
   //================Show and Hide Search parameters========
   toggleContent() {
     this.isContentVisible = !this.isContentVisible;
   }
 
-  //=================Row click drill Down===================
-  handleRowDrillDownClick = (e: any) => {
-    const popupId = `drilldown-${new Date().getTime()}`; // Unique ID for each popup
-    const rowData = e.row.data;
-    if (!this.drilldownPopups) {
-      this.drilldownPopups = [];
-    }
-    // Add the new popup configuration
-    this.drilldownPopups.push({
-      id: popupId,
-      width: '90%',
-      height: '90vh',
-      position: { my: 'center', at: 'center' },
-      rowData: rowData,
-      isOpened: true,
-      isPopupMinimised: false,
-    });
-    this.popupStateService.setPopupState(popupId, true);
+  //============Show Parametrs Div=======================
+  show_Parameter_Div = () => {
+    this.isContentVisible = !this.isContentVisible;
+    this.hint_for_Parametr_div = this.isContentVisible
+      ? 'Hide Parameters'
+      : 'Show Parameters';
   };
 
-  hidePopupsOnNavigation() {
-    if (this.drilldownPopups && this.drilldownPopups.length > 0) {
-      // Hide all drilldown popups instead of closing them
-      this.drilldownPopups.forEach((popup) => {
-        popup.isOpened = false; // Hide the popup but keep its state
-      });
-      this.cdr.detectChanges();
+  //============Show Filter Row==========================
+  filterClick = () => {
+    if (this.dataGrid_DataSource) {
+      this.isFilterOpened = !this.isFilterOpened;
+    }
+  };
+
+  //============Show Filter Row==========================
+  SummaryClick = () => {
+    const reportGridElement = document.querySelector('.reportGrid');
+    if (reportGridElement) {
+      reportGridElement.classList.toggle('reportGridFooter');
+    }
+  };
+
+  //================ Year value change ===================
+  onYearChanged(e: any): void {
+    this.selectedYear = e.value;
+    const currentYear = new Date().getFullYear();
+    const today = new Date();
+
+    if (
+      this.selectedmonth === '' ||
+      this.selectedmonth === null ||
+      this.selectedmonth === undefined
+    ) {
+      if (this.selectedYear === currentYear) {
+        // Set from date to the start of the year and to date to today
+        this.From_Date_Value = new Date(this.selectedYear, 0, 1); // January 1 of the current year
+        this.To_Date_Value = today; // Today's date
+      } else {
+        this.From_Date_Value = new Date(this.selectedYear, 0, 1); // January 1
+        this.To_Date_Value = new Date(this.selectedYear, 11, 31); // December 31
+      }
+    } else {
+      this.From_Date_Value = new Date(this.selectedYear, this.selectedmonth, 1);
+      this.To_Date_Value = new Date(
+        this.selectedYear,
+        this.selectedmonth + 1,
+        0,
+      );
     }
   }
 
-  restorePopupsOnNavigation(): void {
-    if (this.drilldownPopups && this.drilldownPopups.length > 0) {
-      this.drilldownPopups.forEach((popup) => {
-        // If the popup was manually closed, make sure it's not reopened
-        if (this.closedPopupsSet.has(popup.id)) {
-          popup.isOpened = false; // Keep it closed
-        } else {
-          popup.isOpened = true; // Restore visibility for popups that should be shown
-        }
-      });
-      // Ensure UI reflects changes immediately
-      this.cdr.detectChanges();
+  //================Month value change ===================
+  onMonthValueChanged(e: any) {
+    this.selectedmonth = e.value ?? '';
+    const currentYear = new Date().getFullYear();
+    const today = new Date();
+
+    if (this.selectedmonth === '') {
+      if (this.selectedYear === currentYear) {
+        this.From_Date_Value = new Date(this.selectedYear, 0, 1); // January 1 of the current year
+        this.To_Date_Value = today; // Today's date
+      } else {
+        this.From_Date_Value = new Date(this.selectedYear, 0, 1); // January 1 of the selected year
+        this.To_Date_Value = new Date(this.selectedYear, 11, 31); // December 31 of the selected year
+      }
+    } else {
+      this.From_Date_Value = new Date(this.selectedYear, this.selectedmonth, 1);
+      this.To_Date_Value = new Date(
+        this.selectedYear,
+        this.selectedmonth + 1,
+        0,
+      );
     }
   }
 
-  closePopup1(popup: any): void {
-    popup.isOpened = false; // Hide the popup
-    // console.log('Popup manually closed:', popup);
-    this.closedPopupsSet.add(popup.id);
-    // Additional logic for closing the popup can go here
+  //=====================Search on Each Column===========
+  applyFilter() {
+    this.GridSource.filter();
   }
 
   //============Get search parameters dropdown values=======
@@ -512,93 +471,6 @@ export class GroupingDetailsReportComponent implements OnInit {
     });
   }
 
-  //============Show Parametrs Div=======================
-  show_Parameter_Div = () => {
-    this.isContentVisible = !this.isContentVisible;
-    this.hint_for_Parametr_div = this.isContentVisible
-      ? 'Hide Parameters'
-      : 'Show Parameters';
-  };
-
-  //============Show Filter Row==========================
-  filterClick = () => {
-    if (this.dataGrid_DataSource) {
-      this.isFilterOpened = !this.isFilterOpened;
-    }
-  };
-
-  //============Show Filter Row==========================
-  SummaryClick = () => {
-    const reportGridElement = document.querySelector('.reportGrid');
-    if (reportGridElement) {
-      reportGridElement.classList.toggle('reportGridFooter');
-    }
-  };
-
-  //================ Year value change ===================
-  onYearChanged(e: any): void {
-    this.selectedYear = e.value;
-    const currentYear = new Date().getFullYear();
-    const today = new Date();
-
-    if (this.selectedmonth === '' || this.selectedmonth === null || this.selectedmonth === undefined) {
-      if (this.selectedYear === currentYear) {
-        // Set from date to the start of the year and to date to today
-        this.From_Date_Value = new Date(this.selectedYear, 0, 1); // January 1 of the current year
-        this.To_Date_Value = today; // Today's date
-      } else {
-        this.From_Date_Value = new Date(this.selectedYear, 0, 1); // January 1
-        this.To_Date_Value = new Date(this.selectedYear, 11, 31); // December 31
-      }
-    } else {
-      this.From_Date_Value = new Date(this.selectedYear, this.selectedmonth, 1);
-      this.To_Date_Value = new Date(this.selectedYear, this.selectedmonth + 1, 0);
-    }
-  }
-
-  //================Month value change ===================
-  onMonthValueChanged(e: any) {
-    this.selectedmonth = e.value ?? '';
-    const currentYear = new Date().getFullYear();
-    const today = new Date();
-
-    if (this.selectedmonth === '') {
-      if (this.selectedYear === currentYear) {
-        this.From_Date_Value = new Date(this.selectedYear, 0, 1); // January 1 of the current year
-        this.To_Date_Value = today; // Today's date
-      } else {
-        this.From_Date_Value = new Date(this.selectedYear, 0, 1); // January 1 of the selected year
-        this.To_Date_Value = new Date(this.selectedYear, 11, 31); // December 31 of the selected year
-      }
-    } else {
-      this.From_Date_Value = new Date(this.selectedYear, this.selectedmonth, 1);
-      this.To_Date_Value = new Date(this.selectedYear, this.selectedmonth + 1, 0);
-    }
-  }
-
-  //===========Convert the data to API input format============
-  ConvertDataFormat(data: any[]): any {
-    const columnNames = this.filterPopupdataGrid.instance
-      .getVisibleColumns()
-      .map((col: any) => col.dataField);
-
-    const formattedData: any = {};
-
-    columnNames.forEach((column) => {
-      formattedData[column] = data
-        .map((row) => row[column])
-        .filter((v) => v !== undefined && v !== null && v !== '')
-        .join(',');
-    });
-
-    return formattedData;
-  }
-
-  //=====================Search on Each Column===========
-  applyFilter() {
-    this.GridSource.filter();
-  }
-
   //====================Find the column location from the datagrid================
   findColumnLocation = (e: any) => {
     const columnName = e.itemData;
@@ -617,6 +489,215 @@ export class GroupingDetailsReportComponent implements OnInit {
   onExporting(event: any) {
     const fileName = 'Grouping-Details-Report';
     this.service.exportDataGrid(event, fileName);
+  }
+
+  // ============== Popup functionalities ==================
+  onViewClick = (e: any) => {
+    this.selectedRowData = e.row.data;
+    this.selectedRowIndex = e.row.rowIndex;
+    console.log('selected row data', this.selectedRowData);
+    this.isRowPopupVisible = true;
+    this.getClinicalDataPopupData();
+  };
+
+  getClinicalDataPopupData() {
+    this.popupGrid?.instance.beginCustomLoading('Loading...');
+
+    const payload = {
+      ClaimUID: this.selectedRowData?.ClaimUID || 0,
+    };
+
+    this.operationService.getClinicalDataInPopup(payload).subscribe({
+      next: (res: any) => {
+        if (res.flag === '1') {
+          this.popupGridData = res.data || [];
+
+          // Update status in the row object
+          this.selectedRowData.Status = 'Applied';
+
+          // Repaint only the affected row if it exists in current grid
+          if (this.selectedRowIndex !== undefined && this.dataGrid) {
+            this.dataGrid.instance.repaintRows([this.selectedRowIndex]);
+          }
+
+          this.calculateBillableTotal();
+
+          setTimeout(() => {
+            this.isRowPopupVisible = true;
+            this.popupGrid?.instance.endCustomLoading();
+          }, 0);
+        } else {
+          this.popupGridData = [];
+          this.popupGrid?.instance.endCustomLoading();
+          notify('No data found', 'warning', 3000);
+        }
+      },
+      error: (err) => {
+        this.popupGrid?.instance.endCustomLoading();
+        console.error(err);
+        notify('Error loading popup data', 'error', 3000);
+      },
+    });
+  }
+
+  calculateBillableTotal(): void {
+    this.isLoading = true;
+
+    this.billableTotal = (this.popupGridData || [])
+      .filter((item: any) => item.Billable === true)
+      .reduce(
+        (total: number, item: any) => total + Number(item.BillPrice || 0),
+        0,
+      );
+
+    this.isLoading = false;
+  }
+
+  billableSummaryText = () => {
+    if (this.isLoading) {
+      return 'Calculating...';
+    }
+
+    return `Net Billable : AED ${this.billableTotal.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  ReRunGrouper() {
+    this.isReRunProcessing = true;
+    const payload = {
+      ClaimUID: this.selectedRowData?.ClaimUID || 0,
+      IsReprocess: true,
+    };
+    this.operationService.get_ReProcess_ClinicalDataInPopup(payload).subscribe({
+      next: (res: any) => {
+        if (res.flag === '1') {
+          this.getClinicalDataPopupData();
+          notify('Grouper re-run successfully', 'success', 3000);
+        }
+        this.isReRunProcessing = false;
+      },
+      error: (err) => {
+        console.error(err);
+        notify('Error re-running grouper', 'error', 3000);
+        this.isReRunProcessing = false;
+      },
+    });
+  }
+
+  onPopupHidden() {
+    this.isRowPopupVisible = false;
+    this.popupGridData = [];
+  }
+
+  async onExportClick(e: any) {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('ADOC Report');
+
+    await exportDataGrid({
+      component: this.popupGrid.instance,
+      worksheet: worksheet,
+
+      customizeCell: ({ gridCell, excelCell }) => {
+        if (
+          gridCell?.rowType === 'data' &&
+          gridCell.column?.caption === 'Billable'
+        ) {
+          excelCell.value = gridCell.data?.Billable === true ? 'Yes' : 'No';
+        }
+      },
+    });
+
+    // Excel Export
+    if (e.itemData.format === 'xlsx') {
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      saveAs(
+        new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+        'ADOC_Report.xlsx',
+      );
+    }
+
+    // CSV Export
+    if (e.itemData.format === 'csv') {
+      const csvBuffer = await workbook.csv.writeBuffer();
+
+      saveAs(
+        new Blob([csvBuffer], {
+          type: 'text/csv;charset=utf-8;',
+        }),
+        'ADOC_Report.csv',
+      );
+    }
+  }
+
+  // ======= cpt code and ordering clinician edit function ============
+  onCellClick(e: any) {
+    if (!e.column || e.rowType !== 'data') {
+      return;
+    }
+    if (e.rowType === 'group') return;
+    const dataField = e.column.dataField;
+    // --- Helper to avoid repeated notify options---
+    const showError = (message: string) => {
+      notify(message, 'error', 3000);
+    };
+
+    if (dataField === 'CPTCode') {
+      const code = e.data.CPTID;
+      console.log('clicked row data', code);
+      if (!code) {
+        showError('CPT Code is empty');
+        return;
+      }
+      this.masterService.selectCptMaster(code).subscribe((res: any) => {
+        if (res.flag === '1' && res.data?.[0]) {
+          this.selectedCptCodeData = res.data[0];
+          this.isCptEditFormPopupOpened = true;
+        } else {
+          showError('No CPT Code data found');
+        }
+      });
+    }
+  }
+
+  //======= Update data ==========
+  onClickUpdateNewCptType = () => {
+    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings } =
+      this.CptEditFormComponent.getUpdateCptMasterData();
+
+    this.masterService
+      .update_CptMaster_data(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings)
+      .subscribe((response: any) => {
+        if (response) {
+          this.dataGrid.instance.refresh();
+
+          notify(
+            {
+              message: 'Cpt Master Updated Successfully',
+              position: { at: 'top right', my: 'top right' },
+            },
+            'success',
+          );
+
+          this.resetCptForm();
+        } else {
+          notify(
+            {
+              message: 'Your Data Not Updated',
+              position: { at: 'top right', my: 'top right' },
+            },
+            'error',
+          );
+        }
+      });
+  };
+
+  resetCptForm() {
+    this.CptEditFormComponent.clearForm();
   }
 }
 
@@ -649,6 +730,8 @@ export class GroupingDetailsReportComponent implements OnInit {
     DxValidatorModule,
     DxValidationSummaryModule,
     DxLoadPanelModule,
+    DxoSummaryModule,
+    CptMasterEditFormModule,
   ],
   providers: [],
   exports: [],
