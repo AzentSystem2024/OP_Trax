@@ -1,0 +1,283 @@
+@use "../../../../variables.scss" as *;
+@use "sass:math";
+
+:host {
+  --side-panel-toolbar-height: 72px;
+
+  width: 100%;
+  display: contents;
+}
+.view-wrapper {
+  position: relative;
+  flex-direction: column;
+  padding: 0 10px;
+
+  .grid {
+    .name-template {
+      .position {
+        font-size: 10px;
+        color: var(--texteditor-label-color);
+      }
+    }
+
+    ::ng-deep & {
+      .dx-datagrid-header-panel {
+        padding: 0 var(--content-padding);
+      }
+
+      .dx-toolbar {
+        margin-bottom: 0;
+        padding: var(--toolbar-margin-bottom) 0;
+      }
+
+      .dx-datagrid-content .dx-row {
+        cursor: pointer;
+        // height: 3rem;
+        // padding: 0px
+      }
+    }
+
+    .grid-header {
+      @include header();
+    }
+    .dxo-filter-row {
+      height: 4px;
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  user-panel {
+    display: inherit;
+  }
+}
+
+.save-button {
+  position: absolute;
+  bottom: 35px;
+  right: 25px;
+}
+.importItem {
+  width: 600px;
+}
+.center-Button-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  margin: 0px;
+}
+
+.btnDemo {
+  padding: 0px;
+  margin: 0px;
+  background-color: #1b1e20;
+  color: white;
+  border: none;
+  width: 150px;
+  // height: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btnDemo i {
+  font-size: 15px;
+}
+
+.button-container {
+  padding: 0px;
+  height: 0.3vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.toggleButton {
+  border-radius: 4px;
+  background-color: #B0D4F3;
+}
+
+.SearchParams-container {
+  transition: transform 0.5s ease, opacity 0.5s ease, max-height 0.5s ease;
+  transform: translateY(0);
+  opacity: 1;
+  max-height: 500px;
+  margin-top: 10px;
+}
+
+.hide-content {
+  transform: translateY(-20px);
+  opacity: 0;
+  max-height: 0; /* Transition from max-height to 0 */
+  padding: 0;
+  margin: 0;
+  overflow: hidden; /* Prevents content overflow */
+}
+
+/* Adjust the size of the icon inside the button */
+.button-container .toggleButton .dx-icon {
+  font-size: 50px; /* Adjust the icon size */
+  width: 50px; /* Adjust width to match the font-size */
+  // height: 20px;     /* Adjust height to match the font-size */
+}
+
+
+
+.custom-close-btn {
+  position: absolute;
+  // top: 1px;
+  right: 10px;
+  background: var(--base-bg);
+  color: var(--border-color);
+  border: none;
+  font-size: 28px; /* Adjust the size of the X */
+  cursor: pointer;
+  // font-weight: bold;
+  padding: 0;
+  margin: 0;
+}
+
+
+.custom-close-btn:focus {
+  outline: none;
+}
+
+.custom-minimize-btn,
+.custom-close-btn {
+  background: var(--base-bg);
+  color: var(--border-color);
+  font-weight: bold;
+  border: none;
+  right: 20px;
+  font-size: 25px;
+  cursor: pointer;
+  padding: 0px;
+}
+
+
+
+/* General button styles */
+.custom-minimize-btn {
+  position: absolute;
+  top: 7px;
+  right: 55px; /* Position to the left of the close button */
+  width: 40px; /* Square button width */
+  height: 40px; /* Square button height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px; /* Optional: rounded corners */
+  background: var(--base-bg);
+  text-align: center;
+  color: var(--border-color); /* Icon color */
+  font-size:large;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+}
+
+
+/* Expandform icon for the expand state */
+.custom-minimize-btn.expand:before {
+  content: "\e97b"; /* DevExtreme expandform icon (using Unicode) */
+  font-family: "dx-icons"; /* Use DevExtreme's icon font */
+  font-size: 22px; /* Adjust size of the icon */
+  background: var(--base-bg);
+  color: var(--border-color);
+}
+
+
+
+
+.custom-close-btn {
+  position: absolute;
+  top: 5px;
+  right: 30px; /* Position the close button to the right */
+}
+
+.dx-popup .dx-overlay-title {
+  font-size: 5px; /* Regular font size */
+}
+
+/* When minimized, reduce the title size */
+.minimized-title {
+  font-size: 5px; /* Smaller font size */
+  color: gray; /* Lighter color for minimized state */
+}
+
+::ng-deep .dx-datagrid-column-chooser-button .dx-icon {
+  background-image: url('/assets/icons/fa6-solid--list-check.svg');
+  background-size: contain;
+
+}
+::ng-deep .dx-button .dx-icon.dx-icon-custom-summary {
+  background-image: url('/assets/icons/ph--sigma.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 22px 22px;
+
+  width: 22px;
+  height: 22px;
+
+  font-size: 0 !important;     /* prevent font glyph overlap */
+  color: var(--icon-color);
+}
+
+::ng-deep .dx-datagrid-export-button .dx-icon.dx-icon-custom-export {
+  background-image: url('/assets/icons/solar--export-bold.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 22px 22px;
+  width: 22px;
+  height: 22px;
+  font-size: 0 !important;
+  color: var(--icon-color) !important;
+}
+
+
+::ng-deep .dx-button .dx-icon.dx-icon-custom-memorize {
+  background-image: url('/assets/icons/bookmark-save-memmorize.svg'); 
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px 20px;
+  width: 20px;
+  height: 20px;
+  font-size: 0 !important;
+  color: transparent !important;
+}
+/* MAIN DropDownButton icon (toolbar) */
+::ng-deep .dx-dropdownbutton .dx-icon-custom-memorise-list,
+
+/* DropDownButton icon inside overflow/menu */
+::ng-deep .dx-menu-item .dx-icon-custom-memorise-list {
+  background-image: url('/assets/icons/material-symbols--description-outline-rounded.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px 20px;
+  width: 20px;
+  height: 20px;
+  font-size: 0 !important;
+  color: transparent !important;
+}
+
+/* Column finder icon – toolbar */
+::ng-deep .dx-dropdownbutton .dx-icon-custom-column-finder,
+
+/* Column finder icon – overflow/menu */
+::ng-deep .dx-menu-item .dx-icon-custom-column-finder {
+  background-image: url('/assets/icons/tabler--list-search.svg'); /* your SVG */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px 20px;
+
+  width: 20px;
+  height: 20px;
+
+  font-size: 0 !important;      /* prevent font glyph overlap */
+  color: inherit !important;    /* IMPORTANT for SVG visibility */
+}
+
+

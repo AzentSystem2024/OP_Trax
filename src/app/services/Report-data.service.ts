@@ -85,6 +85,13 @@ export class ReportService {
     return this.http.post(url, reqBody);
   }
 
+  //========fetch datasource of Grouping-Details========
+  fetch_Grouping_Details_Data(formData: any) {
+    const url = `${this.BASE_URL}grouperdetails/getReportData`;
+    const reqBody = formData;
+    return this.http.post(url, reqBody);
+  }
+
    //========fetch datasource of Claim-Details========
    fetch_Clinical_Costing_Summary_Data(formData: any) {
     const url = `${this.BASE_URL}ClinicalCostingProcess/clinicalCostingSummary`;

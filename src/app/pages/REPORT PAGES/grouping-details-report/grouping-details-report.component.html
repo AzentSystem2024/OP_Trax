@@ -1,1 +1,383 @@
-<p>grouping-details-report works!</p>
+<div id="reportPage" class="view-wrapper list-page drilldown mt-0">
+  <!-- <div class="paramsDiv"> -->
+  <div
+    id="reportPageParams"
+    class="paramsDiv SearchParams-container"
+    [ngClass]="{ 'hide-content': !isContentVisible }"
+  >
+    <dx-form>
+      <dxi-item
+        itemType="group"
+        cssClass="form-group"
+        class="rowGroup"
+        [colCount]="9"
+        [colCountByScreen]="{ xs: 9, sm: 9, md: 9, lg: 9 }"
+      >
+        <dxi-item [colSpan]="3">
+          <dx-drop-down-box
+            #facilityDropDown
+            labelMode="floating"
+            labelLocation="left"
+            label="Facility value"
+            [(value)]="Facility_Value"
+            valueExpr="FacilityLicense"
+            displayExpr="FacilityName"
+            [showClearButton]="true"
+            [dataSource]="Facility_DataSource"
+          >
+            <div *dxTemplate="let data of 'content'">
+              <dx-data-grid
+                [dataSource]="Facility_DataSource"
+                [columns]="[
+                  { dataField: 'FacilityLicense', caption: 'License' },
+                  { dataField: 'FacilityName', caption: 'Name', width: 'auto' },
+                ]"
+                keyExpr="FacilityLicense"
+                [selection]="{ mode: 'multiple' }"
+                [hoverStateEnabled]="true"
+                [paging]="{ enabled: true, pageSize: 10 }"
+                [filterRow]="{ visible: true }"
+                [headerFilter]="{ visible: true }"
+                [scrolling]="{ mode: 'virtual' }"
+                [height]="Facility_DataSource?.length < 5 ? 'auto' : '250px'"
+                [(selectedRowKeys)]="Facility_Value"
+              >
+              </dx-data-grid>
+            </div>
+          </dx-drop-down-box>
+        </dxi-item>
+
+        <dxi-item [colSpan]="1">
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Year"
+            [(value)]="selectedYear"
+            [dataSource]="years"
+            (onValueChanged)="onYearChanged($event)"
+            placeholder="Year"
+            [width]="'auto'"
+          ></dx-select-box>
+        </dxi-item>
+
+        <dxi-item [colSpan]="1">
+          <div>
+            <dx-select-box
+              labelMode="floating"
+              labelLocation="left"
+              label="month"
+              [dataSource]="monthDataSource"
+              displayExpr="name"
+              valueExpr="value"
+              [(value)]="selectedmonth"
+              (onValueChanged)="onMonthValueChanged($event)"
+              [dropDownOptions]="{ width: 'auto' }"
+            >
+            </dx-select-box>
+          </div>
+        </dxi-item>
+
+        <dxi-item [colSpan]="1">
+          <dx-date-box
+            labelMode="floating"
+            labelLocation="left"
+            label="From Date"
+            type="date"
+            displayFormat="dd/MM/yyyy"
+            valueFormat="yyyy/MM/dd"
+            [(value)]="From_Date_Value"
+            [min]="minDate"
+            [max]="maxDate"
+          >
+            <dx-validator validationGroup="resubValidation">
+              <dxi-validation-rule
+                type="required"
+                message="From Date is required"
+              ></dxi-validation-rule>
+            </dx-validator>
+          </dx-date-box>
+        </dxi-item>
+
+        <dxi-item [colSpan]="1">
+          <dx-date-box
+            labelMode="floating"
+            labelLocation="left"
+            label="To Date"
+            type="date"
+            displayFormat="dd/MM/yyyy"
+            valueFormat="yyyy/MM/dd"
+            [(value)]="To_Date_Value"
+            [min]="minDate"
+            [max]="maxDate"
+          >
+            <dx-validator validationGroup="resubValidation">
+              <dxi-validation-rule
+                type="required"
+                message="To Date is required"
+              ></dxi-validation-rule>
+            </dx-validator>
+          </dx-date-box>
+        </dxi-item>
+
+        <dxi-item [colSpan]="2" class="mt-1">
+          <div class="d-flex justify-content-end align-items-center w-100">
+            <dx-button
+              class="add-card ms-2"
+              icon=""
+              text="Apply"
+              type="default"
+              stylingMode="contained"
+              validationGroup="resubValidation"
+              (onClick)="get_Datagrid_DataSource()"
+            >
+            </dx-button>
+          </div>
+        </dxi-item>
+      </dxi-item>
+    </dx-form>
+  </div>
+  <!-- </div> -->
+  <div class="button-container mt-1 mb-2">
+    <dx-button
+      class="toggleButton"
+      icon="{{ isContentVisible ? 'chevronup' : 'chevrondown' }}"
+      stylingMode="outlined"
+      type="normal"
+      [hint]="isContentVisible ? 'Hide Filter Contend' : 'Show Filter Contend'"
+      [width]="200"
+      [height]="13"
+      (onClick)="toggleContent()"
+    >
+    </dx-button>
+  </div>
+  <!-- ========== Data GRid Table started ======== -->
+  <ng-container>
+    <dx-data-grid
+      id="dataGrid"
+      #dataGrid
+      class="grid reportGrid reportGridFooter theme-dependent"
+      [height]="'84vh'"
+      [noDataText]="!isContentVisible ? 'No Data Available' : ' '"
+      [dataSource]="dataGrid_DataSource"
+      [showBorders]="true"
+      [allowColumnResizing]="false"
+      [columnAutoWidth]="true"
+      [rowAlternationEnabled]="true"
+      rowAlternationInterval="2"
+      [allowColumnReordering]="true"
+      [filterRow]="{ visible: false }"
+      [headerFilter]="{ visible: false }"
+      [columnFixing]="{
+        enabled: true,
+        texts: { fix: 'Freeze', unfix: 'Unfreeze' },
+      }"
+      (onExporting)="onExporting($event)"
+      [summary]="summaryColumnsData"
+    >
+      <dxi-column
+        *ngIf="!isEmptyDatagrid"
+        type="buttons"
+        [width]="40"
+        [fixed]="true"
+        fixedPosition="left"
+        [allowFixing]="false"
+        [allowHiding]="false"
+        [allowResizing]="false"
+        [allowReordering]="false"
+      >
+        <dxi-button
+          icon="detailslayout"
+          text="Details"
+          hint="View Details"
+          [onClick]="handleRowDrillDownClick"
+        ></dxi-button>
+      </dxi-column>
+
+      <ng-container *ngFor="let column of columnsConfig">
+        <dxi-column
+          *ngIf="column.isBand"
+          [caption]="column.caption"
+          [isBand]="true"
+        >
+          <dxi-column
+            *ngFor="let subColumn of column.columns"
+            [dataField]="subColumn.dataField"
+            [caption]="subColumn.caption"
+            [format]="subColumn.format"
+            [visible]="subColumn.visible"
+            [width]="150"
+          ></dxi-column>
+        </dxi-column>
+
+        <dxi-column
+          *ngIf="!column.isBand"
+          [dataField]="column.dataField"
+          [caption]="column.caption"
+          [format]="column.format"
+          [visible]="column.visible"
+          [width]="150"
+        ></dxi-column>
+      </ng-container>
+
+      <dxo-search-panel [visible]="true"></dxo-search-panel>
+      <dxo-paging [pageSize]="10"></dxo-paging>
+      <dxo-pager
+        [visible]="true"
+        [allowedPageSizes]="allowedPageSizes"
+        [displayMode]="displayMode"
+        [showPageSizeSelector]="showPageSizeSelector"
+        [showInfo]="showInfo"
+        [showNavigationButtons]="showNavButtons"
+      >
+      </dxo-pager>
+      <dxo-load-panel [showPane]="false"></dxo-load-panel>
+      <dxo-scrolling mode="virtual"></dxo-scrolling>
+      <dxo-sorting mode="multiple"></dxo-sorting>
+
+      <dxo-header-filter [visible]="isFilterOpened">
+        <dxo-search [enabled]="true"></dxo-search>
+      </dxo-header-filter>
+
+      <dxo-filter-panel [visible]="isFilterOpened"></dxo-filter-panel>
+      <dxo-filter-builder [allowHierarchicalFields]="true">
+      </dxo-filter-builder>
+
+      <dxo-column-chooser
+        [height]="500"
+        hideOnOutsideClick="true"
+        [enabled]="true"
+        mode="select"
+      >
+      </dxo-column-chooser>
+
+      <dxo-search-panel
+        [visible]="true"
+        placeholder="Search"
+      ></dxo-search-panel>
+
+      <dxo-filter-row
+        [visible]="isFilterOpened"
+        [applyFilter]="applyFilter"
+      ></dxo-filter-row>
+
+      <dxo-export
+        [enabled]="true"
+        [allowExportSelectedData]="true"
+        [formats]="['xlsx']"
+      >
+      </dxo-export>
+
+      <dxo-toolbar>
+        <dxi-item location="before">
+          <div class="grid-header">Grouping Details</div>
+        </dxi-item>
+
+        <dxi-item
+          [disabled]="isEmptyDatagrid"
+          widget="dxButton"
+          [options]="{
+            text: '',
+            icon: 'filter',
+            onClick: filterClick,
+            hint: 'Search Column',
+          }"
+        ></dxi-item>
+
+        <dxi-item location="after" locateInMenu="auto">
+          <div class="separator"></div>
+        </dxi-item>
+
+        <dxi-item
+          location="after"
+          locateInMenu="auto"
+          showText="inMenu"
+          [disabled]="isEmptyDatagrid"
+          widget="dxButton"
+          [options]="{
+            text: 'Refresh',
+            icon: 'refresh',
+            onClick: refresh,
+            stylingMode: 'text',
+            hint: 'Refresh',
+          }"
+        ></dxi-item>
+
+        <dxi-item location="after" locateInMenu="auto">
+          <div class="separator"></div>
+        </dxi-item>
+
+        <dxi-item
+          name="columnChooserButton"
+          locateInMenu="auto"
+          [disabled]="isEmptyDatagrid"
+          [options]="{ icon: 'columnchooser' }"
+        ></dxi-item>
+
+        <dxi-item location="after" locateInMenu="auto">
+          <div class="separator"></div>
+        </dxi-item>
+
+        <dxi-item
+          widget="dxButton"
+          [disabled]="isEmptyDatagrid"
+          [options]="{
+            text: '',
+            icon: 'alignjustify',
+            onClick: SummaryClick,
+            hint: 'Hide/Show Summary',
+          }"
+        ></dxi-item>
+        <dxi-item location="after" locateInMenu="auto">
+          <div class="separator"></div>
+        </dxi-item>
+        <dxi-item
+          name="exportButton"
+          [disabled]="isEmptyDatagrid"
+          [options]="{ icon: 'export' }"
+        ></dxi-item>
+        <dxi-item location="after" locateInMenu="auto">
+          <div class="separator"></div>
+        </dxi-item>
+
+        <dxi-item
+          class="columnfinderclass"
+          [disabled]="isEmptyDatagrid"
+          widget="dxDropDownButton"
+          [options]="{
+            dataSource: ColumnNames,
+            onItemClick: findColumnLocation,
+            placeholder: 'Search Column',
+            noDataText: 'Load data and try again',
+
+            hint: 'Column location finder',
+            icon: 'find',
+            dropDownOptions: {
+              width: 'auto',
+              height: '60vh',
+            },
+          }"
+        ></dxi-item>
+      </dxo-toolbar>
+
+      <dxo-grouping
+        [autoExpandAll]="false"
+        [contextMenuEnabled]="true"
+        [expandMode]="'rowClick'"
+      ></dxo-grouping>
+
+      <dxo-selection mode="multiple"></dxo-selection>
+    </dx-data-grid>
+  </ng-container>
+</div>
+
+<dx-load-panel
+  #loadPanel
+  shadingColor="rgba(0,0,0,0.0)"
+  [(visible)]="loadingVisible"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="true"
+  [hideOnOutsideClick]="false"
+  [message]="'Loading...'"
+>
+</dx-load-panel>
