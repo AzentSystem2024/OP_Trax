@@ -150,6 +150,7 @@ export class GroupingDetailsReportComponent implements OnInit {
   isSaveMemorisedOpened: boolean = false;
   personalReportData: any;
   loadingVisible: boolean = false;
+  isGridLoading: boolean = false;
   columnFixed: boolean = true;
   initialized: boolean;
 
@@ -319,6 +320,7 @@ export class GroupingDetailsReportComponent implements OnInit {
     };
     this.isContentVisible = false;
     this.dataGrid.instance.beginCustomLoading('Loading...');
+    this.isGridLoading = true;
     try {
       const response: any = await this.service
         .fetch_Grouping_Details_Data(formData)
@@ -341,6 +343,9 @@ export class GroupingDetailsReportComponent implements OnInit {
         this.ColumnNames = this.columnsConfig
           .filter((column) => column.visible)
           .map((column) => column.caption);
+        setTimeout(() => {
+          this.updateVisibleColumnNames();
+        }, 0);
 
         // Format dates in ReportData
         const formattedReportData = response.data.ReportData;
@@ -372,6 +377,8 @@ export class GroupingDetailsReportComponent implements OnInit {
         },
         'error',
       );
+    } finally {
+      this.isGridLoading = false;
     }
   }
 
@@ -479,6 +486,21 @@ export class GroupingDetailsReportComponent implements OnInit {
     }
   };
 
+  updateVisibleColumnNames() {
+    if (this.dataGrid && this.dataGrid.instance) {
+      const visibleCols = this.dataGrid.instance.getVisibleColumns();
+      this.ColumnNames = visibleCols
+        .filter((col) => col.caption && col.dataField)
+        .map((col) => col.caption);
+    }
+  }
+
+  onGridOptionChanged(e: any) {
+    if (e.name === 'columns' || (e.fullName && e.fullName.includes('visible'))) {
+      this.updateVisibleColumnNames();
+    }
+  }
+
   //=============DataGrid Refreshing=====================
   refresh = () => {
     // this.dataGrid.instance.refresh();
@@ -487,7 +509,7 @@ export class GroupingDetailsReportComponent implements OnInit {
 
   // ================Exporting Function===================
   onExporting(event: any) {
-    const fileName = 'Grouping-Details-Report';
+    const fileName = 'ADOC Grouping Details';
     this.service.exportDataGrid(event, fileName);
   }
 

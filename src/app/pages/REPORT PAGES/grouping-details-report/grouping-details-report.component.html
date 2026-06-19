@@ -128,6 +128,13 @@
               type="default"
               stylingMode="contained"
               validationGroup="resubValidation"
+              [disabled]="
+                isGridLoading ||
+                !Facility_Value ||
+                Facility_Value.length === 0 ||
+                !From_Date_Value ||
+                !To_Date_Value
+              "
               (onClick)="get_Datagrid_DataSource()"
             >
             </dx-button>
@@ -172,6 +179,7 @@
         texts: { fix: 'Freeze', unfix: 'Unfreeze' },
       }"
       (onExporting)="onExporting($event)"
+      (onOptionChanged)="onGridOptionChanged($event)"
       [summary]="summaryColumnsData"
     >
       <dxi-column
@@ -179,14 +187,14 @@
         type="buttons"
         [width]="40"
         [fixed]="true"
-        fixedPosition="left"
+        fixedPosition="right"
         [allowFixing]="false"
         [allowHiding]="false"
         [allowResizing]="false"
         [allowReordering]="false"
       >
         <dxi-button
-          icon="detailslayout"
+          icon="errorcircle"
           text="Details"
           hint="View Details"
           [onClick]="onViewClick"
@@ -260,16 +268,11 @@
         [applyFilter]="applyFilter"
       ></dxo-filter-row>
 
-      <dxo-export
-        [enabled]="true"
-        [allowExportSelectedData]="true"
-        [formats]="['xlsx']"
-      >
-      </dxo-export>
+      <dxo-export [enabled]="true" [formats]="['xlsx']"> </dxo-export>
 
       <dxo-toolbar>
         <dxi-item location="before">
-          <div class="grid-header">Grouping Details</div>
+          <div class="grid-header">ADOC Grouping Details</div>
         </dxi-item>
 
         <dxi-item
@@ -322,7 +325,7 @@
           [disabled]="isEmptyDatagrid"
           [options]="{
             text: '',
-            icon: 'alignjustify',
+            icon: 'formula',
             onClick: SummaryClick,
             hint: 'Hide/Show Summary',
           }"
@@ -333,7 +336,7 @@
         <dxi-item
           name="exportButton"
           [disabled]="isEmptyDatagrid"
-          [options]="{ icon: 'export' }"
+          [options]="{ icon: 'exportxlsx' }"
         ></dxi-item>
         <dxi-item location="after" locateInMenu="auto">
           <div class="separator"></div>
@@ -348,9 +351,8 @@
             onItemClick: findColumnLocation,
             placeholder: 'Search Column',
             noDataText: 'Load data and try again',
-
             hint: 'Column location finder',
-            icon: 'find',
+            icon: 'increaseindent',
             dropDownOptions: {
               width: 'auto',
               height: '60vh',
@@ -364,8 +366,6 @@
         [contextMenuEnabled]="true"
         [expandMode]="'rowClick'"
       ></dxo-grouping>
-
-      <dxo-selection mode="multiple"></dxo-selection>
     </dx-data-grid>
   </ng-container>
 </div>
