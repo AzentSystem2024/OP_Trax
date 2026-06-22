@@ -502,16 +502,30 @@
       <dxi-column
         dataField="ActivityNumber"
         caption="Activity Number"
+        [fixed]="true"
+        fixedPosition="left"
       ></dxi-column>
 
-      <dxi-column dataField="ActivityDate" caption="Date"></dxi-column>
+      <dxi-column
+        dataField="ActivityDate"
+        caption="Date"
+        [fixed]="true"
+        fixedPosition="left"
+      ></dxi-column>
 
-      <dxi-column dataField="CPTType" caption="CPT Type"></dxi-column>
+      <dxi-column
+        dataField="CPTType"
+        caption="CPT Type"
+        [fixed]="true"
+        fixedPosition="left"
+      ></dxi-column>
 
       <dxi-column
         dataField="CPTCode"
         caption="CPT Code"
         cellTemplate="cptCodeTemplate"
+        [fixed]="true"
+        fixedPosition="left"
       >
       </dxi-column>
 

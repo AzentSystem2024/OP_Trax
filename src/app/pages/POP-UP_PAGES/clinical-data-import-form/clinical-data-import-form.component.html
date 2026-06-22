@@ -30,7 +30,7 @@
         </dx-validator>
       </dx-tag-box>
     </dxi-item>
-    
+
     <dxi-item>
       <dx-radio-group
         [items]="['Import XML File', 'Import Excel File']"
@@ -97,17 +97,13 @@
   (onHiding)="onXmlPopupHiding($event)"
   (onHidden)="onXmlImportClose()"
 >
-  <div *dxTemplate="let data of 'content'" id="xml-popup-content" style="height: 100%; position: relative;">
-    <dx-load-panel
-      shadingColor="rgba(0,0,0,0.1)"
-      [position]="{ of: '#xml-popup-content' }"
-      [(visible)]="isExcelLoading"
-      [showIndicator]="true"
-      [showPane]="true"
-      [shading]="true"
-      message="Importing XML..."
-    ></dx-load-panel>
+  <div
+    *dxTemplate="let data of 'content'"
+    id="xml-popup-content"
+    style="height: 100%; position: relative"
+  >
     <dx-data-grid
+      #importGrid
       [dataSource]="importResults"
       [showBorders]="true"
       [columnAutoWidth]="true"

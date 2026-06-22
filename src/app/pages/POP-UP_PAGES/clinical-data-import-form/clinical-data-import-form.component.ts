@@ -26,6 +26,7 @@ import {
   DxValidationGroupComponent,
   DxLoadPanelModule,
   DxCheckBoxModule,
+  DxDataGridComponent,
 } from 'devextreme-angular';
 import { FormTextboxModule, FormPhotoUploaderModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
@@ -45,6 +46,7 @@ import { InactivityService } from 'src/app/services/inactivity.service';
 export class ClinicalDataImportFormComponent {
   @Output() closeForm = new EventEmitter();
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('importGrid', { static: false }) importGrid!: DxDataGridComponent;
   validationGroup!: DxValidationGroupComponent;
 
   selectedOption: string = 'Import Excel File';
@@ -599,6 +601,30 @@ export class ClinicalDataImportFormComponent {
     this.newclinicianMajor.DescriptionValue = '';
   }
 
+  showGridLoading(message: string) {
+    if (this.importGrid && this.importGrid.instance) {
+      this.importGrid.instance.beginCustomLoading(message);
+    } else {
+      setTimeout(() => {
+        if (this.importGrid && this.importGrid.instance) {
+          this.importGrid.instance.beginCustomLoading(message);
+        }
+      }, 150);
+    }
+  }
+
+  hideGridLoading() {
+    if (this.importGrid && this.importGrid.instance) {
+      this.importGrid.instance.endCustomLoading();
+    } else {
+      setTimeout(() => {
+        if (this.importGrid && this.importGrid.instance) {
+          this.importGrid.instance.endCustomLoading();
+        }
+      }, 150);
+    }
+  }
+
   formatProgress = (value: number) => {
     return `${value}% Completed`;
   };
@@ -625,6 +651,12 @@ export class ClinicalDataImportFormComponent {
       this.isExcelLoading = false;
       this.inactivityService.setApiInProgress(false);
       return;
+    }
+
+    const hasXml = Array.from(files).some((f: any) => f.name.toLowerCase().endsWith('.xml'));
+    if (hasXml) {
+      this.isResponsePopupOpened = true;
+      this.showGridLoading('Importing XML...');
     }
 
     this.selectedXmlFile = [];
@@ -862,6 +894,7 @@ export class ClinicalDataImportFormComponent {
       }
     }
     this.isExcelLoading = false;
+    this.hideGridLoading();
     this.inactivityService.setApiInProgress(false);
     fileInput.value = '';
   }
