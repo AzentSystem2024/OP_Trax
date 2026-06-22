@@ -389,7 +389,6 @@ export class MasterReportService {
     return this.http.post(Url, reqBody);
   }
 
-  //======Add Cpt Master data========
   Insert_CptMaster_Data(
     CPTTypeID: any,
     CPTCode: any,
@@ -399,6 +398,7 @@ export class MasterReportService {
     CPTWeightage: any,
     WeightageEffectFrom: any,
     CPTADOCMappings: any,
+    IsADOCExcluded?: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/insert`;
 
@@ -410,6 +410,7 @@ export class MasterReportService {
       PriceEffectFrom,
       CPTWeightage,
       WeightageEffectFrom,
+      IsADOCExcluded: IsADOCExcluded ?? false,
 
       // Default values
       Description: '',
@@ -427,12 +428,14 @@ export class MasterReportService {
       ADOCGroupID: null,
       data: [],
       // New mapping table
-      CPTADOC: (CPTADOCMappings || []).filter(
-        (x: any) =>
-          x.SpecialityID != null &&
-          x.ADOCClassID != null &&
-          x.ADOCCategoryID != null,
-      ),
+      CPTADOC: IsADOCExcluded
+        ? []
+        : (CPTADOCMappings || []).filter(
+            (x: any) =>
+              x.SpecialityID != null &&
+              x.ADOCClassID != null &&
+              x.ADOCCategoryID != null,
+          ),
     };
 
     return this.http.post(url, reqBody);
@@ -445,6 +448,7 @@ export class MasterReportService {
     CPTCode: any,
     CPTName: any,
     CPTADOCMappings: any,
+    IsADOCExcluded?: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/update`;
 
@@ -453,6 +457,7 @@ export class MasterReportService {
       CPTTypeID,
       CPTCode,
       CPTName,
+      IsADOCExcluded: IsADOCExcluded ?? false,
       // Default values
       Description: '',
       CPTGroup: '',
@@ -467,12 +472,14 @@ export class MasterReportService {
       CPTEncounterDepartments: [],
       data: [],
       // New mapping table
-      CPTADOC: (CPTADOCMappings || []).filter(
-        (x: any) =>
-          x.SpecialityID != null &&
-          x.ADOCClassID != null &&
-          x.ADOCCategoryID != null,
-      ),
+      CPTADOC: IsADOCExcluded
+        ? []
+        : (CPTADOCMappings || []).filter(
+            (x: any) =>
+              x.SpecialityID != null &&
+              x.ADOCClassID != null &&
+              x.ADOCCategoryID != null,
+          ),
     };
 
     return this.http.post(url, reqBody);

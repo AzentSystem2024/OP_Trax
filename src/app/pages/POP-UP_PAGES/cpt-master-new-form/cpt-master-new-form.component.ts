@@ -1,14 +1,12 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  OnInit
-} from '@angular/core';
+import { Component, NgModule, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   DxBoxModule,
-  DxButtonModule, DxDataGridModule,
-  DxDateBoxModule, DxDropDownBoxModule,
+  DxButtonModule,
+  DxDataGridModule,
+  DxDateBoxModule,
+  DxDropDownBoxModule,
   DxFormModule,
   DxNumberBoxModule,
   DxRadioGroupModule,
@@ -16,7 +14,8 @@ import {
   DxTagBoxModule,
   DxTextAreaModule,
   DxTextBoxModule,
-  DxValidatorModule
+  DxValidatorModule,
+  DxCheckBoxModule,
 } from 'devextreme-angular';
 import { FormTextboxModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
@@ -40,6 +39,7 @@ export class CptMasterNewFormComponent implements OnInit {
     CPTWeightage: null,
     WeightageEffectFrom: null,
     CPTADOCMappings: [],
+    IsADOCExcluded: false,
   };
 
   IsWeightGlobal = false;
@@ -71,7 +71,10 @@ export class CptMasterNewFormComponent implements OnInit {
       )
       .map((x: any) => {
         const { __KEY__, ...rest } = x;
-        return rest;
+        return {
+          ...rest,
+          ADOCApplicationID: rest.ADOCApplicationID || 0,
+        };
       }),
   });
 
@@ -92,7 +95,7 @@ export class CptMasterNewFormComponent implements OnInit {
             ICDCode: '',
             ADOCClassID: null,
             ADOCCategoryID: null,
-            ADOCApplicationID: 0,
+            ADOCApplicationID: null,
           },
         ];
       }
@@ -187,6 +190,10 @@ export class CptMasterNewFormComponent implements OnInit {
   };
 
   onEditorPreparingADOC(e: any) {
+    if (this.newCptMasterData.IsADOCExcluded) {
+      e.cancel = true;
+      return;
+    }
     // Prevent duplicate Specialty selection
     // if (e.parentType === 'dataRow' && e.dataField === 'SpecialityID') {
     //   const currentRow = e.row?.data;
@@ -254,6 +261,15 @@ export class CptMasterNewFormComponent implements OnInit {
         e.component.saveEditData();
 
         const rowIndex = e.row.rowIndex;
+        const currentRow = this.newCptMasterData.CPTADOCMappings[rowIndex];
+        if (
+          currentRow &&
+          (currentRow.ADOCApplicationID == null ||
+            currentRow.ADOCApplicationID === '')
+        ) {
+          currentRow.ADOCApplicationID = 0;
+        }
+
         const lastRowIndex = this.newCptMasterData.CPTADOCMappings.length - 1;
 
         // Existing row edit -> just save
@@ -267,7 +283,7 @@ export class CptMasterNewFormComponent implements OnInit {
               (x.SpecialityID == null || x.SpecialityID === '') &&
               (x.ADOCClassID == null || x.ADOCClassID === '') &&
               (x.ADOCCategoryID == null || x.ADOCCategoryID === '') &&
-              (x.ICDCode == null || x.ICDCode === '')
+              (x.ICDCode == null || x.ICDCode === ''),
           );
 
           if (!hasEmptyRow) {
@@ -276,7 +292,75 @@ export class CptMasterNewFormComponent implements OnInit {
               ICDCode: '',
               ADOCClassID: null,
               ADOCCategoryID: null,
-              ADOCApplicationID: 0,
+              ADOCApplicationID: null,
+            });
+
+            this.newCptMasterData.CPTADOCMappings = [
+              ...this.newCptMasterData.CPTADOCMappings,
+            ];
+
+            setTimeout(() => {
+              const newRowIndex =
+                this.newCptMasterData.CPTADOCMappings.length - 1;
+
+              e.component.editCell(newRowIndex, 'SpecialityID');
+            }, 50);
+          }
+        }, 50);
+      };
+    }
+
+    // ADOC Application KeyDown to Save and Make New Row
+    if (e.parentType === 'dataRow' && e.dataField === 'ADOCApplicationID') {
+      const originalKeyDown = e.editorOptions.onKeyDown;
+
+      e.editorOptions.onKeyDown = (args: any) => {
+        originalKeyDown?.(args);
+
+        if (args.event.key !== 'Enter') {
+          return;
+        }
+
+        // Commit current editor value immediately
+        e.setValue(args.component.option('value'));
+        e.component.closeEditCell();
+
+        // Save edited value
+        e.component.saveEditData();
+
+        const rowIndex = e.row.rowIndex;
+        const currentRow = this.newCptMasterData.CPTADOCMappings[rowIndex];
+        if (
+          currentRow &&
+          (currentRow.ADOCApplicationID == null ||
+            currentRow.ADOCApplicationID === '')
+        ) {
+          currentRow.ADOCApplicationID = 0;
+        }
+
+        const lastRowIndex = this.newCptMasterData.CPTADOCMappings.length - 1;
+
+        // Existing row edit -> just save
+        if (rowIndex !== lastRowIndex) {
+          return;
+        }
+
+        setTimeout(() => {
+          const hasEmptyRow = this.newCptMasterData.CPTADOCMappings.some(
+            (x: any) =>
+              (x.SpecialityID == null || x.SpecialityID === '') &&
+              (x.ADOCClassID == null || x.ADOCClassID === '') &&
+              (x.ADOCCategoryID == null || x.ADOCCategoryID === '') &&
+              (x.ICDCode == null || x.ICDCode === ''),
+          );
+
+          if (!hasEmptyRow) {
+            this.newCptMasterData.CPTADOCMappings.push({
+              SpecialityID: null,
+              ICDCode: '',
+              ADOCClassID: null,
+              ADOCCategoryID: null,
+              ADOCApplicationID: null,
             });
 
             this.newCptMasterData.CPTADOCMappings = [
@@ -315,7 +399,25 @@ export class CptMasterNewFormComponent implements OnInit {
     e.data.ICDCode = '';
     e.data.ADOCClassID = null;
     e.data.ADOCCategoryID = null;
-    e.data.ADOCApplicationID = 0;
+    e.data.ADOCApplicationID = null;
+  }
+
+  onRowValidatingADOC(e: any) {
+    const data = { ...e.oldData, ...e.newData };
+    const hasOtherValues =
+      (data.SpecialityID != null && data.SpecialityID !== '') ||
+      (data.ADOCClassID != null && data.ADOCClassID !== '') ||
+      (data.ADOCCategoryID != null && data.ADOCCategoryID !== '') ||
+      (data.ICDCode != null && data.ICDCode !== '');
+
+    if (!hasOtherValues) {
+      if (e.newData) {
+        e.newData.ADOCApplicationID = null;
+      }
+      e.isValid = true;
+      e.brokenRules = [];
+      e.errorText = '';
+    }
   }
 
   clearForm() {
@@ -326,6 +428,7 @@ export class CptMasterNewFormComponent implements OnInit {
       CPTPrices: [],
       CPTWeightages: [],
       CPTADOCMappings: [],
+      IsADOCExcluded: false,
     };
   }
 }
@@ -347,6 +450,7 @@ export class CptMasterNewFormComponent implements OnInit {
     DxButtonModule,
     DxRadioGroupModule,
     DxDateBoxModule,
+    DxCheckBoxModule,
   ],
   declarations: [CptMasterNewFormComponent],
   exports: [CptMasterNewFormComponent],

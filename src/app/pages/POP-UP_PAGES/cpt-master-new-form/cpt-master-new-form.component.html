@@ -146,6 +146,15 @@
               </dx-date-box>
             </div>
           </dxi-item>
+
+          <dxi-item>
+            <div class="mt-2" *dxTemplate>
+              <dx-check-box
+                text="ADOC Excluded"
+                [(value)]="newCptMasterData.IsADOCExcluded"
+              ></dx-check-box>
+            </div>
+          </dxi-item>
         </dxi-item>
       </dx-form>
     </div>
@@ -167,6 +176,7 @@
         (onEditorPreparing)="onEditorPreparingADOC($event)"
         (onRowRemoving)="onADOCRowRemoving($event)"
         (onInitNewRow)="onInitNewRowADOC($event)"
+        (onRowValidating)="onRowValidatingADOC($event)"
       >
         <dxo-header-filter [visible]="true">
           <dxo-search [enabled]="true"></dxo-search>
@@ -174,9 +184,9 @@
         <dxo-scrolling mode="virtual"></dxo-scrolling>
         <dxo-editing
           mode="cell"
-          [allowUpdating]="true"
-          [allowAdding]="true"
-          [allowDeleting]="true"
+          [allowUpdating]="!newCptMasterData.IsADOCExcluded"
+          [allowAdding]="!newCptMasterData.IsADOCExcluded"
+          [allowDeleting]="!newCptMasterData.IsADOCExcluded"
           newRowPosition="last"
         >
         </dxo-editing>
@@ -241,10 +251,6 @@
             displayExpr: 'DESCRIPTION',
           }"
         >
-          <dxi-validation-rule
-            type="required"
-            message="ADOC Application is required"
-          ></dxi-validation-rule>
         </dxi-column>
       </dx-data-grid>
     </div>

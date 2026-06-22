@@ -126,6 +126,7 @@ export class CPTMasterComponent {
       CPTWeightage,
       WeightageEffectFrom,
       CPTADOCMappings,
+      IsADOCExcluded,
     } = this.CptNewFormComponent.getNewCptMasterData();
 
     this.masterService
@@ -138,6 +139,7 @@ export class CPTMasterComponent {
         CPTWeightage,
         WeightageEffectFrom,
         CPTADOCMappings,
+        IsADOCExcluded,
       )
       .subscribe((response: any) => {
         if (response) {
@@ -166,13 +168,33 @@ export class CPTMasterComponent {
 
   //======= Update data ==========
   onClickUpdateNewCptType = () => {
-    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings } =
-      this.CptEditFormComponent.getUpdateCptMasterData();
+    const {
+      ID,
+      CPTTypeID,
+      CPTCode,
+      CPTName,
+      CPTADOCMappings,
+      IsADOCExcluded,
+    } = this.CptEditFormComponent.getUpdateCptMasterData();
 
-    console.log(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings);
+    console.log(
+      ID,
+      CPTTypeID,
+      CPTCode,
+      CPTName,
+      CPTADOCMappings,
+      IsADOCExcluded,
+    );
 
     this.masterService
-      .update_CptMaster_data(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings)
+      .update_CptMaster_data(
+        ID,
+        CPTTypeID,
+        CPTCode,
+        CPTName,
+        CPTADOCMappings,
+        IsADOCExcluded,
+      )
       .subscribe((response: any) => {
         if (response) {
           this.dataGrid.instance.refresh();

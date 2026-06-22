@@ -368,11 +368,11 @@ export class ClinicalDataComponent implements OnInit {
 
   //======= Update data ==========
   onClickUpdateNewCptType = () => {
-    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings } =
+    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings, IsADOCExcluded } =
       this.CptEditFormComponent.getUpdateCptMasterData();
 
     this.masterService
-      .update_CptMaster_data(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings)
+      .update_CptMaster_data(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings, IsADOCExcluded)
       .subscribe((response: any) => {
         if (response) {
           this.dataGrid.instance.refresh();
