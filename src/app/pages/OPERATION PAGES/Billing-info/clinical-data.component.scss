@@ -166,4 +166,14 @@
   width: 50px; /* Adjust width to match the font-size */
 }
 
+::ng-deep .dx-datagrid-headers {
+  z-index: 100 !important;
+}
 
+::ng-deep .dx-datagrid-content-fixed {
+  z-index: 10 !important;
+}
+
+::ng-deep .dx-datagrid-headers .dx-datagrid-content-fixed {
+  z-index: 101 !important;
+}

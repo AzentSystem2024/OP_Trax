@@ -264,7 +264,9 @@ export class ClinicalDataComponent implements OnInit {
             this.operationService.getClinicalData(payload),
           );
           this.isLookupLoading = false;
-          return res?.flag === '1' ? (res.data ?? []) : [];
+          const data = res?.flag === '1' ? (res.data ?? []) : [];
+          this.isContentVisible = data.length === 0;
+          return data;
         } catch (err: any) {
           this.isLookupLoading = false;
           console.error('Error loading data:', err.message || err);

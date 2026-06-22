@@ -66,6 +66,7 @@
               <dx-check-box
                 text="ADOC Excluded"
                 [(value)]="newCptMasterData.IsADOCExcluded"
+                (onValueChanged)="onAdocExcludedChanged($event)"
               ></dx-check-box>
             </div>
           </dxi-item>
@@ -90,7 +91,20 @@
     ></dx-tabs>
 
     <div *ngIf="selectedTabIndex === 0" class="grid-container">
+      <div
+        class="p-3 text-center text-muted"
+        *ngIf="newCptMasterData.IsADOCExcluded"
+        style="
+          height: 350px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        ADOC Mapping is Excluded.
+      </div>
       <dx-data-grid
+        *ngIf="!newCptMasterData.IsADOCExcluded"
         class="custom-grid"
         [dataSource]="newCptMasterData.CPTADOCMappings"
         [showBorders]="false"
@@ -121,6 +135,7 @@
         <dxi-column
           dataField="SpecialityID"
           caption="Specialty"
+          [width]="180"
           [lookup]="{
             dataSource: specialityDataSource,
             valueExpr: 'ID',
@@ -137,6 +152,7 @@
         <dxi-column
           dataField="ADOCClassID"
           caption="ADOC Class"
+          [width]="180"
           [lookup]="{
             dataSource: allADOCClassDataSource,
             valueExpr: 'ID',
@@ -154,6 +170,7 @@
           dataField="ADOCCategoryID"
           caption="ADOC Category"
           [allowEditing]="false"
+          [width]="180"
           [lookup]="{
             dataSource: ADOCgroupDataSource,
             valueExpr: 'ID',
@@ -165,12 +182,13 @@
           dataField="ICDCode"
           caption="ICD Code"
           dataType="string"
+          [width]="140"
         ></dxi-column>
         <!-- ADOC Application -->
         <dxi-column
           dataField="ADOCApplicationID"
           caption="ADOC Application"
-          [width]="150"
+          [width]="180"
           [editorOptions]="{ dropDownOptions: { width: 'auto' } }"
           [lookup]="{
             dataSource: ADOCApplicationDataSource,

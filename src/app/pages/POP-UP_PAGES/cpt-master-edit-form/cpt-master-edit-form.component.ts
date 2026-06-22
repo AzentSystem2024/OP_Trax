@@ -155,8 +155,13 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     this.selectedTabIndex = 0;
   }
 
+  onAdocExcludedChanged(e: any) {
+  }
+
   onTabSelectionChanged(e: any) {
-    this.selectedTabIndex = e.addedItems[0].id;
+    if (e.addedItems && e.addedItems.length > 0) {
+      this.selectedTabIndex = e.addedItems[0].id;
+    }
   }
 
   async getSpecialityDropdown(): Promise<void> {

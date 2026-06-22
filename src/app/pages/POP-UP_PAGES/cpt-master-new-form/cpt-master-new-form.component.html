@@ -162,7 +162,19 @@
 
   <!-- Tabs Section -->
   <div class="section-card">
-    <div class="grid-container">
+    <div
+      class="p-3 text-center text-muted"
+      *ngIf="newCptMasterData.IsADOCExcluded"
+      style="
+        height: 350px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      ADOC Mapping is Excluded.
+    </div>
+    <div class="grid-container" *ngIf="!newCptMasterData.IsADOCExcluded">
       <dx-data-grid
         class="custom-grid"
         height="350"
@@ -195,6 +207,7 @@
         <dxi-column
           dataField="SpecialityID"
           caption="Specialty"
+          [width]="200"
           [lookup]="{
             dataSource: specialityDataSource,
             valueExpr: 'ID',
@@ -211,6 +224,7 @@
         <dxi-column
           dataField="ADOCClassID"
           caption="ADOC Class"
+          [width]="200"
           [lookup]="{
             dataSource: allADOCClassDataSource,
             valueExpr: 'ID',
@@ -228,6 +242,7 @@
           dataField="ADOCCategoryID"
           caption="ADOC Category"
           [allowEditing]="false"
+          [width]="180"
           [lookup]="{
             dataSource: ADOCgroupDataSource,
             valueExpr: 'ID',
@@ -237,13 +252,18 @@
         </dxi-column>
 
         <!-- ICD Code -->
-        <dxi-column dataField="ICDCode" caption="ICD Code" dataType="string">
+        <dxi-column
+          dataField="ICDCode"
+          caption="ICD Code"
+          dataType="string"
+          [width]="140"
+        >
         </dxi-column>
         <!-- ADOC Application -->
         <dxi-column
           dataField="ADOCApplicationID"
           caption="ADOC Application"
-          [width]="150"
+          [width]="180"
           [editorOptions]="{ dropDownOptions: { width: 'auto' } }"
           [lookup]="{
             dataSource: ADOCApplicationDataSource,
