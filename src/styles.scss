@@ -629,7 +629,7 @@ body {
 
   .dx-datagrid-headers.dx-datagrid-nowrap.dx-bordered-top-view {
     border-radius: 8px 8px 0 0;
-    background-color: #00a0e020;
+    background-color: #037fb0;
     font-size: larger;
     font-weight: bolder;
   }
@@ -1260,8 +1260,6 @@ body {
   border-radius: 8px 8px 0 0;
   background-color: var(--cell-header-bg);
   color: var(--cell-header-color);
-  // font-size: larger;
-  // font-weight: bolder;
   font-weight: 100 !important;
 }
 

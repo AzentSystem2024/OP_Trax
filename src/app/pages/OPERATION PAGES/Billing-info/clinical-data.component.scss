@@ -112,14 +112,13 @@
   cursor: pointer;
 }
 
-
 .rotate-icon {
   display: inline-block;
   animation: spinClockwise 1s linear infinite;
 }
 
 ::ng-deep .apply-btn-container .dx-button.dx-button-default .dx-icon {
-     color: #fbfbfb; 
+  color: #fbfbfb;
 }
 
 @keyframes spinClockwise {
@@ -140,11 +139,14 @@
 }
 .toggleButton {
   border-radius: 4px;
-  background-color: #B0D4F3;
+  background-color: #b0d4f3;
 }
 
 .SearchParams-container {
-  transition: transform 0.5s ease, opacity 0.5s ease, max-height 0.5s ease;
+  transition:
+    transform 0.5s ease,
+    opacity 0.5s ease,
+    max-height 0.5s ease;
   transform: translateY(0);
   opacity: 1;
   max-height: 500px;
@@ -176,4 +178,29 @@
 
 ::ng-deep .dx-datagrid-headers .dx-datagrid-content-fixed {
   z-index: 101 !important;
+}
+
+// ==========================================
+
+/* Right sticky column */
+::ng-deep .dx-datagrid-sticky-column-right {
+  background: var(--cell-header-bg) !important;
+  z-index: 1000 !important;
+}
+
+/* Sticky column header */
+::ng-deep .dx-datagrid-headers .dx-datagrid-sticky-column-right {
+  background: var(--cell-header-bg) !important;
+  z-index: 1001 !important;
+}
+
+/* Prevent overlap */
+::ng-deep .dx-datagrid-sticky-column-border-left {
+  border-left: 1px solid #d9d9d9 !important;
+}
+
+/* Header cells */
+::ng-deep .dx-datagrid-headers td {
+  position: relative;
+  z-index: 999;
 }

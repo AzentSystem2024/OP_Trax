@@ -459,6 +459,7 @@
       <!-- Details Grid -->
       <dx-data-grid
         #popupGrid
+        id="popupGrid"
         noDataText=" "
         [dataSource]="popupGridData"
         [showBorders]="true"
@@ -473,6 +474,7 @@
           <dxo-search [enabled]="true"></dxo-search>
         </dxo-header-filter>
 
+        <dxo-column-fixing [enabled]="true"></dxo-column-fixing>
         <dxo-scrolling
           mode="virtual"
           columnRenderingMode="virtual"
