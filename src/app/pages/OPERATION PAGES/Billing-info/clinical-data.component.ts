@@ -13,6 +13,7 @@ import {
   DxDateBoxModule,
   DxDropDownBoxModule,
   DxDropDownButtonModule,
+  DxFormModule,
   DxLoadPanelModule,
   DxLookupModule,
   DxPopupModule,
@@ -90,6 +91,7 @@ export class ClinicalDataComponent implements OnInit {
 
   facilityListDataSource: any;
   selectedFacility: any[] = [];
+  cptCodes: string = '';
 
   fromDate: any | null = null;
   toDate: any | null = null;
@@ -99,6 +101,7 @@ export class ClinicalDataComponent implements OnInit {
 
   isRowPopupVisible: boolean = false;
   selectedRowData: any = {};
+  isContentVisible: boolean = true;
 
   selectedCptCodeData: any;
   isCptEditFormPopupOpened: boolean = false;
@@ -219,8 +222,6 @@ export class ClinicalDataComponent implements OnInit {
     }
   }
 
- 
-
   initializeDefaults(): void {
     const today = new Date();
     this.selectedYear = today.getFullYear();
@@ -253,13 +254,14 @@ export class ClinicalDataComponent implements OnInit {
         : '',
       DateFrom: formatDate(this.fromDate),
       DateTo: formatDate(this.toDate),
+      CPTCodes: this.cptCodes || '',
     };
 
     this.dataSource = new DataSource<any>({
       load: async () => {
         try {
           const res: any = await firstValueFrom(
-            this.operationService.getClinicalData(payload)
+            this.operationService.getClinicalData(payload),
           );
           this.isLookupLoading = false;
           return res?.flag === '1' ? (res.data ?? []) : [];
@@ -312,10 +314,10 @@ export class ClinicalDataComponent implements OnInit {
 
     for (const row of uniqueClaimUIDs) {
       const payload = { ClaimUID: row.ClaimUID || 0 };
-      
+
       try {
         const res: any = await firstValueFrom(
-          this.operationService.getClinicalDataInPopup(payload)
+          this.operationService.getClinicalDataInPopup(payload),
         );
         // We only process the API, no need to show popup or change status manually
       } catch (err) {
@@ -372,7 +374,14 @@ export class ClinicalDataComponent implements OnInit {
       this.CptEditFormComponent.getUpdateCptMasterData();
 
     this.masterService
-      .update_CptMaster_data(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings, IsADOCExcluded)
+      .update_CptMaster_data(
+        ID,
+        CPTTypeID,
+        CPTCode,
+        CPTName,
+        CPTADOCMappings,
+        IsADOCExcluded,
+      )
       .subscribe((response: any) => {
         if (response) {
           this.dataGrid.instance.refresh();
@@ -410,6 +419,10 @@ export class ClinicalDataComponent implements OnInit {
   toggleFilterRow = () => {
     this.isFilterRowVisible = !this.isFilterRowVisible;
   };
+
+  toggleContent() {
+    this.isContentVisible = !this.isContentVisible;
+  }
 
   openPopup() {
     this.isAddFormPopupOpened = true;
@@ -591,6 +604,7 @@ export class ClinicalDataComponent implements OnInit {
     CptMasterEditFormModule,
     DxLoadPanelModule,
     DxoSummaryModule,
+    DxFormModule,
   ],
   providers: [],
   exports: [],

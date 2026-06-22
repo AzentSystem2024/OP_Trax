@@ -1,119 +1,160 @@
 <div class="clinical-data-root">
   <div class="view-wrapper list-page">
-    <div class="container-fluid toolbar-fields p-2">
-      <div class="row align-items-center g-2">
-        <div class="col-auto">
-          <dx-drop-down-box
-            label="Facility"
-            labelMode="floating"
-            labelLocation="left"
-            [(value)]="selectedFacility"
-            valueExpr="FacilityLicense"
-            [displayExpr]="displayFacility"
-            [showClearButton]="true"
-            [dataSource]="facilityListDataSource"
-            [width]="'250'"
-            [dropDownOptions]="{ width: '400' }"
-          >
-            <div *dxTemplate="let data of 'content'">
-              <dx-data-grid
-                #facilityGrid
-                [dataSource]="facilityListDataSource"
-                keyExpr="FacilityLicense"
-                [columns]="[
-                  { dataField: 'FacilityLicense', caption: 'License' },
-                  { dataField: 'FacilityName', caption: 'Name' },
-                ]"
-                [selection]="{ mode: 'multiple' }"
-                [hoverStateEnabled]="true"
-                [paging]="{ enabled: true, pageSize: 10 }"
-                [filterRow]="{ visible: true }"
-                [headerFilter]="{ visible: true }"
-                [scrolling]="{ mode: 'virtual' }"
-                [height]="'auto'"
-                [(selectedRowKeys)]="selectedFacility"
-              ></dx-data-grid>
+    <div
+      class="container-fluid toolbar-fields p-2 SearchParams-container"
+      [ngClass]="{ 'hide-content': !isContentVisible }"
+    >
+      <dx-form>
+        <!-- Row 1 -->
+        <dxi-item
+          itemType="group"
+          cssClass="form-group"
+          class="rowGroup"
+          [colCount]="8"
+          [colCountByScreen]="{ xs: 8, sm: 8, md: 8, lg: 8 }"
+        >
+          <dxi-item [colSpan]="4">
+            <dx-drop-down-box
+              label="Facility"
+              labelMode="floating"
+              labelLocation="left"
+              [(value)]="selectedFacility"
+              valueExpr="FacilityLicense"
+              [displayExpr]="displayFacility"
+              [showClearButton]="true"
+              [dataSource]="facilityListDataSource"
+              [dropDownOptions]="{ width: '400' }"
+            >
+              <div *dxTemplate="let data of 'content'">
+                <dx-data-grid
+                  #facilityGrid
+                  [dataSource]="facilityListDataSource"
+                  keyExpr="FacilityLicense"
+                  [columns]="[
+                    { dataField: 'FacilityLicense', caption: 'License' },
+                    { dataField: 'FacilityName', caption: 'Name' },
+                  ]"
+                  [selection]="{ mode: 'multiple' }"
+                  [hoverStateEnabled]="true"
+                  [paging]="{ enabled: true, pageSize: 10 }"
+                  [filterRow]="{ visible: true }"
+                  [headerFilter]="{ visible: true }"
+                  [scrolling]="{ mode: 'virtual' }"
+                  [height]="'auto'"
+                  [(selectedRowKeys)]="selectedFacility"
+                ></dx-data-grid>
+              </div>
+            </dx-drop-down-box>
+          </dxi-item>
+
+          <dxi-item [colSpan]="4">
+            <dx-text-box
+              label="CPT Codes"
+              labelMode="floating"
+              [(value)]="cptCodes"
+            ></dx-text-box>
+          </dxi-item>
+        </dxi-item>
+
+        <!-- Row 2 -->
+        <dxi-item
+          itemType="group"
+          cssClass="form-group"
+          class="rowGroup mt-2"
+          [colCount]="8"
+          [colCountByScreen]="{ xs: 8, sm: 8, md: 8, lg: 8 }"
+        >
+          <dxi-item [colSpan]="1">
+            <dx-select-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Year"
+              [(value)]="selectedYear"
+              [dataSource]="years"
+              (onValueChanged)="onYearChanged($event)"
+              placeholder="Year"
+            ></dx-select-box>
+          </dxi-item>
+
+          <dxi-item [colSpan]="1">
+            <dx-select-box
+              labelMode="floating"
+              labelLocation="left"
+              label="month"
+              [dataSource]="monthDataSource"
+              displayExpr="name"
+              valueExpr="value"
+              [(value)]="selectedmonth"
+              (onValueChanged)="onMonthValueChanged($event)"
+            >
+            </dx-select-box>
+          </dxi-item>
+
+          <dxi-item [colSpan]="2">
+            <dx-date-box
+              label="From Date"
+              labelMode="floating"
+              labelLocation="left"
+              [(value)]="fromDate"
+              [displayFormat]="'dd-MM-yyyy'"
+              type="date"
+              [min]="minDate"
+              [max]="maxDate"
+            >
+            </dx-date-box>
+          </dxi-item>
+
+          <dxi-item [colSpan]="2">
+            <dx-date-box
+              label="To Date"
+              labelMode="floating"
+              labelLocation="left"
+              [(value)]="toDate"
+              [displayFormat]="'dd-MM-yyyy'"
+              [min]="fromDate"
+              [max]="today"
+              type="date"
+            >
+            </dx-date-box>
+          </dxi-item>
+
+          <dxi-item [colSpan]="2" class="mt-1">
+            <div class="d-flex justify-content-end align-items-center w-100">
+              <dx-button
+                text="Apply"
+                icon=""
+                class="add-card ms-2"
+                type="default"
+                [disabled]="isLookupLoading"
+                (onClick)="onApplyFilter()"
+              >
+              </dx-button>
             </div>
-          </dx-drop-down-box>
-        </div>
+          </dxi-item>
+        </dxi-item>
+      </dx-form>
+    </div>
 
-        <div class="col-auto">
-          <dx-select-box
-            labelMode="floating"
-            labelLocation="left"
-            label="Year"
-            [(value)]="selectedYear"
-            [dataSource]="years"
-            (onValueChanged)="onYearChanged($event)"
-            placeholder="Year"
-            [width]="'auto'"
-            [width]="100"
-          ></dx-select-box>
-        </div>
-
-        <div class="col-auto">
-          <dx-select-box
-            labelMode="floating"
-            labelLocation="left"
-            label="month"
-            [dataSource]="monthDataSource"
-            displayExpr="name"
-            valueExpr="value"
-            [(value)]="selectedmonth"
-            (onValueChanged)="onMonthValueChanged($event)"
-            [width]="140"
-          >
-          </dx-select-box>
-        </div>
-
-        <div class="col-auto">
-          <dx-date-box
-            label="From Date"
-            labelMode="floating"
-            labelLocation="left"
-            [(value)]="fromDate"
-            [displayFormat]="'dd-MM-yyyy'"
-            type="date"
-            [width]="130"
-            [min]="minDate"
-            [max]="maxDate"
-          >
-          </dx-date-box>
-        </div>
-
-        <div class="col-auto">
-          <dx-date-box
-            label="To Date"
-            labelMode="floating"
-            labelLocation="left"
-            [(value)]="toDate"
-            [displayFormat]="'dd-MM-yyyy'"
-            [min]="fromDate"
-            [max]="today"
-            type="date"
-            [width]="130"
-          >
-          </dx-date-box>
-        </div>
-
-        <div class="col-auto ms-auto mt-3 apply-btn-container d-flex">
-          <dx-button
-            text="Apply"
-            icon=""
-            class="apply_button"
-            type="default"
-            [disabled]="isLookupLoading"
-            (onClick)="onApplyFilter()"
-          >
-          </dx-button>
-        </div>
-      </div>
+    <div class="button-container mt-1 mb-2">
+      <dx-button
+        class="toggleButton"
+        icon="{{ isContentVisible ? 'chevronup' : 'chevrondown' }}"
+        stylingMode="outlined"
+        type="normal"
+        [hint]="
+          isContentVisible ? 'Hide Filter Contend' : 'Show Filter Contend'
+        "
+        [width]="200"
+        [height]="13"
+        (onClick)="toggleContent()"
+      >
+      </dx-button>
     </div>
 
     <dx-data-grid
-      height="78vh"
+      [height]="isContentVisible ? '67vh' : '82vh'"
       class="grid theme-dependent"
-      noDataText=" "
+      [noDataText]="!isContentVisible ? 'No Data Available' : ' '"
       [dataSource]="dataSource"
       [showBorders]="true"
       [showColumnLines]="true"
@@ -585,7 +626,6 @@
         [formData]="selectedCptCodeData"
       ></app-cpt-master-edit-form>
     </form-popup>
-    
   </div>
 
   <dx-load-panel

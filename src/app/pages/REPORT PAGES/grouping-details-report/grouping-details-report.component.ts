@@ -120,6 +120,7 @@ export class GroupingDetailsReportComponent implements OnInit {
   To_Date_Value: any;
   selectedmonth: any;
   selectedYear: number | null;
+  cptCodes: string = '';
 
   //========Variables for Pagination ====================
   readonly allowedPageSizes: any = [10, 20, 'all'];
@@ -317,6 +318,7 @@ export class GroupingDetailsReportComponent implements OnInit {
       FacilityID: this.Facility_Value.join(','),
       DateFrom: this.reportengine.formatDate(this.From_Date_Value),
       DateTo: this.reportengine.formatDate(this.To_Date_Value),
+      CPTCodes: this.cptCodes || '',
     };
     this.isContentVisible = false;
     this.dataGrid.instance.beginCustomLoading('Loading...');

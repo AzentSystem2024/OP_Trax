@@ -6,14 +6,15 @@
     [ngClass]="{ 'hide-content': !isContentVisible }"
   >
     <dx-form>
+      <!-- Row 1 -->
       <dxi-item
         itemType="group"
         cssClass="form-group"
         class="rowGroup"
-        [colCount]="9"
-        [colCountByScreen]="{ xs: 9, sm: 9, md: 9, lg: 9 }"
+        [colCount]="8"
+        [colCountByScreen]="{ xs: 8, sm: 8, md: 8, lg: 8 }"
       >
-        <dxi-item [colSpan]="3">
+        <dxi-item [colSpan]="4">
           <dx-drop-down-box
             #facilityDropDown
             labelMode="floating"
@@ -47,6 +48,23 @@
           </dx-drop-down-box>
         </dxi-item>
 
+        <dxi-item [colSpan]="4">
+          <dx-text-box
+            label="CPT Codes"
+            labelMode="floating"
+            [(value)]="cptCodes"
+          ></dx-text-box>
+        </dxi-item>
+      </dxi-item>
+
+      <!-- Row 2 -->
+      <dxi-item
+        itemType="group"
+        cssClass="form-group"
+        class="rowGroup mt-2"
+        [colCount]="8"
+        [colCountByScreen]="{ xs: 8, sm: 8, md: 8, lg: 8 }"
+      >
         <dxi-item [colSpan]="1">
           <dx-select-box
             labelMode="floating"
@@ -77,7 +95,7 @@
           </div>
         </dxi-item>
 
-        <dxi-item [colSpan]="1">
+        <dxi-item [colSpan]="2">
           <dx-date-box
             labelMode="floating"
             labelLocation="left"
@@ -98,7 +116,7 @@
           </dx-date-box>
         </dxi-item>
 
-        <dxi-item [colSpan]="1">
+        <dxi-item [colSpan]="2">
           <dx-date-box
             labelMode="floating"
             labelLocation="left"
@@ -163,7 +181,7 @@
       id="dataGrid"
       #dataGrid
       class="grid reportGrid reportGridFooter theme-dependent"
-      [height]="'84vh'"
+      [height]="isContentVisible ? '67vh' : '84vh'"
       [noDataText]="!isContentVisible ? 'No Data Available' : ' '"
       [dataSource]="dataGrid_DataSource"
       [showBorders]="true"
