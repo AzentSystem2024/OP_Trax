@@ -170,6 +170,7 @@
       }"
       (onExporting)="onExporting($event)"
       (onSelectionChanged)="onSelectionChanged($event)"
+      (onCellPrepared)="onCellPrepared($event)"
     >
       <dxo-paging [pageSize]="10"></dxo-paging>
       <dxo-editing
@@ -468,6 +469,7 @@
         [showColumnLines]="true"
         height="500"
         (onCellDblClick)="onCellClick($event)"
+        (onCellPrepared)="onCellPrepared($event)"
       >
         <!-- Header Filter -->
         <dxo-header-filter [visible]="true">

@@ -184,7 +184,7 @@
 
 /* Right sticky column */
 ::ng-deep .dx-datagrid-sticky-column-right {
-  background: var(--cell-header-bg) !important;
+  // background: var(--cell-header-bg) !important;
   z-index: 1000 !important;
 }
 
@@ -202,5 +202,22 @@
 /* Header cells */
 ::ng-deep .dx-datagrid-headers td {
   position: relative;
-  z-index: 999;
+}
+
+::ng-deep
+  .dx-theme-fluent
+  .dx-datagrid-headers.dx-datagrid-nowrap.dx-bordered-top-view {
+  border-radius: 8px 8px 0 0;
+  background-color: var(--cell-header-bg);
+  color: var(--cell-header-color);
+  font-weight: 100 !important;
+}
+
+/* Ensure fixed column headers have a solid background and stay above scrollable columns without transparent bleed-through */
+::ng-deep .dx-datagrid-headers .dx-datagrid-content-fixed {
+  background-color: var(--cell-header-bg) !important;
+}
+::ng-deep .dx-datagrid-headers .dx-datagrid-table .dx-row > td {
+  background-color: var(--cell-header-bg) !important;
+  color: var(--cell-header-color) !important;
 }

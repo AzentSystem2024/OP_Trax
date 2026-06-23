@@ -587,7 +587,17 @@ export class ClinicalDataComponent implements OnInit {
       );
     }
   }
+  onCellPrepared(e: any) {
+    if (e.rowType === 'header') {
+      e.cellElement.style.backgroundColor = 'var(--cell-header-bg)';
+      e.cellElement.style.color = 'var(--cell-header-color)';
+    }
+    if (e.rowType === 'data') {
+      e.cellElement.style.zIndex = 10;
+    }
+  }
 }
+
 @NgModule({
   imports: [
     CommonModule,
