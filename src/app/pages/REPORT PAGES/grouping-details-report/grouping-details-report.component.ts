@@ -305,69 +305,90 @@ export class GroupingDetailsReportComponent implements OnInit {
       CPTCodes: this.cptCodes || '',
     };
 
+    this.dataGrid.instance.beginCustomLoading('Loading...');
     this.isGridLoading = true;
 
-    this.dataGrid_DataSource = new DataSource<any>({
-      load: () => {
-        return new Promise((resolve, reject) => {
-          this.cancelLoad = reject;
-          this.filterSubscription = this.service
-            .fetch_Grouping_Details_Data(formData)
-            .subscribe({
-              next: (response: any) => {
-                this.isGridLoading = false;
-                this.filterSubscription = undefined;
-                this.cancelLoad = undefined;
+    try {
+      const response: any = await new Promise((resolve, reject) => {
+        this.cancelLoad = reject;
+        this.filterSubscription = this.service
+          .fetch_Grouping_Details_Data(formData)
+          .subscribe({
+            next: (res: any) => resolve(res),
+            error: (err: any) => reject(err),
+          });
+      });
 
-                if (response?.flag === '1') {
-                  this.isEmptyDatagrid = false;
-                  this.columndata = response.data.ReportColumns;
+      this.filterSubscription = undefined;
+      this.cancelLoad = undefined;
 
-                  const userLocale = navigator.language || 'en-US';
+      if (response?.flag === '1') {
+        this.isEmptyDatagrid = false;
+        this.columndata = response.data.ReportColumns;
 
-                  this.summaryColumnsData = this.generateSummaryColumns(
-                    response.data.ReportColumns,
-                  );
+        const userLocale = navigator.language || 'en-US';
 
-                  this.columnsConfig = this.generateColumnsConfig(
-                    response.data.ReportColumns,
-                    userLocale,
-                  );
-                  this.ColumnNames = this.columnsConfig
-                    .filter((column: any) => column.visible)
-                    .map((column: any) => column.caption);
+        this.summaryColumnsData = this.generateSummaryColumns(
+          response.data.ReportColumns,
+        );
 
-                  setTimeout(() => {
-                    this.updateVisibleColumnNames();
-                  }, 0);
+        this.columnsConfig = this.generateColumnsConfig(
+          response.data.ReportColumns,
+          userLocale,
+        );
+        this.ColumnNames = this.columnsConfig
+          .filter((column: any) => column.visible)
+          .map((column: any) => column.caption);
 
-                  const formattedReportData = response.data?.ReportData || [];
-                  this.isContentVisible = formattedReportData.length === 0;
-                  resolve(formattedReportData);
-                } else {
-                  this.isContentVisible = true;
-                  notify(
-                    {
-                      message: `${response?.message}`,
-                      position: { at: 'top right', my: 'top right' },
-                    },
-                    'error',
-                  );
-                  resolve([]);
-                }
-              },
-              error: (err: any) => {
-                this.isGridLoading = false;
-                this.filterSubscription = undefined;
-                this.cancelLoad = undefined;
-                this.isContentVisible = true;
-                console.error('Error loading data:', err.message || err);
-                reject(err.message || 'Error loading data');
-              },
-            });
+        setTimeout(() => {
+          this.updateVisibleColumnNames();
+        }, 0);
+
+        const formattedReportData = response.data?.ReportData || [];
+        this.isContentVisible = formattedReportData.length === 0;
+
+        this.dataGrid_DataSource = new DataSource<any>({
+          load: () => Promise.resolve(formattedReportData),
         });
-      },
-    });
+      } else {
+        this.isContentVisible = true;
+        notify(
+          {
+            message: `${response?.message}`,
+            position: { at: 'top right', my: 'top right' },
+          },
+          'error',
+        );
+        this.dataGrid_DataSource = new DataSource<any>({
+          load: () => Promise.resolve([]),
+        });
+      }
+    } catch (error: any) {
+      this.filterSubscription = undefined;
+      this.cancelLoad = undefined;
+      this.isContentVisible = true;
+
+      const errMsg = typeof error === 'string' ? error : error?.message || String(error);
+
+      if (!errMsg.includes('cancelled by user')) {
+        console.error('Error loading data:', error);
+        notify(
+          {
+            message: `An error occurred while fetching the data. Please try again later.`,
+            position: { at: 'top right', my: 'top right' },
+            displayTime: 3000,
+          },
+          'error',
+        );
+      }
+
+      this.dataGrid_DataSource = new DataSource<any>({
+        load: () => Promise.reject(errMsg),
+      });
+    } finally {
+      this.isGridLoading = false;
+      this.dataGrid.instance.endCustomLoading();
+    }
   }
 
   cancelApiCall() {
