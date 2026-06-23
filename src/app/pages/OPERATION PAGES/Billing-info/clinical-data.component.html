@@ -129,6 +129,15 @@
                 (onClick)="onApplyFilter()"
               >
               </dx-button>
+              
+              <dx-button
+                *ngIf="isLookupLoading"
+                text="Cancel"
+                type="danger"
+                class="add-card ms-2"
+                (onClick)="cancelApiCall()"
+              >
+              </dx-button>
             </div>
           </dxi-item>
         </dxi-item>

@@ -1,9 +1,7 @@
 import {
-  Component,
-  ElementRef,
-  NgModule,
+  Component, NgModule,
   OnInit,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import notify from 'devextreme/ui/notify';
 import {
@@ -22,28 +20,23 @@ import {
 } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { CommonModule } from '@angular/common';
-import {  FormPopupModule } from 'src/app/components';
+import { FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/services';
 import { OperationReportService } from '../operation-report.service';
 import { ClinicalDataImportFormModule } from '../../POP-UP_PAGES/clinical-data-import-form/clinical-data-import-form.component';
 import { DatePipe } from '@angular/common';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import {
   CptMasterEditFormComponent,
   CptMasterEditFormModule,
 } from '../../POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
-
 import { NotificationService } from 'src/app/services/notification.service';
 import { InactivityService } from 'src/app/services/inactivity.service';
 import { ReportEngineService } from '../../REPORT PAGES/report-engine.service';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
 import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
-import { Workbook } from 'exceljs';
-import { exportDataGrid } from 'devextreme/excel_exporter';
 import { AdocDetailPopupModule } from '../../POP-UP_PAGES/adoc-detail-popup/adoc-detail-popup.component';
 
 @Component({
@@ -58,6 +51,9 @@ export class ClinicalDataComponent implements OnInit {
 
   @ViewChild(CptMasterEditFormComponent, { static: false })
   CptEditFormComponent!: CptMasterEditFormComponent;
+
+  private filterSubscription?: Subscription;
+  private cancelLoad?: (reason: string) => void;
 
   isAddFormPopupOpened: any = false;
   //========Variables for Pagination ====================
@@ -247,22 +243,42 @@ export class ClinicalDataComponent implements OnInit {
     };
 
     this.dataSource = new DataSource<any>({
-      load: async () => {
-        try {
-          const res: any = await firstValueFrom(
-            this.operationService.getClinicalData(payload),
-          );
-          this.isLookupLoading = false;
-          const data = res?.flag === '1' ? (res.data ?? []) : [];
-          this.isContentVisible = data.length === 0;
-          return data;
-        } catch (err: any) {
-          this.isLookupLoading = false;
-          console.error('Error loading data:', err.message || err);
-          throw err.message || 'Error loading data';
-        }
+      load: () => {
+        return new Promise((resolve, reject) => {
+          this.cancelLoad = reject;
+          this.filterSubscription = this.operationService.getClinicalData(payload).subscribe({
+            next: (res: any) => {
+              this.isLookupLoading = false;
+              this.filterSubscription = undefined;
+              this.cancelLoad = undefined;
+              const data = res?.flag === '1' ? (res.data ?? []) : [];
+              this.isContentVisible = data.length === 0;
+              resolve(data);
+            },
+            error: (err: any) => {
+              this.isLookupLoading = false;
+              this.filterSubscription = undefined;
+              this.cancelLoad = undefined;
+              console.error('Error loading data:', err.message || err);
+              reject(err.message || 'Error loading data');
+            }
+          });
+        });
       },
     });
+  }
+
+  cancelApiCall() {
+    if (this.filterSubscription) {
+      this.filterSubscription.unsubscribe();
+      this.filterSubscription = undefined;
+    }
+    if (this.cancelLoad) {
+      this.cancelLoad('requested data cancelled by user');
+      this.cancelLoad = undefined;
+    }
+    this.isLookupLoading = false;
+    notify('Data loading cancelled', 'warning', 3000);
   }
 
   // ========== process button hide and show depends row selection ========
@@ -450,6 +466,7 @@ export class ClinicalDataComponent implements OnInit {
       }
     }
   }
+
   onCellPrepared(e: any) {
     if (e.rowType === 'header') {
       e.cellElement.style.backgroundColor = 'var(--cell-header-bg)';

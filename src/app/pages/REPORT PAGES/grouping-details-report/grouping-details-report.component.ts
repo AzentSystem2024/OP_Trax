@@ -2,12 +2,8 @@ import { MasterReportService } from 'src/app/pages/MASTER PAGES/master-report.se
 import { CommonModule, DatePipe } from '@angular/common';
 import {
   ChangeDetectorRef,
-  Component,
-  ElementRef,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
+  Component, NgModule, OnInit,
+  ViewChild
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
@@ -34,32 +30,26 @@ import {
   DxListModule,
   DxValidatorModule,
   DxValidationSummaryModule,
-  DxTreeViewComponent,
-  DxLookupComponent,
-  DxDataGridComponent,
-  DxLoadPanelModule,
+  DxTreeViewComponent, DxDataGridComponent,
+  DxLoadPanelModule
 } from 'devextreme-angular';
 import { FormPopupModule } from 'src/app/components';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { ReportEngineService } from '../report-engine.service';
 import DataSource from 'devextreme/data/data_source';
-import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import notify from 'devextreme/ui/notify';
 import { DataService } from 'src/app/services';
-import CustomStore from 'devextreme/data/custom_store';
 import { PopupStateService } from 'src/app/popupStateService.service';
-import * as XLSX from 'xlsx';
 import validationEngine from 'devextreme/ui/validation_engine';
 import { OperationReportService } from '../../OPERATION PAGES/operation-report.service';
-import { Workbook } from 'exceljs';
-import { exportDataGrid } from 'devextreme/excel_exporter';
-import { saveAs } from 'file-saver';
 import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
 import {
   CptMasterEditFormComponent,
   CptMasterEditFormModule,
 } from '../../POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
 import { AdocDetailPopupModule } from '../../POP-UP_PAGES/adoc-detail-popup/adoc-detail-popup.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-grouping-details-report',
@@ -92,6 +82,9 @@ export class GroupingDetailsReportComponent implements OnInit {
   isRowPopupVisible: boolean = false;
   selectedRowData: any = {};
   selectedRowIndex: any;
+
+  private filterSubscription?: Subscription;
+  private cancelLoad?: (reason: string) => void;
 
   //=================DataSource for data Grid Table========
   dataGrid_DataSource: DataSource<any>;
@@ -312,9 +305,21 @@ export class GroupingDetailsReportComponent implements OnInit {
     this.dataGrid.instance.beginCustomLoading('Loading...');
     this.isGridLoading = true;
     try {
-      const response: any = await this.service
-        .fetch_Grouping_Details_Data(formData)
-        .toPromise();
+      const response: any = await new Promise((resolve, reject) => {
+        this.cancelLoad = reject;
+        this.filterSubscription = this.service.fetch_Grouping_Details_Data(formData).subscribe({
+          next: (res: any) => {
+            this.filterSubscription = undefined;
+            this.cancelLoad = undefined;
+            resolve(res);
+          },
+          error: (err: any) => {
+            this.filterSubscription = undefined;
+            this.cancelLoad = undefined;
+            reject(err);
+          }
+        });
+      });
       if (response.flag === '1') {
         this.isEmptyDatagrid = false;
 
@@ -359,17 +364,33 @@ export class GroupingDetailsReportComponent implements OnInit {
     } catch (error) {
       this.dataGrid.instance.endCustomLoading();
       this.isContentVisible = true;
-      notify(
-        {
-          message: `An error occurred while fetching the data. Please try again later.`,
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 3000,
-        },
-        'error',
-      );
+      if (error !== 'API call cancelled by user') {
+        notify(
+          {
+            message: `An error occurred while fetching the data. Please try again later.`,
+            position: { at: 'top right', my: 'top right' },
+            displayTime: 3000,
+          },
+          'error',
+        );
+      }
     } finally {
       this.isGridLoading = false;
     }
+  }
+
+  cancelApiCall() {
+    if (this.filterSubscription) {
+      this.filterSubscription.unsubscribe();
+      this.filterSubscription = undefined;
+    }
+    if (this.cancelLoad) {
+      this.cancelLoad('API call cancelled by user');
+      this.cancelLoad = undefined;
+    }
+    this.isGridLoading = false;
+    this.dataGrid.instance.endCustomLoading();
+    notify('Data loading cancelled', 'warning', 3000);
   }
 
   generateSummaryColumns(reportColumns) {
