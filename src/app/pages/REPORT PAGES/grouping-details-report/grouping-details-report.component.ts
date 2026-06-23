@@ -397,7 +397,7 @@ export class GroupingDetailsReportComponent implements OnInit {
       this.filterSubscription = undefined;
     }
     if (this.cancelLoad) {
-      this.cancelLoad('requested data cancelled by user');
+      this.cancelLoad('Process cancelled by user');
       this.cancelLoad = undefined;
     }
     this.isGridLoading = false;

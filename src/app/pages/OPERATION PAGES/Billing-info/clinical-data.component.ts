@@ -1,8 +1,4 @@
-import {
-  Component, NgModule,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
 import notify from 'devextreme/ui/notify';
 import {
   DxButtonModule,
@@ -246,23 +242,25 @@ export class ClinicalDataComponent implements OnInit {
       load: () => {
         return new Promise((resolve, reject) => {
           this.cancelLoad = reject;
-          this.filterSubscription = this.operationService.getClinicalData(payload).subscribe({
-            next: (res: any) => {
-              this.isLookupLoading = false;
-              this.filterSubscription = undefined;
-              this.cancelLoad = undefined;
-              const data = res?.flag === '1' ? (res.data ?? []) : [];
-              this.isContentVisible = data.length === 0;
-              resolve(data);
-            },
-            error: (err: any) => {
-              this.isLookupLoading = false;
-              this.filterSubscription = undefined;
-              this.cancelLoad = undefined;
-              console.error('Error loading data:', err.message || err);
-              reject(err.message || 'Error loading data');
-            }
-          });
+          this.filterSubscription = this.operationService
+            .getClinicalData(payload)
+            .subscribe({
+              next: (res: any) => {
+                this.isLookupLoading = false;
+                this.filterSubscription = undefined;
+                this.cancelLoad = undefined;
+                const data = res?.flag === '1' ? (res.data ?? []) : [];
+                this.isContentVisible = data.length === 0;
+                resolve(data);
+              },
+              error: (err: any) => {
+                this.isLookupLoading = false;
+                this.filterSubscription = undefined;
+                this.cancelLoad = undefined;
+                console.error('Error loading data:', err.message || err);
+                reject(err.message || 'Error loading data');
+              },
+            });
         });
       },
     });
@@ -274,7 +272,7 @@ export class ClinicalDataComponent implements OnInit {
       this.filterSubscription = undefined;
     }
     if (this.cancelLoad) {
-      this.cancelLoad('requested data cancelled by user');
+      this.cancelLoad('Process cancelled by user');
       this.cancelLoad = undefined;
     }
     this.isLookupLoading = false;
@@ -459,7 +457,10 @@ export class ClinicalDataComponent implements OnInit {
   };
 
   onPopupDataLoaded(rowData: any) {
-    if (this.selectedRowData && this.selectedRowData.ClaimUID === rowData.ClaimUID) {
+    if (
+      this.selectedRowData &&
+      this.selectedRowData.ClaimUID === rowData.ClaimUID
+    ) {
       this.selectedRowData.Status = 'Applied';
       if (this.selectedRowIndex !== undefined) {
         this.dataGrid.instance.repaintRows([this.selectedRowIndex]);
