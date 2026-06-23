@@ -246,16 +246,11 @@ body {
   color: var(--selected-tab-text-color);
 }
 
-// .custom-tab .dx-tabs.dx-state-focused .dx-tab.dx-state-focused {
-//   background-color: var(--tab-selected-bg-color);
-//   // color: var(--text-color);
-//   color: #ffffff;
+// .custom-tab .dx-tab.dx-state-hover {
+//   background-color: var(--tab-hover-bg-color);
+//   color: var(--text-color);
+//   border-radius: 30px;
 // }
-.custom-tab .dx-tab.dx-state-hover {
-  // background-color: var(--tab-hover-bg-color);
-  // color: var(--text-color);
-  // border-radius: 30px;
-}
 .custom-tab .dx-tabs-wrapper {
   position: relative;
   display: flex;
