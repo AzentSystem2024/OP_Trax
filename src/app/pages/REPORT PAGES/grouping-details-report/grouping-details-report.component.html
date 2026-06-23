@@ -156,16 +156,15 @@
               (onClick)="get_Datagrid_DataSource()"
             >
             </dx-button>
-            
+
             <dx-button
-              stylingMode="outlined"
-              type="normal"
-              class="report-btn cancel-btn ms-2"
-              text="Cancel"
-              [disabled]="!isGridLoading"
-              (onClick)="cancelApiCall()"
-            >
-            </dx-button>
+                *ngIf="isGridLoading"
+                text="Cancel"
+                type="danger"
+                class="add-card ms-2"
+                (onClick)="cancelApiCall()"
+              >
+              </dx-button>
           </div>
         </dxi-item>
       </dxi-item>

@@ -2,8 +2,10 @@ import { MasterReportService } from 'src/app/pages/MASTER PAGES/master-report.se
 import { CommonModule, DatePipe } from '@angular/common';
 import {
   ChangeDetectorRef,
-  Component, NgModule, OnInit,
-  ViewChild
+  Component,
+  NgModule,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
@@ -30,8 +32,9 @@ import {
   DxListModule,
   DxValidatorModule,
   DxValidationSummaryModule,
-  DxTreeViewComponent, DxDataGridComponent,
-  DxLoadPanelModule
+  DxTreeViewComponent,
+  DxDataGridComponent,
+  DxLoadPanelModule,
 } from 'devextreme-angular';
 import { FormPopupModule } from 'src/app/components';
 import { ReportService } from 'src/app/services/Report-data.service';
@@ -87,7 +90,7 @@ export class GroupingDetailsReportComponent implements OnInit {
   private cancelLoad?: (reason: string) => void;
 
   //=================DataSource for data Grid Table========
-  dataGrid_DataSource: DataSource<any>;
+  dataGrid_DataSource!: DataSource<any, any>;
   columnsConfig: any; // Column data storing variable
 
   //================Variables for Storing DataSource========
@@ -301,82 +304,70 @@ export class GroupingDetailsReportComponent implements OnInit {
       DateTo: this.reportengine.formatDate(this.To_Date_Value),
       CPTCodes: this.cptCodes || '',
     };
-    this.isContentVisible = false;
-    this.dataGrid.instance.beginCustomLoading('Loading...');
+
     this.isGridLoading = true;
-    try {
-      const response: any = await new Promise((resolve, reject) => {
-        this.cancelLoad = reject;
-        this.filterSubscription = this.service.fetch_Grouping_Details_Data(formData).subscribe({
-          next: (res: any) => {
-            this.filterSubscription = undefined;
-            this.cancelLoad = undefined;
-            resolve(res);
-          },
-          error: (err: any) => {
-            this.filterSubscription = undefined;
-            this.cancelLoad = undefined;
-            reject(err);
-          }
+
+    this.dataGrid_DataSource = new DataSource<any>({
+      load: () => {
+        return new Promise((resolve, reject) => {
+          this.cancelLoad = reject;
+          this.filterSubscription = this.service
+            .fetch_Grouping_Details_Data(formData)
+            .subscribe({
+              next: (response: any) => {
+                this.isGridLoading = false;
+                this.filterSubscription = undefined;
+                this.cancelLoad = undefined;
+
+                if (response?.flag === '1') {
+                  this.isEmptyDatagrid = false;
+                  this.columndata = response.data.ReportColumns;
+
+                  const userLocale = navigator.language || 'en-US';
+
+                  this.summaryColumnsData = this.generateSummaryColumns(
+                    response.data.ReportColumns,
+                  );
+
+                  this.columnsConfig = this.generateColumnsConfig(
+                    response.data.ReportColumns,
+                    userLocale,
+                  );
+                  this.ColumnNames = this.columnsConfig
+                    .filter((column: any) => column.visible)
+                    .map((column: any) => column.caption);
+
+                  setTimeout(() => {
+                    this.updateVisibleColumnNames();
+                  }, 0);
+
+                  const formattedReportData = response.data?.ReportData || [];
+                  this.isContentVisible = formattedReportData.length === 0;
+                  resolve(formattedReportData);
+                } else {
+                  this.isContentVisible = true;
+                  notify(
+                    {
+                      message: `${response?.message}`,
+                      position: { at: 'top right', my: 'top right' },
+                    },
+                    'error',
+                  );
+                  resolve([]);
+                }
+              },
+              error: (err: any) => {
+                this.isGridLoading = false;
+                this.filterSubscription = undefined;
+                this.cancelLoad = undefined;
+                this.isContentVisible = true;
+                console.error('Error loading data:', err.message || err);
+                reject(err.message || 'Error loading data');
+              },
+            });
         });
-      });
-      if (response.flag === '1') {
-        this.isEmptyDatagrid = false;
-
-        this.columndata = response.data.ReportColumns;
-
-        const userLocale = navigator.language || 'en-US';
-
-        this.summaryColumnsData = this.generateSummaryColumns(
-          response.data.ReportColumns,
-        );
-
-        this.columnsConfig = this.generateColumnsConfig(
-          response.data.ReportColumns,
-          userLocale,
-        );
-        this.ColumnNames = this.columnsConfig
-          .filter((column) => column.visible)
-          .map((column) => column.caption);
-        setTimeout(() => {
-          this.updateVisibleColumnNames();
-        }, 0);
-
-        // Format dates in ReportData
-        const formattedReportData = response.data.ReportData;
-
-        this.dataGrid_DataSource = new DataSource<any>({
-          load: () => Promise.resolve(formattedReportData),
-        });
-        this.dataGrid.instance.endCustomLoading();
-        this.isContentVisible = false;
-      } else {
-        this.dataGrid.instance.endCustomLoading();
-        this.isContentVisible = false;
-        notify(
-          {
-            message: `${response.message}`,
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error',
-        );
-      }
-    } catch (error) {
-      this.dataGrid.instance.endCustomLoading();
-      this.isContentVisible = true;
-      if (error !== 'API call cancelled by user') {
-        notify(
-          {
-            message: `An error occurred while fetching the data. Please try again later.`,
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 3000,
-          },
-          'error',
-        );
-      }
-    } finally {
-      this.isGridLoading = false;
-    }
+      },
+    });
   }
 
   cancelApiCall() {
@@ -385,11 +376,10 @@ export class GroupingDetailsReportComponent implements OnInit {
       this.filterSubscription = undefined;
     }
     if (this.cancelLoad) {
-      this.cancelLoad('API call cancelled by user');
+      this.cancelLoad('requested data cancelled by user');
       this.cancelLoad = undefined;
     }
     this.isGridLoading = false;
-    this.dataGrid.instance.endCustomLoading();
     notify('Data loading cancelled', 'warning', 3000);
   }
 
@@ -507,7 +497,10 @@ export class GroupingDetailsReportComponent implements OnInit {
   }
 
   onGridOptionChanged(e: any) {
-    if (e.name === 'columns' || (e.fullName && e.fullName.includes('visible'))) {
+    if (
+      e.name === 'columns' ||
+      (e.fullName && e.fullName.includes('visible'))
+    ) {
       this.updateVisibleColumnNames();
     }
   }
@@ -533,7 +526,10 @@ export class GroupingDetailsReportComponent implements OnInit {
   };
 
   onPopupDataLoaded(rowData: any) {
-    if (this.selectedRowData && this.selectedRowData.ClaimUID === rowData.ClaimUID) {
+    if (
+      this.selectedRowData &&
+      this.selectedRowData.ClaimUID === rowData.ClaimUID
+    ) {
       this.selectedRowData.Status = 'Applied';
       if (this.selectedRowIndex !== undefined && this.dataGrid) {
         this.dataGrid.instance.repaintRows([this.selectedRowIndex]);
@@ -577,7 +573,14 @@ export class GroupingDetailsReportComponent implements OnInit {
       this.CptEditFormComponent.getUpdateCptMasterData();
 
     this.masterService
-      .update_CptMaster_data(ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings, IsADOCExcluded)
+      .update_CptMaster_data(
+        ID,
+        CPTTypeID,
+        CPTCode,
+        CPTName,
+        CPTADOCMappings,
+        IsADOCExcluded,
+      )
       .subscribe((response: any) => {
         if (response) {
           this.dataGrid.instance.refresh();
