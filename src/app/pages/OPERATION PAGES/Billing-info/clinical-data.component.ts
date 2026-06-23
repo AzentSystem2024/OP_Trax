@@ -22,7 +22,7 @@ import {
 } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { CommonModule } from '@angular/common';
-import { FormPopupModule } from 'src/app/components';
+import {  FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/services';
@@ -44,6 +44,7 @@ import { saveAs } from 'file-saver';
 import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
 import { Workbook } from 'exceljs';
 import { exportDataGrid } from 'devextreme/excel_exporter';
+import { AdocDetailPopupModule } from '../../POP-UP_PAGES/adoc-detail-popup/adoc-detail-popup.component';
 
 @Component({
   selector: 'app-clinical-data',
@@ -57,8 +58,6 @@ export class ClinicalDataComponent implements OnInit {
 
   @ViewChild(CptMasterEditFormComponent, { static: false })
   CptEditFormComponent!: CptMasterEditFormComponent;
-
-  @ViewChild('popupGrid', { static: false }) popupGrid: any;
 
   isAddFormPopupOpened: any = false;
   //========Variables for Pagination ====================
@@ -115,18 +114,8 @@ export class ClinicalDataComponent implements OnInit {
 
   isLoading: boolean = false;
 
-  popupGridData: any[] = [];
-  isPopupProcessing: boolean = false;
-
-  exportFormats = [
-    { text: 'Excel', format: 'xlsx' },
-    { text: 'CSV', format: 'csv' },
-  ];
-
-  billableTotal: any = 0;
   selectedRowIndex: any;
   isLookupLoading: boolean = false;
-  isReRunProcessing = false;
   isMultiProcessing: boolean = false;
   processProgressMessage: string = '0/0 completed';
 
@@ -451,140 +440,14 @@ export class ClinicalDataComponent implements OnInit {
     this.selectedRowIndex = e.row.rowIndex;
 
     this.isRowPopupVisible = true;
-    this.getClinicalDataPopupData();
   };
 
-  getClinicalDataPopupData() {
-    this.popupGrid?.instance.beginCustomLoading('Loading...');
-
-    const payload = {
-      ClaimUID: this.selectedRowData?.ClaimUID || 0,
-    };
-
-    this.operationService.getClinicalDataInPopup(payload).subscribe({
-      next: (res: any) => {
-        if (res.flag === '1') {
-          this.popupGridData = res.data || [];
-
-          // Update status in the row object
-          this.selectedRowData.Status = 'Applied';
-
-          // Repaint only the affected row
-          this.dataGrid.instance.repaintRows([this.selectedRowIndex]);
-
-          this.calculateBillableTotal();
-
-          setTimeout(() => {
-            this.isRowPopupVisible = true;
-            this.popupGrid?.instance.endCustomLoading();
-          }, 0);
-        } else {
-          this.popupGridData = [];
-          this.popupGrid?.instance.endCustomLoading();
-          notify('No data found', 'warning', 3000);
-        }
-      },
-      error: (err) => {
-        this.popupGrid?.instance.endCustomLoading();
-        console.error(err);
-        notify('Error loading popup data', 'error', 3000);
-      },
-    });
-  }
-
-  calculateBillableTotal(): void {
-    this.isLoading = true;
-
-    this.billableTotal = (this.popupGridData || [])
-      .filter((item: any) => item.Billable === true)
-      .reduce(
-        (total: number, item: any) => total + Number(item.BillPrice || 0),
-        0,
-      );
-
-    this.isLoading = false;
-
-    console.log('Billable Total:', this.billableTotal);
-  }
-
-  billableSummaryText = () => {
-    if (this.isLoading) {
-      return 'Calculating...';
-    }
-
-    return `Net Billable : AED ${this.billableTotal.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-  };
-
-  ReRunGrouper() {
-    this.isReRunProcessing = true;
-    const payload = {
-      ClaimUID: this.selectedRowData?.ClaimUID || 0,
-      IsReprocess: true,
-    };
-    this.operationService.get_ReProcess_ClinicalDataInPopup(payload).subscribe({
-      next: (res: any) => {
-        if (res.flag === '1') {
-          this.getClinicalDataPopupData();
-          notify('Grouper re-run successfully', 'success', 3000);
-        }
-        this.isReRunProcessing = false;
-      },
-      error: (err) => {
-        console.error(err);
-        notify('Error re-running grouper', 'error', 3000);
-        this.isReRunProcessing = false;
-      },
-    });
-  }
-
-  onPopupHidden() {
-    this.isRowPopupVisible = false;
-    this.popupGridData = [];
-  }
-
-  async onExportClick(e: any) {
-    const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet('ADOC Report');
-
-    await exportDataGrid({
-      component: this.popupGrid.instance,
-      worksheet: worksheet,
-
-      customizeCell: ({ gridCell, excelCell }) => {
-        if (
-          gridCell?.rowType === 'data' &&
-          gridCell.column?.caption === 'Billable'
-        ) {
-          excelCell.value = gridCell.data?.Billable === true ? 'Yes' : 'No';
-        }
-      },
-    });
-
-    // Excel Export
-    if (e.itemData.format === 'xlsx') {
-      const buffer = await workbook.xlsx.writeBuffer();
-
-      saveAs(
-        new Blob([buffer], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        }),
-        'ADOC_Report.xlsx',
-      );
-    }
-
-    // CSV Export
-    if (e.itemData.format === 'csv') {
-      const csvBuffer = await workbook.csv.writeBuffer();
-
-      saveAs(
-        new Blob([csvBuffer], {
-          type: 'text/csv;charset=utf-8;',
-        }),
-        'ADOC_Report.csv',
-      );
+  onPopupDataLoaded(rowData: any) {
+    if (this.selectedRowData && this.selectedRowData.ClaimUID === rowData.ClaimUID) {
+      this.selectedRowData.Status = 'Applied';
+      if (this.selectedRowIndex !== undefined) {
+        this.dataGrid.instance.repaintRows([this.selectedRowIndex]);
+      }
     }
   }
   onCellPrepared(e: any) {
@@ -609,6 +472,7 @@ export class ClinicalDataComponent implements OnInit {
     DxTextBoxModule,
     DxLookupModule,
     FormPopupModule,
+    AdocDetailPopupModule,
     ClinicalDataImportFormModule,
     DxPopupModule,
     DxDateBoxModule,
