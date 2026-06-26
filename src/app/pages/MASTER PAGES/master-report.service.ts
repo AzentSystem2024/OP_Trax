@@ -1289,12 +1289,9 @@ export class MasterReportService {
   }
 
   // ===== Get CPT-Price List =====
-  get_ADOC_Price_List(facilityId: any) {
+  get_ADOC_Price_List() {
     const url = `${this.BASE_URL}ADOCPrice/cptlist`;
-    const payload = {
-      FacilityID: facilityId,
-    };
-    return this.http.post(url, payload);
+    return this.http.post(url, {});
   }
 
   // ===== Add Price Master =====
