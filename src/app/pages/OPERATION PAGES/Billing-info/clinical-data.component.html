@@ -129,7 +129,7 @@
                 (onClick)="onApplyFilter()"
               >
               </dx-button>
-              
+
               <dx-button
                 *ngIf="isLookupLoading"
                 text="Cancel"
@@ -302,8 +302,19 @@
         [allowEditing]="false"
       ></dxi-column>
       <dxi-column
+        dataField="ReceiverID"
+        caption="Receiver"
+        [allowEditing]="false"
+      ></dxi-column>
+      <dxi-column
         dataField="PatientID"
         caption="PatientID"
+        [allowEditing]="false"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="PatientAge"
+        caption="Age (Year)"
         [allowEditing]="false"
       ></dxi-column>
 

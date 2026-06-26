@@ -26,9 +26,13 @@
               {{ rowData?.PatientID }}
             </div>
 
-            <div>
+            <div class="mb-2">
               <strong>Diagnosis :</strong>
               {{ rowData?.Diagnosis || rowData?.SecondaryDiagnosis }}
+            </div>
+            <div class="mb-2">
+              <strong>Receiver :</strong>
+              {{ rowData?.ReceiverID }}
             </div>
           </div>
 
@@ -39,9 +43,13 @@
               {{ rowData?.TransactionDate }}
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2">
               <strong>Encounter Type :</strong>
               {{ rowData?.EncounterType }}
+            </div>
+            <div class="mb-3">
+              <strong>Age (Year) :</strong>
+              {{ rowData?.PatientAge }}
             </div>
 
             <div class="d-flex justify-content-end gap-2">
@@ -90,6 +98,7 @@
       height="490"
       (onCellDblClick)="onCellClick($event)"
       (onCellPrepared)="onCellPrepared($event)"
+      (onCellClick)="onCellClickPrice($event)"
     >
       <!-- Header Filter -->
       <dxo-header-filter [visible]="true">
@@ -235,4 +244,34 @@
     >
     </dx-load-panel>
   </div>
+</dx-popup>
+
+<!-- ===================ADOC price histrory==================== -->
+
+<dx-popup
+  title="Price Details"
+  [(visible)]="showDetails"
+  height="350"
+  width="500"
+>
+  <dx-data-grid
+    class="grid reportGrid reportGridFooter theme-dependent"
+    [height]="'250'"
+    [dataSource]="dataGrid_DataSource"
+    [showBorders]="true"
+    [allowColumnResizing]="false"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    [allowColumnReordering]="true"
+    [filterRow]="{ visible: false }"
+    [headerFilter]="{ visible: false }"
+    [columnFixing]="{
+      enabled: true,
+      texts: { fix: 'Freeze', unfix: 'Unfreeze' },
+    }"
+  >
+    <dxi-column dataField="field" caption="Description"></dxi-column>
+    <dxi-column dataField="value" caption="Price"></dxi-column>
+  </dx-data-grid>
 </dx-popup>

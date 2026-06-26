@@ -9,7 +9,7 @@ export class OperationReportService {
   constructor(
     private http: HttpClient,
     private config: ConfigService,
-  ) {}
+  ) { }
 
   private get BASE_URL(): string {
     return this.config.apiBaseUrl;
@@ -20,12 +20,12 @@ export class OperationReportService {
     return this.http.post<any>(`${this.BASE_URL}ClinicalData/list`, reqBody);
   }
 
-    getClinicalDataInPopup(payload: any) {
+  getClinicalDataInPopup(payload: any) {
     const reqBody = payload;
     return this.http.post<any>(`${this.BASE_URL}ClinicalData/getActivityData`, reqBody);
   }
 
-    get_ReProcess_ClinicalDataInPopup(payload: any) {
+  get_ReProcess_ClinicalDataInPopup(payload: any) {
     const reqBody = payload;
     return this.http.post<any>(`${this.BASE_URL}ClinicalData/reprocess`, reqBody);
   }
@@ -270,6 +270,13 @@ export class OperationReportService {
   resume_Process_Data(payload: any) {
     const url = `${this.BASE_URL}ClinicalCostingProcess/getPendingBatches`;
     const reqBody = payload;
+    return this.http.post(url, reqBody);
+  }
+  //===========price details================
+
+  get_price(inputdata: any) {
+    const url = `${this.BASE_URL}ClinicalData/getpricedetai`;
+    const reqBody = inputdata;
     return this.http.post(url, reqBody);
   }
 }

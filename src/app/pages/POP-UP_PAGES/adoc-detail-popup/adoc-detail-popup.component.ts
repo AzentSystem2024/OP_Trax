@@ -44,13 +44,15 @@ export class AdocDetailPopupComponent implements OnChanges {
   isReRunProcessing: boolean = false;
   isLoading: boolean = false;
   billableTotal: number = 0;
-
+  showDetails: boolean = false
+  selectedRow: any
+  dataGrid_DataSource: any[] = []
   exportFormats = [
     { text: 'Excel', format: 'xlsx' },
     { text: 'CSV', format: 'csv' },
   ];
 
-  constructor(private operationService: OperationReportService) {}
+  constructor(private operationService: OperationReportService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['visible'] && changes['visible'].currentValue === true) {
@@ -188,6 +190,37 @@ export class AdocDetailPopupComponent implements OnChanges {
   onCellClick(e: any) {
     this.cellClick.emit(e);
   }
+
+  onCellClickPrice(e: any) {
+
+    console.log("onCellClickPrice call this function ", e)
+    if (e.column.dataField === 'BillPrice') {
+      console.log("onCellClickPrice price---- ")
+
+      if (e.data.Billable === true) {
+        this.showDetails = true;
+        const payload = {
+          ClaimActivityUID: e.data.ActivityUID
+        }
+
+        this.operationService.get_price(payload).subscribe((res: any) => {
+          console.log(res)
+        })
+        // this.selectedRow = e.data;
+
+        this.dataGrid_DataSource = [
+          { field: "Base Price", value: this.selectedRow.ClaimUID },
+          { field: "Activity UID", value: this.selectedRow.ActivityUID },
+          { field: "Activity Number", value: this.selectedRow.ActivityNumber },
+          { field: "Activity Date", value: this.selectedRow.ActivityDate },
+          { field: "ADOC Group ID", value: this.selectedRow.ADOCGroupID },
+          { field: "ADOC Class ID", value: this.selectedRow.ADOCClassID },
+          { field: "Summary", value: this.selectedRow.ADOCClassID },
+
+        ]
+      }
+    }
+  }
 }
 
 @NgModule({
@@ -203,4 +236,4 @@ export class AdocDetailPopupComponent implements OnChanges {
   declarations: [AdocDetailPopupComponent],
   exports: [AdocDetailPopupComponent],
 })
-export class AdocDetailPopupModule {}
+export class AdocDetailPopupModule { }

@@ -17,7 +17,7 @@ export class DataService {
     private http: HttpClient,
     private router: Router,
     private config: ConfigService,
-  ) {}
+  ) { }
 
   private get BaseURL(): string {
     return this.config.apiBaseUrl;
@@ -359,4 +359,6 @@ export class DataService {
     const reqBody = inputdata;
     return this.http.post(url, reqBody);
   }
+
+
 }

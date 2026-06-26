@@ -53,6 +53,7 @@ import { ADOCGroupComponent } from './pages/MASTER PAGES/adoc-category/adoc-grou
 import { CPTWeightageComponent } from './pages/MASTER PAGES/cpt-weightage/cpt-weightage.component';
 import { AdocCountingRulesComponent } from './pages/MASTER PAGES/adoc-counting-rules/adoc-counting-rules.component';
 import { GroupingDetailsReportComponent } from './pages/REPORT PAGES/grouping-details-report/grouping-details-report.component';
+import { InsuranceMasterComponent } from './pages/MASTER PAGES/insurance-master/insurance-master.component';
 
 const routes: Routes = [
   {
@@ -298,6 +299,11 @@ const routes: Routes = [
         canActivate: [AuthGuardService],
       },
       {
+        path: 'insurance-master',
+        component: InsuranceMasterComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
         path: '**',
         redirectTo: 'analytics-dashboard',
         pathMatch: 'full',
@@ -312,4 +318,4 @@ const routes: Routes = [
   exports: [RouterModule],
   declarations: [],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

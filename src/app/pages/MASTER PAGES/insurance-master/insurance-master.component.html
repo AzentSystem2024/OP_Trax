@@ -1,0 +1,166 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    class="grid theme-dependent"
+    noDataText=""
+    height="600"
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    (onExporting)="onExporting($event)"
+    (onRowRemoving)="onRowRemoving($event)"
+    (onRowUpdating)="onRowUpdating($event)"
+    height="84vh"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-editing
+      mode="popup"
+      [allowUpdating]="true"
+      [allowDeleting]="true"
+      [allowAdding]="true"
+      [popup]="{ width: '30%', height: '60vh' }"
+    >
+      <dxo-popup title="Edit Insurance" [showTitle]="true"></dxo-popup>
+
+      <dxo-form [colCount]="1">
+        <dxi-item dataField="InsuranceID" editorType="dxTextBox" caption="ID">
+          <dxi-validation-rule
+            type="required"
+            message="Insurance ID is required"
+          ></dxi-validation-rule
+        ></dxi-item>
+        <dxi-item
+          dataField="InsuranceName"
+          editorType="dxTextBox"
+          caption="Name"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Insurance Name is required"
+          ></dxi-validation-rule
+        ></dxi-item>
+        <dxi-item
+          dataField="InsuranceShortName"
+          editorType="dxTextBox"
+          caption="ShortName"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Insurance short Name is required"
+          ></dxi-validation-rule
+        ></dxi-item>
+
+        <dxi-item
+          dataField="ClassificationID"
+          editorType="dxSelectBox"
+          caption="Classification"
+          [editorOptions]="{
+            displayExpr: 'DESCRIPTION',
+            valueExpr: 'ID',
+            searchEnabled: true,
+          }"
+        ></dxi-item>
+      </dxo-form>
+    </dxo-editing>
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="showInfo"
+      [showNavigationButtons]="showNavButtons"
+    >
+    </dxo-pager>
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="true"></dxo-header-filter>
+    <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+    <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
+    <dxo-export
+      [enabled]="true"
+      [allowExportSelectedData]="false"
+      [formats]="['xlsx']"
+    >
+    </dxo-export>
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">Insurance</div>
+      </dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' },
+        }"
+      ></dxi-item>
+      <dxi-item location="after" locateInMenu="auto">
+        <div class="separator"></div>
+      </dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          icon: 'bi bi-arrow-clockwise',
+          hint: 'Refresh',
+          onClick: refresh,
+          stylingMode: 'text',
+        }"
+      ></dxi-item>
+      <dxi-item location="after" locateInMenu="auto">
+        <div class="separator"></div>
+      </dxi-item>
+      <dxi-item
+        name="exportButton"
+        location="after"
+        cssClass="custom-export-button"
+      ></dxi-item>
+      <dxi-item location="after" locateInMenu="auto">
+        <div class="separator"></div>
+      </dxi-item>
+      <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="addButtonOptions"
+      ></dxi-item>
+    </dxo-toolbar>
+
+    <dxo-header-filter [visible]="true">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+
+    <dxi-column dataField="InsuranceID" caption="ID"></dxi-column>
+    <dxi-column dataField="InsuranceName" caption="Name"></dxi-column>
+    <dxi-column dataField="InsuranceShortName" caption="ShortName"></dxi-column>
+    <dxi-column dataField="ClassificationID" caption="Classification">
+      <dxo-lookup
+        [dataSource]="insuranceClassificationList"
+        displayExpr="DESCRIPTION"
+        valueExpr="ID"
+      >
+      </dxo-lookup>
+    </dxi-column>
+  </dx-data-grid>
+  <!-- ==========add popup =========== -->
+  <form-popup
+    class="formPopupClass"
+    [(visible)]="isAddFormPopupOpened"
+    (save)="onClickSaveNewData()"
+    titleText="New Insurance"
+    height="auto"
+    [customValidate]="validateInsuranceForm"
+  >
+    <app-insurance-new-form></app-insurance-new-form>
+  </form-popup>
+</div>

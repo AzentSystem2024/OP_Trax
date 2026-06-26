@@ -34,6 +34,7 @@ import { AuthInterceptor } from './services/auth.interceptor';
 import { DepartmentListModule } from './pages/MASTER PAGES/department/department-list.component';
 import { ConfigService } from './services/config.service';
 import { AdocCountingRulesModule } from './pages/MASTER PAGES/adoc-counting-rules/adoc-counting-rules.component';
+import { InsuranceMasterModule } from './pages/MASTER PAGES/insurance-master/insurance-master.component';
 
 export function initializeApp(configService: ConfigService) {
   return () => configService.load(); // Angular waits for this before bootstrapping
@@ -67,6 +68,7 @@ export function initializeApp(configService: ConfigService) {
     ViewImportedMasterDataFormModule,
     DepartmentListModule,
     AdocCountingRulesModule,
+    InsuranceMasterModule
   ],
   providers: [
     AuthService,
@@ -85,4 +87,4 @@ export function initializeApp(configService: ConfigService) {
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

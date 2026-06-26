@@ -441,10 +441,10 @@ export class GroupingDetailsReportComponent implements OnInit {
       valueFormat:
         formatType === 'decimal'
           ? {
-              style: 'decimal',
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }
+            style: 'decimal',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
           : null,
       alignByColumn: isGroupItem, // Align by column if it's a group item
       showInGroupFooter: isGroupItem, // Show in group footer for group items
@@ -669,4 +669,4 @@ export class GroupingDetailsReportComponent implements OnInit {
   exports: [],
   declarations: [GroupingDetailsReportComponent],
 })
-export class ClaimDetailsModule {}
+export class ClaimDetailsModule { }
