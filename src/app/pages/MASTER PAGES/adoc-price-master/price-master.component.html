@@ -51,15 +51,6 @@
         <div class="grid-header">ADOC Price Master</div>
       </dxi-item>
 
-      <!-- Facility Dropdown -->
-      <dxi-item
-        *ngIf="!IsGlobalPrice"
-        location="after"
-        widget="dxSelectBox"
-        [options]="facilitySelectOptions"
-      >
-      </dxi-item>
-
       <dxi-item
         location="after"
         locateInMenu="auto"
@@ -182,7 +173,7 @@
         format="#,##0.00"
         cssClass="new-price-column"
       >
-       <dxi-validation-rule type="required" message="Effect From is required">
+        <dxi-validation-rule type="required" message="Effect From is required">
         </dxi-validation-rule>
       </dxi-column>
 
@@ -193,7 +184,7 @@
         format="#,##0.00"
         cssClass="new-price-column"
       >
-       <dxi-validation-rule type="required" message="Effect From is required">
+        <dxi-validation-rule type="required" message="Effect From is required">
         </dxi-validation-rule>
       </dxi-column>
 

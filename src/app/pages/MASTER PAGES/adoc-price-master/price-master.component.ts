@@ -87,7 +87,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
   ngAfterViewInit() {
     setTimeout(() => {
       this.get_local_storage_data();
-      this.loadLookups();
+      this.fetch_ADOC_Price_List();
     });
   }
 
@@ -152,7 +152,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
         new Promise((resolve, reject) => {
           this.showLoading('Fetching ADOC Price List...');
           this.masterService
-            .get_ADOC_Price_List(this.selectedFacilityID || '')
+            .get_ADOC_Price_List()
             .subscribe({
               next: (response: any) => {
                 this.hideLoading();
