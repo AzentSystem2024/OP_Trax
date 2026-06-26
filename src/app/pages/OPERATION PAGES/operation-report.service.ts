@@ -275,7 +275,7 @@ export class OperationReportService {
   //===========price details================
 
   get_price(inputdata: any) {
-    const url = `${this.BASE_URL}ClinicalData/getpricedetai`;
+    const url = `${this.BASE_URL}ClinicalData/getpricedetail`;
     const reqBody = inputdata;
     return this.http.post(url, reqBody);
   }
