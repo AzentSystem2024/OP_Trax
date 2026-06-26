@@ -251,7 +251,7 @@
 <dx-popup
   title="Price Details"
   [(visible)]="showDetails"
-  height="350"
+  [height]="'auto'"
   width="500"
 >
   <dx-data-grid
@@ -263,13 +263,12 @@
     [columnAutoWidth]="true"
     [rowAlternationEnabled]="true"
     rowAlternationInterval="2"
-    [allowColumnReordering]="true"
+    [allowColumnReordering]="false"
     [filterRow]="{ visible: false }"
     [headerFilter]="{ visible: false }"
-    [columnFixing]="{
-      enabled: true,
-      texts: { fix: 'Freeze', unfix: 'Unfreeze' },
-    }"
+    [sorting]="{ mode: 'none' }"
+    [groupPanel]="{ visible: false }"
+    [columnFixing]="{ enabled: false }"
     (onCellPrepared)="onDetailedCellPrepared($event)"
   >
     <dxi-column dataField="field" caption="Description"></dxi-column>
