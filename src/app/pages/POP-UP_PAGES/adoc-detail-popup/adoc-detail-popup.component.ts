@@ -192,33 +192,35 @@ export class AdocDetailPopupComponent implements OnChanges {
   }
 
   onCellClickPrice(e: any) {
-
-    console.log("onCellClickPrice call this function ", e)
     if (e.column.dataField === 'BillPrice') {
-      console.log("onCellClickPrice price---- ")
-
       if (e.data.Billable === true) {
         this.showDetails = true;
         const payload = {
           ClaimActivityUID: e.data.ActivityUID
         }
-
         this.operationService.get_price(payload).subscribe((res: any) => {
-          console.log(res)
-        })
-        // this.selectedRow = e.data;
-
-        this.dataGrid_DataSource = [
-          { field: "Base Price", value: this.selectedRow.ClaimUID },
-          { field: "Activity UID", value: this.selectedRow.ActivityUID },
-          { field: "Activity Number", value: this.selectedRow.ActivityNumber },
-          { field: "Activity Date", value: this.selectedRow.ActivityDate },
-          { field: "ADOC Group ID", value: this.selectedRow.ADOCGroupID },
-          { field: "ADOC Class ID", value: this.selectedRow.ADOCClassID },
-          { field: "Summary", value: this.selectedRow.ADOCClassID },
-
-        ]
+          if (res && res.flag === '1' && res.data && res.data.length > 0) {
+            const priceData = res.data[0];
+            this.dataGrid_DataSource = [
+              { field: 'Base Price', value: priceData.BasePrice ?? 0 },
+              { field: 'Pediatric Adjuster', value: priceData.PediatricAdjuster ?? 0 },
+              { field: 'Senior Adjuster', value: priceData.SeniorAdjuster ?? 0 },
+              { field: 'Region Adjuster', value: priceData.RegionAdjuster ?? 0 },
+              { field: 'CoE Adjuster', value: priceData.CoEAdjuster ?? 0 },
+              { field: 'Facility Multiplier', value: priceData.FacilityMultiplier ?? 0 },
+              { field: 'ADOC Price', value: priceData.ADOCPrice ?? 0 },
+            ];
+          } else {
+            this.dataGrid_DataSource = [];
+          }
+        });
       }
+    }
+  }
+
+  onDetailedCellPrepared(e: any) {
+    if (e.rowType === 'data' && e.data.field === 'ADOC Price') {
+      e.cellElement.style.fontWeight = 'bold';
     }
   }
 }

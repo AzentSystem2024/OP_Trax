@@ -270,6 +270,7 @@
       enabled: true,
       texts: { fix: 'Freeze', unfix: 'Unfreeze' },
     }"
+    (onCellPrepared)="onDetailedCellPrepared($event)"
   >
     <dxi-column dataField="field" caption="Description"></dxi-column>
     <dxi-column dataField="value" caption="Price"></dxi-column>
