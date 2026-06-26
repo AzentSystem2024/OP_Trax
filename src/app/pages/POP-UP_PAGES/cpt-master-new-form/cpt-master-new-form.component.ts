@@ -34,24 +34,15 @@ export class CptMasterNewFormComponent implements OnInit {
     CPTCode: '',
     CPTTypeID: '',
     CPTName: '',
-    CPTPrice: null,
-    PriceEffectFrom: null,
-    CPTWeightage: null,
-    WeightageEffectFrom: null,
     CPTADOCMappings: [],
     IsADOCExcluded: false,
   };
 
-  IsWeightGlobal = false;
-  IsPriceGlobal = false;
-
+  dropdownsLoaded = false;
   specialityDataSource: any[] = [];
   ADOCClassDataSource: any[] = [];
   ADOCgroupDataSource: any[] = [];
   allADOCClassDataSource: any;
-
-  selectedTabIndex = 0;
-  dropdownsLoaded = false;
 
   ADOCApplicationDataSource: any[] = [];
 
@@ -425,8 +416,6 @@ export class CptMasterNewFormComponent implements OnInit {
       CPTCode: '',
       CPTName: '',
       CPTTypeID: null,
-      CPTPrices: [],
-      CPTWeightages: [],
       CPTADOCMappings: [],
       IsADOCExcluded: false,
     };

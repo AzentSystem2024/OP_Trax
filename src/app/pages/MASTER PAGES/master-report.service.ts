@@ -393,10 +393,6 @@ export class MasterReportService {
     CPTTypeID: any,
     CPTCode: any,
     CPTName: any,
-    CPTPrice: any,
-    PriceEffectFrom: any,
-    CPTWeightage: any,
-    WeightageEffectFrom: any,
     CPTADOCMappings: any,
     IsADOCExcluded?: any,
   ) {
@@ -406,10 +402,6 @@ export class MasterReportService {
       CPTTypeID,
       CPTCode,
       CPTName,
-      CPTPrice,
-      PriceEffectFrom,
-      CPTWeightage,
-      WeightageEffectFrom,
       IsADOCExcluded: IsADOCExcluded ?? false,
 
       // Default values
