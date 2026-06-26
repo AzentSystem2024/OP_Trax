@@ -26,6 +26,7 @@ import {
   DxValidationSummaryModule,
 } from 'devextreme-angular';
 import validationEngine from 'devextreme/ui/validation_engine';
+import { AdocClassEditFormModule } from '../../POP-UP_PAGES/adoc-class-edit-form/adoc-class-edit-form.component';
 @Component({
   selector: 'app-adoc-class',
   templateUrl: './adoc-class.component.html',
@@ -78,6 +79,9 @@ export class ADOCClassComponent {
   DetailedPopupTitle: any;
 
   loadingVisible: boolean = false;
+
+  showAdocClassEdit: boolean = false;
+  selectedAdocClassData: any = null;
 
   constructor(
     private service: ReportService,
@@ -223,6 +227,31 @@ export class ADOCClassComponent {
       });
   }
 
+  // =========== Editing Start =========
+  onEditingStart(e: any) {
+    e.cancel = true; // Prevent default popup
+    const id = e.data.ID;
+    this.loadingVisible = true;
+    this.masterService.Select_adocClass_Row_Data(id).subscribe({
+      next: (res: any) => {
+        this.loadingVisible = false;
+        if (res && res.flag === '1' && res.data && res.data.length > 0) {
+          this.selectedAdocClassData = res.data[0];
+          this.showAdocClassEdit = true;
+        } else if (res && res.data && !Array.isArray(res.data)) {
+          this.selectedAdocClassData = res.data;
+          this.showAdocClassEdit = true;
+        } else {
+          notify('Failed to load ADOC Classification details.', 'error', 2000);
+        }
+      },
+      error: () => {
+        this.loadingVisible = false;
+        notify('Failed to fetch ADOC Classification.', 'error', 2000);
+      }
+    });
+  }
+
   // =========== row data updating =========
   onRowUpdating(event: any) {
     const combinedData = {
@@ -362,6 +391,7 @@ export class ADOCClassComponent {
     DxValidatorModule,
     DxValidationSummaryModule,
     DxLoadPanelModule,
+    AdocClassEditFormModule,
   ],
   declarations: [ADOCClassComponent],
 })

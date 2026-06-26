@@ -96,9 +96,8 @@
       [showRowLines]="true"
       [showColumnLines]="true"
       height="490"
-      (onCellDblClick)="onCellClick($event)"
       (onCellPrepared)="onCellPrepared($event)"
-      (onCellClick)="onCellClickPrice($event)"
+      (onCellClick)="onCellClick($event)"
     >
       <!-- Header Filter -->
       <dxo-header-filter [visible]="true">
@@ -172,6 +171,7 @@
       <dxi-column
         caption="ADOC Classification"
         dataField="ADOCClass"
+        cellTemplate="adocClassTemplate"
       ></dxi-column>
 
       <dxi-column
@@ -186,7 +186,21 @@
       </dxi-column>
 
       <div *dxTemplate="let cell of 'cptCodeTemplate'">
-        <span class="cpt-link" title="'Double click for CPT details'">
+        <span
+          class="cpt-link"
+          title="'Click for CPT Code Details'"
+          style="cursor: pointer; color: var(--dx-color-primary)"
+        >
+          {{ cell.value }}
+        </span>
+      </div>
+
+      <div *dxTemplate="let cell of 'adocClassTemplate'">
+        <span
+          class="cpt-link"
+          title="'Click for ADOC Class Details'"
+          style="cursor: pointer; color: var(--dx-color-primary)"
+        >
           {{ cell.value }}
         </span>
       </div>
@@ -251,25 +265,23 @@
 <dx-popup
   title="Price Details"
   [(visible)]="showDetails"
-  height="350"
+  [height]="'auto'"
   width="500"
 >
   <dx-data-grid
     class="grid reportGrid reportGridFooter theme-dependent"
-    [height]="'250'"
     [dataSource]="dataGrid_DataSource"
     [showBorders]="true"
     [allowColumnResizing]="false"
     [columnAutoWidth]="true"
     [rowAlternationEnabled]="true"
     rowAlternationInterval="2"
-    [allowColumnReordering]="true"
+    [allowColumnReordering]="false"
     [filterRow]="{ visible: false }"
     [headerFilter]="{ visible: false }"
-    [columnFixing]="{
-      enabled: true,
-      texts: { fix: 'Freeze', unfix: 'Unfreeze' },
-    }"
+    [sorting]="{ mode: 'none' }"
+    [groupPanel]="{ visible: false }"
+    [columnFixing]="{ enabled: false }"
     (onCellPrepared)="onDetailedCellPrepared($event)"
   >
     <dxi-column dataField="field" caption="Description"></dxi-column>
@@ -281,3 +293,10 @@
     ></dxi-column>
   </dx-data-grid>
 </dx-popup>
+
+<app-adoc-class-edit-form
+  [(visible)]="showAdocClassEdit"
+  [formData]="selectedAdocClassData"
+  [adocCategoryList]="ADOC_Category_List"
+  (onSaved)="getClinicalDataPopupData()"
+></app-adoc-class-edit-form>

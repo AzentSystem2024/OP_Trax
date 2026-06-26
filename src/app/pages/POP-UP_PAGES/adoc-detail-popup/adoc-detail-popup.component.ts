@@ -23,6 +23,10 @@ import notify from 'devextreme/ui/notify';
 import { Workbook } from 'exceljs';
 import { exportDataGrid } from 'devextreme/excel_exporter';
 import { saveAs } from 'file-saver';
+import { MasterReportService } from '../../MASTER PAGES/master-report.service';
+import { DataService } from 'src/app/services';
+import { firstValueFrom } from 'rxjs';
+import { AdocClassEditFormModule } from '../adoc-class-edit-form/adoc-class-edit-form.component';
 
 @Component({
   selector: 'app-adoc-detail-popup',
@@ -52,11 +56,31 @@ export class AdocDetailPopupComponent implements OnChanges {
     { text: 'CSV', format: 'csv' },
   ];
 
-  constructor(private operationService: OperationReportService) { }
+  showAdocClassEdit: boolean = false;
+  selectedAdocClassData: any = null;
+  ADOC_Category_List: any[] = [];
+
+  constructor(
+    private operationService: OperationReportService,
+    private masterService: MasterReportService,
+    private dataService: DataService
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['visible'] && changes['visible'].currentValue === true) {
       this.getClinicalDataPopupData();
+      this.get_ADOC_GROUP_Dropdown();
+    }
+  }
+
+  async get_ADOC_GROUP_Dropdown(): Promise<void> {
+    try {
+      const response: any = await firstValueFrom(this.dataService.Get_GropDown('ADOC_GROUP'));
+      if (response) {
+        this.ADOC_Category_List = response;
+      }
+    } catch (error) {
+      console.error('Error fetching ADOC Group Dropdown', error);
     }
   }
 
@@ -182,16 +206,11 @@ export class AdocDetailPopupComponent implements OnChanges {
       e.cellElement.style.backgroundColor = 'var(--cell-header-bg)';
       e.cellElement.style.color = 'var(--cell-header-color)';
     }
-    // if (e.rowType === 'data') {
-    //   e.cellElement.style.zIndex = 10;
-    // }
   }
 
   onCellClick(e: any) {
     this.cellClick.emit(e);
-  }
 
-  onCellClickPrice(e: any) {
     if (e.column.dataField === 'BillPrice') {
       if (e.data.Billable === true) {
         this.showDetails = true;
@@ -215,6 +234,29 @@ export class AdocDetailPopupComponent implements OnChanges {
           }
         });
       }
+    } else if (e.column.dataField === 'ADOCClass') {
+      const adocClassID = e.data.ADOCClassID;
+      if (adocClassID) {
+        this.isPopupProcessing = true;
+        this.masterService.Select_adocClass_Row_Data(adocClassID).subscribe({
+          next: (res: any) => {
+            this.isPopupProcessing = false;
+            if (res && res.flag === '1' && res.data && res.data.length > 0) {
+              this.selectedAdocClassData = res.data[0];
+              this.showAdocClassEdit = true;
+            } else if (res && res.data && !Array.isArray(res.data)) {
+              this.selectedAdocClassData = res.data;
+              this.showAdocClassEdit = true;
+            } else {
+              notify('ADOC Classification details not found.', 'error', 2000);
+            }
+          },
+          error: () => {
+            this.isPopupProcessing = false;
+            notify('Failed to load ADOC Classification details.', 'error', 2000);
+          }
+        });
+      }
     }
   }
 
@@ -234,6 +276,7 @@ export class AdocDetailPopupComponent implements OnChanges {
     DxDropDownButtonModule,
     DxLoadPanelModule,
     DxoSummaryModule,
+    AdocClassEditFormModule
   ],
   declarations: [AdocDetailPopupComponent],
   exports: [AdocDetailPopupComponent],
