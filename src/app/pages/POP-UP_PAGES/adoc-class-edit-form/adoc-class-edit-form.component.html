@@ -1,0 +1,104 @@
+<dx-popup
+  [(visible)]="visible"
+  title="Edit ADOC Classification"
+  [showTitle]="true"
+  [width]="500"
+  [height]="'auto'"
+  [showCloseButton]="true"
+  [hideOnOutsideClick]="false"
+  (onHiding)="onPopupHiding()"
+>
+  <div *dxTemplate="let data of 'content'">
+    <dx-form
+      #editForm
+      [formData]="editData"
+      labelMode="floating"
+      validationGroup="adocClassEditValidation"
+      [colCount]="1"
+    >
+      <dxi-item dataField="ClassCode" [editorOptions]="{ readOnly: true }">
+        <dxi-validation-rule
+          type="required"
+          message="Class Code is required"
+        ></dxi-validation-rule>
+      </dxi-item>
+
+      <dxi-item dataField="ClassName">
+        <dxi-validation-rule
+          type="required"
+          message="Class Name is required"
+        ></dxi-validation-rule>
+      </dxi-item>
+
+      <dxi-item
+        dataField="GroupID"
+        [label]="{ text: 'ADOC Category' }"
+        editorType="dxSelectBox"
+        [editorOptions]="{
+          dataSource: adocCategoryList,
+          displayExpr: 'DESCRIPTION',
+          valueExpr: 'ID',
+          searchEnabled: true
+        }"
+      >
+        <dxi-validation-rule
+          type="required"
+          message="ADOC Category is required"
+        ></dxi-validation-rule>
+      </dxi-item>
+
+      <dxi-item
+        itemType="group"
+        [colCount]="3"
+      >
+        <dxi-item
+          dataField="Price"
+          editorType="dxNumberBox"
+          [label]="{ text: 'Base Price (AED)' }"
+          [editorOptions]="{ readOnly: true, format: '#,##0.00' }"
+        ></dxi-item>
+
+        <dxi-item
+          dataField="PaedAdjuster"
+          editorType="dxNumberBox"
+          [label]="{ text: 'Pediatric Adjuster' }"
+          [editorOptions]="{ readOnly: true, format: '#,##0.00' }"
+        ></dxi-item>
+
+        <dxi-item
+          dataField="SeniorAdjuster"
+          editorType="dxNumberBox"
+          [label]="{ text: 'Senior Adjuster' }"
+          [editorOptions]="{ readOnly: true, format: '#,##0.00' }"
+        ></dxi-item>
+      </dxi-item>
+
+      <dxi-item
+        dataField="IsInactive"
+        editorType="dxCheckBox"
+        [label]="{ visible: false }"
+        [editorOptions]="{
+          text: 'Inactive'
+        }"
+      >
+      </dxi-item>
+    </dx-form>
+
+    <div class="mt-5 text-end">
+      <dx-button
+        text="Cancel"
+        stylingMode="outlined"
+        type="normal"
+        (onClick)="onPopupHiding()"
+      ></dx-button>
+
+      <dx-button
+        class="ms-2"
+        text="Save"
+        stylingMode="contained"
+        type="default"
+        (onClick)="onSave()"
+      ></dx-button>
+    </div>
+  </div>
+</dx-popup>

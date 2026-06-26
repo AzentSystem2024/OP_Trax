@@ -11,7 +11,7 @@
     rowAlternationInterval="2"
     (onExporting)="onExporting($event)"
     (onRowRemoving)="onRowRemoving($event)"
-    (onRowUpdating)="onRowUpdating($event)"
+    (onEditingStart)="onEditingStart($event)"
   >
     <dxo-editing
       mode="popup"
@@ -19,56 +19,6 @@
       [allowDeleting]="menuPrevilage.CanDelete"
       [allowAdding]="false"
     >
-      <dxo-popup
-        title="Edit ADOC Classification"
-        [showTitle]="true"
-        [width]="500"
-        [height]="'auto'"
-      >
-      </dxo-popup>
-
-      <dxo-form [colCount]="1" labelMode="floating">
-        <dxi-item dataField="ClassCode" [editorOptions]="{ readOnly: true }">
-          <dxi-validation-rule
-            type="required"
-            message="Class Code is required"
-          ></dxi-validation-rule>
-        </dxi-item>
-
-        <dxi-item dataField="ClassName">
-          <dxi-validation-rule
-            type="required"
-            message="Class Name is required"
-          ></dxi-validation-rule>
-        </dxi-item>
-
-        <dxi-item
-          dataField="GroupID"
-          [label]="{ text: 'ADOC Category' }"
-          editorType="dxSelectBox"
-          [editorOptions]="{
-            dataSource: ADOC_Category_List,
-            displayExpr: 'DESCRIPTION',
-            valueExpr: 'ID',
-            searchEnabled: true,
-          }"
-        >
-          <dxi-validation-rule
-            type="required"
-            message="ADOC Category is required"
-          ></dxi-validation-rule>
-        </dxi-item>
-
-        <dxi-item
-          dataField="IsInactive"
-          editorType="dxCheckBox"
-          [label]="{ visible: false }"
-          [editorOptions]="{
-            text: 'Inactive',
-          }"
-        >
-        </dxi-item>
-      </dxo-form>
     </dxo-editing>
 
     <dxo-paging [pageSize]="10"></dxo-paging>
@@ -255,6 +205,14 @@
     </div>
   </dx-popup>
 
+  <!-- ===== edit popup ===== -->
+  <app-adoc-class-edit-form
+  [(visible)]="showAdocClassEdit"
+  [formData]="selectedAdocClassData"
+  [adocCategoryList]="ADOC_Category_List"
+  (onSaved)="refresh()"
+></app-adoc-class-edit-form>
+
   <dx-popup
     [(visible)]="isDetailPopupVisible"
     [width]="1200"
@@ -329,3 +287,4 @@
   [message]="'Loading...'"
 >
 </dx-load-panel>
+

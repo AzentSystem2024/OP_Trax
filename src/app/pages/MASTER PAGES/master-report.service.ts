@@ -19,7 +19,7 @@ export class MasterReportService {
   constructor(
     private http: HttpClient,
     private config: ConfigService,
-  ) { }
+  ) {}
 
   private get BASE_URL(): string {
     return this.config.apiBaseUrl;
@@ -178,7 +178,7 @@ export class MasterReportService {
     InsuranceID: any,
     InsuranceName: any,
     InsuranceShortName: any,
-    ClassificationID: any
+    ClassificationID: any,
   ) {
     const url = `${this.BASE_URL}insurancecompany/update`;
     const reqBody = {
@@ -186,7 +186,7 @@ export class MasterReportService {
       InsuranceID: InsuranceID,
       InsuranceName: InsuranceName,
       InsuranceShortName: InsuranceShortName,
-      ClassificationID: ClassificationID
+      ClassificationID: ClassificationID,
     };
 
     return this.http.post(url, reqBody);
@@ -425,11 +425,11 @@ export class MasterReportService {
       CPTADOC: IsADOCExcluded
         ? []
         : (CPTADOCMappings || []).filter(
-          (x: any) =>
-            x.SpecialityID != null &&
-            x.ADOCClassID != null &&
-            x.ADOCCategoryID != null,
-        ),
+            (x: any) =>
+              x.SpecialityID != null &&
+              x.ADOCClassID != null &&
+              x.ADOCCategoryID != null,
+          ),
     };
 
     return this.http.post(url, reqBody);
@@ -469,11 +469,11 @@ export class MasterReportService {
       CPTADOC: IsADOCExcluded
         ? []
         : (CPTADOCMappings || []).filter(
-          (x: any) =>
-            x.SpecialityID != null &&
-            x.ADOCClassID != null &&
-            x.ADOCCategoryID != null,
-        ),
+            (x: any) =>
+              x.SpecialityID != null &&
+              x.ADOCClassID != null &&
+              x.ADOCCategoryID != null,
+          ),
     };
 
     return this.http.post(url, reqBody);
@@ -1245,6 +1245,11 @@ export class MasterReportService {
     };
 
     return this.http.post(url, reqBody);
+  }
+
+  //=====Remove ADCO Class Data=====
+  Select_adocClass_Row_Data(id: any) {
+    return this.http.post(`${this.BASE_URL}ADOCClass/select/${id}`, {});
   }
 
   //=====Update ADCO Class data======
