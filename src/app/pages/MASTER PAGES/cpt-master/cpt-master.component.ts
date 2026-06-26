@@ -121,10 +121,6 @@ export class CPTMasterComponent {
       CPTTypeID,
       CPTCode,
       CPTName,
-      CPTPrice,
-      PriceEffectFrom,
-      CPTWeightage,
-      WeightageEffectFrom,
       CPTADOCMappings,
       IsADOCExcluded,
     } = this.CptNewFormComponent.getNewCptMasterData();
@@ -134,10 +130,6 @@ export class CPTMasterComponent {
         CPTTypeID,
         CPTCode,
         CPTName,
-        CPTPrice,
-        PriceEffectFrom,
-        CPTWeightage,
-        WeightageEffectFrom,
         CPTADOCMappings,
         IsADOCExcluded,
       )

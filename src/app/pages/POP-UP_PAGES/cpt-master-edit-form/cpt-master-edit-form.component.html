@@ -77,20 +77,7 @@
 
   <!-- Tabs Section -->
   <div class="section-card">
-    <dx-tabs
-      #withText
-      [width]="'auto'"
-      [rtlEnabled]="false"
-      [scrollByContent]="false"
-      [showNavButtons]="false"
-      [selectedIndex]="selectedTabIndex"
-      [dataSource]="tabsWithText"
-      [orientation]="'horizontal'"
-      [stylingMode]="'secondary'"
-      (onSelectionChanged)="onTabSelectionChanged($event)"
-    ></dx-tabs>
-
-    <div *ngIf="selectedTabIndex === 0" class="grid-container">
+    <div class="grid-container">
       <div
         class="p-3 text-center text-muted"
         *ngIf="newCptMasterData.IsADOCExcluded"
@@ -197,75 +184,6 @@
           }"
         >
         </dxi-column>
-      </dx-data-grid>
-    </div>
-
-    <div *ngIf="selectedTabIndex === 1" class="grid-container">
-      <dx-data-grid
-        class="custom-grid"
-        [dataSource]="newCptMasterData.CPTPrices"
-        (onRowPrepared)="onRowPreparedPrice($event)"
-        [showBorders]="false"
-        [columnAutoWidth]="true"
-        [rowAlternationEnabled]="true"
-        [hoverStateEnabled]="true"
-        [showRowLines]="true"
-        [showColumnLines]="false"
-        height="350"
-      >
-        <dxi-column
-          dataField="FacilityID"
-          caption="Facility"
-          [visible]="!IsPriceGlobal"
-        ></dxi-column>
-        <dxi-column
-          dataField="Price"
-          caption="Price"
-          dataType="number"
-          format="#,##0.00"
-        ></dxi-column>
-
-        <dxi-column
-          dataField="EffectFrom"
-          caption="Effective From"
-        ></dxi-column>
-
-        <dxi-column dataField="EffectTo" caption="Effective To"></dxi-column>
-        <dxi-column dataField="CreatedTime" caption="Updated Time"></dxi-column>
-      </dx-data-grid>
-    </div>
-
-    <div *ngIf="selectedTabIndex === 2" class="grid-container">
-      <dx-data-grid
-        class="custom-grid"
-        [dataSource]="newCptMasterData.CPTWeightages"
-        (onRowPrepared)="onRowPreparedWeightages($event)"
-        [showBorders]="false"
-        [columnAutoWidth]="true"
-        [rowAlternationEnabled]="true"
-        [hoverStateEnabled]="true"
-        [showRowLines]="true"
-        [showColumnLines]="false"
-        height="350"
-      >
-        <dxi-column
-          dataField="FacilityID"
-          caption="Facility"
-          [visible]="!IsWeightGlobal"
-        ></dxi-column>
-        <dxi-column
-          dataField="Weightage"
-          caption="Weightage"
-          dataType="number"
-        ></dxi-column>
-
-        <dxi-column
-          dataField="EffectFrom"
-          caption="Effective From"
-        ></dxi-column>
-
-        <dxi-column dataField="EffectTo" caption="Effective To"></dxi-column>
-        <dxi-column dataField="CreatedTime" caption="Updated Time"></dxi-column>
       </dx-data-grid>
     </div>
   </div>

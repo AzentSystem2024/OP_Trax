@@ -1,0 +1,271 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    #cptPriceGrid
+    class="grid theme-dependent"
+    [dataSource]="cptPriceData"
+    [showBorders]="true"
+    [showColumnLines]="true"
+    [showRowLines]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    [editing]="{
+      mode: 'cell',
+      allowUpdating: true,
+      startEditAction: 'dblClick',
+    }"
+    height="82vh"
+    [allowColumnResizing]="true"
+    (onEditorPreparing)="onEditorPreparing($event)"
+    (onRowUpdated)="onRowUpdated($event)"
+    (onRowPrepared)="onRowPrepared($event)"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="showInfo"
+      [showNavigationButtons]="showNavButtons"
+    >
+    </dxo-pager>
+
+    <dxo-load-panel [enabled]="true"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+
+    <dxo-header-filter [visible]="isFilterRowVisible">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+
+    <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+    <dxo-column-chooser [enabled]="true" [height]="400"></dxo-column-chooser>
+    <dxo-search-panel [visible]="true" placeholder="Search"></dxo-search-panel>
+
+    <!-- Toolbar -->
+    <dxo-toolbar>
+      <!-- Header -->
+      <dxi-item location="before">
+        <div class="grid-header">ADOC Price Master</div>
+      </dxi-item>
+
+      <!-- Facility Dropdown -->
+      <dxi-item
+        *ngIf="!IsGlobalPrice"
+        location="after"
+        widget="dxSelectBox"
+        [options]="facilitySelectOptions"
+      >
+      </dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' },
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          icon: 'refresh',
+          hint: 'refresh',
+          onClick: refresh,
+          stylingMode: 'text',
+        }"
+      ></dxi-item>
+
+      <!-- <dxi-item name="exportButton" location="after"></dxi-item> -->
+
+      <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="saveButtonOptions"
+      ></dxi-item>
+    </dxo-toolbar>
+
+    <!-- Grid Columns Here -->
+    <dxi-column
+      dataField="SerialNumber"
+      caption="SL"
+      [allowEditing]="false"
+      alignment="center"
+      [width]="60"
+    >
+    </dxi-column>
+
+    <dxi-column
+      dataField="ADOCClassName"
+      caption="ADOC Class"
+      [allowEditing]="false"
+    >
+    </dxi-column>
+
+    <dxi-column caption="Active Values" alignment="center">
+      <dxi-column
+        dataField="Price"
+        caption="Base Price (AED)"
+        dataType="number"
+        format="#,##0.00"
+        [allowEditing]="false"
+        alignment="right"
+      >
+      </dxi-column>
+
+      <dxi-column
+        dataField="PaedAdjuster"
+        caption="Pediatric Adjuster"
+        dataType="number"
+        format="#,##0.00"
+        [allowEditing]="false"
+        alignment="right"
+      >
+      </dxi-column>
+
+      <dxi-column
+        dataField="SeniorAdjuster"
+        caption="Senior Adjuster"
+        dataType="number"
+        format="#,##0.00"
+        [allowEditing]="false"
+        alignment="right"
+      >
+      </dxi-column>
+
+      <dxi-column
+        dataField="EffectFrom"
+        caption="Effect From"
+        dataType="date"
+        format="dd-MM-yyyy"
+        [allowEditing]="false"
+        alignment="center"
+      >
+      </dxi-column>
+    </dxi-column>
+
+    <dxi-column caption="New Values" alignment="center">
+      <dxi-column
+        dataField="NewPrice"
+        caption="Base Price (AED)"
+        dataType="number"
+        format="#,##0.00"
+        cssClass="new-price-column"
+      >
+        <dxi-validation-rule type="required" message="New Price is required">
+        </dxi-validation-rule>
+
+        <dxi-validation-rule
+          type="range"
+          [min]="0.01"
+          message="Price must be greater than 0"
+        >
+        </dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="NewPaedAdjuster"
+        caption="Pediatric Adjuster"
+        dataType="number"
+        format="#,##0.00"
+        cssClass="new-price-column"
+      >
+       <dxi-validation-rule type="required" message="Effect From is required">
+        </dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="NewSeniorAdjuster"
+        caption="Senior Adjuster"
+        dataType="number"
+        format="#,##0.00"
+        cssClass="new-price-column"
+      >
+       <dxi-validation-rule type="required" message="Effect From is required">
+        </dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="NewEffectFrom"
+        caption="Effect From"
+        dataType="date"
+        format="dd-MM-yyyy"
+        cssClass="new-price-column"
+      >
+        <dxi-validation-rule type="required" message="Effect From is required">
+        </dxi-validation-rule>
+
+        <dxi-validation-rule
+          type="custom"
+          [validationCallback]="validateNewEffectFrom"
+          message="New Effect From cannot be less than or equal to Active Effect From"
+        >
+        </dxi-validation-rule>
+      </dxi-column>
+    </dxi-column>
+
+    <dxi-column type="buttons" [width]="60">
+      <dxi-button
+        hint="View History Data"
+        icon="errorcircle"
+        [onClick]="onHistoryClick.bind(this)"
+      >
+      </dxi-button>
+    </dxi-column>
+  </dx-data-grid>
+
+  <!-- =========== History Popup =========== -->
+  <dx-popup
+    [(visible)]="historyPopupVisible"
+    [width]="'60%'"
+    [height]="'auto'"
+    title="ADOC Class Price History"
+    [showCloseButton]="true"
+    (onShown)="onHistoryPopupShown()"
+  >
+    <dx-data-grid
+      #historyGrid
+      [dataSource]="PriceHistoryData"
+      [showBorders]="true"
+      height="50vh"
+    >
+      <dxi-column
+        dataField="FacilityID"
+        caption="Facility"
+        [visible]="!IsGlobalPrice"
+      ></dxi-column>
+      <dxi-column
+        dataField="Price"
+        caption="Price"
+        dataType="number"
+      ></dxi-column>
+      <dxi-column
+        dataField="PaedAdjuster"
+        caption="Paed Adjuster"
+        dataType="number"
+      ></dxi-column>
+      <dxi-column
+        dataField="SeniorAdjuster"
+        caption="Senior Adjuster"
+        dataType="number"
+      ></dxi-column>
+
+      <dxi-column dataField="EffectFrom" caption="Effective From"></dxi-column>
+
+      <dxi-column dataField="EffectTo" caption="Effective To"></dxi-column>
+      <dxi-column dataField="CreatedTime" caption="Updated Time"></dxi-column>
+    </dx-data-grid>
+  </dx-popup>
+</div>

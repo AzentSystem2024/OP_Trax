@@ -32,7 +32,7 @@
     >
     </dxo-pager>
 
-    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-load-panel [enabled]="true"></dxo-load-panel>
     <dxo-scrolling mode="virtual"></dxo-scrolling>
     <dxo-sorting mode="multiple"></dxo-sorting>
 
@@ -48,16 +48,44 @@
     <dxo-toolbar>
       <!-- Header -->
       <dxi-item location="before">
-        <div class="grid-header">CPT Price Master</div>
+        <div class="grid-header">Facility Multiplier Master</div>
+      </dxi-item>
+
+      <!-- Region Adjuster -->
+      <dxi-item location="after">
+        <dx-text-box
+          [(value)]="regionAdjuster"
+          [readOnly]="true"
+          label="Region Adjuster"
+          labelMode="floating"
+          width="150"
+        ></dx-text-box>
+      </dxi-item>
+
+      <!-- Quaternary Adjuster -->
+      <dxi-item location="after">
+        <dx-text-box
+          [(value)]="quaternaryAdjuster"
+          [readOnly]="true"
+          label="Quaternary adjuster (CoE)"
+          labelMode="floating"
+          width="180"
+        ></dx-text-box>
       </dxi-item>
 
       <!-- Facility Dropdown -->
-      <dxi-item
-        *ngIf="!IsGlobalPrice"
-        location="after"
-        widget="dxSelectBox"
-        [options]="facilitySelectOptions"
-      >
+      <dxi-item *ngIf="!IsGlobalPrice" location="after" width="200">
+        <dx-select-box
+          label="Facility"
+          labelMode="floating"
+          [dataSource]="facilityList"
+          displayExpr="FacilityName"
+          valueExpr="FacilityLicense"
+          [(value)]="selectedFacilityID"
+          [searchEnabled]="true"
+          width="250"
+          (onValueChanged)="onFacilityChanged($event)"
+        ></dx-select-box>
       </dxi-item>
 
       <dxi-item
@@ -88,8 +116,6 @@
         }"
       ></dxi-item>
 
-      <!-- <dxi-item name="exportButton" location="after"></dxi-item> -->
-
       <dxi-item
         location="after"
         widget="dxButton"
@@ -108,130 +134,85 @@
     </dxi-column>
 
     <dxi-column
-      dataField="CPTCode"
-      caption="CPT Code"
+      dataField="ReceiverName"
+      caption="Receiver Name"
       [allowEditing]="false"
       alignment="center"
+      [width]="250"
     >
     </dxi-column>
 
-    <dxi-column dataField="CPTName" caption="CPT Name" [allowEditing]="false">
+    <dxi-column caption="Cost Block Multipliers" alignment="center">
+      <dxi-column
+        dataField="P_Multiplier"
+        caption="P"
+        dataType="number"
+        format="#,##0.00"
+        alignment="center"
+      >
+        <!-- <dxi-validation-rule
+          type="required"
+          message="P_Multiplier is required"
+        ></dxi-validation-rule> -->
+      </dxi-column>
+
+      <dxi-column
+        dataField="C_Multiplier"
+        caption="C"
+        dataType="number"
+        format="#,##0.00"
+        alignment="center"
+      >
+        <!-- <dxi-validation-rule
+          type="required"
+          message="C_Multiplier is required"
+        ></dxi-validation-rule> -->
+      </dxi-column>
+
+      <dxi-column
+        dataField="S_Multiplier"
+        caption="S"
+        dataType="number"
+        format="#,##0.00"
+        alignment="center"
+      >
+        <!-- <dxi-validation-rule
+          type="required"
+          message="S_Multiplier is required"
+        ></dxi-validation-rule> -->
+      </dxi-column>
+
+      <dxi-column
+        dataField="D_Multiplier"
+        caption="D"
+        dataType="number"
+        format="#,##0.00"
+        alignment="center"
+      >
+        <!-- <dxi-validation-rule
+          type="required"
+          message="D_Multiplier is required"
+        ></dxi-validation-rule> -->
+      </dxi-column>
     </dxi-column>
 
     <dxi-column
-      dataField="CPTType"
-      caption="CPT Type"
-      [allowEditing]="false"
+      dataField="EffectFrom"
+      caption="Effect From"
+      dataType="date"
+      format="dd-MM-yyyy"
       alignment="center"
     >
-    </dxi-column>
-
-    <dxi-column caption="Active Price" alignment="center">
-      <dxi-column
-        dataField="ActivePrice"
-        caption="Price (AED)"
-        dataType="number"
-        format="#,##0.00"
-        [allowEditing]="false"
-        alignment="right"
+      <!-- <dxi-validation-rule
+        type="required"
+        message="Effect From is required"
+      ></dxi-validation-rule>
+      <dxi-validation-rule
+        type="custom"
+        [validationCallback]="validateNewEffectFrom"
+        message="Effect From cannot be less than or equal to Active Effect From"
       >
-      </dxi-column>
-
-      <dxi-column
-        dataField="ActiveEffectFrom"
-        caption="Effect From"
-        dataType="date"
-        format="dd-MM-yyyy"
-        [allowEditing]="false"
-        alignment="center"
-      >
-      </dxi-column>
-    </dxi-column>
-
-    <dxi-column caption="New Price" alignment="center">
-      <dxi-column
-        dataField="NewPrice"
-        caption="Price (AED)"
-        dataType="number"
-        format="#,##0.00"
-        cssClass="new-price-column"
-      >
-        <dxi-validation-rule type="required" message="New Price is required">
-        </dxi-validation-rule>
-
-        <dxi-validation-rule
-          type="range"
-          [min]="0.01"
-          message="Price must be greater than 0"
-        >
-        </dxi-validation-rule>
-      </dxi-column>
-
-      <dxi-column
-        dataField="NewEffectFrom"
-        caption="Effect From"
-        dataType="date"
-        format="dd-MM-yyyy"
-        cssClass="new-price-column"
-      >
-        <dxi-validation-rule type="required" message="Effect From is required">
-        </dxi-validation-rule>
-
-        <dxi-validation-rule
-          type="custom"
-          [validationCallback]="validateNewEffectFrom"
-          message="New Effect From cannot be less than or equal to Active Effect From"
-        >
-        </dxi-validation-rule>
-      </dxi-column>
-    </dxi-column>
-
-    <dxi-column type="buttons" [width]="60">
-      <dxi-button
-        hint="View History Data"
-        icon="errorcircle"
-        [onClick]="onHistoryClick.bind(this)"
-      >
-      </dxi-button>
+      </dxi-validation-rule> -->
     </dxi-column>
   </dx-data-grid>
-
-  <!-- =========== History Popup =========== -->
-  <dx-popup
-    [(visible)]="historyPopupVisible"
-    [width]="'60%'"
-    [height]="'auto'"
-    title="CPT Price History"
-    [showCloseButton]="true"
-    (onShown)="onHistoryPopupShown()"
-  >
-    <dx-data-grid
-      #historyGrid
-      [dataSource]="PriceHistoryData"
-      [showBorders]="true"
-      height="50vh"
-    >
-      <dxi-column
-        dataField="FacilityID"
-        caption="Facility"
-        [visible]="!IsGlobalPrice"
-      ></dxi-column>
-      <dxi-column
-        dataField="Price"
-        caption="Price"
-        dataType="number"
-      ></dxi-column>
-
-      <dxi-column dataField="EffectFrom" caption="Effective From"></dxi-column>
-
-      <dxi-column dataField="EffectTo" caption="Effective To"></dxi-column>
-      <dxi-column dataField="CreatedTime" caption="Updated Time"></dxi-column>
-    </dx-data-grid>
-  </dx-popup>
 </div>
-<dx-load-panel
-  [showPane]="false"
-  shadingColor="rgba(0, 0, 0, 0.4)"
-  [position]="{ of: '.view-wrapper' }"
-  [visible]="isLoading"
-></dx-load-panel>

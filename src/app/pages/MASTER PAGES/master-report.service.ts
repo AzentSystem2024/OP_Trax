@@ -395,10 +395,6 @@ export class MasterReportService {
     CPTTypeID: any,
     CPTCode: any,
     CPTName: any,
-    CPTPrice: any,
-    PriceEffectFrom: any,
-    CPTWeightage: any,
-    WeightageEffectFrom: any,
     CPTADOCMappings: any,
     IsADOCExcluded?: any,
   ) {
@@ -408,10 +404,6 @@ export class MasterReportService {
       CPTTypeID,
       CPTCode,
       CPTName,
-      CPTPrice,
-      PriceEffectFrom,
-      CPTWeightage,
-      WeightageEffectFrom,
       IsADOCExcluded: IsADOCExcluded ?? false,
 
       // Default values
@@ -1173,7 +1165,7 @@ export class MasterReportService {
 
   exportReport(payload: any) {
     return this.http.post(`${this.BASE_URL}exportreport/export`, payload, {
-      responseType: 'blob', // 🔥 VERY IMPORTANT
+      responseType: 'blob', // VERY IMPORTANT
     });
   }
 
@@ -1297,12 +1289,19 @@ export class MasterReportService {
   }
 
   // ===== Get CPT-Price List =====
-  get_CPT_Price_List(facilityId: any) {
-    const url = `${this.BASE_URL}Price/cptlist`;
+  get_ADOC_Price_List(facilityId: any) {
+    const url = `${this.BASE_URL}ADOCPrice/cptlist`;
     const payload = {
       FacilityID: facilityId,
     };
     return this.http.post(url, payload);
+  }
+
+  // ===== Add Price Master =====
+  Insert_PriceMaster_Data(payload: any) {
+    const url = `${this.BASE_URL}ADOCPrice/save`;
+    const reqBody = payload;
+    return this.http.post(url, reqBody);
   }
 
   // ===== Get CPT-Price List =====
@@ -1312,13 +1311,6 @@ export class MasterReportService {
       FacilityID: facilityId,
     };
     return this.http.post(url, payload);
-  }
-
-  // ===== Add Price Master =====
-  Insert_PriceMaster_Data(payload: any) {
-    const url = `${this.BASE_URL}price/save`;
-    const reqBody = payload;
-    return this.http.post(url, reqBody);
   }
 
   // ===== Update Price Master =====
@@ -1406,5 +1398,17 @@ export class MasterReportService {
   get_ADOC_CountingRule_List() {
     const Url = `${this.BASE_URL}ADOCGroup/adoc-rule-list`;
     return this.http.post(Url, {});
+  }
+
+  // ===== Facility Multiplier Master =====
+  get_Facility_Multiplier_List(facilityId: string) {
+    const payload = { FacilityID: facilityId || '' };
+    const Url = `${this.BASE_URL}facilitymultiplier/list`;
+    return this.http.post(Url, payload);
+  }
+
+  Insert_Facility_Multiplier_Data(payload: any) {
+    const Url = `${this.BASE_URL}facilitymultiplier/insert`;
+    return this.http.post(Url, payload);
   }
 }

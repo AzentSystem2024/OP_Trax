@@ -19,8 +19,7 @@ import {
   DxNumberBoxModule,
   DxRadioGroupModule,
   DxSelectBoxModule,
-  DxTabPanelModule,
-  DxTabsModule,
+
   DxTextAreaModule,
   DxTextBoxModule,
   DxValidatorModule,
@@ -45,20 +44,9 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     CPTCode: '',
     CPTTypeID: '',
     CPTName: '',
-    CPTPrices: [],
-    CPTWeightages: [],
     CPTADOCMappings: [],
     IsADOCExcluded: false,
   };
-
-  IsWeightGlobal = false;
-  IsPriceGlobal = false;
-
-  tabsWithText = [
-    { id: 0, text: 'CPT - ADOC Mapping' },
-    { id: 1, text: 'Price History' },
-    { id: 2, text: 'Weightage History' },
-  ];
 
   specialityDataSource: any[] = [];
   ADOCClassDataSource: any[] = [];
@@ -66,7 +54,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   allADOCClassDataSource: any;
   ADOCApplicationDataSource: any[] = [];
 
-  selectedTabIndex = 0;
+
   dropdownsLoaded = false;
 
   constructor(
@@ -101,7 +89,6 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         this.get_ADOC_CLASS_Dropdown(),
         this.get_ADOC_GROUP_Dropdown(),
         this.getSpecialityDropdown(),
-        this.get_local_storage_data(),
         this.get_ADOC_Application_Dropdown(),
       ]);
 
@@ -151,17 +138,9 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     this.newCptMasterData.CPTADOCMappings = [
       ...this.newCptMasterData.CPTADOCMappings,
     ];
-
-    this.selectedTabIndex = 0;
   }
 
   onAdocExcludedChanged(e: any) {
-  }
-
-  onTabSelectionChanged(e: any) {
-    if (e.addedItems && e.addedItems.length > 0) {
-      this.selectedTabIndex = e.addedItems[0].id;
-    }
   }
 
   async getSpecialityDropdown(): Promise<void> {
@@ -425,52 +404,13 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     }
   }
 
-  get_local_storage_data() {
-    const data = JSON.parse(localStorage.getItem('logData') || '{}');
 
-    this.IsWeightGlobal = data.cptWeightGlobal;
-    this.IsPriceGlobal = data.cptPriceGlobal;
-  }
-
-  onRowPreparedWeightages(e: any) {
-    if (e.rowType !== 'data') return;
-
-    const data = this.newCptMasterData.CPTWeightages;
-
-    if (!data || data.length <= 1) return;
-
-    const latestRow = data.reduce((a: any, b: any) =>
-      new Date(a.CreatedTime) > new Date(b.CreatedTime) ? a : b,
-    );
-
-    if (e.data === latestRow) {
-      e.rowElement.classList.add('latest-row');
-    }
-  }
-
-  onRowPreparedPrice(e: any) {
-    if (e.rowType !== 'data') return;
-
-    const data = this.newCptMasterData.CPTPrices;
-
-    if (!data || data.length <= 1) return;
-
-    const latestRow = data.reduce((a: any, b: any) =>
-      new Date(a.CreatedTime) > new Date(b.CreatedTime) ? a : b,
-    );
-
-    if (e.data === latestRow) {
-      e.rowElement.classList.add('latest-row');
-    }
-  }
 
   clearForm() {
     this.newCptMasterData = {
       CPTCode: '',
       CPTName: '',
       CPTTypeID: null,
-      CPTPrices: [],
-      CPTWeightages: [],
       CPTADOCMappings: [],
     };
   }
@@ -490,8 +430,6 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     DxDropDownBoxModule,
     DxButtonModule,
     DxRadioGroupModule,
-    DxTabPanelModule,
-    DxTabsModule,
     DxCheckBoxModule,
   ],
   declarations: [CptMasterEditFormComponent],
