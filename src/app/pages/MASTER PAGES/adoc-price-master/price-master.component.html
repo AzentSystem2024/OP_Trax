@@ -32,7 +32,7 @@
     >
     </dxo-pager>
 
-    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-load-panel [enabled]="true"></dxo-load-panel>
     <dxo-scrolling mode="virtual"></dxo-scrolling>
     <dxo-sorting mode="multiple"></dxo-sorting>
 
@@ -48,7 +48,7 @@
     <dxo-toolbar>
       <!-- Header -->
       <dxi-item location="before">
-        <div class="grid-header">CPT Price Master</div>
+        <div class="grid-header">ADOC Price Master</div>
       </dxi-item>
 
       <!-- Facility Dropdown -->
@@ -108,28 +108,16 @@
     </dxi-column>
 
     <dxi-column
-      dataField="CPTCode"
-      caption="CPT Code"
+      dataField="ADOCClassName"
+      caption="ADOC Class"
       [allowEditing]="false"
-      alignment="center"
     >
     </dxi-column>
 
-    <dxi-column dataField="CPTName" caption="CPT Name" [allowEditing]="false">
-    </dxi-column>
-
-    <dxi-column
-      dataField="CPTType"
-      caption="CPT Type"
-      [allowEditing]="false"
-      alignment="center"
-    >
-    </dxi-column>
-
-    <dxi-column caption="Active Price" alignment="center">
+    <dxi-column caption="Active Values" alignment="center">
       <dxi-column
-        dataField="ActivePrice"
-        caption="Price (AED)"
+        dataField="Price"
+        caption="Base Price (AED)"
         dataType="number"
         format="#,##0.00"
         [allowEditing]="false"
@@ -138,7 +126,27 @@
       </dxi-column>
 
       <dxi-column
-        dataField="ActiveEffectFrom"
+        dataField="PaedAdjuster"
+        caption="Pediatric Adjuster"
+        dataType="number"
+        format="#,##0.00"
+        [allowEditing]="false"
+        alignment="right"
+      >
+      </dxi-column>
+
+      <dxi-column
+        dataField="SeniorAdjuster"
+        caption="Senior Adjuster"
+        dataType="number"
+        format="#,##0.00"
+        [allowEditing]="false"
+        alignment="right"
+      >
+      </dxi-column>
+
+      <dxi-column
+        dataField="EffectFrom"
         caption="Effect From"
         dataType="date"
         format="dd-MM-yyyy"
@@ -148,10 +156,10 @@
       </dxi-column>
     </dxi-column>
 
-    <dxi-column caption="New Price" alignment="center">
+    <dxi-column caption="New Values" alignment="center">
       <dxi-column
         dataField="NewPrice"
-        caption="Price (AED)"
+        caption="Base Price (AED)"
         dataType="number"
         format="#,##0.00"
         cssClass="new-price-column"
@@ -164,6 +172,28 @@
           [min]="0.01"
           message="Price must be greater than 0"
         >
+        </dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="NewPaedAdjuster"
+        caption="Pediatric Adjuster"
+        dataType="number"
+        format="#,##0.00"
+        cssClass="new-price-column"
+      >
+       <dxi-validation-rule type="required" message="Effect From is required">
+        </dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="NewSeniorAdjuster"
+        caption="Senior Adjuster"
+        dataType="number"
+        format="#,##0.00"
+        cssClass="new-price-column"
+      >
+       <dxi-validation-rule type="required" message="Effect From is required">
         </dxi-validation-rule>
       </dxi-column>
 
@@ -201,7 +231,7 @@
     [(visible)]="historyPopupVisible"
     [width]="'60%'"
     [height]="'auto'"
-    title="CPT Price History"
+    title="ADOC Class Price History"
     [showCloseButton]="true"
     (onShown)="onHistoryPopupShown()"
   >
@@ -221,6 +251,16 @@
         caption="Price"
         dataType="number"
       ></dxi-column>
+      <dxi-column
+        dataField="PaedAdjuster"
+        caption="Paed Adjuster"
+        dataType="number"
+      ></dxi-column>
+      <dxi-column
+        dataField="SeniorAdjuster"
+        caption="Senior Adjuster"
+        dataType="number"
+      ></dxi-column>
 
       <dxi-column dataField="EffectFrom" caption="Effective From"></dxi-column>
 
@@ -229,9 +269,3 @@
     </dx-data-grid>
   </dx-popup>
 </div>
-<dx-load-panel
-  [showPane]="false"
-  shadingColor="rgba(0, 0, 0, 0.4)"
-  [position]="{ of: '.view-wrapper' }"
-  [visible]="isLoading"
-></dx-load-panel>

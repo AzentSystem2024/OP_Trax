@@ -1171,7 +1171,7 @@ export class MasterReportService {
 
   exportReport(payload: any) {
     return this.http.post(`${this.BASE_URL}exportreport/export`, payload, {
-      responseType: 'blob', // 🔥 VERY IMPORTANT
+      responseType: 'blob', // VERY IMPORTANT
     });
   }
 
@@ -1295,8 +1295,8 @@ export class MasterReportService {
   }
 
   // ===== Get CPT-Price List =====
-  get_CPT_Price_List(facilityId: any) {
-    const url = `${this.BASE_URL}Price/cptlist`;
+  get_ADOC_Price_List(facilityId: any) {
+    const url = `${this.BASE_URL}ADOCPrice/cptlist`;
     const payload = {
       FacilityID: facilityId,
     };
@@ -1314,7 +1314,7 @@ export class MasterReportService {
 
   // ===== Add Price Master =====
   Insert_PriceMaster_Data(payload: any) {
-    const url = `${this.BASE_URL}price/save`;
+    const url = `${this.BASE_URL}ADOCPrice/save`;
     const reqBody = payload;
     return this.http.post(url, reqBody);
   }

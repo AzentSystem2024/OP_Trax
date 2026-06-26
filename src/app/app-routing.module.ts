@@ -40,7 +40,6 @@ import { LicenseInfoComponent } from './pages/SYSTEM PAGES/license-info/license-
 import { NotificationSettingsComponent } from './pages/SYSTEM PAGES/notificarion-settings/notificarion-settings.component';
 import { EmailLogDataComponent } from './pages/SYSTEM PAGES/Report-Email-Schedule/email-log-data.component';
 import { SubDepartmentListComponent } from './pages/MASTER PAGES/Sub-department/sub-department-list.component';
-
 import { AccountsListComponent } from './pages/ACCOUNTS/accounts-list/accounts-list.component';
 import { TwoStepVerificationComponent } from './components/library/two-step-verification/two-step-verification.component';
 import { AboutPageComponent } from './pages/about-page/about-page.component';
@@ -48,7 +47,7 @@ import { CPTCostingDepartmentAllocationComponent } from './pages/MASTER PAGES/cp
 import { LedgerGroupComponent } from './pages/ACCOUNTS/ledger-group/ledger-group.component';
 import { ClinicalDataComponent } from './pages/OPERATION PAGES/Billing-info/clinical-data.component';
 import { ADOCClassComponent } from './pages/MASTER PAGES/adoc-class/adoc-class.component';
-import { PriceMasterComponent } from './pages/MASTER PAGES/price-master/price-master.component';
+import { AdocPriceMasterComponent } from './pages/MASTER PAGES/adoc-price-master/price-master.component';
 import { ADOCGroupComponent } from './pages/MASTER PAGES/adoc-category/adoc-group.component';
 import { CPTWeightageComponent } from './pages/MASTER PAGES/cpt-weightage/cpt-weightage.component';
 import { AdocCountingRulesComponent } from './pages/MASTER PAGES/adoc-counting-rules/adoc-counting-rules.component';
@@ -279,7 +278,7 @@ const routes: Routes = [
       },
       {
         path: 'price',
-        component: PriceMasterComponent,
+        component: AdocPriceMasterComponent,
         canActivate: [AuthGuardService],
       },
       {

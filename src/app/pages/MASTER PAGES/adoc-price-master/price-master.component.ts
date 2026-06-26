@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, ViewChild } from '@angular/core';
+import { Component, NgModule, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-
 import notify from 'devextreme/ui/notify';
-
 import {
   DxButtonModule,
   DxDataGridComponent,
@@ -22,12 +20,12 @@ import { MasterReportService } from '../master-report.service';
 import { DataSource } from 'devextreme/common/data';
 
 @Component({
-  selector: 'app-price-master',
+  selector: 'app-adoc-price-master',
   templateUrl: './price-master.component.html',
   styleUrl: './price-master.component.scss',
   providers: [ReportService, DataService],
 })
-export class PriceMasterComponent {
+export class AdocPriceMasterComponent implements AfterViewInit {
   @ViewChild('cptPriceGrid', { static: false })
   cptPriceGrid!: DxDataGridComponent;
 
@@ -56,7 +54,6 @@ export class PriceMasterComponent {
   cptPriceData: any = [];
   originalCptPriceData: any[] = [];
 
-  isLoading: boolean = false;
   editedRows: any = [];
   IsGlobalPrice: boolean = false;
 
@@ -85,9 +82,26 @@ export class PriceMasterComponent {
       elementAttr: { class: 'add-button' },
     };
 
-    this.loadLookups();
-    this.fetchCPTPriceList();
-    this.get_local_storage_data();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.get_local_storage_data();
+      this.loadLookups();
+    });
+  }
+
+  showLoading(message: string) {
+    if (this.cptPriceGrid && this.cptPriceGrid.instance) {
+      this.cptPriceGrid.instance.option('loadPanel.text', message);
+      this.cptPriceGrid.instance.beginCustomLoading(message);
+    }
+  }
+
+  hideLoading() {
+    if (this.cptPriceGrid && this.cptPriceGrid.instance) {
+      this.cptPriceGrid.instance.endCustomLoading();
+    }
   }
 
   
@@ -98,43 +112,62 @@ export class PriceMasterComponent {
   }
 
   loadLookups() {
+    this.showLoading('Loading Facility List...');
     this.dataService
       .get_UserWise_FacilityList_Data()
-      .subscribe((response: any) => {
-        this.facilityList = response.facilityDetails || [];
+      .subscribe({
+        next: (response: any) => {
+          this.facilityList = response.facilityDetails || [];
 
-        if (this.facilityList.length === 1) {
-          this.selectedFacilityID = this.facilityList[0].FacilityLicense;
+          if (this.facilityList.length === 1) {
+            this.selectedFacilityID = this.facilityList[0].FacilityLicense;
+          }
+          
+          this.fetch_ADOC_Price_List();
+
+          this.facilitySelectOptions = {
+            dataSource: this.facilityList,
+            displayExpr: 'FacilityName',
+            valueExpr: 'FacilityLicense',
+            value: this.selectedFacilityID,
+            width: 250,
+            searchEnabled: true,
+            onValueChanged: (e: any) => {
+              this.selectedFacilityID = e.value;
+              this.onFacilityChanged(e);
+            },
+          };
+          this.hideLoading();
+        },
+        error: (error: any) => {
+          this.hideLoading();
+          notify('Failed to load facility list', 'error', 2000);
         }
-        this.facilitySelectOptions = {
-          dataSource: this.facilityList,
-          displayExpr: 'FacilityName',
-          valueExpr: 'FacilityLicense',
-          value: this.selectedFacilityID,
-          width: 250,
-          searchEnabled: true,
-          onValueChanged: (e: any) => {
-            this.selectedFacilityID = e.value;
-            this.onFacilityChanged(e);
-          },
-        };
       });
   }
 
-  fetchCPTPriceList() {
+  fetch_ADOC_Price_List() {
     this.cptPriceData = new DataSource({
       load: () =>
         new Promise((resolve, reject) => {
+          this.showLoading('Fetching ADOC Price List...');
           this.masterService
-            .get_CPT_Price_List(this.selectedFacilityID || '')
+            .get_ADOC_Price_List(this.selectedFacilityID || '')
             .subscribe({
               next: (response: any) => {
+                this.hideLoading();
                 if (response.flag === '1') {
                   const data = (response.data || []).map(
                     (item: any, index: number) => ({
                       ...item,
                       SerialNumber: index + 1,
                       NewPrice: item.NewPrice > 0 ? item.NewPrice : null,
+                      NewPaedAdjuster:
+                        item.NewPaedAdjuster > 0 ? item.NewPaedAdjuster : null,
+                      NewSeniorAdjuster:
+                        item.NewSeniorAdjuster > 0
+                          ? item.NewSeniorAdjuster
+                          : null,
                     }),
                   );
 
@@ -149,6 +182,7 @@ export class PriceMasterComponent {
                 }
               },
               error: (error) => {
+                this.hideLoading();
                 notify(
                   'An error occurred while fetching CPT Price List',
                   'error',
@@ -163,16 +197,17 @@ export class PriceMasterComponent {
   }
 
   onHistoryClick(e: any) {
-    const ID = e.row.data.CPTID;
-    this.isLoading = true;
+    const ID = e.row.data.ADOCClassID;
+    this.showLoading('Loading History...');
     this.masterService.selectCptMaster(ID).subscribe((response: any) => {
       if (response.flag === '1') {
-        this.PriceHistoryData = response.data[0].CPTPrices || [];
+     
+        // this.PriceHistoryData = response.data[0].CPTPrices || response.data[0].Prices || response.data[0].ADOCClassPrices || [];
         this.historyPopupVisible = true;
-        this.isLoading = false;
+        this.hideLoading();
       } else {
         notify('Failed to load Price History', 'error', 2000);
-        this.isLoading = false;
+        this.hideLoading();
       }
     });
   }
@@ -191,9 +226,9 @@ export class PriceMasterComponent {
     const newEffectFrom = new Date(e.value);
     newEffectFrom.setHours(0, 0, 0, 0);
 
-    const activePrice = e.data?.ActivePrice ?? e.row?.data?.ActivePrice;
+    const activePrice = e.data?.Price ?? e.row?.data?.Price;
     const activeEffectFrom =
-      e.data?.ActiveEffectFrom ?? e.row?.data?.ActiveEffectFrom;
+      e.data?.EffectFrom ?? e.row?.data?.EffectFrom;
 
     // Initial setup - no active record exists
     if (!activePrice && !activeEffectFrom) {
@@ -221,24 +256,47 @@ export class PriceMasterComponent {
       return;
     }
 
+    const origDate = originalRow.NewEffectFrom ? new Date(originalRow.NewEffectFrom).setHours(0, 0, 0, 0) : 0;
+    const newDate = e.data.NewEffectFrom ? new Date(e.data.NewEffectFrom).setHours(0, 0, 0, 0) : 0;
+
     const isModified =
       originalRow.NewPrice !== e.data.NewPrice ||
-      new Date(originalRow.NewEffectFrom).getTime() !==
-        new Date(e.data.NewEffectFrom).getTime();
+      originalRow.NewPaedAdjuster !== e.data.NewPaedAdjuster ||
+      originalRow.NewSeniorAdjuster !== e.data.NewSeniorAdjuster ||
+      origDate !== newDate;
 
     e.data.IsModified = isModified;
+
+    const rowIndex = e.component.getRowIndexByKey(e.key);
+    if (rowIndex >= 0) {
+      const rowElements = e.component.getRowElement(rowIndex);
+      if (rowElements) {
+        const elements = rowElements.length !== undefined && !rowElements.style ? Array.from(rowElements as any) : [rowElements];
+        elements.forEach((row: any) => {
+          if (row && row.style) {
+            if (isModified) {
+              // row.style.backgroundColor = '#77a692';
+              row.style.fontWeight = '600';
+            } else {
+              row.style.backgroundColor = '';
+              row.style.fontWeight = '';
+            }
+          }
+        });
+      }
+    }
   }
 
   onRowPrepared(e: any) {
     if (e.rowType === 'data' && e.data?.IsModified) {
-      e.rowElement.style.backgroundColor = '#77a692';
+      // e.rowElement.style.backgroundColor = '#77a692';
       e.rowElement.style.fontWeight = '600';
     }
   }
 
   onFacilityChanged(event: any) {
     this.selectedFacilityID = event.value;
-    this.fetchCPTPriceList();
+    this.fetch_ADOC_Price_List();
   }
 
   savePriceMaster() {
@@ -253,6 +311,8 @@ export class PriceMasterComponent {
 
       return (
         original.NewPrice !== row.NewPrice ||
+        original.NewPaedAdjuster !== row.NewPaedAdjuster ||
+        original.NewSeniorAdjuster !== row.NewSeniorAdjuster ||
         this.getDate(original.NewEffectFrom) !== this.getDate(row.NewEffectFrom)
       );
     });
@@ -264,20 +324,30 @@ export class PriceMasterComponent {
 
     const payload = modifiedRows.map((x: any) => ({
       FacilityID: this.selectedFacilityID ? this.selectedFacilityID : null,
-      CPTID: x.CPTID,
+      ADOCClassID: x.ADOCClassID,
       Price: x.NewPrice,
+      PaedAdjuster: x.NewPaedAdjuster,
+      SeniorAdjuster: x.NewSeniorAdjuster,
       EffectFrom: this.formatDate(x.NewEffectFrom),
       EffectTo: null,
     }));
 
+    this.showLoading('Saving ADOC Class Price Master...');
     this.masterService
       .Insert_PriceMaster_Data(payload)
-      .subscribe((response: any) => {
-        if (response.flag === '1') {
-          notify('Price Master Saved Successfully', 'success', 2000);
-          this.fetchCPTPriceList();
-        } else {
-          notify('Failed to save Price Master', 'error', 2000);
+      .subscribe({
+        next: (response: any) => {
+          this.hideLoading();
+          if (response.flag === '1') {
+            notify('Price Master Saved Successfully', 'success', 2000);
+            this.fetch_ADOC_Price_List();
+          } else {
+            notify('Failed to save Price Master', 'error', 2000);
+          }
+        },
+        error: (error: any) => {
+          this.hideLoading();
+          notify('An error occurred while saving Price Master', 'error', 2000);
         }
       });
   }
@@ -300,7 +370,7 @@ export class PriceMasterComponent {
 
   refresh = () => {
     this.cptPriceGrid.instance.refresh();
-    this.fetchCPTPriceList();
+    this.fetch_ADOC_Price_List();
   };
 
   toggleFilterRow = () => {
@@ -332,6 +402,6 @@ export class PriceMasterComponent {
     DxCheckBoxModule,
     DxLoadPanelModule,
   ],
-  declarations: [PriceMasterComponent],
+  declarations: [AdocPriceMasterComponent],
 })
-export class PriceMasterModule {}
+export class AdocPriceMasterModule {}
