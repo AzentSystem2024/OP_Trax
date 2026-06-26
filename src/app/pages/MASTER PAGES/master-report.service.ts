@@ -1295,6 +1295,13 @@ export class MasterReportService {
     return this.http.post(url, payload);
   }
 
+  // ===== Add Price Master =====
+  Insert_PriceMaster_Data(payload: any) {
+    const url = `${this.BASE_URL}ADOCPrice/save`;
+    const reqBody = payload;
+    return this.http.post(url, reqBody);
+  }
+
   // ===== Get CPT-Price List =====
   get_CPT_Weightage_List(facilityId: any) {
     const url = `${this.BASE_URL}cptweightage/cptlist`;
@@ -1302,13 +1309,6 @@ export class MasterReportService {
       FacilityID: facilityId,
     };
     return this.http.post(url, payload);
-  }
-
-  // ===== Add Price Master =====
-  Insert_PriceMaster_Data(payload: any) {
-    const url = `${this.BASE_URL}ADOCPrice/save`;
-    const reqBody = payload;
-    return this.http.post(url, reqBody);
   }
 
   // ===== Update Price Master =====
@@ -1396,5 +1396,17 @@ export class MasterReportService {
   get_ADOC_CountingRule_List() {
     const Url = `${this.BASE_URL}ADOCGroup/adoc-rule-list`;
     return this.http.post(Url, {});
+  }
+
+  // ===== Facility Multiplier Master =====
+  get_Facility_Multiplier_List(facilityId: string) {
+    const payload = { FacilityID: facilityId || '' };
+    const Url = `${this.BASE_URL}facilitymultiplier/list`;
+    return this.http.post(Url, payload);
+  }
+
+  Insert_Facility_Multiplier_Data(payload: any) {
+    const Url = `${this.BASE_URL}facilitymultiplier/insert`;
+    return this.http.post(Url, payload);
   }
 }

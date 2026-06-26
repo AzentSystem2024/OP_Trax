@@ -52,6 +52,7 @@ import { ADOCGroupComponent } from './pages/MASTER PAGES/adoc-category/adoc-grou
 import { CPTWeightageComponent } from './pages/MASTER PAGES/cpt-weightage/cpt-weightage.component';
 import { AdocCountingRulesComponent } from './pages/MASTER PAGES/adoc-counting-rules/adoc-counting-rules.component';
 import { GroupingDetailsReportComponent } from './pages/REPORT PAGES/grouping-details-report/grouping-details-report.component';
+import { FacilityMultiplierMasterComponent } from './pages/MASTER PAGES/facility-multiplier-master/facility-multiplier-master.component';
 
 const routes: Routes = [
   {
@@ -279,6 +280,11 @@ const routes: Routes = [
       {
         path: 'price',
         component: AdocPriceMasterComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'facility-multiplier',
+        component: FacilityMultiplierMasterComponent,
         canActivate: [AuthGuardService],
       },
       {
