@@ -59,6 +59,8 @@ export class AdocPriceMasterComponent implements AfterViewInit {
 
   PriceHistoryData: any = [];
   historyPopupVisible: boolean = false;
+  isEditingEnabled: boolean = false;
+  editButtonOptions: any;
 
   constructor(
     private masterService: MasterReportService,
@@ -82,6 +84,18 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       elementAttr: { class: 'add-button' },
     };
 
+    this.editButtonOptions = {
+      class: 'ms-2',
+      text: '',
+      icon: 'edit',
+      type: 'default',
+      stylingMode: 'default',
+      hint: 'Toggle Edit Mode',
+      disabled: !this.menuPrevilage.CanAdd,
+      onClick: this.toggleEditMode,
+      elementAttr: { class: 'edit-button' },
+    };
+
   }
 
   ngAfterViewInit() {
@@ -90,6 +104,18 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       this.fetch_ADOC_Price_List();
     });
   }
+
+  toggleEditMode = () => {
+    this.isEditingEnabled = !this.isEditingEnabled;
+    this.editButtonOptions = {
+      ...this.editButtonOptions,
+      icon: this.isEditingEnabled ? 'close' : 'edit'
+    };
+    
+    if (!this.isEditingEnabled) {
+      // this.refresh();
+    }
+  };
 
   showLoading(message: string) {
     if (this.cptPriceGrid && this.cptPriceGrid.instance) {

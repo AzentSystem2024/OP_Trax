@@ -55,7 +55,7 @@
       <dxi-item location="after">
         <dx-text-box
           [(value)]="regionAdjuster"
-          [readOnly]="true"
+          [readOnly]="!isEditingEnabled"
           label="Region Adjuster"
           labelMode="floating"
           width="150"
@@ -66,7 +66,7 @@
       <dxi-item location="after">
         <dx-text-box
           [(value)]="quaternaryAdjuster"
-          [readOnly]="true"
+          [readOnly]="!isEditingEnabled"
           label="Quaternary adjuster (CoE)"
           labelMode="floating"
           width="180"
@@ -74,7 +74,7 @@
       </dxi-item>
 
       <!-- Facility Dropdown -->
-      <dxi-item *ngIf="!IsGlobalPrice" location="after" width="200">
+      <dxi-item [visible]="!IsGlobalPrice" location="after" width="200">
         <dx-select-box
           label="Facility"
           labelMode="floating"
@@ -119,6 +119,13 @@
       <dxi-item
         location="after"
         widget="dxButton"
+        [options]="editButtonOptions"
+      ></dxi-item>
+
+      <dxi-item
+        [visible]="isEditingEnabled"
+        location="after"
+        widget="dxButton"
         [options]="saveButtonOptions"
       ></dxi-item>
     </dxo-toolbar>
@@ -138,22 +145,19 @@
       caption="Receiver Name"
       [allowEditing]="false"
       alignment="center"
-      [width]="250"
+      [width]="180"
     >
     </dxi-column>
 
-    <dxi-column caption="Cost Block Multipliers" alignment="center">
+    <dxi-column caption="Active Values" alignment="center">
       <dxi-column
         dataField="P_Multiplier"
         caption="P"
         dataType="number"
         format="#,##0.00"
+        [allowEditing]="false"
         alignment="center"
       >
-        <!-- <dxi-validation-rule
-          type="required"
-          message="P_Multiplier is required"
-        ></dxi-validation-rule> -->
       </dxi-column>
 
       <dxi-column
@@ -161,12 +165,9 @@
         caption="C"
         dataType="number"
         format="#,##0.00"
+        [allowEditing]="false"
         alignment="center"
       >
-        <!-- <dxi-validation-rule
-          type="required"
-          message="C_Multiplier is required"
-        ></dxi-validation-rule> -->
       </dxi-column>
 
       <dxi-column
@@ -174,12 +175,9 @@
         caption="S"
         dataType="number"
         format="#,##0.00"
+        [allowEditing]="false"
         alignment="center"
       >
-        <!-- <dxi-validation-rule
-          type="required"
-          message="S_Multiplier is required"
-        ></dxi-validation-rule> -->
       </dxi-column>
 
       <dxi-column
@@ -187,32 +185,104 @@
         caption="D"
         dataType="number"
         format="#,##0.00"
+        [allowEditing]="false"
         alignment="center"
       >
-        <!-- <dxi-validation-rule
-          type="required"
-          message="D_Multiplier is required"
-        ></dxi-validation-rule> -->
+      </dxi-column>
+
+      <dxi-column
+        dataField="EffectFrom"
+        caption="Effect From"
+        dataType="date"
+        format="dd-MM-yyyy"
+        [allowEditing]="false"
+        alignment="center"
+        [width]="120"
+      >
       </dxi-column>
     </dxi-column>
 
     <dxi-column
-      dataField="EffectFrom"
-      caption="Effect From"
-      dataType="date"
-      format="dd-MM-yyyy"
+      caption="New Values"
       alignment="center"
+      [visible]="isEditingEnabled"
     >
-      <!-- <dxi-validation-rule
-        type="required"
-        message="Effect From is required"
-      ></dxi-validation-rule>
-      <dxi-validation-rule
-        type="custom"
-        [validationCallback]="validateNewEffectFrom"
-        message="Effect From cannot be less than or equal to Active Effect From"
+      <dxi-column
+        dataField="NewP_Multiplier"
+        caption="P"
+        dataType="number"
+        format="#,##0.00"
+        cssClass="new-price-column"
+        alignment="center"
       >
-      </dxi-validation-rule> -->
+        <dxi-validation-rule
+          type="required"
+          message="New P_Multiplier is required"
+        ></dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="NewC_Multiplier"
+        caption="C"
+        dataType="number"
+        format="#,##0.00"
+        cssClass="new-price-column"
+        alignment="center"
+      >
+        <dxi-validation-rule
+          type="required"
+          message="New C_Multiplier is required"
+        ></dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="NewS_Multiplier"
+        caption="S"
+        dataType="number"
+        format="#,##0.00"
+        cssClass="new-price-column"
+        alignment="center"
+      >
+        <dxi-validation-rule
+          type="required"
+          message="New S_Multiplier is required"
+        ></dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="NewD_Multiplier"
+        caption="D"
+        dataType="number"
+        format="#,##0.00"
+        cssClass="new-price-column"
+        alignment="center"
+      >
+        <dxi-validation-rule
+          type="required"
+          message="New D_Multiplier is required"
+        ></dxi-validation-rule>
+      </dxi-column>
+
+      <dxi-column
+        dataField="NewEffectFrom"
+        caption="Effect From"
+        dataType="date"
+        format="dd-MM-yyyy"
+        cssClass="new-price-column"
+        alignment="center"
+        [width]="120"
+      >
+        <dxi-validation-rule
+          type="required"
+          message="Effect From is required"
+        ></dxi-validation-rule>
+        <dxi-validation-rule
+          type="custom"
+          [validationCallback]="validateNewEffectFrom"
+          message="Effect From cannot be less than or equal to Active Effect From"
+        >
+        </dxi-validation-rule>
+      </dxi-column>
     </dxi-column>
   </dx-data-grid>
 </div>

@@ -54,6 +54,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
   quaternaryAdjuster: any = null;
 
   saveButtonOptions: any;
+  editButtonOptions: any;
   facilitySelectOptions: any;
 
   cptPriceData: any = [];
@@ -61,6 +62,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
 
   editedRows: any = [];
   IsGlobalPrice: boolean = false;
+  isEditingEnabled: boolean = false;
 
   PriceHistoryData: any = [];
   historyPopupVisible: boolean = false;
@@ -86,6 +88,18 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       onClick: () => this.savePriceMaster(),
       elementAttr: { class: 'add-button' },
     };
+
+    this.editButtonOptions = {
+      class: 'ms-2',
+      text: '',
+      icon: 'edit',
+      type: 'default',
+      stylingMode: 'default',
+      hint: 'Toggle Edit Mode',
+      disabled: !this.menuPrevilage?.CanAdd,
+      onClick: this.toggleEditMode,
+      elementAttr: { class: 'edit-button' },
+    };
   }
 
   ngAfterViewInit() {
@@ -94,6 +108,14 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       this.loadLookups();
     });
   }
+
+  toggleEditMode = () => {
+    this.isEditingEnabled = !this.isEditingEnabled;
+    this.editButtonOptions = {
+      ...this.editButtonOptions,
+      icon: this.isEditingEnabled ? 'close' : 'edit',
+    };
+  };
 
   showLoading(message: string) {
     if (this.cptPriceGrid && this.cptPriceGrid.instance) {
@@ -166,12 +188,20 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
                     (item: any, index: number) => ({
                       ...item,
                       SerialNumber: index + 1,
+                      NewC_Multiplier:
+                        item.NewC_Multiplier > 0 ? item.NewC_Multiplier : null,
+                      NewP_Multiplier:
+                        item.NewP_Multiplier > 0 ? item.NewP_Multiplier : null,
+                      NewS_Multiplier:
+                        item.NewS_Multiplier > 0 ? item.NewS_Multiplier : null,
+                      NewD_Multiplier:
+                        item.NewD_Multiplier > 0 ? item.NewD_Multiplier : null,
                       C_Multiplier: item.C_Multiplier,
                       P_Multiplier: item.P_Multiplier,
                       S_Multiplier: item.S_Multiplier,
                       D_Multiplier: item.D_Multiplier,
                       EffectFrom: item.EffectFrom,
-                      EffectTo: item.EffectTo
+                      EffectTo: item.EffectTo,
                     }),
                   );
 
@@ -215,7 +245,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
   }
 
   onEditorPreparing(e: any) {
-    if (e.parentType === 'dataRow' && e.dataField === 'EffectFrom') {
+    if (e.parentType === 'dataRow' && e.dataField === 'NewEffectFrom') {
       delete e.editorOptions.min;
     }
   }
@@ -228,7 +258,12 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     const newEffectFrom = new Date(e.value);
     newEffectFrom.setHours(0, 0, 0, 0);
 
-    const activeEffectFrom = e.row?.data?.EffectFrom;
+    const activePrice = e.data?.P_Multiplier ?? e.row?.data?.P_Multiplier;
+    const activeEffectFrom = e.data?.EffectFrom ?? e.row?.data?.EffectFrom;
+
+    if (!activePrice && !activeEffectFrom) {
+      return true;
+    }
 
     if (!activeEffectFrom) {
       return true;
@@ -249,18 +284,18 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       return;
     }
 
-    const origDate = originalRow.EffectFrom
-      ? new Date(originalRow.EffectFrom).setHours(0, 0, 0, 0)
+    const origDate = originalRow.NewEffectFrom
+      ? new Date(originalRow.NewEffectFrom).setHours(0, 0, 0, 0)
       : 0;
-    const newDate = e.data.EffectFrom
-      ? new Date(e.data.EffectFrom).setHours(0, 0, 0, 0)
+    const newDate = e.data.NewEffectFrom
+      ? new Date(e.data.NewEffectFrom).setHours(0, 0, 0, 0)
       : 0;
 
     const isModified =
-      originalRow.C_Multiplier !== e.data.C_Multiplier ||
-      originalRow.P_Multiplier !== e.data.P_Multiplier ||
-      originalRow.S_Multiplier !== e.data.S_Multiplier ||
-      originalRow.D_Multiplier !== e.data.D_Multiplier ||
+      originalRow.NewC_Multiplier !== e.data.NewC_Multiplier ||
+      originalRow.NewP_Multiplier !== e.data.NewP_Multiplier ||
+      originalRow.NewS_Multiplier !== e.data.NewS_Multiplier ||
+      originalRow.NewD_Multiplier !== e.data.NewD_Multiplier ||
       origDate !== newDate;
 
     e.data.IsModified = isModified;
@@ -278,6 +313,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
             if (isModified) {
               row.style.fontWeight = '600';
             } else {
+              row.style.backgroundColor = '';
               row.style.fontWeight = '';
             }
           }
@@ -307,38 +343,37 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       );
 
       if (!original) {
-        return true;
+        return false;
       }
 
       return (
-        original.C_Multiplier !== row.C_Multiplier ||
-        original.P_Multiplier !== row.P_Multiplier ||
-        original.S_Multiplier !== row.S_Multiplier ||
-        original.D_Multiplier !== row.D_Multiplier ||
-        this.getDate(original.EffectFrom) !== this.getDate(row.EffectFrom)
+        original.NewC_Multiplier !== row.NewC_Multiplier ||
+        original.NewP_Multiplier !== row.NewP_Multiplier ||
+        original.NewS_Multiplier !== row.NewS_Multiplier ||
+        original.NewD_Multiplier !== row.NewD_Multiplier ||
+        this.getDate(original.NewEffectFrom) !== this.getDate(row.NewEffectFrom)
       );
     });
 
     if (modifiedRows.length === 0) {
       notify('No changes found', 'warning', 2000);
-      // Wait, we might still want to save if regionAdjuster or quaternaryAdjuster changed. 
-      // But let's proceed to save if any data is present to be safe, or just check those as well.
+      return;
     }
 
     const payload = {
-      FacilityID: this.selectedFacilityID ? this.selectedFacilityID : null,
+      FacilityID: this.selectedFacilityID,
       RegionAdjuster: this.regionAdjuster,
       QuaternaryAdjuster: this.quaternaryAdjuster,
-      data: gridItems.map((x: any) => ({
+      data: modifiedRows.map((x: any) => ({
         ReceiverID: x.ReceiverID,
-        C_Multiplier: x.C_Multiplier,
-        P_Multiplier: x.P_Multiplier,
-        S_Multiplier: x.S_Multiplier,
-        D_Multiplier: x.D_Multiplier,
-        EffectFrom: this.formatDate(x.EffectFrom),
-      }))
+        C_Multiplier: x.NewC_Multiplier,
+        P_Multiplier: x.NewP_Multiplier,
+        S_Multiplier: x.NewS_Multiplier,
+        D_Multiplier: x.NewD_Multiplier,
+        EffectFrom: this.formatDate(x.NewEffectFrom),
+      })),
     };
-
+  
     this.showLoading('Data Saving...');
     this.masterService.Insert_Facility_Multiplier_Data(payload).subscribe({
       next: (response: any) => {
@@ -352,7 +387,11 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       },
       error: (error: any) => {
         this.hideLoading();
-        notify('An error occurred while saving Multiplier Master', 'error', 2000);
+        notify(
+          'An error occurred while saving Multiplier Master',
+          'error',
+          2000,
+        );
       },
     });
   }

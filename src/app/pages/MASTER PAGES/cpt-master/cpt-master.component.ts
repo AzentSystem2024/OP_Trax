@@ -103,10 +103,22 @@ export class CPTMasterComponent {
   openEditingStart(event: any) {
     event.cancel = true;
     const ID = event.data.ID;
-    this.masterService.selectCptMaster(ID).subscribe((response: any) => {
-      console.log(response, 'select!!!');
-      this.selectedCptMaster = response.data[0];
-      this.isEditFormPopupOpened = true;
+    if (this.dataGrid && this.dataGrid.instance) {
+      this.dataGrid.instance.beginCustomLoading('Loading...');
+    }
+    this.masterService.selectCptMaster(ID).subscribe({
+      next: (response: any) => {
+        this.selectedCptMaster = response.data[0];
+        this.isEditFormPopupOpened = true;
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.dataGrid.instance.endCustomLoading();
+        }
+      },
+      error: (error: any) => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.dataGrid.instance.endCustomLoading();
+        }
+      }
     });
   }
 
@@ -122,7 +134,7 @@ export class CPTMasterComponent {
       CPTCode,
       CPTName,
       CPTADOCMappings,
-      IsADOCExcluded,
+      ADOCApplicationID,
     } = this.CptNewFormComponent.getNewCptMasterData();
 
     this.masterService
@@ -131,7 +143,7 @@ export class CPTMasterComponent {
         CPTCode,
         CPTName,
         CPTADOCMappings,
-        IsADOCExcluded,
+        ADOCApplicationID,
       )
       .subscribe((response: any) => {
         if (response) {
@@ -166,7 +178,7 @@ export class CPTMasterComponent {
       CPTCode,
       CPTName,
       CPTADOCMappings,
-      IsADOCExcluded,
+      ADOCApplicationID,
     } = this.CptEditFormComponent.getUpdateCptMasterData();
 
     console.log(
@@ -175,7 +187,7 @@ export class CPTMasterComponent {
       CPTCode,
       CPTName,
       CPTADOCMappings,
-      IsADOCExcluded,
+      ADOCApplicationID,
     );
 
     this.masterService
@@ -185,7 +197,7 @@ export class CPTMasterComponent {
         CPTCode,
         CPTName,
         CPTADOCMappings,
-        IsADOCExcluded,
+        ADOCApplicationID,
       )
       .subscribe((response: any) => {
         if (response) {

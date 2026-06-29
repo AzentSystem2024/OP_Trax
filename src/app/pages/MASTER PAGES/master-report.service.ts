@@ -396,7 +396,7 @@ export class MasterReportService {
     CPTCode: any,
     CPTName: any,
     CPTADOCMappings: any,
-    IsADOCExcluded?: any,
+    ADOCApplicationID?: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/insert`;
 
@@ -404,7 +404,7 @@ export class MasterReportService {
       CPTTypeID,
       CPTCode,
       CPTName,
-      IsADOCExcluded: IsADOCExcluded ?? false,
+      ADOCApplication: ADOCApplicationID ?? null,
 
       // Default values
       Description: '',
@@ -422,14 +422,15 @@ export class MasterReportService {
       ADOCGroupID: null,
       data: [],
       // New mapping table
-      CPTADOC: IsADOCExcluded
-        ? []
-        : (CPTADOCMappings || []).filter(
-            (x: any) =>
-              x.SpecialityID != null &&
-              x.ADOCClassID != null &&
-              x.ADOCCategoryID != null,
-          ),
+      CPTADOC:
+        ADOCApplicationID !== 0
+          ? []
+          : (CPTADOCMappings || []).filter(
+              (x: any) =>
+                x.SpecialityID != null &&
+                x.ADOCClassID != null &&
+                x.ADOCCategoryID != null,
+            ),
     };
 
     return this.http.post(url, reqBody);
@@ -442,7 +443,7 @@ export class MasterReportService {
     CPTCode: any,
     CPTName: any,
     CPTADOCMappings: any,
-    IsADOCExcluded?: any,
+    ADOCApplicationID?: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/update`;
 
@@ -451,7 +452,7 @@ export class MasterReportService {
       CPTTypeID,
       CPTCode,
       CPTName,
-      IsADOCExcluded: IsADOCExcluded ?? false,
+      ADOCApplication: ADOCApplicationID ?? null,
       // Default values
       Description: '',
       CPTGroup: '',
@@ -466,14 +467,15 @@ export class MasterReportService {
       CPTEncounterDepartments: [],
       data: [],
       // New mapping table
-      CPTADOC: IsADOCExcluded
-        ? []
-        : (CPTADOCMappings || []).filter(
-            (x: any) =>
-              x.SpecialityID != null &&
-              x.ADOCClassID != null &&
-              x.ADOCCategoryID != null,
-          ),
+      CPTADOC:
+        ADOCApplicationID !== 0
+          ? []
+          : (CPTADOCMappings || []).filter(
+              (x: any) =>
+                x.SpecialityID != null &&
+                x.ADOCClassID != null &&
+                x.ADOCCategoryID != null,
+            ),
     };
 
     return this.http.post(url, reqBody);
@@ -1410,7 +1412,7 @@ export class MasterReportService {
   }
 
   Insert_Facility_Multiplier_Data(payload: any) {
-    const Url = `${this.BASE_URL}facilitymultiplier/insert`;
+    const Url = `${this.BASE_URL}FacilityMultiplier/save`;
     return this.http.post(Url, payload);
   }
 }

@@ -1,4 +1,20 @@
-<div class="cpt-master-container">
+<div
+  *ngIf="!dropdownsLoaded"
+  style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 550px;
+    width: 100%;
+  "
+>
+  <dx-load-indicator [visible]="true"></dx-load-indicator>
+  <div style="margin-top: 10px; color: #666">Loading data...</div>
+</div>
+
+<div class="cpt-master-container" *ngIf="dropdownsLoaded">
   <!-- CPT Details Section -->
   <div class="section-card">
     <div class="section-title">CPT Information</div>
@@ -61,13 +77,24 @@
             </div>
           </dxi-item>
 
-          <dxi-item>
-            <div class="mt-2" *dxTemplate>
-              <dx-check-box
-                text="ADOC Excluded"
-                [(value)]="newCptMasterData.IsADOCExcluded"
-                (onValueChanged)="onAdocExcludedChanged($event)"
-              ></dx-check-box>
+          <dxi-item [colSpan]="2">
+            <div class="d-flex align-items-center mt-2" *dxTemplate>
+              <div
+                class="me-4 text-muted"
+                style="font-size: 13px; font-weight: 500; white-space: nowrap"
+              >
+                ADOC Application:
+              </div>
+              <dx-radio-group
+                [items]="ADOCApplicationDataSource"
+                displayExpr="DESCRIPTION"
+                valueExpr="ID"
+                [(value)]="newCptMasterData.ADOCApplicationID"
+                (onValueChanged)="onAdocApplicationChanged($event)"
+                layout="horizontal"
+                style="margin-bottom: 0"
+              >
+              </dx-radio-group>
             </div>
           </dxi-item>
         </dxi-item>
@@ -80,7 +107,7 @@
     <div class="grid-container">
       <div
         class="p-3 text-center text-muted"
-        *ngIf="newCptMasterData.IsADOCExcluded"
+        *ngIf="newCptMasterData.ADOCApplicationID !== 0"
         style="
           height: 350px;
           display: flex;
@@ -88,10 +115,10 @@
           justify-content: center;
         "
       >
-        ADOC Mapping is Excluded.
+        ADOC Mapping is not applicable.
       </div>
       <dx-data-grid
-        *ngIf="!newCptMasterData.IsADOCExcluded"
+        *ngIf="newCptMasterData.ADOCApplicationID === 0"
         class="custom-grid"
         [dataSource]="newCptMasterData.CPTADOCMappings"
         [showBorders]="false"
@@ -109,11 +136,20 @@
         <dxo-header-filter [visible]="true">
           <dxo-search [enabled]="true"></dxo-search>
         </dxo-header-filter>
+
+        <dxo-toolbar>
+          <dxi-item location="before">
+            <div class="section-title" style="padding: 0; margin-bottom: 0">
+              ADOC Mapping
+            </div>
+          </dxi-item>
+          <dxi-item name="addRowButton"></dxi-item>
+        </dxo-toolbar>
         <dxo-editing
           mode="cell"
-          [allowUpdating]="!newCptMasterData.IsADOCExcluded"
-          [allowAdding]="!newCptMasterData.IsADOCExcluded"
-          [allowDeleting]="!newCptMasterData.IsADOCExcluded"
+          [allowUpdating]="true"
+          [allowAdding]="true"
+          [allowDeleting]="true"
           newRowPosition="last"
         >
         </dxo-editing>
@@ -122,7 +158,6 @@
         <dxi-column
           dataField="SpecialityID"
           caption="Specialty"
-          [width]="180"
           [lookup]="{
             dataSource: specialityDataSource,
             valueExpr: 'ID',
@@ -169,21 +204,8 @@
           dataField="ICDCode"
           caption="ICD Code"
           dataType="string"
-          [width]="140"
-        ></dxi-column>
-        <!-- ADOC Application -->
-        <dxi-column
-          dataField="ADOCApplicationID"
-          caption="ADOC Application"
           [width]="180"
-          [editorOptions]="{ dropDownOptions: { width: 'auto' } }"
-          [lookup]="{
-            dataSource: ADOCApplicationDataSource,
-            valueExpr: 'ID',
-            displayExpr: 'DESCRIPTION',
-          }"
-        >
-        </dxi-column>
+        ></dxi-column>
       </dx-data-grid>
     </div>
   </div>

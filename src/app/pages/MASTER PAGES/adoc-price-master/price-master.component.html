@@ -84,6 +84,13 @@
       <dxi-item
         location="after"
         widget="dxButton"
+        [options]="editButtonOptions"
+      ></dxi-item>
+
+      <dxi-item
+        [visible]="isEditingEnabled"
+        location="after"
+        widget="dxButton"
         [options]="saveButtonOptions"
       ></dxi-item>
     </dxo-toolbar>
@@ -98,7 +105,7 @@
     >
     </dxi-column>
 
-    <dxi-column
+    <dxi-column 
       dataField="ADOCClassName"
       caption="ADOC Class"
       [allowEditing]="false"
@@ -147,7 +154,7 @@
       </dxi-column>
     </dxi-column>
 
-    <dxi-column caption="New Values" alignment="center">
+    <dxi-column caption="New Values" alignment="center" [visible]="isEditingEnabled">
       <dxi-column
         dataField="NewPrice"
         caption="Base Price (AED)"
@@ -207,14 +214,14 @@
       </dxi-column>
     </dxi-column>
 
-    <dxi-column type="buttons" [width]="60">
+    <!-- <dxi-column type="buttons" [width]="60">
       <dxi-button
         hint="View History Data"
         icon="errorcircle"
         [onClick]="onHistoryClick.bind(this)"
       >
       </dxi-button>
-    </dxi-column>
+    </dxi-column> -->
   </dx-data-grid>
 
   <!-- =========== History Popup =========== -->

@@ -375,7 +375,7 @@ export class ClinicalDataComponent implements OnInit {
 
   //======= Update data ==========
   onClickUpdateNewCptType = () => {
-    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings, IsADOCExcluded } =
+    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings, ADOCApplicationID } =
       this.CptEditFormComponent.getUpdateCptMasterData();
 
     this.masterService
@@ -385,7 +385,7 @@ export class ClinicalDataComponent implements OnInit {
         CPTCode,
         CPTName,
         CPTADOCMappings,
-        IsADOCExcluded,
+        ADOCApplicationID,
       )
       .subscribe((response: any) => {
         if (response) {
