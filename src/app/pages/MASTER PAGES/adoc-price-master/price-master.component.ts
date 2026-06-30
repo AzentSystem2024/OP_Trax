@@ -29,7 +29,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
   @ViewChild('cptPriceGrid', { static: false })
   cptPriceGrid!: DxDataGridComponent;
 
-   @ViewChild('historyGrid', { static: false })
+  @ViewChild('historyGrid', { static: false })
   historyGrid!: DxDataGridComponent;
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
@@ -95,7 +95,6 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       onClick: this.toggleEditMode,
       elementAttr: { class: 'edit-button' },
     };
-
   }
 
   ngAfterViewInit() {
@@ -109,9 +108,9 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     this.isEditingEnabled = !this.isEditingEnabled;
     this.editButtonOptions = {
       ...this.editButtonOptions,
-      icon: this.isEditingEnabled ? 'close' : 'edit'
+      icon: this.isEditingEnabled ? 'close' : 'edit',
     };
-    
+
     if (!this.isEditingEnabled) {
       // this.refresh();
     }
@@ -130,7 +129,6 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     }
   }
 
-  
   onHistoryPopupShown() {
     setTimeout(() => {
       this.historyGrid?.instance?.updateDimensions();
@@ -139,37 +137,35 @@ export class AdocPriceMasterComponent implements AfterViewInit {
 
   loadLookups() {
     this.showLoading('Loading Facility List...');
-    this.dataService
-      .get_UserWise_FacilityList_Data()
-      .subscribe({
-        next: (response: any) => {
-          this.facilityList = response.facilityDetails || [];
+    this.dataService.get_UserWise_FacilityList_Data().subscribe({
+      next: (response: any) => {
+        this.facilityList = response.facilityDetails || [];
 
-          if (this.facilityList.length === 1) {
-            this.selectedFacilityID = this.facilityList[0].FacilityLicense;
-          }
-          
-          this.fetch_ADOC_Price_List();
-
-          this.facilitySelectOptions = {
-            dataSource: this.facilityList,
-            displayExpr: 'FacilityName',
-            valueExpr: 'FacilityLicense',
-            value: this.selectedFacilityID,
-            width: 250,
-            searchEnabled: true,
-            onValueChanged: (e: any) => {
-              this.selectedFacilityID = e.value;
-              this.onFacilityChanged(e);
-            },
-          };
-          this.hideLoading();
-        },
-        error: (error: any) => {
-          this.hideLoading();
-          notify('Failed to load facility list', 'error', 2000);
+        if (this.facilityList.length === 1) {
+          this.selectedFacilityID = this.facilityList[0].FacilityLicense;
         }
-      });
+
+        this.fetch_ADOC_Price_List();
+
+        this.facilitySelectOptions = {
+          dataSource: this.facilityList,
+          displayExpr: 'FacilityName',
+          valueExpr: 'FacilityLicense',
+          value: this.selectedFacilityID,
+          width: 250,
+          searchEnabled: true,
+          onValueChanged: (e: any) => {
+            this.selectedFacilityID = e.value;
+            this.onFacilityChanged(e);
+          },
+        };
+        this.hideLoading();
+      },
+      error: (error: any) => {
+        this.hideLoading();
+        notify('Failed to load facility list', 'error', 2000);
+      },
+    });
   }
 
   fetch_ADOC_Price_List() {
@@ -177,47 +173,45 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       load: () =>
         new Promise((resolve, reject) => {
           this.showLoading('Fetching ADOC Price List...');
-          this.masterService
-            .get_ADOC_Price_List()
-            .subscribe({
-              next: (response: any) => {
-                this.hideLoading();
-                if (response.flag === '1') {
-                  const data = (response.data || []).map(
-                    (item: any, index: number) => ({
-                      ...item,
-                      SerialNumber: index + 1,
-                      NewPrice: item.NewPrice > 0 ? item.NewPrice : null,
-                      NewPaedAdjuster:
-                        item.NewPaedAdjuster > 0 ? item.NewPaedAdjuster : null,
-                      NewSeniorAdjuster:
-                        item.NewSeniorAdjuster > 0
-                          ? item.NewSeniorAdjuster
-                          : null,
-                    }),
-                  );
-
-                  this.cptPriceData = data;
-
-                  this.originalCptPriceData = JSON.parse(JSON.stringify(data));
-
-                  resolve(data);
-                } else {
-                  notify('Failed to load CPT Price List', 'error', 2000);
-                  reject('Failed to load CPT Price List');
-                }
-              },
-              error: (error) => {
-                this.hideLoading();
-                notify(
-                  'An error occurred while fetching CPT Price List',
-                  'error',
-                  2000,
+          this.masterService.get_ADOC_Price_List().subscribe({
+            next: (response: any) => {
+              this.hideLoading();
+              if (response.flag === '1') {
+                const data = (response.data || []).map(
+                  (item: any, index: number) => ({
+                    ...item,
+                    SerialNumber: index + 1,
+                    NewPrice: item.NewPrice > 0 ? item.NewPrice : null,
+                    NewPaedAdjuster:
+                      item.NewPaedAdjuster > 0 ? item.NewPaedAdjuster : null,
+                    NewSeniorAdjuster:
+                      item.NewSeniorAdjuster > 0
+                        ? item.NewSeniorAdjuster
+                        : null,
+                  }),
                 );
 
-                reject(error);
-              },
-            });
+                this.cptPriceData = data;
+
+                this.originalCptPriceData = JSON.parse(JSON.stringify(data));
+
+                resolve(data);
+              } else {
+                notify('Failed to load CPT Price List', 'error', 2000);
+                reject('Failed to load CPT Price List');
+              }
+            },
+            error: (error) => {
+              this.hideLoading();
+              notify(
+                'An error occurred while fetching CPT Price List',
+                'error',
+                2000,
+              );
+
+              reject(error);
+            },
+          });
         }),
     });
   }
@@ -225,16 +219,22 @@ export class AdocPriceMasterComponent implements AfterViewInit {
   onHistoryClick(e: any) {
     const ID = e.row.data.ADOCClassID;
     this.showLoading('Loading History...');
-    this.masterService.selectCptMaster(ID).subscribe((response: any) => {
-      if (response.flag === '1') {
-     
-        // this.PriceHistoryData = response.data[0].CPTPrices || response.data[0].Prices || response.data[0].ADOCClassPrices || [];
-        this.historyPopupVisible = true;
+    this.masterService.get_Price_History_List(ID).subscribe({
+      next: (response: any) => {
+        if (response.flag === '1') {
+          this.PriceHistoryData = response.data;
+          console.log(this.PriceHistoryData);
+          this.historyPopupVisible = true;
+          this.hideLoading();
+        } else {
+          notify('Failed to load Price History', 'error', 2000);
+          this.hideLoading();
+        }
+      },
+      error: (error: any) => {
         this.hideLoading();
-      } else {
-        notify('Failed to load Price History', 'error', 2000);
-        this.hideLoading();
-      }
+        notify('An error occurred while fetching Price History', 'error', 2000);
+      },
     });
   }
 
@@ -253,8 +253,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     newEffectFrom.setHours(0, 0, 0, 0);
 
     const activePrice = e.data?.Price ?? e.row?.data?.Price;
-    const activeEffectFrom =
-      e.data?.EffectFrom ?? e.row?.data?.EffectFrom;
+    const activeEffectFrom = e.data?.EffectFrom ?? e.row?.data?.EffectFrom;
 
     // Initial setup - no active record exists
     if (!activePrice && !activeEffectFrom) {
@@ -282,8 +281,12 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       return;
     }
 
-    const origDate = originalRow.NewEffectFrom ? new Date(originalRow.NewEffectFrom).setHours(0, 0, 0, 0) : 0;
-    const newDate = e.data.NewEffectFrom ? new Date(e.data.NewEffectFrom).setHours(0, 0, 0, 0) : 0;
+    const origDate = originalRow.NewEffectFrom
+      ? new Date(originalRow.NewEffectFrom).setHours(0, 0, 0, 0)
+      : 0;
+    const newDate = e.data.NewEffectFrom
+      ? new Date(e.data.NewEffectFrom).setHours(0, 0, 0, 0)
+      : 0;
 
     const isModified =
       originalRow.NewPrice !== e.data.NewPrice ||
@@ -297,7 +300,10 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     if (rowIndex >= 0) {
       const rowElements = e.component.getRowElement(rowIndex);
       if (rowElements) {
-        const elements = rowElements.length !== undefined && !rowElements.style ? Array.from(rowElements as any) : [rowElements];
+        const elements =
+          rowElements.length !== undefined && !rowElements.style
+            ? Array.from(rowElements as any)
+            : [rowElements];
         elements.forEach((row: any) => {
           if (row && row.style) {
             if (isModified) {
@@ -359,23 +365,21 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     }));
 
     this.showLoading('Saving ADOC Class Price Master...');
-    this.masterService
-      .Insert_PriceMaster_Data(payload)
-      .subscribe({
-        next: (response: any) => {
-          this.hideLoading();
-          if (response.flag === '1') {
-            notify('Price Master Saved Successfully', 'success', 2000);
-            this.fetch_ADOC_Price_List();
-          } else {
-            notify('Failed to save Price Master', 'error', 2000);
-          }
-        },
-        error: (error: any) => {
-          this.hideLoading();
-          notify('An error occurred while saving Price Master', 'error', 2000);
+    this.masterService.Insert_PriceMaster_Data(payload).subscribe({
+      next: (response: any) => {
+        this.hideLoading();
+        if (response.flag === '1') {
+          notify('Price Master Saved Successfully', 'success', 2000);
+          this.fetch_ADOC_Price_List();
+        } else {
+          notify('Failed to save Price Master', 'error', 2000);
         }
-      });
+      },
+      error: (error: any) => {
+        this.hideLoading();
+        notify('An error occurred while saving Price Master', 'error', 2000);
+      },
+    });
   }
 
   getDate(value: any): string {

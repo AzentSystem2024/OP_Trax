@@ -232,16 +232,26 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
 
   onHistoryClick(e: any) {
     const ID = e.row.data.ReceiverID;
+    const FacilityID = this.selectedFacilityID;
     this.showLoading('Data Loading...');
-    this.masterService.selectCptMaster(ID).subscribe((response: any) => {
-      if (response.flag === '1') {
-        this.historyPopupVisible = true;
-        this.hideLoading();
-      } else {
-        notify('Failed to load History', 'error', 2000);
-        this.hideLoading();
-      }
-    });
+    this.masterService
+      .get_Facility_Multiplier_History_List(ID, FacilityID)
+      .subscribe({
+        next: (response: any) => {
+          if (response.flag === '1' || response.flag === 'true') {
+            this.PriceHistoryData = response.data;
+            this.historyPopupVisible = true;
+            this.hideLoading();
+          } else {
+            notify('Failed to load History', 'error', 2000);
+            this.hideLoading();
+          }
+        },
+        error: (error: any) => {
+          this.hideLoading();
+          notify('An error occurred while fetching History', 'error', 2000);
+        },
+      });
   }
 
   onEditorPreparing(e: any) {
@@ -373,7 +383,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
         EffectFrom: this.formatDate(x.NewEffectFrom),
       })),
     };
-  
+
     this.showLoading('Data Saving...');
     this.masterService.Insert_Facility_Multiplier_Data(payload).subscribe({
       next: (response: any) => {

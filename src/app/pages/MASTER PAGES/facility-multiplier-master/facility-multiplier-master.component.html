@@ -284,5 +284,64 @@
         </dxi-validation-rule>
       </dxi-column>
     </dxi-column>
+
+    <dxi-column type="buttons" [width]="60">
+      <dxi-button
+        hint="View History Data"
+        icon="errorcircle"
+        [onClick]="onHistoryClick.bind(this)"
+      >
+      </dxi-button>
+    </dxi-column>
   </dx-data-grid>
+
+  <!-- =========== History Popup =========== -->
+  <dx-popup
+    [(visible)]="historyPopupVisible"
+    [width]="'60%'"
+    [height]="'auto'"
+    title="Facility Multiplier History"
+    [showCloseButton]="true"
+    (onShown)="onHistoryPopupShown()"
+  >
+    <dx-data-grid
+      #historyGrid
+      [dataSource]="PriceHistoryData"
+      [showBorders]="true"
+      height="50vh"
+    >
+      <dxi-column
+        dataField="FacilityID"
+        caption="Facility"
+        [visible]="!IsGlobalPrice"
+      ></dxi-column>
+      <dxi-column
+        dataField="C_Multiplier"
+        caption="C"
+        dataType="number"
+        format="#,##0.00"
+      ></dxi-column>
+      <dxi-column
+        dataField="P_Multiplier"
+        caption="P"
+        dataType="number"
+        format="#,##0.00"
+      ></dxi-column>
+      <dxi-column
+        dataField="S_Multiplier"
+        caption="S"
+        dataType="number"
+        format="#,##0.00"
+      ></dxi-column>
+      <dxi-column
+        dataField="D_Multiplier"
+        caption="D"
+        dataType="number"
+        format="#,##0.00"
+      ></dxi-column>
+
+      <dxi-column dataField="EffectFrom" caption="Effective From" dataType="date" format="dd-MM-yyyy"></dxi-column>
+      <dxi-column dataField="EffectTo" caption="Effective To" dataType="date" format="dd-MM-yyyy"></dxi-column>
+    </dx-data-grid>
+  </dx-popup>
 </div>

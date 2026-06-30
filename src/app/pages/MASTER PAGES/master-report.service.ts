@@ -1308,6 +1308,15 @@ export class MasterReportService {
     return this.http.post(url, reqBody);
   }
 
+  // ===== Get Price History =====
+  get_Price_History_List(ADOCClassID: any) {
+    const url = `${this.BASE_URL}ADOCPrice/history`;
+    const payload = {
+      ADOCClassID: ADOCClassID,
+    };
+    return this.http.post(url, payload);
+  }
+
   // ===== Get CPT-Price List =====
   get_CPT_Weightage_List(facilityId: any) {
     const url = `${this.BASE_URL}cptweightage/cptlist`;
@@ -1408,6 +1417,12 @@ export class MasterReportService {
   get_Facility_Multiplier_List(facilityId: string) {
     const payload = { FacilityID: facilityId || '' };
     const Url = `${this.BASE_URL}facilitymultiplier/list`;
+    return this.http.post(Url, payload);
+  }
+
+  get_Facility_Multiplier_History_List(id: any,facilityId:any) {
+    const payload = { ReceiverID: id ,FacilityID:facilityId};
+    const Url = `${this.BASE_URL}facilitymultiplier/history`;
     return this.http.post(Url, payload);
   }
 
