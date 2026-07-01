@@ -1,0 +1,107 @@
+@use "../../../../variables.scss" as *;
+@use "sass:math";
+
+:host {
+  --side-panel-toolbar-height: 72px;
+
+  width: 100%;
+  display: contents;
+}
+
+.view-wrapper {
+  position: relative;
+  height: 84vh;
+  margin: var(--content-padding);
+  padding: 0px;
+  border-radius: 7px;
+
+  user-panel {
+    display: inherit;
+  }
+}
+
+.toolBarData {
+  background-color: var(--base-bg);
+  padding: 5px var(--content-padding);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.04);
+}
+.contentDiv {
+  padding: 10px;
+  height: 80vh;
+  width: 100%;
+  border-radius: 6px;
+  background-color: var(--base-bg);
+  display: flex;
+  flex-direction: column;
+  // justify-content: center;
+  // align-items: center;
+}
+.SearchParamsDiv {
+  width: 100%;
+  display: flex;
+  gap: 10px; /* Space between elements */
+  align-items: center; /* Align items vertically */
+  justify-content: center; /* Center align content horizontally */
+}
+.innerContentDiv {
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  border-radius: 8px;
+  justify-content: space-between;
+}
+
+.RemittanceDownloadDiv {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.FacilityDownloadDiv {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.FacilityDownloadDiv h1,
+.RemittanceDownloadDiv h1 {
+  font-size: 4rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.ButtonContentDiv {
+  height: 10%;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.disabled-overlay {
+  opacity: 0.3; /* Reduces the opacity */
+  pointer-events: none; /* Prevents interaction with other elements */
+}
+
+.progress-bar-centered {
+  position: absolute;
+  top: 49vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+}
+/* Style for the icon inside the custom-download-button */
+.custom-download-button .dx-icon {
+  color: #007bff;        /* Blue icon color */
+  font-size: 20px;       /* Increase icon size */
+  margin-right: 6px;     /* Adjust spacing */
+}
+
+/* Optional: Change icon on hover */
+.custom-download-button:hover .dx-icon {
+  color: #0056b3;
+}
+
+::ng-deep .dx-button.dx-button-default .dx-icon {
+    color: rgb(255, 255, 255) !important;
+}

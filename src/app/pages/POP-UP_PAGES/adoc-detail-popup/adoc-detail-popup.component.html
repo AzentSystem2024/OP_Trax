@@ -1,7 +1,7 @@
 <dx-popup
   [(visible)]="visible"
   [width]="'95%'"
-  [height]="'95vh'"
+  [height]="'100vh'"
   [showTitle]="true"
   title="ADOC Grouping & Applying Counting Rules"
   [dragEnabled]="true"
@@ -26,6 +26,11 @@
               {{ rowData?.PatientID }}
             </div>
 
+             <div class="mb-3">
+              <strong>Age (Year) :</strong>
+              {{ rowData?.PatientAge }}
+            </div>
+
             <div class="mb-2">
               <strong>Diagnosis :</strong>
               {{ rowData?.Diagnosis || rowData?.SecondaryDiagnosis }}
@@ -47,10 +52,18 @@
               <strong>Encounter Type :</strong>
               {{ rowData?.EncounterType }}
             </div>
-            <div class="mb-3">
-              <strong>Age (Year) :</strong>
-              {{ rowData?.PatientAge }}
+
+            <div class="mb-2">
+              <strong>Encounter Start Date :</strong>
+              {{ rowData?.EncounterStartDate }}
             </div>
+
+            <div class="mb-2">
+              <strong>Encounter End Date :</strong>
+              {{ rowData?.EncounterEndDate }}
+            </div>
+
+           
 
             <div class="d-flex justify-content-end gap-2">
               <dx-button
@@ -95,7 +108,7 @@
       [columnAutoWidth]="true"
       [showRowLines]="true"
       [showColumnLines]="true"
-      height="490"
+      height="480"
       (onCellPrepared)="onCellPrepared($event)"
       (onCellClick)="onCellClick($event)"
     >

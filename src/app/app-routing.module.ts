@@ -54,6 +54,7 @@ import { AdocCountingRulesComponent } from './pages/MASTER PAGES/adoc-counting-r
 import { GroupingDetailsReportComponent } from './pages/REPORT PAGES/grouping-details-report/grouping-details-report.component';
 import { FacilityMultiplierMasterComponent } from './pages/MASTER PAGES/facility-multiplier-master/facility-multiplier-master.component';
 import { InsuranceMasterComponent } from './pages/MASTER PAGES/insurance-master/insurance-master.component';
+import { DownloadFromFacilityComponent } from './pages/OPERATION PAGES/download-from-facility/download-from-facility.component';
 
 const routes: Routes = [
   {
@@ -306,6 +307,11 @@ const routes: Routes = [
       {
         path: 'insurance-master',
         component: InsuranceMasterComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'download-from-facility',
+        component: DownloadFromFacilityComponent,
         canActivate: [AuthGuardService],
       },
       {

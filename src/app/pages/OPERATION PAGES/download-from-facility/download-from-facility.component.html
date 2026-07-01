@@ -1,0 +1,168 @@
+<div [class.disabled-overlay]="showProgressBar" class="view-wrapper list-page">
+  <div class="toolBarData ps-4">
+    <dx-toolbar [items]="toolbarItems"> </dx-toolbar>
+  </div>
+
+  <div class="contentDiv mt-2">
+    <div class="SearchParamsDiv mb-3 mt-1">
+      <dx-select-box
+        labelMode="floating"
+        labelLocation="left"
+        label="Select Facility"
+        [items]="FacilitydropdownItems"
+        displayExpr="FacilityName"
+        valueExpr="FacilityID"
+        [(value)]="FacilityValue"
+        [width]="'40%'"
+        (onValueChanged)="fetch_last_sync_times()"
+      >
+        <dx-validator #facilityValidator>
+          <dxi-validation-rule
+            type="required"
+            message="Facility selection is required"
+          ></dxi-validation-rule>
+        </dx-validator>
+      </dx-select-box>
+
+      <!-- month -->
+      <dx-select-box
+        label="Year"
+        labelMode="floating"
+        labelLocation="left"
+        [(value)]="selectedYear"
+        [dataSource]="years"
+        (onValueChanged)="onYearChanged($event)"
+        placeholder="Year"
+        [width]="'10%'"
+      >
+      </dx-select-box>
+      <!-- year -->
+      <dx-select-box
+        label="Month"
+        labelMode="floating"
+        labelLocation="left"
+        [dataSource]="monthDataSource"
+        displayExpr="name"
+        valueExpr="value"
+        [(value)]="selectedmonth"
+        (onValueChanged)="onMonthValueChanged($event)"
+        [width]="'10%'"
+      >
+      </dx-select-box>
+      <!-- start date -->
+      <dx-date-box
+        labelMode="floating"
+        labelLocation="left"
+        label="From Date"
+        type="date"
+        displayFormat="dd/MM/yyyy"
+        valueFormat="yyyy/MM/dd"
+        [(value)]="startDate"
+        [min]="minDate"
+        [max]="endDate"
+        [width]="'20%'"
+        (onValueChanged)="onStartDateChange($event)"
+      >
+      </dx-date-box>
+      <!-- end date -->
+      <dx-date-box
+        labelMode="floating"
+        labelLocation="left"
+        label="To Date"
+        type="date"
+        displayFormat="dd/MM/yyyy"
+        valueFormat="yyyy/MM/dd"
+        [(value)]="endDate"
+        [min]="startDate"
+        [max]="maxDate"
+        [width]="'20%'"
+        (onValueChanged)="onEndDateChange($event)"
+      >
+      </dx-date-box>
+    </div>
+
+    <div class="innerContentDiv d-flex justify-content-center">
+      <div class="FacilityDownloadDiv d-flex flex-column">
+        <h6 *ngIf="lastClaimSyncTime" class="FacilityCount mb-5">
+          <b> Last downloaded : {{ lastClaimSyncTime }}</b>
+        </h6>
+        <h1>{{ facilityDownloadedCount }}</h1>
+        <div class="d-flex align-items-center mt-5 gap-2">
+          <dx-button
+            [disabled]="!facilityButtonVisibility || disableButtons"
+            text="Download"
+            type="default"
+            icon="arrowdown"
+            hint="Download Data"
+            stylingMode="contained"
+            class="FacilitycountButton custom-download-button"
+            [width]="'auto'"
+            [height]="40"
+            (onClick)="handleClaimButtonClick()"
+          >
+          </dx-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="loading-indicator">
+  <dx-load-panel
+    *ngIf="isLoading"
+    [visible]="true"
+    shadingColor="rgba(0,0,0,0)"
+    [position]="{ of: '.view-wrapper' }"
+    message="Loading..."
+  ></dx-load-panel>
+</div>
+
+<!-- Load Panel for Download Progress -->
+<dx-load-panel
+  [visible]="showProgressBar"
+  shadingColor="rgba(0,0,0,0.2)"
+  [showIndicator]="false"
+  [showPane]="true"
+  [shading]="true"
+  [closeOnOutsideClick]="false"
+  [message]="''"
+>
+  <div *dxTemplate="let data of 'content'">
+    <div class="custom-loader text-center p-3">
+      <h4>Downloading Claims...</h4>
+
+      <p>
+        📅 Period : {{ startDate | date: "dd-MMM-yyyy" }} →
+        {{ endDate | date: "dd-MMM-yyyy" }}
+      </p>
+      <p>🔄 Processing: {{ currentProcessingDate | date: "dd-MMM-yyyy" }}</p>
+      <p>
+        <b>✅ Records Downloaded: {{ facilityDownloadedCount }}</b>
+      </p>
+
+      <div class="">
+        <div
+          class="progress"
+          role="progressbar"
+          aria-label="Animated striped example"
+          aria-valuenow="75"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div
+            class="progress-bar progress-bar-striped progress-bar-animated"
+            style="width: 99.99%"
+          ></div>
+        </div>
+      </div>
+
+      <dx-button
+        text="Cancel"
+        type="danger"
+        stylingMode="contained"
+        (onClick)="cancelDownload()"
+        class="mt-3"
+      ></dx-button>
+    </div>
+  </div>
+</dx-load-panel>
