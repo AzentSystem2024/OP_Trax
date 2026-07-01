@@ -243,25 +243,24 @@
       [showBorders]="true"
       height="50vh"
     >
-      <dxi-column
-        dataField="FacilityID"
-        caption="Facility"
-        [visible]="!IsGlobalPrice"
-      ></dxi-column>
+     
       <dxi-column
         dataField="Price"
-        caption="Price"
+        caption="Base Price"
         dataType="number"
+        format="#,##0.00"
       ></dxi-column>
       <dxi-column
         dataField="PaedAdjuster"
         caption="Pediatric Adjuster"
         dataType="number"
+        format="#,##0.00"
       ></dxi-column>
       <dxi-column
         dataField="SeniorAdjuster"
         caption="Senior Adjuster"
         dataType="number"
+        format="#,##0.00"
       ></dxi-column>
 
       <dxi-column
