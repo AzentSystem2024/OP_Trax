@@ -166,6 +166,7 @@
         <dxi-column
           dataField="SpecialityID"
           caption="Specialty"
+          [width]="200"
           [lookup]="{
             dataSource: specialityDataSource,
             valueExpr: 'ID',
@@ -182,7 +183,7 @@
         <dxi-column
           dataField="ADOCClassID"
           caption="ADOC Class"
-          [width]="200"
+          [width]="180"
           [lookup]="{
             dataSource: allADOCClassDataSource,
             valueExpr: 'ID',
@@ -210,12 +211,7 @@
         </dxi-column>
 
         <!-- ICD Code -->
-        <dxi-column
-          dataField="ICDCode"
-          caption="ICD Code"
-          dataType="string"
-          [width]="180"
-        >
+        <dxi-column dataField="ICDCode" caption="ICD Code" dataType="string">
         </dxi-column>
       </dx-data-grid>
     </div>

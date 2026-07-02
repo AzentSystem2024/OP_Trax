@@ -158,6 +158,7 @@
         <dxi-column
           dataField="SpecialityID"
           caption="Specialty"
+          [width]="200"
           [lookup]="{
             dataSource: specialityDataSource,
             valueExpr: 'ID',
@@ -204,7 +205,6 @@
           dataField="ICDCode"
           caption="ICD Code"
           dataType="string"
-          [width]="180"
         ></dxi-column>
       </dx-data-grid>
     </div>
