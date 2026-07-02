@@ -42,7 +42,6 @@ import { InactivityService } from 'src/app/services/inactivity.service';
   templateUrl: './clinical-data-import-form.component.html',
   styleUrls: ['./clinical-data-import-form.component.scss'],
 })
-
 export class ClinicalDataImportFormComponent {
   @Output() closeForm = new EventEmitter();
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
@@ -50,7 +49,7 @@ export class ClinicalDataImportFormComponent {
   validationGroup!: DxValidationGroupComponent;
 
   selectedOption: string = 'Import Excel File';
-  isApplygrouper: boolean = false;
+  isApplygrouper: boolean = true;
   selectedXmlFile: any | null = null;
   importResults: any[] = [];
   isResponsePopupOpened: boolean = false;
@@ -519,9 +518,7 @@ export class ClinicalDataImportFormComponent {
   ];
 
   get progressValue() {
-    return this.totalFiles > 0
-      ? (this.uploadedCount / this.totalFiles) * 100
-      : 0;
+    return this.uploadedCount;
   }
 
   clinicianMajor = {
@@ -575,6 +572,7 @@ export class ClinicalDataImportFormComponent {
       console.error('Error fetching clinician license list:', error);
     }
   }
+
   // dispaly Facility for dropdown
   displayFacility(item: any): string {
     return item ? `${item.FacilityLicense} - ${item.FacilityName}` : '';
@@ -625,8 +623,9 @@ export class ClinicalDataImportFormComponent {
     }
   }
 
-  formatProgress = (value: number) => {
-    return `${value}% Completed`;
+  formatProgress = (ratio: number, value: number) => {
+    const pending = this.totalFiles - value;
+    return `${Math.round(ratio * 100)}% (${value}/${this.totalFiles} Completed, ${pending} Pending)`;
   };
 
   // ================ Called when a file is selected
@@ -637,7 +636,7 @@ export class ClinicalDataImportFormComponent {
     this.inactivityService.setApiInProgress(true);
 
     // Yield to the event loop so the loading spinner can render before heavy processing
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     console.log(this.selectedFacilityIDs, 'selectedFacility');
 
@@ -653,7 +652,9 @@ export class ClinicalDataImportFormComponent {
       return;
     }
 
-    const hasXml = Array.from(files).some((f: any) => f.name.toLowerCase().endsWith('.xml'));
+    const hasXml = Array.from(files).some((f: any) =>
+      f.name.toLowerCase().endsWith('.xml'),
+    );
     if (hasXml) {
       this.isResponsePopupOpened = true;
       this.showGridLoading('Importing XML...');
@@ -663,8 +664,9 @@ export class ClinicalDataImportFormComponent {
 
     // Helper to process one XML file sequentially
     const processXmlFile = (file: File): Promise<void> => {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Unable to read file.'));
         reader.onload = () => {
           const base64String = (reader.result as string).split(',')[1];
           const filePayload: any = {
@@ -694,6 +696,7 @@ export class ClinicalDataImportFormComponent {
             error: (err: any) => {
               console.error('Import error:', err);
               this.failCount++;
+              reject(err);
             },
             complete: () => resolve(),
           });
@@ -707,7 +710,22 @@ export class ClinicalDataImportFormComponent {
 
       // XML import (sequential)
       if (fileName.endsWith('.xml')) {
-        await processXmlFile(file);
+        try {
+          await processXmlFile(file);
+        } catch (err: any) {
+          notify(
+            {
+              message:
+                err?.message ||
+                'Network error occurred during import. Process stopped.',
+              position: { at: 'top right', my: 'top right' },
+              displayTime: 5000,
+            },
+            'error',
+          );
+          this.isResponsePopupOpened = false;
+          break;
+        }
         continue;
       }
 
@@ -1235,7 +1253,7 @@ export class ClinicalDataImportFormComponent {
     console.error('Error during data import:', error);
     this.isSaving = false;
     this.isLoading = false;
-    // 🔥 Always reset API progress on error
+    // Always reset API progress on error
     this.inactivityService.setApiInProgress(false);
   }
 

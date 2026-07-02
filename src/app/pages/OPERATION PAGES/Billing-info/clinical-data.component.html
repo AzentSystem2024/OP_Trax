@@ -64,6 +64,16 @@
           [colCount]="8"
           [colCountByScreen]="{ xs: 8, sm: 8, md: 8, lg: 8 }"
         >
+          <dxi-item [colSpan]="2">
+            <dx-select-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Search On"
+              [items]="['Encounter End Date']"
+              value="Encounter End Date"
+            ></dx-select-box>
+          </dxi-item>
+
           <dxi-item [colSpan]="1">
             <dx-select-box
               labelMode="floating"
@@ -90,7 +100,7 @@
             </dx-select-box>
           </dxi-item>
 
-          <dxi-item [colSpan]="2">
+          <dxi-item [colSpan]="1">
             <dx-date-box
               label="From Date"
               labelMode="floating"
@@ -104,7 +114,7 @@
             </dx-date-box>
           </dxi-item>
 
-          <dxi-item [colSpan]="2">
+          <dxi-item [colSpan]="1">
             <dx-date-box
               label="To Date"
               labelMode="floating"
@@ -161,7 +171,7 @@
     </div>
 
     <dx-data-grid
-      [height]="isContentVisible ? '67vh' : '82vh'"
+      [height]="isContentVisible ? '70vh' : '82vh'"
       class="grid theme-dependent"
       [noDataText]="!isContentVisible ? 'No Data Available' : ' '"
       [dataSource]="dataSource"
@@ -296,7 +306,7 @@
         caption="Transaction Date"
         [allowEditing]="false"
       ></dxi-column>
-       <dxi-column
+      <dxi-column
         dataField="EncounterEndDate"
         caption="Encounter End Date"
         [allowEditing]="false"

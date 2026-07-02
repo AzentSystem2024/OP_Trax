@@ -90,8 +90,8 @@
   class="formPopupClass"
   [(visible)]="isResponsePopupOpened"
   title="Import Claim XML Files"
-  height="100vh"
-  width="75vw"
+  [height]="'90vh'"
+  [width]="'90vw'"
   [showCloseButton]="!isExcelLoading"
   [closeOnOutsideClick]="!isExcelLoading"
   (onHiding)="onXmlPopupHiding($event)"
@@ -166,6 +166,8 @@
         caption="Transaction Date"
       ></dxi-column>
       <dxi-column dataField="RecordCount" caption="Record Count"></dxi-column>
+      <dxi-column dataField="SubmissionCount" caption="Submission"></dxi-column>
+      <dxi-column dataField="ResubmissionCount" caption="Resubmission"></dxi-column>
       <dxi-column dataField="XMLFileName" caption="File Name"></dxi-column>
       <dxi-column dataField="Status" caption="Status" width="auto"></dxi-column>
       <dxi-column dataField="FailedReason" caption="Failed Reason"></dxi-column>
@@ -177,7 +179,7 @@
         [min]="0"
         [max]="totalFiles"
         [value]="progressValue"
-        [statusFormat]="format"
+        [statusFormat]="formatProgress"
         style="margin: 10px auto"
       >
       </dx-progress-bar>
@@ -190,8 +192,8 @@
   class="formPopupClass"
   [(visible)]="isExcelpopupOpened"
   title="Import Claim Excel Files"
-  height="100vh"
-  width="90vw"
+  [height]="'90vh'"
+  [width]="'90vw'"
   (onHidden)="CloseExcelForm()"
 >
   <div

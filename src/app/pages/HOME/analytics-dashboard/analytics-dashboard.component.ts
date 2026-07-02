@@ -10,10 +10,12 @@ import {
   DxLoadPanelModule,
   DxPieChartModule,
   DxSelectBoxModule,
+  DxTagBoxModule,
   DxToolbarModule,
 } from 'devextreme-angular';
 import notify from 'devextreme/ui/notify';
 import { ReportService } from 'src/app/services/Report-data.service';
+import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 @Component({
@@ -44,10 +46,16 @@ export class AnalyticsDashboardComponent {
   monthDataSource: { name: string; value: any }[];
   years: number[] = [];
 
+  userID: any;
+  facilityData: any;
+  selectedFacilityIDs: any[] = [];
+
   constructor(
     private dataService: DataService,
     private service: ReportService,
+    private masterService: MasterReportService,
   ) {
+    this.userID = sessionStorage.getItem('UserID');
     const logData = JSON.parse(localStorage.getItem('logData') || '{}');
     const lastProcessedYear = Number(logData?.LastProcessedYear || 0);
 
@@ -75,8 +83,28 @@ export class AnalyticsDashboardComponent {
     }
     //=============month field datasource============
     this.monthDataSource = this.service.getMonths();
-    this.loadChartData();
+    this.getUserFacilityData();
   }
+
+  getUserFacilityData() {
+    this.masterService
+      .Get_User_Facility_List_Data(this.userID)
+      .subscribe((res: any) => {
+        this.facilityData = res.data;
+        if (this.facilityData?.length === 1) {
+          this.selectedFacilityIDs = [this.facilityData[0].FacilityLicense];
+        } else if (this.facilityData?.length > 1) {
+          // Select all facilities by default
+          this.selectedFacilityIDs = this.facilityData.map((f: any) => f.FacilityLicense);
+        }
+        this.loadChartData();
+      });
+  }
+
+  // dispaly Facility for dropdown
+  displayFacility = (item: any): string => {
+    return item ? `${item.FacilityLicense} - ${item.FacilityName}` : '';
+  };
 
   //================ Year value change ===================
   onYearChanged(e: any): void {
@@ -117,8 +145,26 @@ export class AnalyticsDashboardComponent {
 
   // ============== load chart data =============
   loadChartData() {
+    if (!this.selectedFacilityIDs || this.selectedFacilityIDs.length === 0) {
+      this.showError('Please select at least one Facility.');
+      return;
+    }
+    if (!this.fromDate) {
+      this.showError('Please select From Date.');
+      return;
+    }
+    if (!this.toDate) {
+      this.showError('Please select To Date.');
+      return;
+    }
+    if (this.fromDate > this.toDate) {
+      this.showError('From Date cannot be greater than To Date.');
+      return;
+    }
+
     this.loadingVisible = true;
     const inputData = {
+      FacilityID: this.selectedFacilityIDs.join(','),
       DateFrom: this.formatDate(this.fromDate),
       DateTo: this.formatDate(this.toDate),
     };
@@ -371,6 +417,7 @@ export class AnalyticsDashboardComponent {
     DxPieChartModule,
     DxDataGridModule,
     DxToolbarModule,
+    DxTagBoxModule,
   ],
   providers: [],
   exports: [],

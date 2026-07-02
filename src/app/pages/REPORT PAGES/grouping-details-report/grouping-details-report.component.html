@@ -65,6 +65,16 @@
         [colCount]="8"
         [colCountByScreen]="{ xs: 8, sm: 8, md: 8, lg: 8 }"
       >
+        <dxi-item [colSpan]="2">
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Search On"
+            [items]="['Encounter End Date']"
+            value="Encounter End Date"
+          ></dx-select-box>
+        </dxi-item>
+
         <dxi-item [colSpan]="1">
           <dx-select-box
             labelMode="floating"
@@ -95,7 +105,7 @@
           </div>
         </dxi-item>
 
-        <dxi-item [colSpan]="2">
+        <dxi-item [colSpan]="1">
           <dx-date-box
             labelMode="floating"
             labelLocation="left"
@@ -116,7 +126,7 @@
           </dx-date-box>
         </dxi-item>
 
-        <dxi-item [colSpan]="2">
+        <dxi-item [colSpan]="1">
           <dx-date-box
             labelMode="floating"
             labelLocation="left"
