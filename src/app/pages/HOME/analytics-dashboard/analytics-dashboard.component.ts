@@ -95,7 +95,9 @@ export class AnalyticsDashboardComponent {
           this.selectedFacilityIDs = [this.facilityData[0].FacilityLicense];
         } else if (this.facilityData?.length > 1) {
           // Select all facilities by default
-          this.selectedFacilityIDs = this.facilityData.map((f: any) => f.FacilityLicense);
+          this.selectedFacilityIDs = this.facilityData.map(
+            (f: any) => f.FacilityLicense,
+          );
         }
         this.loadChartData();
       });
@@ -172,7 +174,11 @@ export class AnalyticsDashboardComponent {
       next: (res: any) => {
         this.loadingVisible = false;
         if (res.flag === '1') {
-          this.CPTVolumeBySeries = res.CPTVolumeBySeries;
+          const cptData = res.CPTVolumeBySeries;
+          this.CPTVolumeBySeries =
+            cptData && cptData.every((item: any) => item.TotalCount === 0)
+              ? null
+              : cptData;
           this.SpecialityImpact = res.SpecialityImpact;
           this.TopCPTImpact = res.TopCPTImpact;
           this.ClinicianSpecialityImpact = res.ClinicianSpecialityImpact;
@@ -256,7 +262,7 @@ export class AnalyticsDashboardComponent {
 
     return words[0] + '\n' + words.slice(1).join(' ');
   };
-  
+
   customizeSpecialityTooltip = (arg: any) => {
     const data = arg.point?.data;
 

@@ -38,11 +38,14 @@ export class AppComponent implements OnDestroy {
 
   @HostListener('document:contextmenu', ['$event'])
   onRightClick(event: Event) {
+    if (!environment.production) return;
     event.preventDefault();
   }
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
+    if (!environment.production) return;
+    
     // Prevent F12
     if (event.key === 'F12') {
       event.preventDefault();
@@ -96,6 +99,8 @@ export class AppComponent implements OnDestroy {
 
   @HostListener('document:keyup', ['$event'])
   handleKeyUp(event: KeyboardEvent) {
+    if (!environment.production) return;
+
     if (event.key === 'PrintScreen') {
       navigator.clipboard.writeText('');
       event.preventDefault();
@@ -104,6 +109,8 @@ export class AppComponent implements OnDestroy {
 
   @HostListener('document:copy', ['$event'])
   onCopy(event: ClipboardEvent) {
+    if (!environment.production) return;
+
     const target = event.target as HTMLElement;
     if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
       event.preventDefault();
