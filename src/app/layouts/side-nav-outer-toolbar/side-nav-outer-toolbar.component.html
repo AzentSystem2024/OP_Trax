@@ -26,50 +26,64 @@
   </side-navigation-menu>
   <!-- Content Area -->
   <div class="content m-0 p-0">
-    <dx-sortable
-      class="custom-tab"
-      filter=".dx-tab"
-      [data]="tabs"
-      itemOrientation="horizontal"
-      dragDirection="horizontal"
-      (onDragStart)="onTabDragStart($event)"
+    <div
+      *ngIf="tabs.length === 0"
+      class="d-flex justify-content-center align-items-center w-100"
+      style="height: 100%; min-height: 80vh;"
     >
-      <dx-tab-panel
-        class="tabPanelDiv m-0 p-0"
-        [dataSource]="tabs"
-        noDataText=" "
-        itemTitleTemplate="title"
-        itemTemplate="item"
-        [animationEnabled]="true"
-        [deferRendering]="false"
-        [showNavButtons]="true"
-        [repaintChangesOnly]="true"
-        [selectedIndex]="selectedIndex"
+      <img
+        src="../../../../assets/OPtrax Logo.png"
+        alt="OPtrax Logo"
+        style="max-width: 300px"
+      />
+    </div>
+
+    <div [hidden]="tabs.length === 0">
+      <dx-sortable
+        class="custom-tab"
+        filter=".dx-tab"
+        [data]="tabs"
+        itemOrientation="horizontal"
+        dragDirection="horizontal"
+        (onDragStart)="onTabDragStart($event)"
       >
-      
-        <div
-          class="tabItems m-0"
-          height="100%"
-          *dxTemplate="let tab of 'title'"
-          (click)="TabItemClick(tab)"
+        <dx-tab-panel
+          class="tabPanelDiv m-0 p-0"
+          [dataSource]="tabs"
+          noDataText=" "
+          itemTitleTemplate="title"
+          itemTemplate="item"
+          [animationEnabled]="true"
+          [deferRendering]="false"
+          [showNavButtons]="true"
+          [repaintChangesOnly]="true"
+          [selectedIndex]="selectedIndex"
         >
-          <span class="tabSubItems ms-2" [title]="tab.title">{{
-            tab.title
-          }}</span>
-          <i
-            *ngIf="showCloseButton()"
-            class="dx-icon-close close-icon"
-            (click)="closeButtonHandler(tab)"
-          ></i>
+        
+          <div
+            class="tabItems m-0"
+            height="100%"
+            *dxTemplate="let tab of 'title'"
+            (click)="TabItemClick(tab)"
+          >
+            <span class="tabSubItems ms-2" [title]="tab.title">{{
+              tab.title
+            }}</span>
+            <i
+              *ngIf="showCloseButton()"
+              class="dx-icon-close close-icon"
+              (click)="closeButtonHandler(tab)"
+            ></i>
+          </div>
+        </dx-tab-panel>
+        <div
+        class="fillColor"
+        [style.backgroundColor]="selectedIndex !== null ? 'var(--tab-selected-bg-color)' : 'transparent'"
+      ></div>
+        <div>
+          <router-outlet></router-outlet>
         </div>
-      </dx-tab-panel>
-      <div
-      class="fillColor"
-      [style.backgroundColor]="selectedIndex !== null ? 'var(--tab-selected-bg-color)' : 'transparent'"
-    ></div>
-      <div>
-        <router-outlet></router-outlet>
-      </div>
-    </dx-sortable>
+      </dx-sortable>
+    </div>
   </div>
 </dx-drawer>

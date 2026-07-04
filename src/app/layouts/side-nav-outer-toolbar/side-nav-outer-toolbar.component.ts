@@ -6,7 +6,6 @@ import {
   Input,
   ViewChild,
 } from '@angular/core';
-import { DxTreeViewTypes } from 'devextreme-angular/ui/tree-view';
 import { DxDrawerModule, DxDrawerTypes } from 'devextreme-angular/ui/drawer';
 import { DxScrollViewComponent } from 'devextreme-angular/ui/scroll-view';
 import { CommonModule } from '@angular/common';
@@ -74,21 +73,27 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
   ) {
     this.routerSubscription = this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {
-        this.selectedRoute = event.urlAfterRedirects.split('?')[0];
+        const urlPath = event.urlAfterRedirects.split('?')[0].replace(/^\/+/, '');
+        const tabExists = this.tabs.some(tab => tab.path === urlPath || tab.path.replace(/^\/+/, '') === urlPath);
+        if (tabExists) {
+          this.selectedRoute = event.urlAfterRedirects.split('?')[0];
+        } else {
+          this.selectedRoute = '';
+        }
       }
     });
     inactiveservice.startTheInactiveService();
   }
 
   ngOnInit() {
-    let path = 'analytics-dashboard';
-    let title = 'Dashboard';
-    this.tabs.push({
-      title: title,
-      path: path,
-    });
-    this.selectedIndex = this.tabs.findIndex((tab) => tab.path === path);
-    this.router.navigate([path]);
+    // let path = 'analytics-dashboard';
+    // let title = 'Dashboard';
+    // this.tabs.push({
+    //   title: title,
+    //   path: path,
+    // });
+    // this.selectedIndex = this.tabs.findIndex((tab) => tab.path === path);
+    // this.router.navigate([path]);
 
     this.menuOpened = this.screen.sizes['screen-large'];
     this.screenSubscription = this.screen.changed.subscribe(() =>
@@ -188,11 +193,11 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
   }
 
   closeButtonHandler(tab: any) {
-    if (tab.path === 'analytics-dashboard') {
-      return; // Don't allow deleting the home page
-    }
+    // if (tab.path === 'analytics-dashboard') {
+    //   return; // Don't allow deleting the home page
+    // }
 
-    if (this.tabs.length > 1) {
+    if (this.tabs.length >= 1) {
       const index = this.tabs.indexOf(tab);
       if (index > -1) {
         const isCurrentRoute = this.router.url.replace(/^\/+/, '') === tab.path;
@@ -211,6 +216,8 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
             const selectedTab = this.tabs[this.selectedIndex];
             this.selectedRoute = selectedTab.path;
             this.router.navigate([selectedTab.path]);
+          } else {
+            this.selectedRoute = '';
           }
         }
       }

@@ -163,7 +163,7 @@ const routes: Routes = [
         component: ChangePasswordComponent,
       },
       {
-        path: 'ctp-master-page',
+        path: 'cpt-master-page',
         component: CPTMasterComponent,
         canActivate: [AuthGuardService],
       },

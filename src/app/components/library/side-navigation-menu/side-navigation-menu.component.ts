@@ -85,8 +85,8 @@ export class SideNavigationMenuComponent
   ngOnInit(): void {
     const rawMenu = localStorage.getItem('sidemenuItems');
     this.navigation = rawMenu ? JSON.parse(rawMenu) : [];
-    const defaultPath = 'analytics-dashboard';
-    this.selectedItem = defaultPath;
+    // const defaultPath = 'analytics-dashboard';
+    // this.selectedItem = defaultPath;
     this.setSelectedItem();
     this.customerInfo = this.dataservice.fetch_customer_name();
   }
@@ -154,7 +154,9 @@ export class SideNavigationMenuComponent
   }
 
   setSelectedItem(): void {
-    if (this.menu?.instance && this._selectedItem) {
+    if (!this.menu?.instance) return;
+
+    if (this._selectedItem) {
       const selectedItem = this.navigation.find(
         (item) => item.path === this._selectedItem
       );
@@ -163,6 +165,9 @@ export class SideNavigationMenuComponent
       this.menu.instance.selectItem(selectedItem.id);
       this.selectedItemKeys = [selectedItem.id];
       this.expandParentNodes(selectedItem.id);
+    } else {
+      this.menu.instance.unselectAll();
+      this.selectedItemKeys = [];
     }
   }
 
