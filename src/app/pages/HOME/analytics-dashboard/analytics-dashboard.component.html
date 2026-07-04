@@ -10,21 +10,39 @@
       <div
         class="d-flex align-items-center flex-wrap h-100 ms-3 mt-2 mb-2 me-2 gap-2"
       >
-        <dx-tag-box
+        <dx-drop-down-box
+          #facilityDropDown
+          labelMode="floating"
           label="Facility"
-          [items]="facilityData"
+          [(value)]="selectedFacilityIDs"
           valueExpr="FacilityLicense"
           [displayExpr]="displayFacility"
-          labelMode="floating"
-          [searchEnabled]="true"
-          [dropDownOptions]="{ height: 250 }"
-          [(value)]="selectedFacilityIDs"
-          [showSelectionControls]="true"
           [showClearButton]="true"
-          selectAllMode="allPages"
-          [multiline]="false"
+          [dataSource]="facilityData"
           width="300"
-        ></dx-tag-box>
+          [dropDownOptions]="{ width: 480 }"
+        >
+          <div *dxTemplate="let data of 'content'">
+            <dx-data-grid
+              [dataSource]="facilityData"
+              [columns]="[
+                { dataField: 'FacilityLicense', caption: 'License', width: 100 },
+                { dataField: 'FacilityName', caption: 'Name' },
+                { dataField: 'FacilityRegion', caption: 'Region', width: 110 },
+              ]"
+              keyExpr="FacilityLicense"
+              [selection]="{ mode: 'multiple' }"
+              [hoverStateEnabled]="true"
+              [paging]="{ enabled: true, pageSize: 10 }"
+              [filterRow]="{ visible: true }"
+              [headerFilter]="{ visible: true }"
+              [scrolling]="{ mode: 'virtual' }"
+              [height]="facilityData?.length < 5 ? 'auto' : '250px'"
+              [(selectedRowKeys)]="selectedFacilityIDs"
+            >
+            </dx-data-grid>
+          </div>
+        </dx-drop-down-box>
 
         <dx-select-box
           labelMode="floating"

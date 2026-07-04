@@ -28,6 +28,7 @@ export class FacilityListComponent implements OnInit {
 
   FacilityType_DataSource: any;
   Facilitygroup_DataSource: any;
+  FacilityRegion_DataSource:any;
   postOffice_DataSource: any;
   //================Variables for Pagination ====================
   readonly allowedPageSizes: any = [5, 10, 'all'];
@@ -90,6 +91,14 @@ export class FacilityListComponent implements OnInit {
       .subscribe((response: any) => {
         if (response) {
           this.Facilitygroup_DataSource = response;
+        }
+      });
+
+      this.masterService
+      .Get_GropDown('FACILITY_REGION')
+      .subscribe((response: any) => {
+        if (response) {
+          this.FacilityRegion_DataSource = response;
         }
       });
 

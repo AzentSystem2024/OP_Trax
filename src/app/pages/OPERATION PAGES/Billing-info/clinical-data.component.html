@@ -33,6 +33,7 @@
                   [columns]="[
                     { dataField: 'FacilityLicense', caption: 'License' },
                     { dataField: 'FacilityName', caption: 'Name' },
+                    { dataField: 'FacilityRegion', caption: 'Region' },
                   ]"
                   [selection]="{ mode: 'multiple' }"
                   [hoverStateEnabled]="true"
@@ -295,6 +296,13 @@
         caption="FacilityID"
         [allowEditing]="false"
       ></dxi-column>
+
+      <dxi-column
+        dataField="FacilityRegion"
+        caption="Facility Region"
+        [allowEditing]="false"
+      ></dxi-column>
+
       <dxi-column
         dataField="ClaimNumber"
         caption="Invoice No"
