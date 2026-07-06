@@ -40,28 +40,20 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
   @ViewChild(DxScrollViewComponent, { static: true })
   scrollView!: DxScrollViewComponent;
 
-  @Input()
-  title!: string;
+  @Input() title!: string;
 
   selectedRoute = '';
-
   menuOpened!: boolean;
-
   temporaryMenuOpened = false;
-
   menuMode: DxDrawerTypes.OpenedStateMode = 'shrink';
-
   menuRevealMode: DxDrawerTypes.RevealMode = 'expand';
-
   minMenuSize = 0;
-
   shaderEnabled = false;
-
   routerSubscription: Subscription;
-
   screenSubscription: Subscription;
   tabs: any[] = [];
   selectedIndex = 0;
+
   constructor(
     private screen: ScreenService,
     private router: Router,
@@ -69,12 +61,17 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
     private inactiveservice: InactivityService,
     private dataService: DataService,
     private customReuseStrategy: CustomReuseStrategy,
-    private reuseStrategyService: ReuseStrategyService
+    private reuseStrategyService: ReuseStrategyService,
   ) {
     this.routerSubscription = this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {
-        const urlPath = event.urlAfterRedirects.split('?')[0].replace(/^\/+/, '');
-        const tabExists = this.tabs.some(tab => tab.path === urlPath || tab.path.replace(/^\/+/, '') === urlPath);
+        const urlPath = event.urlAfterRedirects
+          .split('?')[0]
+          .replace(/^\/+/, '');
+        const tabExists = this.tabs.some(
+          (tab) =>
+            tab.path === urlPath || tab.path.replace(/^\/+/, '') === urlPath,
+        );
         if (tabExists) {
           this.selectedRoute = event.urlAfterRedirects.split('?')[0];
         } else {
@@ -86,18 +83,19 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // let path = 'analytics-dashboard';
-    // let title = 'Dashboard';
-    // this.tabs.push({
-    //   title: title,
-    //   path: path,
-    // });
-    // this.selectedIndex = this.tabs.findIndex((tab) => tab.path === path);
-    // this.router.navigate([path]);
+    let path = 'Home';
+    let title = '';
+    this.tabs.push({
+      title: title,
+      path: path,
+      visible: title && title.trim() !== '' ? true : false,
+    });
+    this.selectedIndex = this.tabs.findIndex((tab) => tab.path === path);
+    this.router.navigate([path]);
 
     this.menuOpened = this.screen.sizes['screen-large'];
     this.screenSubscription = this.screen.changed.subscribe(() =>
-      this.updateDrawer()
+      this.updateDrawer(),
     );
     this.updateDrawer();
   }
@@ -106,7 +104,7 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
     localStorage.clear();
     sessionStorage.clear();
   };
-  
+
   ngOnDestroy(): void {
     this.routerSubscription.unsubscribe();
     this.screenSubscription.unsubscribe();
@@ -146,6 +144,10 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
         this.tabs.push({
           title: event.itemData.text,
           path: path,
+          visible:
+            event.itemData.text && event.itemData.text.trim() !== ''
+              ? true
+              : false,
         });
       }
       this.selectedIndex = this.tabs.findIndex((tab) => tab.path === path);
@@ -188,16 +190,19 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
     e.itemData = e.fromData[e.fromIndex];
   }
 
-  showCloseButton() {
+  showCloseButton(tab: any) {
+    if (!tab || !tab.title || tab.title.trim() === '') {
+      return false;
+    }
     return true;
   }
 
   closeButtonHandler(tab: any) {
-    // if (tab.path === 'analytics-dashboard') {
-    //   return; // Don't allow deleting the home page
-    // }
+    if (tab.path === 'Home') {
+      return; // Don't allow deleting the home page
+    }
 
-    if (this.tabs.length >= 1) {
+    if (this.tabs.length > 1) {
       const index = this.tabs.indexOf(tab);
       if (index > -1) {
         const isCurrentRoute = this.router.url.replace(/^\/+/, '') === tab.path;
@@ -217,7 +222,8 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
             this.selectedRoute = selectedTab.path;
             this.router.navigate([selectedTab.path]);
           } else {
-            this.selectedRoute = '';
+            this.selectedRoute = 'Home';
+            this.router.navigate(['Home']);
           }
         }
       }

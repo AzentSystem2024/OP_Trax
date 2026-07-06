@@ -13,6 +13,7 @@ import {
   UnauthenticatedContentComponent,
 } from './layouts';
 import { AnalyticsDashboardComponent } from './pages/HOME/analytics-dashboard/analytics-dashboard.component';
+import { HomeComponent } from './pages/HOME/home/home.component';
 import { AppSignInComponent } from './pages/sign-in-form/sign-in-form.component';
 import { AppSignUpComponent } from './pages/sign-up-form/sign-up-form.component';
 import { AppResetPasswordComponent } from './pages/reset-password-form/reset-password-form.component';
@@ -217,6 +218,11 @@ const routes: Routes = [
       {
         path: 'analytics-dashboard',
         component: AnalyticsDashboardComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'Home',
+        component: HomeComponent,
         canActivate: [AuthGuardService],
       },
       {

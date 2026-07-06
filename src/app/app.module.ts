@@ -16,6 +16,7 @@ import { UnauthenticatedContentModule } from './layouts/unauthenticated-content/
 import { AppRoutingModule } from './app-routing.module';
 
 import { AnalyticsDashboardModule } from './pages/HOME/analytics-dashboard/analytics-dashboard.component';
+import { HomeModule } from './pages/HOME/home/home.component';
 import { ThemeService } from './services';
 import { DxFormModule } from 'devextreme-angular';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -54,6 +55,7 @@ export function initializeApp(configService: ConfigService) {
     UnauthenticatedContentModule,
     DxSelectBoxModule,
     AnalyticsDashboardModule,
+    HomeModule,
     DxFormModule,
     ReactiveFormsModule,
     AppRoutingModule,
