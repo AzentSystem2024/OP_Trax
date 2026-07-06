@@ -191,8 +191,8 @@ export class IcdMasterComponent implements OnInit {
     this.isAddPopupVisible = false;
   }
 
-  saveNewIcd() {
-    const validation = this.addForm.instance.validate();
+  saveNewIcd(formInstance: any) {
+    const validation = formInstance.validate();
     if (validation.isValid) {
       const { ICDCode, ICDName, ICDDescription } = this.newIcdData;
       this.masterService

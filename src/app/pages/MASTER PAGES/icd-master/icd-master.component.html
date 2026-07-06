@@ -51,6 +51,10 @@
             labelMode: 'floating',
           }"
         >
+          <dxi-validation-rule
+            type="required"
+            message="ICD Name is required"
+          ></dxi-validation-rule>
         </dxi-item>
 
         <dxi-item
@@ -63,6 +67,10 @@
             height: 100,
           }"
         >
+          <dxi-validation-rule
+            type="required"
+            message="Description is required"
+          ></dxi-validation-rule>
         </dxi-item>
 
         <dxi-item
@@ -188,12 +196,7 @@
     (onHiding)="onPopupHiding()"
   >
     <div *dxTemplate="let data of 'content'">
-      <dx-form
-        #addForm
-        [formData]="newIcdData"
-        labelMode="floating"
-        validationGroup="icdMasterValidation"
-      >
+      <dx-form #addForm [formData]="newIcdData" labelMode="floating">
         <dxi-item
           dataField="ICDCode"
           editorType="dxTextBox"
@@ -218,6 +221,10 @@
             labelMode: 'floating',
           }"
         >
+          <dxi-validation-rule
+            type="required"
+            message="ICD Name is required"
+          ></dxi-validation-rule>
         </dxi-item>
 
         <dxi-item
@@ -230,6 +237,10 @@
             height: 100,
           }"
         >
+          <dxi-validation-rule
+            type="required"
+            message="Description is required"
+          ></dxi-validation-rule>
         </dxi-item>
       </dx-form>
 
@@ -246,7 +257,7 @@
           text="Save"
           stylingMode="contained"
           type="default"
-          (onClick)="saveNewIcd()"
+          (onClick)="saveNewIcd(addForm.instance)"
         ></dx-button>
       </div>
     </div>
