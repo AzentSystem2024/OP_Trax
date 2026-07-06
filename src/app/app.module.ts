@@ -68,7 +68,8 @@ export function initializeApp(configService: ConfigService) {
     ViewImportedMasterDataFormModule,
     DepartmentListModule,
     AdocCountingRulesModule,
-    InsuranceMasterModule
+    InsuranceMasterModule,
+    
   ],
   providers: [
     AuthService,

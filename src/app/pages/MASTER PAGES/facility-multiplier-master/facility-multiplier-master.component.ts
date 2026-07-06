@@ -365,23 +365,19 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       );
     });
 
-    if (modifiedRows.length === 0) {
-      notify('No changes found', 'warning', 2000);
-      return;
-    }
-
     const payload = {
       FacilityID: this.selectedFacilityID,
       RegionAdjuster: this.regionAdjuster,
       QuaternaryAdjuster: this.quaternaryAdjuster,
-      data: modifiedRows.map((x: any) => ({
-        ReceiverID: x.ReceiverID,
-        C_Multiplier: x.NewC_Multiplier,
-        P_Multiplier: x.NewP_Multiplier,
-        S_Multiplier: x.NewS_Multiplier,
-        D_Multiplier: x.NewD_Multiplier,
-        EffectFrom: this.formatDate(x.NewEffectFrom),
-      })),
+      data:
+        modifiedRows?.map((x: any) => ({
+          ReceiverID: x.ReceiverID,
+          C_Multiplier: x.NewC_Multiplier,
+          P_Multiplier: x.NewP_Multiplier,
+          S_Multiplier: x.NewS_Multiplier,
+          D_Multiplier: x.NewD_Multiplier,
+          EffectFrom: this.formatDate(x.NewEffectFrom),
+        })) || [],
     };
 
     this.showLoading('Data Saving...');

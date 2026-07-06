@@ -1430,4 +1430,24 @@ export class MasterReportService {
     const Url = `${this.BASE_URL}FacilityMultiplier/save`;
     return this.http.post(Url, payload);
   }
+  // ===== ICD-ADOC Mapping =====
+  get_icdAdocMapping_List() {
+    const Url = `${this.BASE_URL}ICDADOCMapping/list`;
+    const reqBody = { list: [] };
+    return this.http.post(Url, reqBody);
+  }
+
+  insert_icdAdocMapping_Data(payload: any) {
+    const Url = `${this.BASE_URL}ICDADOCMapping/save`;
+    return this.http.post(Url, payload);
+  }
+
+  update_icdAdocMapping_data(payload: any) {
+    const Url = `${this.BASE_URL}ICDADOCMapping/update`;
+    return this.http.post(Url, payload);
+  }
+
+  Remove_icdAdocMapping_Row_Data(id: any) {
+    return this.http.post(`${this.BASE_URL}ICDADOCMapping/delete/${id}`, {});
+  }
 }

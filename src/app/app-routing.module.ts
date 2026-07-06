@@ -55,6 +55,7 @@ import { GroupingDetailsReportComponent } from './pages/REPORT PAGES/grouping-de
 import { FacilityMultiplierMasterComponent } from './pages/MASTER PAGES/facility-multiplier-master/facility-multiplier-master.component';
 import { InsuranceMasterComponent } from './pages/MASTER PAGES/insurance-master/insurance-master.component';
 import { DownloadFromFacilityComponent } from './pages/OPERATION PAGES/download-from-facility/download-from-facility.component';
+import { IcdAdocMappingComponent } from './pages/MASTER PAGES/icd-adoc-mapping/icd-adoc-mapping.component';
 
 const routes: Routes = [
   {
@@ -267,6 +268,11 @@ const routes: Routes = [
       {
         path: 'adoc-class',
         component: ADOCClassComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'icd-adoc-mapping',
+        component: IcdAdocMappingComponent,
         canActivate: [AuthGuardService],
       },
       {
