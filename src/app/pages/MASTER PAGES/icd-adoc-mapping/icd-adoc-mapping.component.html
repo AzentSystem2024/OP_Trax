@@ -15,9 +15,8 @@
   >
     <dxo-editing
       mode="popup"
-      [allowUpdating]="menuPrevilage.CanEdit"
-      [allowDeleting]="menuPrevilage.CanDelete"
-      [allowAdding]="false"
+      [allowUpdating]="menuPrevilage.CanEdit && isEditingEnabled"
+      [allowDeleting]="menuPrevilage.CanDelete && isEditingEnabled"
     >
       <dxo-popup
         title="Edit ICD ADOC Mapping"
@@ -130,7 +129,14 @@
         location="after"
         cssClass="custom-export-button"
       ></dxi-item>
+
       <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="editButtonOptions"
+      ></dxi-item>
+
+      <dxi-item *ngIf="isEditingEnabled"
         location="after"
         widget="dxButton"
         [options]="addButtonOptions"

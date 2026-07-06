@@ -31,12 +31,12 @@ import validationEngine from 'devextreme/ui/validation_engine';
   styleUrls: ['./icd-adoc-mapping.component.scss'],
   providers: [ReportService, DataService],
 })
-export class IcdAdocMappingComponent  {
+export class IcdAdocMappingComponent {
   @ViewChild(DxDataGridComponent, { static: true })
   dataGrid!: DxDataGridComponent;
 
-   @ViewChild('addForm', { static: false })
-    addForm!: DxFormComponent;
+  @ViewChild('addForm', { static: false })
+  addForm!: DxFormComponent;
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
   displayMode: any = 'full';
@@ -54,20 +54,23 @@ export class IcdAdocMappingComponent  {
     load: () =>
       new Promise((resolve, reject) => {
         this.masterService.get_icdAdocMapping_List().subscribe({
-          next: (response: any) => resolve(response.datas || response.data || response),
+          next: (response: any) =>
+            resolve(response.datas || response.data || response),
           error: (error: any) => reject(error.message),
         });
       }),
   });
 
   addButtonOptions: any;
+  editButtonOptions: any;
+  isEditingEnabled: boolean = false;
 
   menuPrevilage: any;
 
   newIcdAdocMapping = {
     SpecialtyID: null,
     ICDCode: '',
-    ADOCClassID: null
+    ADOCClassID: null,
   };
 
   constructor(
@@ -100,7 +103,31 @@ export class IcdAdocMappingComponent  {
       onClick: () => this.showNewPopup(),
       elementAttr: { class: 'add-button' },
     };
+
+    this.editButtonOptions = {
+      class: 'ms-2',
+      text: '',
+      icon: 'edit',
+      type: 'default',
+      stylingMode: 'default',
+      hint: 'Toggle Edit Mode',
+      disabled: !this.menuPrevilage.CanAdd,
+      onClick: this.toggleEditMode,
+      elementAttr: { class: 'edit-button' },
+    };
   }
+
+  toggleEditMode = () => {
+    this.isEditingEnabled = !this.isEditingEnabled;
+    this.editButtonOptions = {
+      ...this.editButtonOptions,
+      icon: this.isEditingEnabled ? 'close' : 'edit',
+    };
+
+    if (!this.isEditingEnabled) {
+      // this.refresh();
+    }
+  };
 
   refresh = () => {
     this.dataGrid.instance.refresh();
@@ -114,18 +141,15 @@ export class IcdAdocMappingComponent  {
     this.isAddPopupVisible = true;
   }
 
-   onPopupHiding() {
+  onPopupHiding() {
     this.newIcdAdocMapping = {
       SpecialtyID: null,
       ICDCode: '',
-      ADOCClassID: null
+      ADOCClassID: null,
     };
 
     this.addForm?.instance.reset();
   }
-
-
-  
 
   // =========== Save data  =========
   saveIcdAdocMapping() {
@@ -143,59 +167,59 @@ export class IcdAdocMappingComponent  {
       return;
     }
 
-
     const payload = {
       SpecialtyID: this.newIcdAdocMapping.SpecialtyID,
       ICDCode: this.newIcdAdocMapping.ICDCode,
       ADOCClassID: this.newIcdAdocMapping.ADOCClassID,
-      UserID: sessionStorage.getItem('UserID')
+      UserID: sessionStorage.getItem('UserID'),
     };
 
-    this.masterService
-      .insert_icdAdocMapping_Data(payload)
-      .subscribe({
-        next: (res: any) => {
-          if (res && (res.flag === '1' || res.status === 'success' || res === '1')) {
-            notify(
-              {
-                message: 'ICD ADOC Mapping Added Successfully',
-                position: { at: 'top right', my: 'top right' },
-                displayTime: 500,
-              },
-              'success',
-            );
-
-            this.isAddPopupVisible = false;
-
-            this.newIcdAdocMapping = {
-              SpecialtyID: null,
-              ICDCode: '',
-              ADOCClassID: null
-            };
-
-            this.dataGrid.instance.refresh();
-          } else {
-            notify(
-              {
-                message: res?.message || 'Save Failed',
-                position: { at: 'top right', my: 'top right' },
-                displayTime: 500,
-              },
-              'error',
-            );
-          }
-        },
-        error: (err: any) => {
+    this.masterService.insert_icdAdocMapping_Data(payload).subscribe({
+      next: (res: any) => {
+        if (
+          res &&
+          (res.flag === '1' || res.status === 'success' || res === '1')
+        ) {
           notify(
             {
-              message: err?.message || 'Save Failed',
+              message: 'ICD ADOC Mapping Added Successfully',
+              position: { at: 'top right', my: 'top right' },
+              displayTime: 500,
+            },
+            'success',
+          );
+
+          this.isAddPopupVisible = false;
+
+          this.newIcdAdocMapping = {
+            SpecialtyID: null,
+            ICDCode: '',
+            ADOCClassID: null,
+          };
+
+          this.dataGrid.instance.refresh();
+        } else {
+          notify(
+            {
+              message: res?.message || 'Save Failed',
               position: { at: 'top right', my: 'top right' },
               displayTime: 500,
             },
             'error',
           );
-        },
-      });
+        }
+      },
+      error: (err: any) => {
+        notify(
+          {
+            message: err?.message || 'Save Failed',
+            position: { at: 'top right', my: 'top right' },
+            displayTime: 500,
+          },
+          'error',
+        );
+      },
+    });
   }
 
   // =========== row data updating =========
@@ -228,48 +252,49 @@ export class IcdAdocMappingComponent  {
       SpecialtyID: combinedData.SpecialtyID,
       ICDCode: combinedData.ICDCode,
       ADOCClassID: combinedData.ADOCClassID,
-      UserID: sessionStorage.getItem('UserID')
+      UserID: sessionStorage.getItem('UserID'),
     };
 
-    this.masterService
-      .update_icdAdocMapping_data(payload)
-      .subscribe({
-        next: (res: any) => {
-          if (res && (res.flag === '1' || res.status === 'success' || res === '1')) {
-            notify(
-              {
-                message: 'Data Updated Successfully',
-                position: { at: 'top right', my: 'top right' },
-                displayTime: 500,
-              },
-              'success',
-            );
-          } else {
-            notify(
-              {
-                message: res?.message || 'Your Data Not Saved',
-                position: { at: 'top right', my: 'top right' },
-                displayTime: 500,
-              },
-              'error',
-            );
-          }
-
-          event.component.cancelEditData();
-          this.dataGrid.instance.refresh();
-        },
-        error: (err: any) => {
+    this.masterService.update_icdAdocMapping_data(payload).subscribe({
+      next: (res: any) => {
+        if (
+          res &&
+          (res.flag === '1' || res.status === 'success' || res === '1')
+        ) {
           notify(
             {
-              message: err?.message || 'Update Failed',
+              message: 'Data Updated Successfully',
+              position: { at: 'top right', my: 'top right' },
+              displayTime: 500,
+            },
+            'success',
+          );
+        } else {
+          notify(
+            {
+              message: res?.message || 'Your Data Not Saved',
               position: { at: 'top right', my: 'top right' },
               displayTime: 500,
             },
             'error',
           );
-          event.component.cancelEditData();
         }
-      });
+
+        event.component.cancelEditData();
+        this.dataGrid.instance.refresh();
+      },
+      error: (err: any) => {
+        notify(
+          {
+            message: err?.message || 'Update Failed',
+            position: { at: 'top right', my: 'top right' },
+            displayTime: 500,
+          },
+          'error',
+        );
+        event.component.cancelEditData();
+      },
+    });
 
     event.cancel = true;
   }
@@ -282,7 +307,13 @@ export class IcdAdocMappingComponent  {
       .Remove_icdAdocMapping_Row_Data(SelectedRow.ID)
       .subscribe({
         next: (res: any) => {
-          if (res && (res.flag === '1' || res.status === 'success' || res === '1' || res.data === 'Deleted Successfully')) {
+          if (
+            res &&
+            (res.flag === '1' ||
+              res.status === 'success' ||
+              res === '1' ||
+              res.data === 'Deleted Successfully')
+          ) {
             notify(
               {
                 message: 'Delete operation successful',
@@ -314,7 +345,7 @@ export class IcdAdocMappingComponent  {
             'error',
           );
           event.component.refresh();
-        }
+        },
       });
   }
 
@@ -326,18 +357,20 @@ export class IcdAdocMappingComponent  {
 }
 
 @NgModule({
-  imports: [CommonModule,
-      DxDataGridModule,
-      DxButtonModule,
-      DxDropDownButtonModule,
-      DxSelectBoxModule,
-      DxTextBoxModule,
-      DxLookupModule,
-      DxPopupModule,
-      DxCheckBoxModule,
-      DxFormModule,
-      DxValidatorModule,
-      DxValidationSummaryModule,],
+  imports: [
+    CommonModule,
+    DxDataGridModule,
+    DxButtonModule,
+    DxDropDownButtonModule,
+    DxSelectBoxModule,
+    DxTextBoxModule,
+    DxLookupModule,
+    DxPopupModule,
+    DxCheckBoxModule,
+    DxFormModule,
+    DxValidatorModule,
+    DxValidationSummaryModule,
+  ],
   declarations: [IcdAdocMappingComponent],
   exports: [IcdAdocMappingComponent],
 })
