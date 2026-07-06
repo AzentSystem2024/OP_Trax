@@ -1,0 +1,254 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    class="grid theme-dependent"
+    noDataText="No Data Available"
+    height="82vh"
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    (onExporting)="onExporting($event)"
+    (onRowRemoving)="onRowRemoving($event)"
+    (onRowUpdating)="onRowUpdating($event)"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-editing
+      mode="popup"
+      [allowUpdating]="menuPrevilage?.CanEdit"
+      [allowDeleting]="menuPrevilage?.CanDelete"
+      [allowAdding]="false"
+    >
+      <dxo-popup
+        title="Edit ICD Master"
+        [showTitle]="true"
+        [width]="500"
+        [height]="'auto'"
+      ></dxo-popup>
+      <dxo-form [colCount]="1" labelMode="floating">
+        <dxi-item
+          dataField="ICDCode"
+          editorType="dxTextBox"
+          [label]="{ visible: false }"
+          [editorOptions]="{
+            label: 'ICD Code',
+            labelMode: 'floating',
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="ICD Code is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item
+          dataField="ICDName"
+          editorType="dxTextBox"
+          [label]="{ visible: false }"
+          [editorOptions]="{
+            label: 'ICD Name',
+            labelMode: 'floating',
+          }"
+        >
+        </dxi-item>
+
+        <dxi-item
+          dataField="ICDDescription"
+          editorType="dxTextArea"
+          [label]="{ visible: false }"
+          [editorOptions]="{
+            label: 'Description',
+            labelMode: 'floating',
+            height: 100,
+          }"
+        >
+        </dxi-item>
+
+        <dxi-item
+          dataField="IsInactive"
+          editorType="dxCheckBox"
+          [label]="{ visible: false }"
+          [editorOptions]="{
+            text: 'Inactive',
+          }"
+        >
+        </dxi-item>
+      </dxo-form>
+    </dxo-editing>
+
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="showInfo"
+      [showNavigationButtons]="showNavButtons"
+    >
+    </dxo-pager>
+
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="isFilterRowVisible">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+    <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+    <dxo-column-chooser [enabled]="true" [height]="400"></dxo-column-chooser>
+    <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
+    <dxo-export
+      [enabled]="true"
+      [allowExportSelectedData]="false"
+      [formats]="['xlsx']"
+    >
+    </dxo-export>
+
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">ICD Master</div>
+      </dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' },
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          hint: 'Refresh',
+          icon: 'refresh',
+          onClick: refresh,
+          stylingMode: 'text',
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        name="exportButton"
+        location="after"
+        cssClass="custom-export-button"
+      ></dxi-item>
+      <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="addButtonOptions"
+      ></dxi-item>
+    </dxo-toolbar>
+
+    <dxi-column dataField="ICDCode" caption="ICD Code"></dxi-column>
+    <dxi-column dataField="ICDName" caption="ICD Name"></dxi-column>
+    <dxi-column dataField="ICDDescription" caption="Description"></dxi-column>
+    <dxi-column
+      dataField="Status"
+      caption="Status"
+      [cellTemplate]="'statusTemplate'"
+      alignment="center"
+    >
+    </dxi-column>
+
+    <div *dxTemplate="let cell of 'statusTemplate'">
+      <span
+        [ngStyle]="{
+          color: cell.data.Status === 'Active' ? 'green' : 'red',
+        }"
+        [title]="cell.data.Status"
+        style="font-size: 20px; cursor: pointer"
+      >
+        ⚑
+      </span>
+    </div>
+    <dxi-column
+      dataField="IsInactive"
+      caption="Inactive"
+      dataType="boolean"
+      [visible]="false"
+    ></dxi-column>
+  </dx-data-grid>
+
+  <!-- ========= new form popup ========= -->
+  <dx-popup
+    [(visible)]="isAddPopupVisible"
+    title="New ICD Master"
+    [width]="500"
+    [height]="'auto'"
+    [showCloseButton]="true"
+    [hideOnOutsideClick]="false"
+    (onHiding)="onPopupHiding()"
+  >
+    <div *dxTemplate="let data of 'content'">
+      <dx-form
+        #addForm
+        [formData]="newIcdData"
+        labelMode="floating"
+        validationGroup="icdMasterValidation"
+      >
+        <dxi-item
+          dataField="ICDCode"
+          editorType="dxTextBox"
+          [label]="{ visible: false }"
+          [editorOptions]="{
+            label: 'ICD Code',
+            labelMode: 'floating',
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="ICD Code is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item
+          dataField="ICDName"
+          editorType="dxTextBox"
+          [label]="{ visible: false }"
+          [editorOptions]="{
+            label: 'ICD Name',
+            labelMode: 'floating',
+          }"
+        >
+        </dxi-item>
+
+        <dxi-item
+          dataField="ICDDescription"
+          editorType="dxTextArea"
+          [label]="{ visible: false }"
+          [editorOptions]="{
+            label: 'Description',
+            labelMode: 'floating',
+            height: 100,
+          }"
+        >
+        </dxi-item>
+      </dx-form>
+
+      <div class="mt-5 text-end">
+        <dx-button
+          text="Cancel"
+          stylingMode="outlined"
+          type="normal"
+          (onClick)="isAddPopupVisible = false"
+        ></dx-button>
+
+        <dx-button
+          class="ms-2"
+          text="Save"
+          stylingMode="contained"
+          type="default"
+          (onClick)="saveNewIcd()"
+        ></dx-button>
+      </div>
+    </div>
+  </dx-popup>
+</div>

@@ -1,10 +1,7 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
+  NgModule, ViewChild
 } from '@angular/core';
 import {
   DxDataGridModule,

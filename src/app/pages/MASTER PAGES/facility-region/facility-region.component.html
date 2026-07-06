@@ -20,7 +20,7 @@
       [allowUpdating]="menuPrevilage.CanEdit"
       [allowDeleting]="menuPrevilage.CanDelete"
       [allowAdding]="menuPrevilage.CanAdd"
-      [popup]="{ width: '35%', height: '70vh' }"
+      [popup]="{ width: '35%', height: 'auto' }"
     >
       <dxo-popup title="Edit Facility Region" [showTitle]="true"></dxo-popup>
       <dxo-form [colCount]="1">
@@ -31,7 +31,7 @@
           [editorOptions]="{
             label: 'Region',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         >
           <!-- <dxo-label text="Region"></dxo-label> -->
@@ -44,7 +44,7 @@
           [editorOptions]="{
             label: 'Desciption',
             labelMode: 'floating',
-            height: 200
+            height: 200,
           }"
         >
           <!-- <dxo-label text="Description"></dxo-label> -->
@@ -90,7 +90,7 @@
           hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
           onClick: toggleFilterRow,
           stylingMode: 'text',
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
 
@@ -103,7 +103,7 @@
           hint: 'Refresh',
           icon: 'refresh',
           onClick: refresh,
-          stylingMode: 'text'
+          stylingMode: 'text',
         }"
       ></dxi-item>
 
@@ -124,12 +124,14 @@
     <dxi-column dataField="FacilityRegion" caption="Region"></dxi-column>
     <dxi-column dataField="Description" Caption="Description"></dxi-column>
   </dx-data-grid>
+
+  
   <form-popup
     class="formPopupClass"
     [(visible)]="isAddFormPopupOpened"
     (save)="onClickSaveNewFacilityRegion()"
     titleText="New Facility Region"
-    height="70vh"
+    height="auto"
   >
     <app-facility-region-new-form></app-facility-region-new-form>
   </form-popup>

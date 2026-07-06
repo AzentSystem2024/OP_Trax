@@ -57,6 +57,7 @@ import { FacilityMultiplierMasterComponent } from './pages/MASTER PAGES/facility
 import { InsuranceMasterComponent } from './pages/MASTER PAGES/insurance-master/insurance-master.component';
 import { DownloadFromFacilityComponent } from './pages/OPERATION PAGES/download-from-facility/download-from-facility.component';
 import { IcdAdocMappingComponent } from './pages/MASTER PAGES/icd-adoc-mapping/icd-adoc-mapping.component';
+import { IcdMasterComponent } from './pages/MASTER PAGES/icd-master/icd-master.component';
 
 const routes: Routes = [
   {
@@ -282,6 +283,11 @@ const routes: Routes = [
         canActivate: [AuthGuardService],
       },
       {
+        path: 'icd-master',
+        component: IcdMasterComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
         path: 'adoc-group',
         component: ADOCGroupComponent,
         canActivate: [AuthGuardService],
@@ -328,7 +334,7 @@ const routes: Routes = [
       },
       {
         path: '**',
-        redirectTo: 'analytics-dashboard',
+        redirectTo: 'Home',
         pathMatch: 'full',
       },
     ],
@@ -341,4 +347,4 @@ const routes: Routes = [
   exports: [RouterModule],
   declarations: [],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

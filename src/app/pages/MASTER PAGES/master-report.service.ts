@@ -1430,6 +1430,50 @@ export class MasterReportService {
     const Url = `${this.BASE_URL}FacilityMultiplier/save`;
     return this.http.post(Url, payload);
   }
+
+  //==========================================ICD MASTER==========================================================
+  //======Icd Master List===========
+  Get_IcdMaster_Data() {
+    const Url = `${this.BASE_URL}icdmaster/list`;
+    const reqBody = {
+      list: [],
+    };
+
+    return this.http.post(Url, reqBody);
+  }
+
+  //======Add Icd Master data========
+  Insert_IcdMaster_Data(ICDCode: any, ICDName: any, ICDDescription: any) {
+    const url = `${this.BASE_URL}icdmaster/save`;
+    const reqBody = {
+      ICDCode: ICDCode,
+      ICDName: ICDName,
+      ICDDescription: ICDDescription,
+      UserID: 0,
+    };
+
+    return this.http.post(url, reqBody);
+  }
+
+  //=====Update Icd Master data======
+  update_IcdMaster_data(id: any, ICDCode: any, ICDName: any, ICDDescription: any, IsInactive: any) {
+    const url = `${this.BASE_URL}icdmaster/update`;
+    const reqBody = {
+      ID: id,
+      ICDCode: ICDCode,
+      ICDName: ICDName,
+      ICDDescription: ICDDescription,
+      IsInactive: IsInactive,
+    };
+
+    return this.http.post(url, reqBody);
+  }
+
+  //=====Remove Icd Master Data==========
+  Remove_IcdMaster_Row_Data(id: any) {
+    return this.http.post(`${this.BASE_URL}ICDMaster/delete/${id}`, {});
+  }
+
   // ===== ICD-ADOC Mapping =====
   get_icdAdocMapping_List() {
     const Url = `${this.BASE_URL}ICDADOCMapping/list`;
