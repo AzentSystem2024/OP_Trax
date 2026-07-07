@@ -384,9 +384,7 @@ export class MasterReportService {
   //======Cpt Master List===========
   get_CptMaster_List() {
     const Url = `${this.BASE_URL}cptmaster/list`;
-    const reqBody = {
-      list: [],
-    };
+    const reqBody = {};
 
     return this.http.post(Url, reqBody);
   }
@@ -1420,8 +1418,8 @@ export class MasterReportService {
     return this.http.post(Url, payload);
   }
 
-  get_Facility_Multiplier_History_List(id: any,facilityId:any) {
-    const payload = { ReceiverID: id ,FacilityID:facilityId};
+  get_Facility_Multiplier_History_List(id: any, facilityId: any) {
+    const payload = { ReceiverID: id, FacilityID: facilityId };
     const Url = `${this.BASE_URL}facilitymultiplier/history`;
     return this.http.post(Url, payload);
   }
@@ -1456,7 +1454,13 @@ export class MasterReportService {
   }
 
   //=====Update Icd Master data======
-  update_IcdMaster_data(id: any, ICDCode: any, ICDName: any, ICDDescription: any, IsInactive: any) {
+  update_IcdMaster_data(
+    id: any,
+    ICDCode: any,
+    ICDName: any,
+    ICDDescription: any,
+    IsInactive: any,
+  ) {
     const url = `${this.BASE_URL}icdmaster/update`;
     const reqBody = {
       ID: id,

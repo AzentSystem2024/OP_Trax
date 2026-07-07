@@ -1,4 +1,4 @@
-<div class="view-wrapper list-page">
+<div id="analytics-dashboard-view" class="view-wrapper list-page">
   <div class="h-80vh">
     <div
       class="topDiv d-flex flex-column w-100 sticky-top firstChartDiv ExportDiv1"
@@ -463,9 +463,11 @@
     </div>
   </div>
 </div>
+
 <dx-load-panel
   #loadPanel
-  [position]="{ of: '.view-wrapper', at: 'center', my: 'center' }"
+  container="#analytics-dashboard-view"
+  [position]="{ of: '#analytics-dashboard-view', at: 'center', my: 'center' }"
   shadingColor="rgba(0,0,0,0)"
   [(visible)]="loadingVisible"
   [showIndicator]="true"

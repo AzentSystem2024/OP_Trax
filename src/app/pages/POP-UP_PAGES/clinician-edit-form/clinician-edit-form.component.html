@@ -1,3 +1,4 @@
+<div id="clinician-edit-form-wrapper" class="w-100 h-100 position-relative">
 <dx-form class="plain-styled-form">
   <dxi-item itemType="group">
     <dxo-col-count-by-screen
@@ -101,3 +102,16 @@
     </dxi-item>
   </dxi-item>
 </dx-form>
+</div>
+<dx-load-panel
+  #loadPanel
+  container="#clinician-edit-form-wrapper"
+  [position]="{ of: '#clinician-edit-form-wrapper', at: 'center', my: 'center' }"
+  shadingColor="rgba(0,0,0,0.4)"
+  [(visible)]="isLoading"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="false"
+  [message]="'Loading...'"
+>
+</dx-load-panel>

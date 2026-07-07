@@ -40,11 +40,12 @@ export class CPTMasterComponent {
   CptEditFormComponent!: CptMasterEditFormComponent;
 
   //========Variables for Pagination ====================
-  readonly allowedPageSizes: any = [5, 10, 'all'];
+  readonly allowedPageSizes: any = [50, 100, 200];
   displayMode: any = 'full';
   showPageSizeSelector = true;
   showInfo = true;
   showNavButtons = true;
+  
   facilityGroupDatasource: any;
   isAddFormPopupOpened: boolean = false;
   isEditFormPopupOpened: boolean = false;
@@ -54,8 +55,8 @@ export class CPTMasterComponent {
     load: () =>
       new Promise((resolve, reject) => {
         this.masterService.get_CptMaster_List().subscribe({
-          next: (response: any) => resolve(response.data), // Resolve with the data
-          error: (error) => reject(error.message), // Reject with the error message
+          next: (response: any) => resolve(response.data), 
+          error: (error) => reject(error.message), 
         });
       }),
   });

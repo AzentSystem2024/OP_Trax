@@ -26,6 +26,7 @@ import jsPDF from 'jspdf';
 })
 export class AnalyticsDashboardComponent {
   @ViewChild('topCPTGrid') topCPTGrid!: DxDataGridComponent;
+  
   @ViewChild('topClinicianGrid') topClinicianGrid!: DxDataGridComponent;
   numberFormat = { type: 'thousands' };
 

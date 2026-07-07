@@ -106,7 +106,8 @@
       dataField="ClinicianShortName"
       caption="Short Name"
     ></dxi-column>
-    <dxi-column dataField="SpecialityName" caption="Specialty Name"> </dxi-column>
+    <dxi-column dataField="SpecialityName" caption="Specialty Name">
+    </dxi-column>
     <dxi-column dataField="Profession" caption="Profession"> </dxi-column>
     <dxi-column dataField="Category" caption="Category"> </dxi-column>
   </dx-data-grid>
@@ -146,7 +147,6 @@
   >
     <div>
       <app-clinician-edit-form
-        *ngIf="isEditClinicianPopupOpened"
         [formData]="selectedClinician"
       ></app-clinician-edit-form>
     </div>

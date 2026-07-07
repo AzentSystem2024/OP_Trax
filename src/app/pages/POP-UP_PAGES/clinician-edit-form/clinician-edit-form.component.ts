@@ -15,6 +15,7 @@ import {
   DxValidatorModule,
   DxRadioGroupModule,
   DxValidatorComponent,
+  DxLoadPanelModule,
 } from 'devextreme-angular';
 import { FormTextboxModule, FormPhotoUploaderModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
@@ -58,6 +59,7 @@ export class ClinicianEditFormComponent implements OnChanges {
   cliniciansList: any;
 
   dropdownsLoaded: boolean = false;
+  isLoading: boolean = false;
 
   constructor(private masterService: MasterReportService) {}
 
@@ -74,6 +76,7 @@ export class ClinicianEditFormComponent implements OnChanges {
   }
 
   async loadInitialData() {
+    this.isLoading = true;
     try {
       const [
         speciality,
@@ -106,6 +109,8 @@ export class ClinicianEditFormComponent implements OnChanges {
       this.bindFormData();
     } catch (error) {
       console.error(error);
+    } finally {
+      this.isLoading = false;
     }
   }
 
@@ -235,6 +240,7 @@ export class ClinicianEditFormComponent implements OnChanges {
     DxSelectBoxModule,
     DxRadioGroupModule,
     DxTextBoxModule,
+    DxLoadPanelModule,
   ],
   declarations: [ClinicianEditFormComponent],
   exports: [ClinicianEditFormComponent],
