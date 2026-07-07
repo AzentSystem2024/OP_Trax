@@ -1,12 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, ViewChild, OnInit } from '@angular/core';
+import { Component, NgModule, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   DxDataGridModule,
   DxButtonModule,
-  DxDataGridComponent,
-  DxLoadPanelModule,
-  DxCheckBoxModule,
+  DxDataGridComponent, DxCheckBoxModule,
   DxDropDownButtonModule,
   DxFormComponent,
   DxFormModule,
@@ -15,13 +13,12 @@ import {
   DxSelectBoxModule,
   DxTextBoxModule,
   DxValidationSummaryModule,
-  DxValidatorModule,
+  DxValidatorModule
 } from 'devextreme-angular';
 import notify from 'devextreme/ui/notify';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
-import { firstValueFrom } from 'rxjs';
 import { DataSource } from 'devextreme/common/data';
 import validationEngine from 'devextreme/ui/validation_engine';
 
@@ -221,7 +218,7 @@ export class IcdAdocMappingComponent {
       },
     });
   }
-
+0
   // =========== row data updating =========
   onRowUpdating(event: any) {
     const combinedData = {
