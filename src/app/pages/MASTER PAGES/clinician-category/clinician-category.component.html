@@ -33,7 +33,7 @@
           [editorOptions]="{
             label: 'Category',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         >
           <!-- <dxo-label text="Category"></dxo-label> -->
@@ -46,7 +46,7 @@
           [editorOptions]="{
             height: 200,
             label: 'Description',
-            labelMode: 'floating'
+            labelMode: 'floating',
           }"
         >
           <!-- <dxo-label text="Description"></dxo-label> -->
@@ -93,7 +93,7 @@
           onClick: toggleFilterRow,
           stylingMode: 'text',
 
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
 
@@ -108,7 +108,7 @@
           icon: 'refresh',
           onClick: refresh,
           stylingMode: 'text',
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
       <dxi-item
@@ -124,11 +124,10 @@
       ></dxi-item>
     </dxo-toolbar>
 
-    <!-- <dxo-selection mode="multiple"></dxo-selection> -->
-
     <dxi-column dataField="Category" caption="Category"> </dxi-column>
     <dxi-column dataField="Description" Caption="Description"></dxi-column>
   </dx-data-grid>
+
   <form-popup
     class="formPopupClass"
     [(visible)]="isAddFormPopupOpened"

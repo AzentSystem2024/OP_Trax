@@ -9,7 +9,7 @@
     [allowColumnReordering]="true"
     [rowAlternationEnabled]="true"
     rowAlternationInterval="2"
-    [wordWrapEnabled]="true"
+    [wordWrapEnabled]="false"
     [columnAutoWidth]="true"
     width="100%"
     (onExporting)="onExporting($event)"
@@ -93,8 +93,17 @@
       alignment="left"
       width="60"
     ></dxi-column>
-    <dxi-column dataField="RuleDescription" caption="ADOC Rule"></dxi-column>
-    <dxi-column dataField="Remarks" caption="Description" [visibleIndex]="2"></dxi-column>
+    <dxi-column
+      dataField="RuleDescription"
+      caption="ADOC Rule"
+      cellTemplate="wrapTextTemplate"
+    ></dxi-column>
+    <dxi-column
+      dataField="Remarks"
+      caption="Description"
+      [visibleIndex]="2"
+      cellTemplate="wrapTextTemplate"
+    ></dxi-column>
 
     <dxi-column
       dataField="IsInactive"
@@ -120,7 +129,14 @@
         style="font-size: 20px; cursor: pointer"
       >
         ⚑
-      </span> 
+      </span>
+    </div>
+
+    <div
+      *dxTemplate="let data of 'wrapTextTemplate'"
+      style="white-space: normal; word-break: break-word"
+    >
+      {{ data.value }}
     </div>
   </dx-data-grid>
 </div>

@@ -58,6 +58,7 @@ import { InsuranceMasterComponent } from './pages/MASTER PAGES/insurance-master/
 import { DownloadFromFacilityComponent } from './pages/OPERATION PAGES/download-from-facility/download-from-facility.component';
 import { IcdAdocMappingComponent } from './pages/MASTER PAGES/icd-adoc-mapping/icd-adoc-mapping.component';
 import { IcdMasterComponent } from './pages/MASTER PAGES/icd-master/icd-master.component';
+import { CustomRulesComponent } from './pages/MASTER PAGES/custom-rules/custom-rules.component';
 
 const routes: Routes = [
   {
@@ -295,6 +296,11 @@ const routes: Routes = [
       {
         path: 'adoc-counting-rules',
         component: AdocCountingRulesComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'custom-rules',
+        component: CustomRulesComponent,
         canActivate: [AuthGuardService],
       },
       {

@@ -1498,4 +1498,27 @@ export class MasterReportService {
   Remove_icdAdocMapping_Row_Data(id: any) {
     return this.http.post(`${this.BASE_URL}ICDADOCMapping/delete/${id}`, {});
   }
+  // ===== Custom Rules =====
+  get_CustomRules_List() {
+    const Url = `${this.BASE_URL}ADOCGroup/custom-rules-list`;
+    const reqBody = {};
+    return this.http.post(Url, reqBody);
+  }
+
+  Insert_CustomRules_Data(payload: any) {
+    const Url = `${this.BASE_URL}ADOCGroup/custom-rules-save`;
+    return this.http.post(Url, payload);
+  }
+
+  update_CustomRules_data(payload: any) {
+    const Url = `${this.BASE_URL}ADOCGroup/custom-rules-update`;
+    return this.http.post(Url, payload);
+  }
+
+  Remove_CustomRules_Row_Data(id: any) {
+    return this.http.post(
+      `${this.BASE_URL}ADOCGroup/custom-rules-delete/${id}`,
+      {},
+    );
+  }
 }

@@ -15,6 +15,7 @@
     height="82vh"
   >
     <dxo-paging [pageSize]="10"></dxo-paging>
+
     <dxo-editing
       mode="popup"
       [allowUpdating]="menuPrevilage.CanEdit"
@@ -35,7 +36,7 @@
           [editorOptions]="{
             label: 'Profession',
             labelMode: 'floating',
-            height: 40
+            height: 40,
           }"
         ></dxi-item>
         <dxi-item
@@ -45,11 +46,12 @@
           [editorOptions]="{
             label: 'Description',
             labelMode: 'floating',
-            height: 200
+            height: 200,
           }"
         ></dxi-item>
       </dxo-form>
     </dxo-editing>
+
     <dxo-pager
       [visible]="true"
       [allowedPageSizes]="allowedPageSizes"
@@ -67,12 +69,14 @@
     </dxo-header-filter>
     <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
     <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
+
     <dxo-export
       [enabled]="true"
       [allowExportSelectedData]="false"
       [formats]="['xlsx']"
     >
     </dxo-export>
+
     <dxo-toolbar>
       <dxi-item location="before">
         <div class="grid-header">Clinician Profession</div>
@@ -87,7 +91,7 @@
           hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
           onClick: toggleFilterRow,
           stylingMode: 'text',
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
       <dxi-item
@@ -100,7 +104,7 @@
           icon: 'refresh',
           onClick: refresh,
           stylingMode: 'text',
-          hint: 'Refresh'
+          hint: 'Refresh',
         }"
       ></dxi-item>
 
@@ -118,55 +122,40 @@
       <!-- <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item> -->
     </dxo-toolbar>
 
-    <!-- <dxo-selection mode="multiple"></dxo-selection> -->
-
     <dxi-column dataField="Profession" caption="Profession"> </dxi-column>
     <dxi-column dataField="Description" Caption="Description"></dxi-column>
   </dx-data-grid>
-  <!-- <form-popup
-    class="formPopupClass"
+
+  <dx-popup
     [(visible)]="isAddFormPopupOpened"
-    (save)="onClickSaveNewData()"
-    titleText="New Clinician profession"
-    height="auto"
+    title="New Clinician profession"
+    [width]="'40%'"
+    [height]="'auto'"
+    [showCloseButton]="true"
+    [dragEnabled]="true"
+    [closeOnOutsideClick]="false"
   >
-    <app-clinician-profession-new-form></app-clinician-profession-new-form>
-  </form-popup> -->
+    <div *dxTemplate="let data of 'content'">
+      <app-clinician-profession-new-form> </app-clinician-profession-new-form>
 
- <dx-popup
-  [(visible)]="isAddFormPopupOpened"
-  title="New Clinician profession"
-  [width]="'40%'"
-  [height]="'auto'"
-  [showCloseButton]="true"
-  [dragEnabled]="true"
-  [closeOnOutsideClick]="false"
->
+      <div class="text-end mt-4">
+        <dx-button
+          text="Cancel"
+          type="normal"
+          stylingMode="outlined"
+          (onClick)="isAddFormPopupOpened = false"
+        >
+        </dx-button>
 
-  <div *dxTemplate="let data of 'content'">
-
-    <app-clinician-profession-new-form>
-    </app-clinician-profession-new-form>
-
-    <div class="text-end mt-4">
-
-      <dx-button
-        text="Cancel"
-        type="normal"
-        stylingMode="outlined"
-        (onClick)="isAddFormPopupOpened = false"
-      >
-      </dx-button>
-
-      <dx-button
-        class="ms-2"
-        text="Save"
-        type="default"
-        stylingMode="contained"
-        (onClick)="onClickSaveNewData()"
-      >
-      </dx-button>
+        <dx-button
+          class="ms-2"
+          text="Save"
+          type="default"
+          stylingMode="contained"
+          (onClick)="onClickSaveNewData()"
+        >
+        </dx-button>
+      </div>
     </div>
-  </div>
-</dx-popup>
+  </dx-popup>
 </div>

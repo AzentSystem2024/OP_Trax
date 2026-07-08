@@ -26,7 +26,7 @@
               {{ rowData?.PatientID }}
             </div>
 
-             <div class="mb-3">
+            <div class="mb-3">
               <strong>Age (Year) :</strong>
               {{ rowData?.PatientAge }}
             </div>
@@ -62,8 +62,6 @@
               <strong>Encounter End Date :</strong>
               {{ rowData?.EncounterEndDate }}
             </div>
-
-           
 
             <div class="d-flex justify-content-end gap-2">
               <dx-button
@@ -186,6 +184,12 @@
         caption="ADOC Classification"
         dataField="ADOCClass"
         cellTemplate="adocClassTemplate"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="ExclusionAmount"
+        caption="Exclusion Amount(AED)"
+        format="#,##0.00"
       ></dxi-column>
 
       <dxi-column

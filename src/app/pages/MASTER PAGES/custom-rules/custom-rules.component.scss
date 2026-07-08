@@ -14,7 +14,6 @@
   bottom: 0;
   left: 0;
   right: 0;
-  flex-direction: row;
 
   .grid {
     height: 45%;
@@ -58,6 +57,36 @@
   height: 85vh;
 }
 
-.grid .dx-row {
+.dx-datagrid .dx-row {
   height: 10px;
+}
+
+::ng-deep .dx-datagrid-rowsview .dx-data-row td {
+  border-right: 1px solid var(--border-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+::ng-deep .dx-datagrid-headers .dx-header-row td {
+  border-right: 1px solid var(--border-color) !important;
+  background-color: var(--grid-header-bg) !important;
+  color: var(--grid-header-color) !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+}
+
+::ng-deep .dx-datagrid .dx-data-row td {
+  font-variant-numeric: tabular-nums;
+}
+
+::ng-deep .edit-button.dx-button.dx-button-default {
+  height: 36px !important;
+  border-radius: 100% !important;
+  background-color: #00808000 !important;
+  padding: 1px !important;
+  color: #ffffff !important;
+  border: 2px solid var(--border-color);
+
+  .dx-icon {
+    color: var(--toolbar-icon-color) !important;
+  }
 }

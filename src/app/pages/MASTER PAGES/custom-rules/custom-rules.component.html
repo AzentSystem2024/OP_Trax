@@ -1,0 +1,171 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    class="grid theme-dependent"
+    noDataText="No Custom Rules found"
+    height="82vh"
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    (onRowInserting)="onRowInserting($event)"
+    (onRowUpdating)="onRowUpdating($event)"
+    (onRowRemoving)="onRowRemoving($event)"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+
+    <!-- <dxo-editing
+      mode="popup"
+      [allowUpdating]="menuPrevilage?.CanEdit ?? true"
+      [allowDeleting]="menuPrevilage?.CanDelete ?? true"
+      [allowAdding]="menuPrevilage?.CanAdd ?? true"
+      [popup]="{
+        title: 'Custom Rule',
+        showTitle: true,
+        width: 700,
+        height: 'auto',
+      }"
+    >
+      <dxo-form>
+        <dxi-item itemType="group" [colCount]="2" [colSpan]="2">
+          <dxi-item dataField="Rule" [colSpan]="2"></dxi-item>
+          <dxi-item dataField="CPTCode" [colSpan]="2"></dxi-item>
+          <dxi-item dataField="Specialty"></dxi-item>
+          <dxi-item dataField="PrimaryDiagnosis"></dxi-item>
+          <dxi-item dataField="SecondaryDiagnosis"></dxi-item>
+          <dxi-item dataField="ActivityAmountCriteria"></dxi-item>
+          <dxi-item dataField="ActivityAmountValue"></dxi-item>
+          <dxi-item dataField="ADOCPricePercentage"></dxi-item>
+        </dxi-item>
+      </dxo-form>
+    </dxo-editing> -->
+
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      displayMode="full"
+      [showPageSizeSelector]="true"
+      [showInfo]="true"
+      [showNavigationButtons]="true"
+    >
+    </dxo-pager>
+
+    <dxo-load-panel [showPane]="false"></dxo-load-panel>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+    <dxo-header-filter [visible]="isFilterRowVisible">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+    <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-search-panel [visible]="true" placeholder="Search"></dxo-search-panel>
+
+    <dxo-export
+      [enabled]="true"
+      [allowExportSelectedData]="false"
+      [formats]="['xlsx']"
+    >
+    </dxo-export>
+
+    <dxo-toolbar>
+      <dxi-item location="before">
+        <div class="grid-header">Custom Rules Master</div>
+      </dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' },
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          icon: 'refresh',
+          hint: 'Refresh',
+          onClick: refresh,
+          stylingMode: 'text',
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        name="exportButton"
+        location="after"
+        cssClass="custom-export-button"
+        [disabled]="!isDataAvailable"
+      ></dxi-item>
+
+      <!-- <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="addButtonOptions"
+      ></dxi-item> -->
+    </dxo-toolbar>
+
+    <dxi-column
+      dataField="SlNo"
+      caption="Sl No."
+      [width]="70"
+      [allowEditing]="false"
+      alignment="center"
+    ></dxi-column>
+    <dxi-column
+      dataField="Rule"
+      caption="Rule"
+      cellTemplate="wrapTextTemplate"
+    ></dxi-column>
+    <dxi-column
+      dataField="CPTCode"
+      caption="CPT Code"
+      cellTemplate="wrapTextTemplate"
+    ></dxi-column>
+    <dxi-column dataField="Specialty" caption="Specialty"></dxi-column>
+    <dxi-column
+      dataField="PrimaryDiagnosis"
+      caption="Primary Diagnosis"
+    ></dxi-column>
+    <dxi-column
+      dataField="SecondaryDiagnosis"
+      caption="Secondary Diagnosis"
+    ></dxi-column>
+
+    <dxi-column
+      dataField="ActivityAmountCriteria"
+      [visible]="false"
+    ></dxi-column>
+    <dxi-column dataField="ActivityAmountValue" [visible]="false"></dxi-column>
+    <dxi-column
+      caption="Activity Amount"
+      alignment="center"
+      cellTemplate="activityAmountTemplate"
+    ></dxi-column>
+
+    <dxi-column
+      dataField="ADOCPricePercentage"
+      caption="ADOC Price %"
+    ></dxi-column>
+
+    <div
+      *dxTemplate="let data of 'wrapTextTemplate'"
+      style="white-space: normal; word-break: break-word"
+    >
+      {{ data.value }}
+    </div>
+
+    <div *dxTemplate="let data of 'activityAmountTemplate'">
+      {{ data.data.ActivityAmountCriteria }} {{ data.data.ActivityAmountValue }}
+    </div>
+  </dx-data-grid>
+</div>
