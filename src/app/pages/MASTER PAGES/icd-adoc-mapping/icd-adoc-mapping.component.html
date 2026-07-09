@@ -63,6 +63,19 @@
             message="ADOC Classification is required"
           ></dxi-validation-rule>
         </dxi-item>
+
+        <dxi-item 
+          dataField="EffectFrom" 
+          editorType="dxDateBox"
+          [editorOptions]="{
+            displayFormat: 'dd-MMM-yyyy'
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Effect From is required"
+          ></dxi-validation-rule>
+        </dxi-item>
       </dxo-form>
     </dxo-editing>
 
@@ -158,6 +171,7 @@
         displayExpr="DESCRIPTION"
       ></dxo-lookup>
     </dxi-column>
+    <dxi-column dataField="EffectFrom" caption="Effect From" dataType="date" format="dd-MMM-yyyy"></dxi-column>
   </dx-data-grid>
 
   <!-- ========= new form popup ========= -->
@@ -225,6 +239,22 @@
           <dxi-validation-rule
             type="required"
             message="ADOC Classification is required"
+          ></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item
+          dataField="EffectFrom"
+          editorType="dxDateBox"
+          [label]="{ visible: false }"
+          [editorOptions]="{
+            label: 'Effect From',
+            labelMode: 'floating',
+            displayFormat: 'dd-MMM-yyyy'
+          }"
+        >
+          <dxi-validation-rule
+            type="required"
+            message="Effect From is required"
           ></dxi-validation-rule>
         </dxi-item>
       </dx-form>

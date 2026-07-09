@@ -13,7 +13,8 @@ import {
   DxSelectBoxModule,
   DxTextBoxModule,
   DxValidationSummaryModule,
-  DxValidatorModule
+  DxValidatorModule,
+  DxDateBoxModule
 } from 'devextreme-angular';
 import notify from 'devextreme/ui/notify';
 import { DataService } from 'src/app/services';
@@ -68,6 +69,7 @@ export class IcdAdocMappingComponent {
     SpecialtyID: null,
     ICDCode: '',
     ADOCClassID: null,
+    EffectFrom: null as Date | null,
   };
 
   constructor(
@@ -143,9 +145,19 @@ export class IcdAdocMappingComponent {
       SpecialtyID: null,
       ICDCode: '',
       ADOCClassID: null,
+      EffectFrom: null,
     };
 
     this.addForm?.instance.reset();
+  }
+
+  private formatDate(date: any): string | null {
+    if (!date) return null;
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   // =========== Save data  =========
@@ -168,6 +180,7 @@ export class IcdAdocMappingComponent {
       SpecialtyID: this.newIcdAdocMapping.SpecialtyID,
       ICDCode: this.newIcdAdocMapping.ICDCode,
       ADOCClassID: this.newIcdAdocMapping.ADOCClassID,
+      EffectFrom: this.formatDate(this.newIcdAdocMapping.EffectFrom),
       UserID: sessionStorage.getItem('UserID'),
     };
 
@@ -192,6 +205,7 @@ export class IcdAdocMappingComponent {
             SpecialtyID: null,
             ICDCode: '',
             ADOCClassID: null,
+            EffectFrom: null,
           };
 
           this.dataGrid.instance.refresh();
@@ -218,7 +232,7 @@ export class IcdAdocMappingComponent {
       },
     });
   }
-0
+
   // =========== row data updating =========
   onRowUpdating(event: any) {
     const combinedData = {
@@ -229,7 +243,8 @@ export class IcdAdocMappingComponent {
     if (
       !combinedData.SpecialtyID ||
       !combinedData.ICDCode?.trim() ||
-      !combinedData.ADOCClassID
+      !combinedData.ADOCClassID ||
+      !combinedData.EffectFrom
     ) {
       notify(
         {
@@ -249,6 +264,7 @@ export class IcdAdocMappingComponent {
       SpecialtyID: combinedData.SpecialtyID,
       ICDCode: combinedData.ICDCode,
       ADOCClassID: combinedData.ADOCClassID,
+      EffectFrom: this.formatDate(combinedData.EffectFrom),
       UserID: sessionStorage.getItem('UserID'),
     };
 
@@ -367,6 +383,7 @@ export class IcdAdocMappingComponent {
     DxFormModule,
     DxValidatorModule,
     DxValidationSummaryModule,
+    DxDateBoxModule,
   ],
   declarations: [IcdAdocMappingComponent],
   exports: [IcdAdocMappingComponent],

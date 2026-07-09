@@ -58,7 +58,7 @@
           hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
           onClick: toggleFilterRow,
           stylingMode: 'text',
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
       <dxi-item
@@ -72,7 +72,6 @@
           stylingMode: 'text',
           hint: 'refresh',
           onClick: refresh,
-
         }"
       ></dxi-item>
 
@@ -96,17 +95,12 @@
     <dxi-column dataField="Mobile" caption="Mobile No."></dxi-column>
     <dxi-column dataField="Whatsapp" caption="Whatsapp No."></dxi-column>
     <dxi-column type="buttons">
-    <dxi-button
-      name="edit"
-      [visible]="menuPrevilage.CanEdit"
-    ></dxi-button>
+      <dxi-button name="edit" [visible]="menuPrevilage.CanEdit"></dxi-button>
 
-    <dxi-button
-      name="delete"
-      [visible]="canShowDelete"
-    ></dxi-button>
-  </dxi-column>
+      <dxi-button name="delete" [visible]="canShowDelete"></dxi-button>
+    </dxi-column>
   </dx-data-grid>
+
   <form-popup
     class="formPopupClass"
     [(visible)]="isAddFormPopupOpened"
@@ -118,6 +112,7 @@
   >
     <app-user-new-form></app-user-new-form>
   </form-popup>
+
   <dx-popup
     [(visible)]="isEditPopupOpened"
     title="Edit User"
