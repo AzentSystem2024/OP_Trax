@@ -1506,12 +1506,12 @@ export class MasterReportService {
   }
 
   Insert_CustomRules_Data(payload: any) {
-    const Url = `${this.BASE_URL}ADOCGroup/custom-rules-save`;
+    const Url = `${this.BASE_URL}ADOCGroup/custom-rules/save`;
     return this.http.post(Url, payload);
   }
 
   update_CustomRules_data(payload: any) {
-    const Url = `${this.BASE_URL}ADOCGroup/custom-rules-update`;
+    const Url = `${this.BASE_URL}ADOCGroup/custom-rules/update`;
     return this.http.post(Url, payload);
   }
 

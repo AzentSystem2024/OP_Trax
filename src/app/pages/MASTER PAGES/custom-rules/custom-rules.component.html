@@ -9,17 +9,15 @@
     [allowColumnReordering]="true"
     [rowAlternationEnabled]="true"
     rowAlternationInterval="2"
-    (onRowInserting)="onRowInserting($event)"
     (onRowUpdating)="onRowUpdating($event)"
     (onRowRemoving)="onRowRemoving($event)"
   >
     <dxo-paging [pageSize]="10"></dxo-paging>
 
-    <!-- <dxo-editing
+    <dxo-editing
       mode="popup"
       [allowUpdating]="menuPrevilage?.CanEdit ?? true"
-      [allowDeleting]="menuPrevilage?.CanDelete ?? true"
-      [allowAdding]="menuPrevilage?.CanAdd ?? true"
+      [allowDeleting]="false"
       [popup]="{
         title: 'Custom Rule',
         showTitle: true,
@@ -31,15 +29,38 @@
         <dxi-item itemType="group" [colCount]="2" [colSpan]="2">
           <dxi-item dataField="Rule" [colSpan]="2"></dxi-item>
           <dxi-item dataField="CPTCode" [colSpan]="2"></dxi-item>
-          <dxi-item dataField="Specialty"></dxi-item>
+          <dxi-item
+            dataField="Specialty"
+            editorType="dxSelectBox"
+            [editorOptions]="{
+              dataSource: specialityList,
+              valueExpr: 'DESCRIPTION',
+              displayExpr: 'DESCRIPTION',
+              searchEnabled: true,
+              acceptCustomValue: true,
+            }"
+          ></dxi-item>
           <dxi-item dataField="PrimaryDiagnosis"></dxi-item>
           <dxi-item dataField="SecondaryDiagnosis"></dxi-item>
-          <dxi-item dataField="ActivityAmountCriteria"></dxi-item>
+          <dxi-item
+            dataField="ActivityAmountCriteria"
+            editorType="dxSelectBox"
+            [editorOptions]="{
+              items: ['=', '!=', '>', '<', '>=', '<='],
+              searchEnabled: true,
+            }"
+          ></dxi-item>
           <dxi-item dataField="ActivityAmountValue"></dxi-item>
           <dxi-item dataField="ADOCPricePercentage"></dxi-item>
+          <dxi-item
+            dataField="IsInactive"
+            editorType="dxCheckBox"
+            [label]="{ visible: false }"
+            [editorOptions]="{ text: 'Inactive' }"
+          ></dxi-item>
         </dxi-item>
       </dxo-form>
-    </dxo-editing> -->
+    </dxo-editing>
 
     <dxo-pager
       [visible]="true"
@@ -107,11 +128,11 @@
         [disabled]="!isDataAvailable"
       ></dxi-item>
 
-      <!-- <dxi-item
+      <dxi-item
         location="after"
         widget="dxButton"
         [options]="addButtonOptions"
-      ></dxi-item> -->
+      ></dxi-item>
     </dxo-toolbar>
 
     <dxi-column
@@ -139,6 +160,7 @@
     <dxi-column
       dataField="SecondaryDiagnosis"
       caption="Secondary Diagnosis"
+      cellTemplate="wrapTextTemplate"
     ></dxi-column>
 
     <dxi-column
@@ -146,6 +168,7 @@
       [visible]="false"
     ></dxi-column>
     <dxi-column dataField="ActivityAmountValue" [visible]="false"></dxi-column>
+    <dxi-column dataField="IsInactive" [visible]="false"></dxi-column>
     <dxi-column
       caption="Activity Amount"
       alignment="center"
@@ -156,6 +179,27 @@
       dataField="ADOCPricePercentage"
       caption="ADOC Price %"
     ></dxi-column>
+
+    <dxi-column
+      dataField="Status"
+      caption="Status"
+      [cellTemplate]="'statusTemplate'"
+      alignment="center"
+      width="150"
+    >
+    </dxi-column>
+
+    <div *dxTemplate="let cell of 'statusTemplate'">
+      <span
+        [ngStyle]="{
+          color: cell.data.Status === 'Active' ? 'green' : 'red',
+        }"
+        [title]="cell.data.Status"
+        style="font-size: 20px; cursor: pointer"
+      >
+        ⚑
+      </span>
+    </div>
 
     <div
       *dxTemplate="let data of 'wrapTextTemplate'"
@@ -168,4 +212,63 @@
       {{ data.data.ActivityAmountCriteria }} {{ data.data.ActivityAmountValue }}
     </div>
   </dx-data-grid>
+
+  <!-- ========= new form popup ========= -->
+  <dx-popup
+    [(visible)]="isAddPopupVisible"
+    title="New Custom Rule"
+    [width]="700"
+    [height]="'auto'"
+    [showCloseButton]="true"
+    [hideOnOutsideClick]="false"
+  >
+    <div *dxTemplate="let data of 'content'">
+      <dx-form #addForm [formData]="newCustomRule" labelMode="floating">
+        <dxi-item itemType="group" [colCount]="2" [colSpan]="2">
+          <dxi-item dataField="Rule" [colSpan]="2"></dxi-item>
+          <dxi-item dataField="CPTCode" [colSpan]="2"></dxi-item>
+          <dxi-item
+            dataField="Specialty"
+            editorType="dxSelectBox"
+            [editorOptions]="{
+              dataSource: specialityList,
+              valueExpr: 'DESCRIPTION',
+              displayExpr: 'DESCRIPTION',
+              searchEnabled: true,
+              acceptCustomValue: true,
+            }"
+          ></dxi-item>
+          <dxi-item dataField="PrimaryDiagnosis"></dxi-item>
+          <dxi-item dataField="SecondaryDiagnosis"></dxi-item>
+          <dxi-item
+            dataField="ActivityAmountCriteria"
+            editorType="dxSelectBox"
+            [editorOptions]="{
+              items: ['=', '!=', '>', '<', '>=', '<='],
+              searchEnabled: true,
+            }"
+          ></dxi-item>
+          <dxi-item dataField="ActivityAmountValue"></dxi-item>
+          <dxi-item dataField="ADOCPricePercentage"></dxi-item>
+        </dxi-item>
+      </dx-form>
+
+      <div class="mt-5 text-end">
+        <dx-button
+          text="Cancel"
+          stylingMode="outlined"
+          type="normal"
+          (onClick)="isAddPopupVisible = false"
+        ></dx-button>
+
+        <dx-button
+          class="ms-2"
+          text="Save"
+          stylingMode="contained"
+          type="default"
+          (onClick)="saveNewRule()"
+        ></dx-button>
+      </div>
+    </div>
+  </dx-popup>
 </div>
