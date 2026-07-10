@@ -59,6 +59,7 @@ import { DownloadFromFacilityComponent } from './pages/OPERATION PAGES/download-
 import { IcdAdocMappingComponent } from './pages/MASTER PAGES/icd-adoc-mapping/icd-adoc-mapping.component';
 import { IcdMasterComponent } from './pages/MASTER PAGES/icd-master/icd-master.component';
 import { CustomRulesComponent } from './pages/MASTER PAGES/custom-rules/custom-rules.component';
+import { ExclusionInclusionComponent } from './pages/MASTER PAGES/exclusion-inclusion/exclusion-inclusion.component';
 
 const routes: Routes = [
   {
@@ -301,6 +302,11 @@ const routes: Routes = [
       {
         path: 'custom-rules',
         component: CustomRulesComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'exclusion-inclusion',
+        component: ExclusionInclusionComponent,
         canActivate: [AuthGuardService],
       },
       {

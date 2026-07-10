@@ -1521,4 +1521,28 @@ export class MasterReportService {
       {},
     );
   }
+
+  // ===== Exclusion / Inclusion Rules =====
+  get_ExclusionInclusion_List() {
+    const Url = `${this.BASE_URL}ExclusionInclusion/list`;
+    const reqBody = {};
+    return this.http.post(Url, reqBody);
+  }
+
+  Insert_ExclusionInclusion_Data(payload: any) {
+    const Url = `${this.BASE_URL}ExclusionInclusion/save`;
+    return this.http.post(Url, payload);
+  }
+
+  update_ExclusionInclusion_data(payload: any) {
+    const Url = `${this.BASE_URL}ExclusionInclusion/update`;
+    return this.http.post(Url, payload);
+  }
+
+  Remove_ExclusionInclusion_Row_Data(id: any) {
+    return this.http.post(
+      `${this.BASE_URL}ExclusionInclusion/delete/${id}`,
+      {},
+    );
+  }
 }
