@@ -151,7 +151,7 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   closeChangePassword() {
-    this.route.navigateByUrl('/analytics-dashboard');
+    this.route.navigateByUrl('/Home');
   }
 
   validateField(fieldName: string): boolean {
@@ -208,6 +208,7 @@ export class ChangePasswordComponent implements OnInit {
       console.log('user security policy data', this.securityPolicyData);
     });
   }
+  
   onPasswordInput(event: Event): void {
     const target = event.target as HTMLInputElement;
 
