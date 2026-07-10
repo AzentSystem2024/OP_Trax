@@ -54,6 +54,7 @@ export class ExclusionInclusionComponent {
   cptCodeList: any[] = [];
   specialityList: any[] = [];
   clinicianList: any[] = [];
+  clinicianDataSource: any;
   icdCodeList: any[] = [];
   adocClassList: any[] = [];
   adocRuleList: any[] = [];
@@ -101,6 +102,15 @@ export class ExclusionInclusionComponent {
     });
     this.masterService.get_Clinian_Table_Data().subscribe((res: any) => {
       this.clinicianList = res.data || res || [];
+      this.clinicianDataSource = new DataSource({
+        store: {
+          type: 'array',
+          data: this.clinicianList,
+          key: 'ID'
+        },
+        paginate: true,
+        pageSize: 50
+      });
     });
 
     this.dataService.Get_GropDown('ADOC_APPLICATION').subscribe((res: any) => {
