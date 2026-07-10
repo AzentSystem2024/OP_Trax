@@ -52,10 +52,6 @@
             }"
           >
             <dxo-label text="Clinician"></dxo-label>
-            <dxi-validation-rule
-              type="required"
-              message="Clinician is required"
-            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="SpecialtyID"
@@ -82,10 +78,6 @@
             [editorOptions]="{ placeholder: 'Enter ICD Code' }"
           >
             <dxo-label text="ICD Code"></dxo-label>
-            <dxi-validation-rule
-              type="required"
-              message="ICD Code is required"
-            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="ADOCStatusID"
@@ -98,10 +90,6 @@
             }"
           >
             <dxo-label text="ADOC Rule"></dxo-label>
-            <dxi-validation-rule
-              type="required"
-              message="ADOC Rule is required"
-            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="ADOCClassID"
@@ -115,6 +103,12 @@
             }"
           >
             <dxo-label text="ADOC Class"></dxo-label>
+            <dxi-validation-rule
+              type="custom"
+              [reevaluate]="true"
+              message="ADOC Class is required"
+              [validationCallback]="validateAdocClass"
+            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="EffectFrom"
@@ -289,10 +283,6 @@
             }"
           >
             <dxo-label text="Clinician"></dxo-label>
-            <dxi-validation-rule
-              type="required"
-              message="Clinician is required"
-            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="SpecialtyID"
@@ -319,10 +309,6 @@
             [editorOptions]="{ placeholder: 'Enter ICD Code' }"
           >
             <dxo-label text="ICD Code"></dxo-label>
-            <dxi-validation-rule
-              type="required"
-              message="ICD Code is required"
-            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="ADOCStatusID"
@@ -336,10 +322,6 @@
             }"
           >
             <dxo-label text="ADOC Rule"></dxo-label>
-            <dxi-validation-rule
-              type="required"
-              message="ADOC Rule is required"
-            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="ADOCClassID"
@@ -353,6 +335,12 @@
             }"
           >
             <dxo-label text="ADOC Class"></dxo-label>
+            <dxi-validation-rule
+              type="custom"
+              [reevaluate]="true"
+              message="ADOC Class is required"
+              [validationCallback]="validateAdocClass"
+            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="EffectFrom"

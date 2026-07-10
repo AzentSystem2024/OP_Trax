@@ -81,6 +81,9 @@ export class ExclusionInclusionComponent {
             const dataWithSerialNo = (response.datas || []).map(
               (item: any, index: number) => ({
                 ...item,
+                ClinicianID: item.ClinicianID === 0 ? null : item.ClinicianID,
+                SpecialtyID: item.SpecialtyID === 0 ? null : item.SpecialtyID,
+                ADOCClassID: item.ADOCClassID === 0 ? null : item.ADOCClassID,
                 SlNo: index + 1,
               }),
             );
@@ -106,10 +109,10 @@ export class ExclusionInclusionComponent {
         store: {
           type: 'array',
           data: this.clinicianList,
-          key: 'ID'
+          key: 'ID',
         },
         paginate: true,
-        pageSize: 50
+        pageSize: 50,
       });
     });
 
@@ -159,6 +162,13 @@ export class ExclusionInclusionComponent {
     this.isAddPopupVisible = true;
   }
 
+  validateAdocClass = (e: any) => {
+    if (this.isAdocClassReadOnly) {
+      return true;
+    }
+    return e.value !== null && e.value !== undefined && e.value !== '';
+  };
+
   onClinicianChangedInPopup = (e: any) => {
     if (e.value) {
       this.isSpecialtyReadOnly = true;
@@ -200,12 +210,12 @@ export class ExclusionInclusionComponent {
 
     const payload = {
       CPTCode: this.newRule.CPTCode || '',
-      ClinicianID: this.newRule.ClinicianID || '',
-      SpecialtyID: this.newRule.SpecialtyID || '',
+      ClinicianID: this.newRule.ClinicianID || 0,
+      SpecialtyID: this.newRule.SpecialtyID || 0,
       ICDCode: this.newRule.ICDCode || '',
-      ADOCStatusID: this.newRule.ADOCStatusID || '',
+      ADOCStatusID: this.newRule.ADOCStatusID || 0,
       UserID: sessionStorage.getItem('UserID'),
-      ADOCClassID: this.newRule.ADOCClassID || '',
+      ADOCClassID: this.newRule.ADOCClassID || 0,
       EffectFrom: formattedDate,
     };
 
@@ -321,14 +331,14 @@ export class ExclusionInclusionComponent {
     }
 
     const payload = {
-      ID: combinedData.ID || '',
+      ID: combinedData.ID || null,
       CPTCode: combinedData.CPTCode || '',
-      ClinicianID: combinedData.ClinicianID || '',
-      SpecialtyID: combinedData.SpecialtyID || '',
+      ClinicianID: combinedData.ClinicianID || 0,
+      SpecialtyID: combinedData.SpecialtyID || 0,
       ICDCode: combinedData.ICDCode || '',
-      ADOCStatusID: combinedData.ADOCStatusID || '',
+      ADOCStatusID: combinedData.ADOCStatusID || 0,
       UserID: sessionStorage.getItem('UserID'),
-      ADOCClassID: combinedData.ADOCClassID || '',
+      ADOCClassID: combinedData.ADOCClassID || 0,
       EffectFrom: formattedDate,
     };
 
