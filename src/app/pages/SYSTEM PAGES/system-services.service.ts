@@ -95,6 +95,11 @@ export class SystemServicesService {
     return this.http.post(url, data);
   }
 
+  importLicense(payload: any) {
+    const url = `${this.BASE_URL}facility/licenseImport`;
+    return this.http.post(url, payload);
+  }
+
   //=============================Security Notification ===================================================
   //==============lising data===========
   getSecurityNotificationData() {

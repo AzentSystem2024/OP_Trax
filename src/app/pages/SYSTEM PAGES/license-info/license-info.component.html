@@ -1,6 +1,3 @@
-<!-- <div class="view-wrapper titleDiv m-3">
-  <h4>License Info</h4>
-</div> -->
 <div class="view-wrapper list-page">
   <dx-data-grid
     class="grid theme-dependent"
@@ -29,18 +26,22 @@
     <dxo-load-panel [showPane]="false"></dxo-load-panel>
     <dxo-scrolling mode="virtual"></dxo-scrolling>
     <dxo-sorting mode="multiple"></dxo-sorting>
-    <dxo-header-filter [visible]="true"></dxo-header-filter>
+
     <dxo-filter-row
       *ngIf="isRowSearchVisible"
       [visible]="true"
     ></dxo-filter-row>
 
-    <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
+    <dxo-header-filter [visible]="true">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+
     <dxo-export [enabled]="true" [formats]="['xlsx']"> </dxo-export>
     <dxo-toolbar>
       <dxi-item location="before">
         <div class="grid-header">License Info</div>
       </dxi-item>
+      
       <dxi-item location="before">
         <div>
           <dx-text-box
@@ -77,9 +78,10 @@
           icon: 'search',
           hint: 'Show/hide search row',
           stylingMode: 'text',
-          onClick: showSearch
+          onClick: showSearch,
         }"
       ></dxi-item>
+
       <dxi-item
         location="after"
         locateInMenu="auto"
@@ -89,16 +91,30 @@
           text: 'Refresh',
           icon: 'refresh',
           onClick: refresh,
-          stylingMode: 'text'
+          stylingMode: 'text',
+        }"
+      ></dxi-item>
+      <dxi-item *ngIf="importButtonVisibility"
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Import',
+          icon: 'import',
+          onClick: onImportClick,
+          stylingMode: 'text',
         }"
       ></dxi-item>
 
       <dxi-item name="exportButton"></dxi-item>
     </dxo-toolbar>
-
-    <!-- <dxo-selection mode="multiple"></dxo-selection> -->
-    <dxo-header-filter [visible]="true">
-      <dxo-search [enabled]="true"></dxo-search>
-    </dxo-header-filter>
   </dx-data-grid>
+  <input
+    type="file"
+    #fileInput
+    (change)="onFileSelected($event)"
+    accept=".licx"
+    style="display: none"
+  />
 </div>

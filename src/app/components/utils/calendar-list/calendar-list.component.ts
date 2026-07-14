@@ -17,7 +17,7 @@ export class CalendarListComponent implements OnInit {
 
   @Output() listSelectionChanged = new EventEmitter<any>();
 
-  selectedItems = [];
+  selectedItems:any = [];
 
   constructor() {}
 

@@ -26,7 +26,7 @@ import jsPDF from 'jspdf';
 })
 export class AnalyticsDashboardComponent {
   @ViewChild('topCPTGrid') topCPTGrid!: DxDataGridComponent;
-  
+
   @ViewChild('topClinicianGrid') topClinicianGrid!: DxDataGridComponent;
   numberFormat = { type: 'thousands' };
 
@@ -89,6 +89,7 @@ export class AnalyticsDashboardComponent {
   }
 
   getUserFacilityData() {
+    this.loadingVisible = true;
     this.masterService
       .Get_User_Facility_List_Data(this.userID)
       .subscribe((res: any) => {

@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
 import {
   DxDataGridModule,
   DxButtonModule,
@@ -18,8 +12,8 @@ import {
 import { ReportService } from 'src/app/services/Report-data.service';
 import { SystemServicesService } from '../system-services.service';
 import DataSource from 'devextreme/data/data_source';
-import { Router } from '@angular/router';
 import { DataService } from 'src/app/services';
+import notify from 'devextreme/ui/notify';
 
 @Component({
   selector: 'app-license-info',
@@ -30,9 +24,10 @@ import { DataService } from 'src/app/services';
 export class LicenseInfoComponent implements OnInit {
   @ViewChild(DxDataGridComponent, { static: true })
   dataGrid: DxDataGridComponent;
+  @ViewChild('fileInput', { static: false }) fileInput: any;
 
   //========Variables for Pagination ====================
-  readonly allowedPageSizes: any = [5, 10, 'all'];
+  readonly allowedPageSizes: any = [25, 50, 'all'];
   displayMode: any = 'full';
   showPageSizeSelector = true;
   showInfo = true;
@@ -57,7 +52,7 @@ export class LicenseInfoComponent implements OnInit {
               item.serialNumber = index + 1;
 
               item.Expiry_Date = this.dataService.formatDateTime(
-                item.Expiry_Date
+                item.Expiry_Date,
               );
             });
 
@@ -66,22 +61,35 @@ export class LicenseInfoComponent implements OnInit {
             resolve(response.data); // Resolve with the modified data
           },
           error: (error) => {
-          this.isManualRefresh = false;
-          reject(error.message);
-        }, // Reject with the error message
+            this.isManualRefresh = false;
+            reject(error.message);
+          }, // Reject with the error message
         });
       }),
   });
   currentPathName: any;
   initialized: boolean;
   isRowSearchVisible: boolean = false;
+  importButtonVisibility: any;
 
   constructor(
     private service: ReportService,
     private systemService: SystemServicesService,
-    private router: Router,
-    private dataService: DataService
-  ) {}
+    private dataService: DataService,
+  ) {
+    this.importButtonVisibility = false;
+    const sessionData = localStorage.getItem('logData');
+    if (sessionData) {
+      try {
+        const parsedData = JSON.parse(sessionData);
+        this.importButtonVisibility =
+          parsedData?.OfflineLicenseRenewal === true ||
+          parsedData?.OfflineLicenseRenewal === 'true';
+      } catch (e) {
+        console.error('Error parsing logdata from localStorage', e);
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.update_Columns();
@@ -151,6 +159,48 @@ export class LicenseInfoComponent implements OnInit {
   showSearch = () => {
     this.isRowSearchVisible = !this.isRowSearchVisible;
   };
+
+  onImportClick = () => {
+    if (this.fileInput) {
+      this.fileInput.nativeElement.click();
+    }
+  };
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const encryptedText = e.target.result;
+
+        const payload = {
+          LicenseInfo: encryptedText,
+        };
+
+        console.log('File selected:', file.name);
+        console.log('Payload created for API:', payload);
+
+        this.systemService.importLicense(payload).subscribe({
+          next: (res: any) => {
+            if (res.flag === 1 || res.flag === '1') {
+              notify(res.message || 'License imported successfully', 'success');
+              this.refresh();
+            } else {
+              notify(res.message || 'Failed to import license', 'error');
+            }
+          },
+          error: (err: any) => {
+            notify('Error importing license', 'error');
+            console.error('Error importing license', err);
+          },
+        });
+      };
+      reader.readAsText(file);
+
+      // Reset the file input so the same file can be imported again if needed
+      event.target.value = null;
+    }
+  }
 }
 @NgModule({
   imports: [
