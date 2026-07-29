@@ -502,9 +502,19 @@
         [dataSource]="newBatchDataSource"
         class="grid new-batch-grid theme-dependent mt-2 flex-grow-1"
         [showBorders]="true"
+        [showColumnLines]="true"
+        [showRowLines]="true"
         [allowColumnResizing]="true"
+        [allowColumnReordering]="true"
+        [rowAlternationEnabled]="true"
         [columnAutoWidth]="true"
+        rowAlternationInterval="2"
+        [columnFixing]="{
+          enabled: true,
+          texts: { fix: 'Freeze', unfix: 'Unfreeze' },
+        }"
         [height]="isNewContentVisible ? '70vh' : '82vh'"
+        (onCellPrepared)="onCellPrepared($event)"
       >
         <dxo-selection
           mode="multiple"
@@ -565,14 +575,13 @@
 
         <dxo-toolbar>
           <dxi-item location="before">
-            <div class="grid-header ms-2">
-              <b><u>Pending Upload Data</u></b>
-            </div>
+            <div class="grid-header">Pending Upload Data</div>
           </dxi-item>
           <dxi-item location="after">
             <dx-button
               text="Create Batch"
               type="default"
+              class="add-button"
               stylingMode="contained"
               icon="plus"
               [disabled]="newBatchDataSource.length === 0"
@@ -589,6 +598,92 @@
         [showPane]="true"
         [shading]="true"
         [message]="isMultiProcessing ? 'Processing...' : 'Loading...'"
+      ></dx-load-panel>
+    </div>
+  </dx-popup>
+
+  <!-- Batch Claims Data Popup -->
+  <dx-popup
+    [width]="'95%'"
+    [height]="'95%'"
+    [showTitle]="true"
+    [title]="'Batch Claim Details - ' + selectedBatchNo"
+    [dragEnabled]="false"
+    [hideOnOutsideClick]="false"
+    [showCloseButton]="true"
+    [(visible)]="isBatchClaimPopupVisible"
+  >
+    <div *dxTemplate="let data of 'content'" class="d-flex flex-column h-100">
+      <dx-data-grid
+        [dataSource]="batchClaimDataSource"
+        class="grid theme-dependent mt-2 flex-grow-1"
+        [showBorders]="true"
+        [showColumnLines]="true"
+        [showRowLines]="true"
+        [allowColumnResizing]="true"
+        [allowColumnReordering]="true"
+        [rowAlternationEnabled]="true"
+        [columnAutoWidth]="true"
+        rowAlternationInterval="2"
+        [columnFixing]="{
+          enabled: true,
+          texts: { fix: 'Freeze', unfix: 'Unfreeze' },
+        }"
+        [height]="'80vh'"
+        (onCellPrepared)="onCellPrepared($event)"
+      >
+        <dxo-scrolling mode="virtual"></dxo-scrolling>
+        <dxo-paging [pageSize]="10"></dxo-paging>
+        <dxo-pager
+          [visible]="true"
+          [allowedPageSizes]="allowedPageSizes"
+          [displayMode]="displayMode"
+          [showPageSizeSelector]="showPageSizeSelector"
+          [showInfo]="showInfo"
+          [showNavigationButtons]="showNavButtons"
+        >
+        </dxo-pager>
+
+        <dxi-column dataField="ClaimUID" caption="Claim UID" [visible]="false"></dxi-column>
+        <dxi-column dataField="FacilityID" caption="Facility ID"></dxi-column>
+        <dxi-column dataField="FacilityRegion" caption="Facility Region"></dxi-column>
+        <dxi-column dataField="ClaimNumber" caption="Claim Number"></dxi-column>
+        <dxi-column dataField="TransactionDate" caption="Transaction Date"></dxi-column>
+        <dxi-column dataField="EncounterStartDate" caption="Encounter Start Date"></dxi-column>
+        <dxi-column dataField="EncounterEndDate" caption="Encounter End Date"></dxi-column>
+        <dxi-column dataField="ReceiverID" caption="Receiver ID"></dxi-column>
+        <dxi-column dataField="PatientAge" caption="Patient Age"></dxi-column>
+        <dxi-column dataField="PatientID" caption="Patient ID"></dxi-column>
+        <dxi-column dataField="PatientName" caption="Patient Name"></dxi-column>
+        <dxi-column dataField="EncounterType" caption="Encounter Type"></dxi-column>
+        <dxi-column dataField="Specialty" caption="Specialty"></dxi-column>
+        <dxi-column dataField="Diagnosis" caption="Diagnosis"></dxi-column>
+        <dxi-column dataField="Status" caption="Status"></dxi-column>
+
+        <dxo-toolbar>
+          <dxi-item location="before">
+            <div class="grid-header">Batch Claim Data</div>
+          </dxi-item>
+          <dxi-item location="after">
+            <dx-button
+              text="Show XML"
+              type="default"
+              class="add-button"
+              stylingMode="contained"
+              icon="code"
+              (onClick)="onShowXmlClick()"
+            ></dx-button>
+          </dxi-item>
+        </dxo-toolbar>
+      </dx-data-grid>
+
+      <dx-load-panel
+        [position]="{ of: '.grid' }"
+        [visible]="isBatchClaimLoading"
+        [showIndicator]="true"
+        [showPane]="true"
+        [shading]="true"
+        [message]="'Loading...'"
       ></dx-load-panel>
     </div>
   </dx-popup>

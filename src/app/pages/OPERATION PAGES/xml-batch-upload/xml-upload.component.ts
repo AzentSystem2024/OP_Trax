@@ -118,7 +118,13 @@ export class XmlUploadComponent implements OnInit {
   isXmlPopupVisible: boolean = false;
   xmlContent: string = '';
   selectedBatchNo: string = '';
-islookUpMultiProcessing: boolean;
+  islookUpMultiProcessing: boolean = false;
+
+  // State variables for Batch Claim Popup
+  isBatchClaimPopupVisible: boolean = false;
+  batchClaimDataSource: any[] = [];
+  isBatchClaimLoading: boolean = false;
+  selectedBatchID: any = null;
 
   constructor(
     private service: ReportService,
@@ -551,9 +557,38 @@ islookUpMultiProcessing: boolean;
   }
 
   onDetailClick = (e: any) => {
-    const payload = { ID: e.row.data.ID };
+    this.selectedBatchID = e.row.data.ID;
     this.selectedBatchNo = e.row.data.BatchNo || 'Batch';
+    this.isBatchClaimPopupVisible = true;
+    this.isBatchClaimLoading = true;
 
+    const payload = { ID: this.selectedBatchID };
+
+    this.operationService.get_XML_Batch_Claim_Data(payload).subscribe({
+      next: (res: any) => {
+        this.isBatchClaimLoading = false;
+        this.batchClaimDataSource = res?.flag === '1' || res?.flag === 1 ? (res.data ?? []) : [];
+        if (this.batchClaimDataSource.length === 0) {
+          this.notificationService.showNotification(
+            'No claim data found for this batch.',
+            'warning',
+          );
+        }
+      },
+      error: (err: any) => {
+        this.isBatchClaimLoading = false;
+        this.notificationService.showNotification(
+          'Error loading claim data',
+          'error',
+        );
+      },
+    });
+  };
+
+  onShowXmlClick = () => {
+    if (!this.selectedBatchID) return;
+
+    const payload = { ID: this.selectedBatchID };
     this.inactivityService.setApiInProgress(true);
     this.operationService.get_batch_xml(payload).subscribe({
       next: (res: any) => {

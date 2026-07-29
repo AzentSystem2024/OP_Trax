@@ -307,4 +307,9 @@ export class OperationReportService {
     const url = `${this.BASE_URL}XMLBatch/batchxml`;
     return this.http.post<any>(url, payload);
   }
+
+  get_XML_Batch_Claim_Data(payload: any) {
+    const url = `${this.BASE_URL}XMLBatch/batchdetails`;
+    return this.http.post<any>(url, payload);
+  }
 }
