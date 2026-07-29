@@ -302,12 +302,14 @@
       [allowEditing]="false"
     ></dxi-column>
 
-    <dxi-column type="buttons" caption="Detail" [width]="80">
+    <dxi-column type="buttons" caption="" [width]="100">
+      <dxi-button hint="View Claims" icon="info" [onClick]="onDetailClick">
+      </dxi-button>
       <dxi-button
-        hint="Detail"
-        icon="info"
-        text="Detail"
-        [onClick]="onDetailClick"
+        hint="View XML"
+        icon="bi bi-filetype-xml"
+        [onClick]="onMainGridShowXmlClick"
+        cssClass="ms-2"
       >
       </dxi-button>
     </dxi-column>
@@ -612,6 +614,7 @@
     [hideOnOutsideClick]="false"
     [showCloseButton]="true"
     [(visible)]="isBatchClaimPopupVisible"
+    (onHidden)="onBatchClaimPopupHidden()"
   >
     <div *dxTemplate="let data of 'content'" class="d-flex flex-column h-100">
       <dx-data-grid
@@ -644,18 +647,37 @@
         >
         </dxo-pager>
 
-        <dxi-column dataField="ClaimUID" caption="Claim UID" [visible]="false"></dxi-column>
+        <dxi-column
+          dataField="ClaimUID"
+          caption="Claim UID"
+          [visible]="false"
+        ></dxi-column>
         <dxi-column dataField="FacilityID" caption="Facility ID"></dxi-column>
-        <dxi-column dataField="FacilityRegion" caption="Facility Region"></dxi-column>
+        <dxi-column
+          dataField="FacilityRegion"
+          caption="Facility Region"
+        ></dxi-column>
         <dxi-column dataField="ClaimNumber" caption="Claim Number"></dxi-column>
-        <dxi-column dataField="TransactionDate" caption="Transaction Date"></dxi-column>
-        <dxi-column dataField="EncounterStartDate" caption="Encounter Start Date"></dxi-column>
-        <dxi-column dataField="EncounterEndDate" caption="Encounter End Date"></dxi-column>
+        <dxi-column
+          dataField="TransactionDate"
+          caption="Transaction Date"
+        ></dxi-column>
+        <dxi-column
+          dataField="EncounterStartDate"
+          caption="Encounter Start Date"
+        ></dxi-column>
+        <dxi-column
+          dataField="EncounterEndDate"
+          caption="Encounter End Date"
+        ></dxi-column>
         <dxi-column dataField="ReceiverID" caption="Receiver ID"></dxi-column>
         <dxi-column dataField="PatientAge" caption="Patient Age"></dxi-column>
         <dxi-column dataField="PatientID" caption="Patient ID"></dxi-column>
         <dxi-column dataField="PatientName" caption="Patient Name"></dxi-column>
-        <dxi-column dataField="EncounterType" caption="Encounter Type"></dxi-column>
+        <dxi-column
+          dataField="EncounterType"
+          caption="Encounter Type"
+        ></dxi-column>
         <dxi-column dataField="Specialty" caption="Specialty"></dxi-column>
         <dxi-column dataField="Diagnosis" caption="Diagnosis"></dxi-column>
         <dxi-column dataField="Status" caption="Status"></dxi-column>
@@ -663,16 +685,6 @@
         <dxo-toolbar>
           <dxi-item location="before">
             <div class="grid-header">Batch Claim Data</div>
-          </dxi-item>
-          <dxi-item location="after">
-            <dx-button
-              text="Show XML"
-              type="default"
-              class="add-button"
-              stylingMode="contained"
-              icon="code"
-              (onClick)="onShowXmlClick()"
-            ></dx-button>
           </dxi-item>
         </dxo-toolbar>
       </dx-data-grid>

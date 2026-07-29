@@ -585,10 +585,14 @@ export class XmlUploadComponent implements OnInit {
     });
   };
 
-  onShowXmlClick = () => {
-    if (!this.selectedBatchID) return;
+  onBatchClaimPopupHidden = () => {
+    this.batchClaimDataSource = [];
+  };
 
-    const payload = { ID: this.selectedBatchID };
+  onMainGridShowXmlClick = (e: any) => {
+    const payload = { ID: e.row.data.ID };
+    this.selectedBatchNo = e.row.data.BatchNo || 'Batch';
+
     this.inactivityService.setApiInProgress(true);
     this.operationService.get_batch_xml(payload).subscribe({
       next: (res: any) => {
