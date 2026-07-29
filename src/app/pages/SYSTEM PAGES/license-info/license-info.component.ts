@@ -145,11 +145,13 @@ export class LicenseInfoComponent implements OnInit {
       },
     ];
   }
+
   //========================Export data ==========================
   onExporting(event: any) {
     const fileName = 'licence-info';
     this.service.exportDataGrid(event, fileName);
   }
+  
   //=================== Page refreshing===========================
   refresh = () => {
     this.isManualRefresh = true;

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from 'src/app/services/config.service';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -278,5 +279,32 @@ export class OperationReportService {
     const url = `${this.BASE_URL}ClinicalData/getpricedetail`;
     const reqBody = inputdata;
     return this.http.post(url, reqBody);
+  }
+
+  // =================== DMO API Services =====================
+  get_XML_Batch_List_Data(payload: any) {
+    const url = `${this.BASE_URL}XMLBatch/list`;
+    return this.http.post<any>(url, payload);
+  }
+
+  upload_XML_Batch_Data(payload: any) {
+    const url = `${this.BASE_URL}XMLBatch/UploadXml`;
+    return this.http.post<any>(url, payload);
+  }
+
+  // Dummy API for pending upload data
+  get_pending_upload_data(payload: any) {
+    const url = `${this.BASE_URL}XMLBatch/pendinglist`;
+    return this.http.post<any>(url, payload);
+  }
+
+  create_XML_Batch(payload: any) {
+    const url = `${this.BASE_URL}XMLBatch/createbatch`;
+    return this.http.post<any>(url, payload);
+  }
+
+  get_batch_xml(payload: any) {
+    const url = `${this.BASE_URL}XMLBatch/batchxml`;
+    return this.http.post<any>(url, payload);
   }
 }

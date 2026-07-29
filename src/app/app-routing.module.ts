@@ -60,6 +60,7 @@ import { IcdAdocMappingComponent } from './pages/MASTER PAGES/icd-adoc-mapping/i
 import { IcdMasterComponent } from './pages/MASTER PAGES/icd-master/icd-master.component';
 import { CustomRulesComponent } from './pages/MASTER PAGES/custom-rules/custom-rules.component';
 import { ExclusionInclusionComponent } from './pages/MASTER PAGES/exclusion-inclusion/exclusion-inclusion.component';
+import { XmlUploadComponent } from './pages/OPERATION PAGES/xml-batch-upload/xml-upload.component';
 
 const routes: Routes = [
   {
@@ -342,6 +343,11 @@ const routes: Routes = [
       {
         path: 'download-from-facility',
         component: DownloadFromFacilityComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'xml-batch',
+        component: XmlUploadComponent,
         canActivate: [AuthGuardService],
       },
       {

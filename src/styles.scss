@@ -15,7 +15,8 @@ body {
 }
 
 /* Allow text selection in inputs and textareas */
-input, textarea {
+input,
+textarea {
   -webkit-user-select: auto;
   -moz-user-select: auto;
   -ms-user-select: auto;
@@ -1228,14 +1229,14 @@ input, textarea {
 .dx-button.dx-button-default {
   border-radius: 8px !important;
   background-color: teal !important;
-  padding: 8px 32px !important;
+  padding: 8px 5px !important;
   color: #fff !important; /* text color */
 }
 
 .dx-button.dx-button-default:hover {
   border-radius: 8px !important;
   background-color: teal !important;
-  padding: 8px 32px !important;
+  padding: 8px 5px !important;
   color: #fff !important; /* text color */
 }
 
