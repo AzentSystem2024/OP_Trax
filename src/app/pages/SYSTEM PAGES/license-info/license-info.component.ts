@@ -130,6 +130,7 @@ export class LicenseInfoComponent implements OnInit {
         caption: 'Status',
         dataField: 'status',
         allowEditing: false,
+        alignment: 'center',
         cellTemplate: (container: any, options: any) => {
           const icon = document.createElement('i');
           icon.className =

@@ -4,14 +4,17 @@ import { Router } from '@angular/router';
 import { DxDataGridComponent } from 'devextreme-angular';
 import { ConfigService } from 'src/app/services/config.service';
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class ReportEngineService {
   private sharedData: any[] = [];
 
-  constructor(private http: HttpClient, private router: Router,private config: ConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private config: ConfigService,
+  ) {}
 
   private get BASE_URL(): string {
     return this.config.apiBaseUrl;
@@ -27,7 +30,7 @@ export class ReportEngineService {
   save_Memorise_report(
     reportName: any,
     memoriseColumnData: any,
-    filterParameters: any
+    filterParameters: any,
   ) {
     const userid = sessionStorage.getItem('UserID');
     const currentPathName = this.router.url.replace('/', '');
@@ -45,20 +48,41 @@ export class ReportEngineService {
   makeColumnVisible(dataGrid: DxDataGridComponent, columnName: string) {
     const columns = dataGrid.instance.getVisibleColumns();
     const columnIndex = columns.findIndex(
-      (column) => column.caption === columnName
+      (column) => column.caption === columnName,
     );
     if (columnIndex !== -1) {
-      const columnWidth = 150;
+      let scrollLeftOffset = 0;
+
+      // Calculate the total width of all preceding visible columns
+      for (let i = 0; i < columnIndex; i++) {
+        // Fallback to 150 if undefined
+        const colWidth =
+          (columns[i] as any).visibleWidth ||
+          (typeof columns[i].width === 'number' ? columns[i].width : 150);
+        scrollLeftOffset += Number(colWidth);
+      }
+
       const gridElement = dataGrid.instance.element();
-      const visibleWidth = gridElement.clientWidth + 400;
-      const scrollLeft = columnIndex * columnWidth - visibleWidth / 2;
+      const visibleWidth = gridElement.clientWidth;
+
+      const targetColumnWidth =
+        (columns[columnIndex] as any).visibleWidth ||
+        (typeof columns[columnIndex].width === 'number'
+          ? columns[columnIndex].width
+          : 150);
+
+      // Calculate scrollLeft to center the column in the view
+      let scrollLeft =
+        scrollLeftOffset - visibleWidth / 2 + Number(targetColumnWidth) / 2;
+      scrollLeft = Math.max(0, scrollLeft); // Prevent negative scroll values
+
       // Scroll to the calculated position
       dataGrid.instance.getScrollable().scrollTo({ left: scrollLeft });
       // Highlight the column
       dataGrid.instance.columnOption(
         columnName,
         'cssClass',
-        'highlighted-column'
+        'highlighted-column',
       );
       setTimeout(() => {
         dataGrid.instance.columnOption(columnName, 'cssClass', null);

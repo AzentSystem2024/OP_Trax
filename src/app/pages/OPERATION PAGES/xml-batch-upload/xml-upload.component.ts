@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { firstValueFrom, Subscription } from 'rxjs';
 import notify from 'devextreme/ui/notify';
+import { confirm } from 'devextreme/ui/dialog';
 import DataSource from 'devextreme/data/data_source';
 import {
   DxButtonModule,
@@ -15,6 +16,7 @@ import {
   DxTextBoxModule,
   DxPopupModule,
   DxTextAreaModule,
+  DxProgressBarModule,
 } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { DataService } from 'src/app/services';
@@ -37,6 +39,7 @@ import { InactivityService } from 'src/app/services/inactivity.service';
     DxFormModule,
     DxPopupModule,
     DxTextAreaModule,
+    DxProgressBarModule,
   ],
   providers: [ReportService, DataService, OperationReportService, DatePipe],
   templateUrl: './xml-upload.component.html',
@@ -125,6 +128,24 @@ export class XmlUploadComponent implements OnInit {
   batchClaimDataSource: any[] = [];
   isBatchClaimLoading: boolean = false;
   selectedBatchID: any = null;
+
+  // State variables for Upload Progress Popup
+  isUploadProgressPopupVisible: boolean = false;
+  uploadProgressDataSource: any[] = [];
+  uploadTotal: number = 0;
+  uploadCompleted: number = 0;
+  uploadFailed: number = 0;
+  uploadPending: number = 0;
+  uploadProgress: number = 0;
+
+  cancelUpload: boolean = false;
+
+  uploadSubscription?: Subscription;
+  cancelUploadFn?: (reason?: any) => void;
+
+  progressStatus = (ratio: number, value: number) => {
+    return `Progress: ${Math.round(ratio * 100)}%`;
+  };
 
   constructor(
     private service: ReportService,
@@ -367,6 +388,20 @@ export class XmlUploadComponent implements OnInit {
     }
   }
 
+  onCancelUploadClick() {
+    this.cancelUpload = true;
+    if (this.uploadSubscription) {
+      this.uploadSubscription.unsubscribe();
+      this.uploadSubscription = undefined;
+    }
+    if (this.cancelUploadFn) {
+      this.cancelUploadFn('Upload cancelled by user');
+      this.cancelUploadFn = undefined;
+    }
+    this.isMultiProcessing = false;
+    this.inactivityService.setApiInProgress(false);
+  }
+
   async upload_selected_Data() {
     const selectedRows = this.dataGrid.instance.getSelectedRowsData();
 
@@ -382,36 +417,114 @@ export class XmlUploadComponent implements OnInit {
       ...new Map(selectedRows.map((row) => [row.ID, row])).values(),
     ];
 
-    const total = uniqueIDs.length;
-    let completed = 0;
-
+    this.uploadTotal = uniqueIDs.length;
+    this.uploadCompleted = 0;
+    this.uploadFailed = 0;
+    this.uploadPending = this.uploadTotal;
+    this.uploadProgress = 0;
+    this.uploadProgressDataSource = [];
+    this.isUploadProgressPopupVisible = true;
     this.isMultiProcessing = true;
-    this.processProgressMessage = `0/${total} completed`;
+    this.cancelUpload = false;
 
     this.inactivityService.setApiInProgress(true);
 
     for (const row of uniqueIDs) {
-      const payload = { ID: row.ID || 0 };
-
-      try {
-        const res: any = await firstValueFrom(
-          this.operationService.upload_XML_Batch_Data(payload),
+      if (this.cancelUpload) {
+        this.notificationService.showNotification(
+          'Upload cancelled by user.',
+          'warning',
         );
-      } catch (err) {
-        console.error(`Error processing ID ${row.ID}:`, err);
+        break;
       }
 
-      completed++;
-      this.processProgressMessage = `${completed}/${total} completed`;
+      const payload = {
+        FacilityID: row.FacilityID || '',
+        FileName: row.BatchNo || '',
+        UserID: parseInt(sessionStorage.getItem('UserID') || '0', 10),
+        ID: row.ID || 0,
+        UploadType: 'test',
+      };
+
+      try {
+        const res: any = await new Promise((resolve, reject) => {
+          this.cancelUploadFn = reject;
+          this.uploadSubscription = this.operationService
+            .upload_XML_Batch_Data(payload)
+            .subscribe({
+              next: resolve,
+              error: reject,
+            });
+        });
+
+        this.cancelUploadFn = undefined;
+        this.uploadSubscription = undefined;
+
+        if (res?.flag === '1' || res?.flag === 1) {
+          this.uploadCompleted++;
+          if (res.data && res.data.length > 0) {
+            const dataWithBatch = res.data.map((d: any) => ({
+              ...d,
+              BatchNo: row.BatchNo,
+            }));
+            this.uploadProgressDataSource.push(...dataWithBatch);
+          } else {
+            this.uploadProgressDataSource.push({
+              BatchNo: row.BatchNo,
+              UploadStatus: 'Success',
+              ErrorReport: res.message || 'Processed successfully',
+              UploadType: 'test',
+            });
+          }
+        } else {
+          this.uploadFailed++;
+          if (res.data && res.data.length > 0) {
+            const dataWithBatch = res.data.map((d: any) => ({
+              ...d,
+              BatchNo: row.BatchNo,
+            }));
+            this.uploadProgressDataSource.push(...dataWithBatch);
+          } else {
+            this.uploadProgressDataSource.push({
+              BatchNo: row.BatchNo,
+              UploadStatus: 'Failed',
+              ErrorReport: res?.message || 'Processing failed',
+              UploadType: 'test',
+            });
+          }
+        }
+      } catch (err) {
+        if (err === 'Upload cancelled by user') {
+          break;
+        }
+        console.error(`Error processing ID ${row.ID}:`, err);
+        this.uploadFailed++;
+        this.uploadProgressDataSource.push({
+          BatchNo: row.BatchNo,
+          UploadStatus: 'Failed',
+          ErrorReport: 'Network or Server Error',
+          UploadType: 'test',
+        });
+      }
+
+      this.uploadPending--;
+      this.uploadProgress = Math.round(
+        ((this.uploadCompleted + this.uploadFailed) / this.uploadTotal) * 100,
+      );
+      this.uploadProgressDataSource = [...this.uploadProgressDataSource];
     }
 
     this.isMultiProcessing = false;
     this.inactivityService.setApiInProgress(false);
 
-    this.notificationService.showNotification(
-      'Processing completed successfully.',
-      'success',
-    );
+    if (!this.cancelUpload) {
+      this.notificationService.showNotification(
+        'Processing completed.',
+        'success',
+      );
+    } else {
+      this.notificationService.showNotification('Upload cancelled.', 'warning');
+    }
     this.onApplyFilter();
   }
 
@@ -567,7 +680,8 @@ export class XmlUploadComponent implements OnInit {
     this.operationService.get_XML_Batch_Claim_Data(payload).subscribe({
       next: (res: any) => {
         this.isBatchClaimLoading = false;
-        this.batchClaimDataSource = res?.flag === '1' || res?.flag === 1 ? (res.data ?? []) : [];
+        this.batchClaimDataSource =
+          res?.flag === '1' || res?.flag === 1 ? (res.data ?? []) : [];
         if (this.batchClaimDataSource.length === 0) {
           this.notificationService.showNotification(
             'No claim data found for this batch.',
@@ -589,9 +703,9 @@ export class XmlUploadComponent implements OnInit {
     this.batchClaimDataSource = [];
   };
 
-  onMainGridShowXmlClick = (e: any) => {
-    const payload = { ID: e.row.data.ID };
-    this.selectedBatchNo = e.row.data.BatchNo || 'Batch';
+  fetchAndShowXml(batchID: number, batchNo: string) {
+    const payload = { ID: batchID };
+    this.selectedBatchNo = batchNo;
 
     this.inactivityService.setApiInProgress(true);
     this.operationService.get_batch_xml(payload).subscribe({
@@ -630,6 +744,61 @@ export class XmlUploadComponent implements OnInit {
         this.inactivityService.setApiInProgress(false);
         this.notificationService.showNotification(
           'Error loading XML details',
+          'error',
+        );
+      },
+    });
+  }
+
+  onMainGridShowXmlClick = (e: any) => {
+    this.fetchAndShowXml(e.row.data.ID, e.row.data.BatchNo);
+  };
+
+  onPopupShowXmlClick = () => {
+    if (this.selectedBatchID) {
+      this.fetchAndShowXml(this.selectedBatchID, this.selectedBatchNo);
+    }
+  };
+
+  isDeleteDisabled = (e: any) => {
+    return !!e.row.data.UploadTime;
+  };
+
+  onDeleteBatchClick = async (e: any) => {
+    const batchId = e.row.data.ID;
+    const batchNo = e.row.data.BatchNo || 'Batch';
+
+    const result = await confirm(
+      `Are you sure you want to delete ${batchNo}?`,
+      'Confirm Delete',
+    );
+    if (!result) {
+      return;
+    }
+
+    const payload = { ID: batchId };
+
+    this.inactivityService.setApiInProgress(true);
+    this.operationService.delete_XML_Batch_Data(payload).subscribe({
+      next: (res: any) => {
+        this.inactivityService.setApiInProgress(false);
+        if (res?.flag === '1' || res?.flag === 1) {
+          this.notificationService.showNotification(
+            res?.message || 'Batch deleted successfully.',
+            'success',
+          );
+          this.onApplyFilter();
+        } else {
+          this.notificationService.showNotification(
+            res?.message || 'Failed to delete batch.',
+            'error',
+          );
+        }
+      },
+      error: (err: any) => {
+        this.inactivityService.setApiInProgress(false);
+        this.notificationService.showNotification(
+          'Error deleting batch.',
           'error',
         );
       },

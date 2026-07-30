@@ -312,4 +312,9 @@ export class OperationReportService {
     const url = `${this.BASE_URL}XMLBatch/batchdetails`;
     return this.http.post<any>(url, payload);
   }
+
+  delete_XML_Batch_Data(payload: any) {
+    const url = `${this.BASE_URL}XMLBatch/deletebatch`;
+    return this.http.post<any>(url, payload);
+  }
 }

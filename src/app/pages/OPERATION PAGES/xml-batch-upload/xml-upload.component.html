@@ -262,12 +262,18 @@
 
     <dxo-editing mode="cell" [allowUpdating]="true"></dxo-editing>
 
-    <dxi-column dataField="SL" caption="SL" [allowEditing]="false"></dxi-column>
+    <dxi-column
+      dataField="SL"
+      caption="SL"
+      [allowEditing]="false"
+      alignment="left"
+    ></dxi-column>
 
     <dxi-column
       dataField="FacilityID"
       caption="FacilityID"
       [allowEditing]="false"
+      alignment="left"
     ></dxi-column>
 
     <dxi-column
@@ -302,7 +308,7 @@
       [allowEditing]="false"
     ></dxi-column>
 
-    <dxi-column type="buttons" caption="" [width]="100">
+    <dxi-column type="buttons" caption="" [width]="130">
       <dxi-button hint="View Claims" icon="info" [onClick]="onDetailClick">
       </dxi-button>
       <dxi-button
@@ -310,6 +316,14 @@
         icon="bi bi-filetype-xml"
         [onClick]="onMainGridShowXmlClick"
         cssClass="ms-2"
+      >
+      </dxi-button>
+      <dxi-button
+        hint="Delete Batch"
+        icon="trash"
+        [onClick]="onDeleteBatchClick"
+        [disabled]="isDeleteDisabled"
+        cssClass="ms-2 text-danger"
       >
       </dxi-button>
     </dxi-column>
@@ -477,26 +491,19 @@
                   (onClick)="cancelNewApiCall()"
                 >
                 </dx-button>
+                <dx-button
+                  text="Save"
+                  type="default"
+                  class="add-card ms-3"
+                  stylingMode="contained"
+                  icon="save"
+                  [disabled]="newBatchDataSource.length === 0"
+                  (onClick)="onCreateBatchClick()"
+                ></dx-button>
               </div>
             </dxi-item>
           </dxi-item>
         </dx-form>
-      </div>
-
-      <div class="button-container mt-1 mb-2">
-        <dx-button
-          class="toggleButton"
-          icon="{{ isNewContentVisible ? 'chevronup' : 'chevrondown' }}"
-          stylingMode="outlined"
-          type="normal"
-          [hint]="
-            isNewContentVisible ? 'Hide Filter Content' : 'Show Filter Content'
-          "
-          [width]="200"
-          [height]="13"
-          (onClick)="toggleNewContent()"
-        >
-        </dx-button>
       </div>
 
       <dx-data-grid
@@ -515,7 +522,7 @@
           enabled: true,
           texts: { fix: 'Freeze', unfix: 'Unfreeze' },
         }"
-        [height]="isNewContentVisible ? '70vh' : '82vh'"
+        [height]="'75vh'"
         (onCellPrepared)="onCellPrepared($event)"
       >
         <dxo-selection
@@ -574,23 +581,6 @@
         <dxi-column dataField="Specialty" caption="Specialty"></dxi-column>
         <dxi-column dataField="Diagnosis" caption="Diagnosis"></dxi-column>
         <dxi-column dataField="Status" caption="Status"></dxi-column>
-
-        <dxo-toolbar>
-          <dxi-item location="before">
-            <div class="grid-header">Pending Upload Data</div>
-          </dxi-item>
-          <dxi-item location="after">
-            <dx-button
-              text="Create Batch"
-              type="default"
-              class="add-button"
-              stylingMode="contained"
-              icon="plus"
-              [disabled]="newBatchDataSource.length === 0"
-              (onClick)="onCreateBatchClick()"
-            ></dx-button>
-          </dxi-item>
-        </dxo-toolbar>
       </dx-data-grid>
 
       <dx-load-panel
@@ -609,7 +599,7 @@
     [width]="'95%'"
     [height]="'95%'"
     [showTitle]="true"
-    [title]="'Batch Claim Details - ' + selectedBatchNo"
+    [title]="'Batch Details - ' + selectedBatchNo"
     [dragEnabled]="false"
     [hideOnOutsideClick]="false"
     [showCloseButton]="true"
@@ -686,6 +676,15 @@
           <dxi-item location="before">
             <div class="grid-header">Batch Claim Data</div>
           </dxi-item>
+          <dxi-item location="after">
+            <dx-button
+              text="View XML"
+              icon="bi bi-filetype-xml"
+              type="default"
+              stylingMode="outlined"
+              (onClick)="onPopupShowXmlClick()"
+            ></dx-button>
+          </dxi-item>
         </dxo-toolbar>
       </dx-data-grid>
 
@@ -728,6 +727,84 @@
         class="flex-grow-1"
         stylingMode="outlined"
       ></dx-text-area>
+    </div>
+  </dx-popup>
+
+  <!-- Upload Progress Popup -->
+  <dx-popup
+    [width]="'80%'"
+    [height]="'80vh'"
+    [showTitle]="true"
+    title="Upload Progress"
+    [dragEnabled]="false"
+    [hideOnOutsideClick]="false"
+    [showCloseButton]="true"
+    [(visible)]="isUploadProgressPopupVisible"
+  >
+    <div *dxTemplate="let data of 'content'" class="d-flex flex-column h-100">
+      <div class="progress-section mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <div class="fw-bold d-flex gap-3">
+            <span>Total: {{ uploadTotal }}</span>
+            <span class="text-success">Completed: {{ uploadCompleted }}</span>
+            <span class="text-danger">Failed: {{ uploadFailed }}</span>
+            <span class="text-warning">Pending: {{ uploadPending }}</span>
+          </div>
+          <dx-button
+            text="Cancel Upload"
+            type="danger"
+            icon="close"
+            [disabled]="!isMultiProcessing"
+            (onClick)="onCancelUploadClick()"
+          ></dx-button>
+        </div>
+        <dx-progress-bar
+          [min]="0"
+          [max]="100"
+          [value]="uploadProgress"
+          [statusFormat]="progressStatus"
+        >
+        </dx-progress-bar>
+      </div>
+
+      <dx-data-grid
+        [dataSource]="uploadProgressDataSource"
+        class="flex-grow-1 progress-grid"
+        [showBorders]="true"
+        [rowAlternationEnabled]="true"
+      >
+        <dxo-scrolling mode="virtual"></dxo-scrolling>
+        <dxi-column dataField="BatchNo" caption="Batch No"></dxi-column>
+        <dxi-column
+          dataField="UploadStatus"
+          caption="Status"
+          cellTemplate="statusTemplate"
+        ></dxi-column>
+        <dxi-column dataField="UploadType" caption="Upload Type"></dxi-column>
+        <dxi-column dataField="Uploaduser" caption="User"></dxi-column>
+        <dxi-column dataField="UploadTime" caption="Time"></dxi-column>
+        <dxi-column dataField="ErrorReport" caption="Error Report"></dxi-column>
+
+        <div *dxTemplate="let cell of 'statusTemplate'">
+          <span
+            [class.text-success]="cell.value === 'Success'"
+            [class.text-danger]="cell.value === 'Failed'"
+          >
+            {{ cell.value }}
+          </span>
+        </div>
+      </dx-data-grid>
+
+      <dx-load-panel
+        [position]="{ of: '.progress-grid' }"
+        container=".progress-grid"
+        [visible]="isMultiProcessing"
+        [showIndicator]="true"
+        [showPane]="true"
+        [shading]="true"
+        [message]="'Uploading...'"
+        [wrapperAttr]="{ style: 'z-index: 9999;' }"
+      ></dx-load-panel>
     </div>
   </dx-popup>
 </div>

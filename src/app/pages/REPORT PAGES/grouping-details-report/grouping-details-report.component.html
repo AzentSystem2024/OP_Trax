@@ -32,7 +32,11 @@
                 [columns]="[
                   { dataField: 'FacilityLicense', caption: 'License' },
                   { dataField: 'FacilityName', caption: 'Name', width: 'auto' },
-                  { dataField: 'FacilityRegion', caption: 'Region', width: 'auto' },
+                  {
+                    dataField: 'FacilityRegion',
+                    caption: 'Region',
+                    width: 'auto',
+                  },
                 ]"
                 keyExpr="FacilityLicense"
                 [selection]="{ mode: 'multiple' }"
@@ -205,7 +209,7 @@
       [noDataText]="!isContentVisible ? 'No Data Available' : ' '"
       [dataSource]="dataGrid_DataSource"
       [showBorders]="true"
-      [allowColumnResizing]="false"
+      [allowColumnResizing]="true"
       [columnAutoWidth]="true"
       [rowAlternationEnabled]="true"
       rowAlternationInterval="2"
