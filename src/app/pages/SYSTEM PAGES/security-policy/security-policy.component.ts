@@ -56,7 +56,7 @@ export class SecurityPolicyComponent implements OnInit {
   initialized: boolean=false;
 
   MFAvalidationRequired: boolean = false;
-  isGoogleAuthenticator: boolean = false;
+  // isGoogleAuthenticator: boolean = false;
   isMicrosoftAuthenticator: boolean = false;
   isCustomAuthenticator: boolean = false;
 
@@ -139,7 +139,7 @@ export class SecurityPolicyComponent implements OnInit {
           this.disableUserOn =
             this.presentSecurityData.DisableUserOnInactiveDays;
           this.MFAvalidationRequired = this.presentSecurityData.EnableMFA;
-          this.isGoogleAuthenticator = this.presentSecurityData.MFAGoogle;
+          // this.isGoogleAuthenticator = this.presentSecurityData.MFAGoogle;
           this.isMicrosoftAuthenticator = this.presentSecurityData.MFAMicrosoft;
           this.isCustomAuthenticator = this.presentSecurityData.MFACustom;
 
@@ -166,7 +166,7 @@ export class SecurityPolicyComponent implements OnInit {
       LowercaseCharacters: this.isLowercaseChecked,
       MFACustom: this.isCustomAuthenticator,
       MFAEmail: this.customEmail,
-      MFAGoogle: this.isGoogleAuthenticator,
+      MFAGoogle: this.isMicrosoftAuthenticator,
       MFAMicrosoft: this.isMicrosoftAuthenticator,
       MFAOnLogin: this.appliesToLogin,
       MFAOnPasswordChange: this.appliesToPasswordChange,
@@ -241,7 +241,7 @@ export class SecurityPolicyComponent implements OnInit {
     this.disableUserOn = null;
     // MFA options
     this.MFAvalidationRequired = false;
-    this.isGoogleAuthenticator = false;
+    // this.isGoogleAuthenticator = false; 
     this.isMicrosoftAuthenticator = false;
     this.isCustomAuthenticator = false;
     this.appliesToLogin = false;
@@ -255,7 +255,7 @@ export class SecurityPolicyComponent implements OnInit {
   //========== only allow select one check box under the MFA ========
   onCheckboxChanged(authType: string, isChecked: any): void {
     if (!isChecked) return; // do nothing when unchecking
-    this.isGoogleAuthenticator = authType === 'google';
+    // this.isGoogleAuthenticator = authType === 'google';
     this.isMicrosoftAuthenticator = authType === 'microsoft';
     this.isCustomAuthenticator = authType === 'custom';
 

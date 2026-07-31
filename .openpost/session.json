@@ -1,0 +1,125 @@
+{
+  "tabs": [
+    {
+      "id": "1785488624008mhal",
+      "tabKind": "request",
+      "name": "New Request",
+      "method": "GET",
+      "url": "http://costrxapi.diligenzit.com/api/user/setup-google-auth?userId=1",
+      "params": [
+        {
+          "key": "userId",
+          "value": "1",
+          "enabled": true
+        }
+      ],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json",
+          "enabled": true
+        },
+        {
+          "key": "tok",
+          "value": "",
+          "enabled": true
+        }
+      ],
+      "body": {
+        "type": "none",
+        "raw": "{\n  \"userId\":1\n}"
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": {
+          "token": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6ImFmZTUzN2UyLWZlMDYtNGMzMS05ZTgyLTgxMjYwMTdkNTBiYiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiMSIsIlVzZXJJZCI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTc4NTUxNzEzOSwiaXNzIjoibXlfYXBwX2lzc3VlciIsImF1ZCI6Im15X2FwcF9hdWRpZW5jZSJ9.Rzxip7iTGhHoEZvuQXfGrB60sMeW8mQy_ZXIy7SRUV0"
+        }
+      },
+      "inheritAuth": true,
+      "inheritScripts": false,
+      "preRequestScript": "",
+      "testScript": "",
+      "testRules": [],
+      "setVariables": [],
+      "activeTab": "auth",
+      "responseTab": "body",
+      "sourceRequestId": null,
+      "sourceCollectionId": null,
+      "sourceFolderPath": null,
+      "sourceScope": "local",
+      "proxyId": null,
+      "certificateConfig": null,
+      "inheritCertificate": false,
+      "response": {
+        "status": 500,
+        "statusText": "Internal Server Error",
+        "headers": {
+          "date": "Fri, 31 Jul 2026 09:05:39 GMT",
+          "server": "Microsoft-IIS/10.0",
+          "transfer-encoding": "chunked",
+          "x-powered-by": "ASP.NET"
+        },
+        "body": "",
+        "time": 605,
+        "size": 0,
+        "actualRequest": {
+          "method": "GET",
+          "url": "http://costrxapi.diligenzit.com/api/user/setup-google-auth?userId=1",
+          "headers": {
+            "Accept": "application/json",
+            "tok": "",
+            "Authorization": "Bearer Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6ImFmZTUzN2UyLWZlMDYtNGMzMS05ZTgyLTgxMjYwMTdkNTBiYiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiMSIsIlVzZXJJZCI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTc4NTUxNzEzOSwiaXNzIjoibXlfYXBwX2lzc3VlciIsImF1ZCI6Im15X2FwcF9hdWRpZW5jZSJ9.Rzxip7iTGhHoEZvuQXfGrB60sMeW8mQy_ZXIy7SRUV0"
+          },
+          "body": null,
+          "protocol": "HTTP/1.1",
+          "certificateNames": "System Trust Store"
+        },
+        "cookies": [],
+        "timingPhases": [
+          {
+            "name": "Environment",
+            "duration": 1
+          },
+          {
+            "name": "Auth",
+            "duration": 0
+          },
+          {
+            "name": "HTTP Request",
+            "duration": 605
+          },
+          {
+            "name": "Post-processing",
+            "duration": 0
+          }
+        ]
+      },
+      "error": null,
+      "loading": false,
+      "wsConnected": false,
+      "wsUrl": null,
+      "wsMessages": [],
+      "grpcConnected": false,
+      "grpcStreaming": false,
+      "grpcMessages": [],
+      "grpcConfig": null,
+      "groupId": null,
+      "mcpDescription": "",
+      "mcpInputSchema": "",
+      "collectionId": null,
+      "folderId": null,
+      "folderPath": null,
+      "editorScope": "local"
+    }
+  ],
+  "groups": [],
+  "activeTabId": "1785488624008mhal",
+  "currentView": "requests",
+  "sidebarTab": "collections",
+  "sidebarCollapsed": true,
+  "responseTab": "body",
+  "layoutMode": "horizontal",
+  "splitRatio": 0.5,
+  "horizontalSplitRatio": 0.5,
+  "selectedMockServerId": null
+}

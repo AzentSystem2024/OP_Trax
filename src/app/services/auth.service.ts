@@ -23,10 +23,9 @@ const defaultPath = '/';
 // const BaseURL = environment.PROJECTX_API_BASE_URL;
 
 export const defaultUser: IUser = {
-  email: 'Nithin@gmail.com',
-  name: 'Nithin Sivadas',
-  avatarUrl:
-    'https://js.devexpress.com/Demos/WidgetsGallery/JSDemos/images/employees/01.png',
+  email: '',
+  name: '',
+  avatarUrl: '',
 };
 
 @Injectable({
@@ -118,6 +117,26 @@ export class AuthService {
     };
 
     return this.http.post<any>(API_URL, ReqBody);
+  }
+
+  setupGoogleAuth(userId: number) {
+    return this.http.get<any>(
+      `${this.BaseURL}user/setup-google-auth?userId=${userId}`,
+    );
+  }
+
+  verifyGoogleAuth(userId: number, code: string) {
+    return this.http.post<any>(
+      `${this.BaseURL}user/verify-google-auth?userId=${userId}&code=${code}`,
+      {},
+    );
+  }
+
+  resetGoogleAuth(userId: number) {
+    return this.http.post<any>(
+      `${this.BaseURL}user/reset-google-auth?userId=${userId}`,
+      {},
+    );
   }
 
   getMenuData() {

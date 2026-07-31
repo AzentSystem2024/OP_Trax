@@ -130,7 +130,13 @@ export class LoginFormComponent implements OnInit {
 
       if (response.flag == 1) {
         this.storeSession(response);
-        await this.verify_PostOfficeCredencial_Data();
+        // ====== Redirect logic (MFA or dashboard) ======
+        if (this.loginResponse.data.EnableMFA === true) {
+          this.sharedService.triggerLoadComponent(false);
+          this.router.navigateByUrl('/auth/two-step-verification');
+        } else {
+          this.verify_PostOfficeCredencial_Data();
+        }
       } else if (response.flag == 2 && !forcelogin) {
         this.sharedService.triggerLoadComponent(false);
         const result = confirm(
@@ -232,15 +238,10 @@ export class LoginFormComponent implements OnInit {
           } else {
           }
 
-          // ====== Redirect logic (MFA or dashboard) ======
-          if (this.loginResponse.data.EnableMFA === true) {
-            this.sharedService.triggerLoadComponent(false);
-            this.router.navigateByUrl('/auth/two-step-verification');
-          } else {
-            this.inactive.setUserlogginValue();
-            this.sharedService.triggerLoadComponent(false);
-            this.router.navigateByUrl('/analytics-dashboard');
-          }
+          // ====== Redirect logic (dashboard) ======
+          this.inactive.setUserlogginValue();
+          this.sharedService.triggerLoadComponent(false);
+          this.router.navigateByUrl('/analytics-dashboard');
         } else {
           // ====== Failure case ======
           notify(
@@ -253,14 +254,9 @@ export class LoginFormComponent implements OnInit {
           );
 
           // Still proceed with login flow
-          if (this.loginResponse.data.EnableMFA === true) {
-            this.sharedService.triggerLoadComponent(false);
-            this.router.navigateByUrl('/auth/two-step-verification');
-          } else {
-            this.inactive.setUserlogginValue();
-            this.sharedService.triggerLoadComponent(false);
-            this.router.navigateByUrl('/analytics-dashboard');
-          }
+          this.inactive.setUserlogginValue();
+          this.sharedService.triggerLoadComponent(false);
+          this.router.navigateByUrl('/analytics-dashboard');
         }
       },
       (err) => {

@@ -1,6 +1,6 @@
 <div class="position-relative">
   <div class="mainPage text-center">
-    <h5 style="color: black" class="mb-2">2-Step Verification</h5>
+    <h5 class="mb-2">2-Step Verification</h5>
 
     <div
       *ngIf="
@@ -12,6 +12,7 @@
       <p style="color: black">{{ smsOtpHeading }}</p>
       <div class="otp-inputs d-flex justify-content-center gap-2">
         <dx-text-box
+          valueChangeEvent="keyup"
           #sms1
           [(value)]="smsOtpDigits[0]"
           maxLength="1"
@@ -19,6 +20,7 @@
           (keyup)="onOtpKeyUp($event, 0, 'sms')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #sms2
           [(value)]="smsOtpDigits[1]"
           maxLength="1"
@@ -26,6 +28,7 @@
           (keyup)="onOtpKeyUp($event, 1, 'sms')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #sms3
           [(value)]="smsOtpDigits[2]"
           maxLength="1"
@@ -33,6 +36,7 @@
           (keyup)="onOtpKeyUp($event, 2, 'sms')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #sms4
           [(value)]="smsOtpDigits[3]"
           maxLength="1"
@@ -40,6 +44,7 @@
           (keyup)="onOtpKeyUp($event, 3, 'sms')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #sms5
           [(value)]="smsOtpDigits[4]"
           maxLength="1"
@@ -47,6 +52,7 @@
           (keyup)="onOtpKeyUp($event, 4, 'sms')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #sms6
           [(value)]="smsOtpDigits[5]"
           maxLength="1"
@@ -64,6 +70,7 @@
       <p>{{ emailOtpHeading }}</p>
       <div class="otp-inputs d-flex justify-content-center gap-2">
         <dx-text-box
+          valueChangeEvent="keyup"
           #email1
           [(value)]="emailOtpDigits[0]"
           maxLength="1"
@@ -71,6 +78,7 @@
           (keyup)="onOtpKeyUp($event, 0, 'email')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #email2
           [(value)]="emailOtpDigits[1]"
           maxLength="1"
@@ -78,6 +86,7 @@
           (keyup)="onOtpKeyUp($event, 1, 'email')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #email3
           [(value)]="emailOtpDigits[2]"
           maxLength="1"
@@ -85,6 +94,7 @@
           (keyup)="onOtpKeyUp($event, 2, 'email')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #email4
           [(value)]="emailOtpDigits[3]"
           maxLength="1"
@@ -92,6 +102,7 @@
           (keyup)="onOtpKeyUp($event, 3, 'email')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #email5
           [(value)]="emailOtpDigits[4]"
           maxLength="1"
@@ -99,6 +110,7 @@
           (keyup)="onOtpKeyUp($event, 4, 'email')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #email6
           [(value)]="emailOtpDigits[5]"
           maxLength="1"
@@ -116,6 +128,7 @@
       <p>{{ whatsappOtpHeading }}</p>
       <div class="otp-inputs d-flex justify-content-center gap-2">
         <dx-text-box
+          valueChangeEvent="keyup"
           #whatsapp1
           [(value)]="whatsappOtpDigits[0]"
           maxLength="1"
@@ -123,6 +136,7 @@
           (keyup)="onOtpKeyUp($event, 0, 'whatsapp')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #whatsapp2
           [(value)]="whatsappOtpDigits[1]"
           maxLength="1"
@@ -130,6 +144,7 @@
           (keyup)="onOtpKeyUp($event, 1, 'whatsapp')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #whatsapp3
           [(value)]="whatsappOtpDigits[2]"
           maxLength="1"
@@ -137,6 +152,7 @@
           (keyup)="onOtpKeyUp($event, 2, 'whatsapp')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #whatsapp4
           [(value)]="whatsappOtpDigits[3]"
           maxLength="1"
@@ -144,6 +160,7 @@
           (keyup)="onOtpKeyUp($event, 3, 'whatsapp')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #whatsapp5
           [(value)]="whatsappOtpDigits[4]"
           maxLength="1"
@@ -151,11 +168,95 @@
           (keyup)="onOtpKeyUp($event, 4, 'whatsapp')"
         ></dx-text-box>
         <dx-text-box
+          valueChangeEvent="keyup"
           #whatsapp6
           [(value)]="whatsappOtpDigits[5]"
           maxLength="1"
           class="otp-input"
           (keyup)="onOtpKeyUp($event, 5, 'whatsapp')"
+        ></dx-text-box>
+      </div>
+    </div>
+
+    <!-- Authenticator OTP -->
+    <div
+      *ngIf="mfaAuthenticator && currentOtpStep === 'authenticator'"
+      class="otp-section mb-4"
+    >
+      <p style="font-weight: 500">Authenticator App Verification</p>
+
+      <div *ngIf="!isGoogleAuthSetup" class="mb-4">
+        <p style="font-size: 14px">
+          Scan this QR code with your Authenticator app:
+        </p>
+        <img
+          *ngIf="qrCodeImageUrl"
+          [src]="qrCodeImageUrl"
+          alt="QR Code"
+          style="width: 200px; height: 200px; margin-bottom: 10px"
+        />
+        <p *ngIf="manualKey" style="font-size: 14px; margin-bottom: 10px">
+          Manual Key: <strong>{{ manualKey }}</strong>
+        </p>
+      </div>
+
+      <div *ngIf="isGoogleAuthSetup" class="mb-4 d-flex justify-content-center">
+        <dx-button
+          text="Reset Authenticator"
+          type="default"
+          (onClick)="confirmResetQrCode()"
+        ></dx-button>
+      </div>
+
+      <p style="font-size: 14px">Enter the 6-digit code from your app</p>
+      <div class="otp-inputs d-flex justify-content-center gap-2">
+        <dx-text-box
+          valueChangeEvent="keyup"
+          #auth1
+          [(value)]="authOtpDigits[0]"
+          maxLength="1"
+          class="otp-input"
+          (keyup)="onOtpKeyUp($event, 0, 'authenticator')"
+        ></dx-text-box>
+        <dx-text-box
+          valueChangeEvent="keyup"
+          #auth2
+          [(value)]="authOtpDigits[1]"
+          maxLength="1"
+          class="otp-input"
+          (keyup)="onOtpKeyUp($event, 1, 'authenticator')"
+        ></dx-text-box>
+        <dx-text-box
+          valueChangeEvent="keyup"
+          #auth3
+          [(value)]="authOtpDigits[2]"
+          maxLength="1"
+          class="otp-input"
+          (keyup)="onOtpKeyUp($event, 2, 'authenticator')"
+        ></dx-text-box>
+        <dx-text-box
+          valueChangeEvent="keyup"
+          #auth4
+          [(value)]="authOtpDigits[3]"
+          maxLength="1"
+          class="otp-input"
+          (keyup)="onOtpKeyUp($event, 3, 'authenticator')"
+        ></dx-text-box>
+        <dx-text-box
+          valueChangeEvent="keyup"
+          #auth5
+          [(value)]="authOtpDigits[4]"
+          maxLength="1"
+          class="otp-input"
+          (keyup)="onOtpKeyUp($event, 4, 'authenticator')"
+        ></dx-text-box>
+        <dx-text-box
+          valueChangeEvent="keyup"
+          #auth6
+          [(value)]="authOtpDigits[5]"
+          maxLength="1"
+          class="otp-input"
+          (keyup)="onOtpKeyUp($event, 5, 'authenticator')"
         ></dx-text-box>
       </div>
     </div>
@@ -169,8 +270,8 @@
       [disabled]="!isCurrentOtpComplete()"
     ></dx-button>
 
-    <p class="mt-3 text-muted">
-      Didn’t get the code?
+    <!-- <p class="mt-3 text-muted">
+      Didn't get the code?
       <span *ngIf="!canResendCode" class="text-primary">
         Resend in {{ countdown }}s
       </span>
@@ -182,6 +283,6 @@
       >
         Resend
       </a>
-    </p>
+    </p> -->
   </div>
 </div>

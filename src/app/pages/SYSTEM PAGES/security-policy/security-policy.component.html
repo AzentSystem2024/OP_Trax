@@ -6,7 +6,7 @@
       <dx-button
         style="border-radius: 24px"
         stylingMode="outlined"
-        text="Cancel"
+        text="Clear"
         type="normal"
         (onClick)="onClickCancel()"
       ></dx-button>
@@ -107,19 +107,19 @@
 
         <!-- Checkboxes (Mutually Exclusive) -->
         <div class="mb-3">
-          <dx-check-box
+          <!-- <dx-check-box
             class="d-block mb-2"
             [(value)]="isGoogleAuthenticator"
             text="Google"
             [readOnly]="!MFAvalidationRequired"
             hint="Use Google Authenticator"
             (valueChange)="onCheckboxChanged('google', $event)"
-          ></dx-check-box>
+          ></dx-check-box> -->
 
           <dx-check-box
             class="d-block mb-2"
             [(value)]="isMicrosoftAuthenticator"
-            text="Microsoft"
+            text="Microsoft / Google"
             [readOnly]="!MFAvalidationRequired"
             hint="Use Microsoft Authenticator"
             (valueChange)="onCheckboxChanged('microsoft', $event)"
@@ -164,7 +164,7 @@
             </div>
           </div>
         </div>
-        <div *ngIf="MFAvalidationRequired">
+        <!-- <div *ngIf="MFAvalidationRequired">
           <label class="fw-bold d-block mb-2"
             >Multi-factor authentication applies to:</label
           >
@@ -178,7 +178,7 @@
             [(value)]="appliesToPasswordChange"
             text="Password Changes"
           ></dx-check-box>
-        </div>
+        </div> -->
       </div>
     </div>
 

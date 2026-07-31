@@ -19,7 +19,9 @@ import { CardAuthModule } from '../card-auth/card-auth.component';
 import { ResetPasswordFormModule } from '../reset-password-form/reset-password-form.component';
 import { SingleCardModule } from 'src/app/layouts';
 import notify from 'devextreme/ui/notify';
+import { confirm } from 'devextreme/ui/dialog';
 import { InactivityService } from 'src/app/services/inactivity.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-two-step-verification',
@@ -34,13 +36,17 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
   emailInputs!: QueryList<DxTextBoxComponent>;
 
   @ViewChildren(
-    'whatsapp1, whatsapp2, whatsapp3, whatsapp4, whatsapp5, whatsapp6'
+    'whatsapp1, whatsapp2, whatsapp3, whatsapp4, whatsapp5, whatsapp6',
   )
   whatsappInputs!: QueryList<DxTextBoxComponent>;
+
+  @ViewChildren('auth1, auth2, auth3, auth4, auth5, auth6')
+  authInputs!: QueryList<DxTextBoxComponent>;
 
   smsOtpDigits: string[] = Array(6).fill('');
   emailOtpDigits: string[] = Array(6).fill('');
   whatsappOtpDigits: string[] = Array(6).fill('');
+  authOtpDigits: string[] = Array(6).fill('');
 
   countdown: any = 30;
   intervalId: any;
@@ -51,6 +57,11 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
   mfaEmail: boolean = null;
   mfaWhatsapp: boolean = null;
   mfaSMS: boolean = null;
+  mfaAuthenticator: boolean = false;
+  isGoogleAuthSetup: boolean = false;
+  qrCodeImageUrl: string = '';
+  manualKey: string = '';
+  userId: number = 1;
 
   expectedEmailOTP: any;
   expectedsmsOTP: any;
@@ -65,13 +76,14 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
   emailOtpHeading: string;
   whatsappOtpHeading: string;
 
-  currentOtpStep = 'sms';
-
+  currentOtpStep = '';
   MFASingleToken: any;
+
   constructor(
     private router: Router,
     private inactive: InactivityService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
   ) {}
 
   ngOnInit() {
@@ -79,6 +91,12 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
 
     if (logDataString) {
       this.logData = JSON.parse(logDataString);
+
+      this.userId = this.logData.UserId || this.logData.Id || 1;
+      this.mfaAuthenticator = !!(
+        this.logData.MFAGoogle || this.logData.MFAMicrosoft
+      );
+      this.isGoogleAuthSetup = this.logData.IsGoogleAuthSetup;
 
       this.MFASingleToken = !!this.logData.MFASingleToken;
 
@@ -113,10 +131,70 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
 
       this.emailOtpHeading = `Enter the OTP received from the registered email ${maskedEmail}`;
       this.whatsappOtpHeading = `Enter the OTP received from the registered WhatsApp number ${maskedWhatsapp}`;
+
+      if (this.MFASingleToken) {
+        if (this.mfaSMS || this.mfaEmail || this.mfaWhatsapp) {
+          this.currentOtpStep = 'sms';
+        } else if (this.mfaAuthenticator) {
+          this.currentOtpStep = 'authenticator';
+          this.checkAuthSetup();
+        }
+      } else {
+        if (this.mfaSMS) {
+          this.currentOtpStep = 'sms';
+        } else if (this.mfaEmail) {
+          this.currentOtpStep = 'email';
+        } else if (this.mfaWhatsapp) {
+          this.currentOtpStep = 'whatsapp';
+        } else if (this.mfaAuthenticator) {
+          this.currentOtpStep = 'authenticator';
+          this.checkAuthSetup();
+        }
+      }
     }
 
     this.startCountdown();
     this.setInstructionText();
+  }
+
+  checkAuthSetup() {
+    if (!this.isGoogleAuthSetup) {
+      this.authService.setupGoogleAuth(this.userId).subscribe({
+        next: (res: any) => {
+          if (res && res.qrCodeImageUrl) {
+            this.qrCodeImageUrl = res.qrCodeImageUrl;
+            this.manualKey = res.manualKey;
+            this.cdr.detectChanges();
+          }
+        },
+        error: (err: any) => {
+          console.error('Error fetching QR code:', err);
+        },
+      });
+    }
+  }
+
+  regenerateQrCode() {
+    this.authService.resetGoogleAuth(this.userId).subscribe({
+      next: (res: any) => {
+        if (res && res.success) {
+          this.isGoogleAuthSetup = false;
+          this.checkAuthSetup();
+        }
+      },
+    });
+  }
+
+  confirmResetQrCode() {
+    const result = confirm(
+      'Are you sure you want to reset your Authenticator? You will need to scan a new QR code.',
+      'Reset Authenticator',
+    );
+    result.then((dialogResult: boolean) => {
+      if (dialogResult) {
+        this.regenerateQrCode();
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -153,7 +231,7 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
   onOtpKeyUp(
     event: KeyboardEvent,
     index: number,
-    type: 'sms' | 'email' | 'whatsapp'
+    type: 'sms' | 'email' | 'whatsapp' | 'authenticator',
   ): void {
     const input = event.target as HTMLInputElement;
 
@@ -169,6 +247,9 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
       case 'whatsapp':
         inputList = this.whatsappInputs.toArray();
         break;
+      case 'authenticator':
+        inputList = this.authInputs.toArray();
+        break;
     }
 
     if (input.value && index < inputList.length - 1) {
@@ -176,6 +257,13 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
     } else if (event.key === 'Backspace' && !input.value && index > 0) {
       this.focusNextInput(inputList[index - 1]);
     }
+
+    // Auto-commit if all 6 digits are entered
+    setTimeout(() => {
+      if (this.isCurrentOtpComplete()) {
+        // this.verifyCodes();
+      }
+    }, 10);
   }
 
   // ========= auto change cursor to next text box ============
@@ -187,71 +275,113 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
       inputElement.focus();
     }
   }
-  // =================== Verify SMS OTP =======================
+
+  // ============= Change the OTP Steps =============
+  goToNextStep() {
+    if (this.currentOtpStep === 'sms') {
+      if (!this.MFASingleToken) {
+        if (this.mfaEmail) {
+          this.currentOtpStep = 'email';
+          return;
+        } else if (this.mfaWhatsapp) {
+          this.currentOtpStep = 'whatsapp';
+          return;
+        }
+      }
+      if (this.mfaAuthenticator) {
+        this.currentOtpStep = 'authenticator';
+        this.checkAuthSetup();
+        return;
+      }
+    } else if (this.currentOtpStep === 'email') {
+      if (this.mfaWhatsapp) {
+        this.currentOtpStep = 'whatsapp';
+        return;
+      } else if (this.mfaAuthenticator) {
+        this.currentOtpStep = 'authenticator';
+        this.checkAuthSetup();
+        return;
+      }
+    } else if (this.currentOtpStep === 'whatsapp') {
+      if (this.mfaAuthenticator) {
+        this.currentOtpStep = 'authenticator';
+        this.checkAuthSetup();
+        return;
+      }
+    }
+
+    // If no more steps are applicable, log the user in
+    this.inactive.setUserlogginValue();
+    this.router.navigateByUrl('/analytics-dashboard');
+  }
+
+  // =================== Verify OTP =======================
   verifyCodes() {
-    if (this.MFASingleToken && this.mfaSMS) {
+    if (this.currentOtpStep === 'sms') {
       const smsCode = this.smsOtpDigits.join('');
       if (smsCode !== this.expectedsmsOTP) {
         notify({
-          message: 'Invalid SMS OTP',
+          message: this.MFASingleToken ? 'Invalid OTP' : 'Invalid SMS OTP',
           type: 'error',
           position: { at: 'top right', my: 'top right' },
         });
         return;
       }
-      this.inactive.setUserlogginValue();
-      this.router.navigateByUrl('/analytics-dashboard');
+      this.goToNextStep();
       return;
     }
 
-    // When MFASingleToken is false, handle step-by-step
-    if (!this.MFASingleToken) {
-      if (this.currentOtpStep === 'sms' && this.mfaSMS) {
-        const smsCode = this.smsOtpDigits.join('');
-        if (smsCode !== this.expectedsmsOTP) {
-          notify({
-            message: 'Invalid SMS OTP',
-            type: 'error',
-            position: { at: 'top right', my: 'top right' },
-          });
-          return;
-        }
-        this.currentOtpStep = this.mfaEmail
-          ? 'email'
-          : this.mfaWhatsapp
-          ? 'whatsapp'
-          : '';
+    if (this.currentOtpStep === 'email' && this.mfaEmail) {
+      const emailCode = this.emailOtpDigits.join('');
+      if (emailCode !== this.expectedEmailOTP) {
+        notify({
+          message: 'Invalid Email OTP',
+          type: 'error',
+          position: { at: 'top right', my: 'top right' },
+        });
         return;
       }
+      this.goToNextStep();
+      return;
+    }
 
-      if (this.currentOtpStep === 'email' && this.mfaEmail) {
-        const emailCode = this.emailOtpDigits.join('');
-        if (emailCode !== this.expectedEmailOTP) {
-          notify({
-            message: 'Invalid Email OTP',
-            type: 'error',
-            position: { at: 'top right', my: 'top right' },
-          });
-          return;
-        }
-        this.currentOtpStep = this.mfaWhatsapp ? 'whatsapp' : '';
+    if (this.currentOtpStep === 'whatsapp' && this.mfaWhatsapp) {
+      const whatsappCode = this.whatsappOtpDigits.join('');
+      if (whatsappCode !== this.expectedwhatsappOTP) {
+        notify({
+          message: 'Invalid WhatsApp OTP',
+          type: 'error',
+          position: { at: 'top right', my: 'top right' },
+        });
         return;
       }
+      this.goToNextStep();
+      return;
+    }
 
-      if (this.currentOtpStep === 'whatsapp' && this.mfaWhatsapp) {
-        const whatsappCode = this.whatsappOtpDigits.join('');
-        if (whatsappCode !== this.expectedwhatsappOTP) {
+    if (this.currentOtpStep === 'authenticator' && this.mfaAuthenticator) {
+      const authCode = this.authOtpDigits.join('');
+      this.authService.verifyGoogleAuth(this.userId, authCode).subscribe({
+        next: (res: any) => {
+          if (res && res.success) {
+            this.goToNextStep();
+          } else {
+            notify({
+              message: 'Invalid Authenticator Code',
+              type: 'error',
+              position: { at: 'top right', my: 'top right' },
+            });
+          }
+        },
+        error: (err: any) => {
           notify({
-            message: 'Invalid WhatsApp OTP',
+            message: 'Error verifying Authenticator Code',
             type: 'error',
             position: { at: 'top right', my: 'top right' },
           });
-          return;
-        }
-
-        this.inactive.setUserlogginValue();
-        this.router.navigateByUrl('/analytics-dashboard');
-      }
+        },
+      });
+      return;
     }
   }
 
@@ -263,6 +393,8 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
       return this.emailOtpDigits.every((d) => d);
     } else if (this.currentOtpStep === 'whatsapp') {
       return this.whatsappOtpDigits.every((d) => d);
+    } else if (this.currentOtpStep === 'authenticator') {
+      return this.authOtpDigits.every((d) => d);
     }
     return false;
   }
@@ -273,6 +405,7 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
     this.startCountdown();
     // Call API
   }
+
   // ================= Start Count Down ======================
   startCountdown() {
     this.canResendCode = false;

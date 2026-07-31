@@ -1,0 +1,203 @@
+[
+  {
+    "id": "1785488639369",
+    "timestamp": 1785488639369,
+    "request": {
+      "id": "1785488638481",
+      "name": "New Request",
+      "method": "GET",
+      "url": "http://costrxapi.diligenzit.com/api/user/setup-google-auth?userId=1",
+      "params": [
+        {
+          "key": "userId",
+          "value": "1",
+          "enabled": true
+        }
+      ],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json",
+          "enabled": true
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "inheritAuth": true
+    },
+    "response": {
+      "status": 500,
+      "statusText": "Internal Server Error",
+      "headers": {
+        "date": "Fri, 31 Jul 2026 09:03:58 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "transfer-encoding": "chunked",
+        "x-powered-by": "ASP.NET"
+      },
+      "body": "",
+      "time": 884,
+      "size": 0,
+      "cookies": []
+    }
+  },
+  {
+    "id": "1785488677035",
+    "timestamp": 1785488677035,
+    "request": {
+      "id": "1785488677031",
+      "name": "New Request",
+      "method": "GET",
+      "url": "http://costrxapi.diligenzit.com/api/user/setup-google-auth?userId=1",
+      "params": [
+        {
+          "key": "userId",
+          "value": "1",
+          "enabled": true
+        }
+      ],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json",
+          "enabled": true
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"userId\":1\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "inheritAuth": true
+    },
+    "response": {
+      "status": 0,
+      "statusText": "Error",
+      "headers": {},
+      "body": "Request failed: Request with GET/HEAD method cannot have body.",
+      "time": 3,
+      "size": 0,
+      "cookies": []
+    }
+  },
+  {
+    "id": "1785488689032",
+    "timestamp": 1785488689032,
+    "request": {
+      "id": "1785488688449",
+      "name": "New Request",
+      "method": "GET",
+      "url": "http://costrxapi.diligenzit.com/api/user/setup-google-auth?userId=1",
+      "params": [
+        {
+          "key": "userId",
+          "value": "1",
+          "enabled": true
+        }
+      ],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "body": {
+        "type": "none",
+        "raw": "{\n  \"userId\":1\n}"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "inheritAuth": true
+    },
+    "response": {
+      "status": 500,
+      "statusText": "Internal Server Error",
+      "headers": {
+        "date": "Fri, 31 Jul 2026 09:04:49 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "transfer-encoding": "chunked",
+        "x-powered-by": "ASP.NET"
+      },
+      "body": "",
+      "time": 581,
+      "size": 0,
+      "cookies": []
+    }
+  },
+  {
+    "id": "1785488739518",
+    "timestamp": 1785488739518,
+    "request": {
+      "id": "1785488738911",
+      "name": "New Request",
+      "method": "GET",
+      "url": "http://costrxapi.diligenzit.com/api/user/setup-google-auth?userId=1",
+      "params": [
+        {
+          "key": "userId",
+          "value": "1",
+          "enabled": true
+        }
+      ],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json",
+          "enabled": true
+        },
+        {
+          "key": "tok",
+          "value": "",
+          "enabled": true
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6ImFmZTUzN2UyLWZlMDYtNGMzMS05ZTgyLTgxMjYwMTdkNTBiYiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiMSIsIlVzZXJJZCI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTc4NTUxNzEzOSwiaXNzIjoibXlfYXBwX2lzc3VlciIsImF1ZCI6Im15X2FwcF9hdWRpZW5jZSJ9.Rzxip7iTGhHoEZvuQXfGrB60sMeW8mQy_ZXIy7SRUV0",
+          "enabled": true
+        }
+      ],
+      "body": {
+        "type": "none",
+        "raw": "{\n  \"userId\":1\n}"
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": {
+          "token": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6ImFmZTUzN2UyLWZlMDYtNGMzMS05ZTgyLTgxMjYwMTdkNTBiYiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiMSIsIlVzZXJJZCI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTc4NTUxNzEzOSwiaXNzIjoibXlfYXBwX2lzc3VlciIsImF1ZCI6Im15X2FwcF9hdWRpZW5jZSJ9.Rzxip7iTGhHoEZvuQXfGrB60sMeW8mQy_ZXIy7SRUV0"
+        }
+      },
+      "inheritAuth": true
+    },
+    "response": {
+      "status": 500,
+      "statusText": "Internal Server Error",
+      "headers": {
+        "date": "Fri, 31 Jul 2026 09:05:39 GMT",
+        "server": "Microsoft-IIS/10.0",
+        "transfer-encoding": "chunked",
+        "x-powered-by": "ASP.NET"
+      },
+      "body": "",
+      "time": 605,
+      "size": 0,
+      "cookies": []
+    }
+  }
+]
