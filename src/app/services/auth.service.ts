@@ -113,7 +113,7 @@ export class AuthService {
       ComputerUser: 'User1',
       InternetIP: '192.158.1.38',
       SystemTimeUTC: currentUTCDateTime,
-      ForceLogin: true,
+      ForceLogin: forcelogin,
     };
 
     return this.http.post<any>(API_URL, ReqBody);
