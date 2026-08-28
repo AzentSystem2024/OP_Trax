@@ -101,6 +101,105 @@
       </span>
     </ng-container>
   </dx-form>
-
-
 </form>
+
+<dx-popup
+  [width]="440"
+  [height]="'auto'"
+  [showTitle]="true"
+  title="Verify OTP"
+  [dragEnabled]="false"
+  [hideOnOutsideClick]="false"
+  [showCloseButton]="true"
+  [(visible)]="isOtpPopupVisible"
+  (onShown)="onPopupShown()"
+  (onHiding)="onPopupHiding()"
+>
+  <div *dxTemplate="let data of 'content'" class="p-3 text-center">
+    <p style="font-size: 15px; margin-bottom: 20px;">
+      Verify your OTP sending to the email - <strong>{{ otpEmail }}</strong>
+    </p>
+
+    <div class="otp-inputs d-flex justify-content-center gap-2 mb-4">
+      <dx-text-box
+        #otp1
+        [(value)]="otpDigits[0]"
+        maxLength="1"
+        valueChangeEvent="keyup"
+        stylingMode="outlined"
+        placeholder="-"
+        class="otp-input"
+        [disabled]="isVerifyingOtp"
+        (keyup)="onOtpKeyUp($event, 0)"
+      ></dx-text-box>
+      <dx-text-box
+        #otp2
+        [(value)]="otpDigits[1]"
+        maxLength="1"
+        valueChangeEvent="keyup"
+        stylingMode="outlined"
+        placeholder="-"
+        class="otp-input"
+        [disabled]="isVerifyingOtp"
+        (keyup)="onOtpKeyUp($event, 1)"
+      ></dx-text-box>
+      <dx-text-box
+        #otp3
+        [(value)]="otpDigits[2]"
+        maxLength="1"
+        valueChangeEvent="keyup"
+        stylingMode="outlined"
+        placeholder="-"
+        class="otp-input"
+        [disabled]="isVerifyingOtp"
+        (keyup)="onOtpKeyUp($event, 2)"
+      ></dx-text-box>
+      <dx-text-box
+        #otp4
+        [(value)]="otpDigits[3]"
+        maxLength="1"
+        valueChangeEvent="keyup"
+        stylingMode="outlined"
+        placeholder="-"
+        class="otp-input"
+        [disabled]="isVerifyingOtp"
+        (keyup)="onOtpKeyUp($event, 3)"
+      ></dx-text-box>
+      <dx-text-box
+        #otp5
+        [(value)]="otpDigits[4]"
+        maxLength="1"
+        valueChangeEvent="keyup"
+        stylingMode="outlined"
+        placeholder="-"
+        class="otp-input"
+        [disabled]="isVerifyingOtp"
+        (keyup)="onOtpKeyUp($event, 4)"
+      ></dx-text-box>
+      <dx-text-box
+        #otp6
+        [(value)]="otpDigits[5]"
+        maxLength="1"
+        valueChangeEvent="keyup"
+        stylingMode="outlined"
+        placeholder="-"
+        class="otp-input"
+        [disabled]="isVerifyingOtp"
+        (keyup)="onOtpKeyUp($event, 5)"
+      ></dx-text-box>
+    </div>
+
+    <div class="mt-3">
+      <dx-button
+        [text]="isVerifyingOtp ? 'Verifying...' : 'Verify'"
+        type="default"
+        stylingMode="contained"
+        [width]="'100%'"
+        [height]="'40px'"
+        [disabled]="isVerifyingOtp || !isOtpComplete"
+        (onClick)="onVerifyOtpClick()"
+      ></dx-button>
+    </div>
+  </div>
+</dx-popup>
+

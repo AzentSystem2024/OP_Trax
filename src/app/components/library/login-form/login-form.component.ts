@@ -1,6 +1,13 @@
 import { SystemServicesService } from './../../../pages/SYSTEM PAGES/system-services.service';
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  NgModule,
+  Input,
+  OnInit,
+  ViewChildren,
+  QueryList,
+} from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { LoginOauthModule } from 'src/app/components/library/login-oauth/login-oauth.component';
 import { DxFormModule } from 'devextreme-angular/ui/form';
@@ -19,6 +26,7 @@ import { InactivityService } from 'src/app/services/inactivity.service';
 import {
   DxLoadPanelModule,
   DxPopupModule,
+  DxTextBoxComponent,
   DxTextBoxModule,
 } from 'devextreme-angular';
 import { firstValueFrom } from 'rxjs';
@@ -33,6 +41,9 @@ import { MasterReportService } from 'src/app/pages/MASTER PAGES/master-report.se
 export class LoginFormComponent implements OnInit {
   @Input() resetLink = '/auth/reset-password';
   @Input() createAccountLink = '/auth/create-account';
+
+  @ViewChildren('otp1, otp2, otp3, otp4, otp5, otp6')
+  otpInputs!: QueryList<DxTextBoxComponent>;
 
   defaultAuthData!: IResponse;
 
@@ -49,6 +60,10 @@ export class LoginFormComponent implements OnInit {
   loginResponse: any;
   SingleToken: boolean = false;
   securityPolicyData: any;
+
+  isOtpPopupVisible: boolean = false;
+  otpEmail: string = '';
+  otpDigits: string[] = ['', '', '', '', '', ''];
 
   constructor(
     private authService: AuthService,
@@ -129,14 +144,29 @@ export class LoginFormComponent implements OnInit {
       this.loginResponse = response;
 
       if (response.flag == 1) {
-        this.storeSession(response);
-        // ====== Redirect logic (MFA or dashboard) ======
-        if (this.loginResponse.data.EnableMFA === true) {
+        const userRoleId =
+          response.data?.UserRoleID ??
+          response.data?.userRoleID ??
+          response.data?.UserRoleId ??
+          response.data?.userRoleId ??
+          response.UserRoleID ??
+          response.userRoleID;
+
+        if (Number(userRoleId) === 2) {
           this.sharedService.triggerLoadComponent(false);
-          this.router.navigateByUrl('/auth/two-step-verification');
-        } else {
-          this.verify_PostOfficeCredencial_Data();
+          const rawEmail =
+            response.data?.Email ??
+            response.data?.EmailID ??
+            response.data?.email ??
+            response.Email ??
+            response.EmailID ??
+            '';
+          this.otpEmail = this.maskEmail(rawEmail);
+          this.isOtpPopupVisible = true;
+          return;
         }
+
+        this.completeLogin(response);
       } else if (response.flag == 2 && !forcelogin) {
         this.sharedService.triggerLoadComponent(false);
         const result = confirm(
@@ -160,6 +190,129 @@ export class LoginFormComponent implements OnInit {
       this.showNotify(`Error: ${err.message}`, 'error');
       this.sharedService.triggerLoadComponent(false);
     }
+  }
+
+  // ====== Complete login helper ======
+  completeLogin(response: any) {
+    this.storeSession(response);
+    // ====== Redirect logic (MFA or dashboard) ======
+    if (this.loginResponse.data?.EnableMFA === true) {
+      this.sharedService.triggerLoadComponent(false);
+      this.router.navigateByUrl('/auth/two-step-verification');
+    } else {
+      this.verify_PostOfficeCredencial_Data();
+    }
+  }
+
+  isVerifyingOtp: boolean = false;
+
+  get isOtpComplete(): boolean {
+    return (
+      this.otpDigits &&
+      this.otpDigits.length === 6 &&
+      this.otpDigits.every((digit) => digit && digit.trim() !== '')
+    );
+  }
+
+  onOtpKeyUp(event: KeyboardEvent, index: number): void {
+    const input = event.target as HTMLInputElement;
+    const inputList = this.otpInputs?.toArray() || [];
+
+    if (input.value && index < inputList.length - 1) {
+      this.focusNextInput(inputList[index + 1]);
+    } else if (event.key === 'Backspace' && !input.value && index > 0) {
+      this.focusNextInput(inputList[index - 1]);
+    }
+  }
+
+  focusNextInput(inputComponent: DxTextBoxComponent): void {
+    if (inputComponent) {
+      const inputElement =
+        inputComponent.instance?.element()?.querySelector('input');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }
+  }
+
+  onPopupShown(): void {
+    setTimeout(() => {
+      if (this.otpInputs && this.otpInputs.first) {
+        this.focusNextInput(this.otpInputs.first);
+      }
+    }, 100);
+  }
+
+  onPopupHiding(): void {
+    this.otpDigits = ['', '', '', '', '', ''];
+  }
+
+  // ====== Verify OTP Click ======
+  async onVerifyOtpClick() {
+    const otpCode = this.otpDigits.join('').trim();
+    if (otpCode.length !== 6) {
+      this.showNotify('Please enter complete 6-digit OTP.', 'error');
+      return;
+    }
+
+    const userId =
+      this.loginResponse?.data?.UserID ??
+      this.loginResponse?.data?.UserId ??
+      this.loginResponse?.data?.Id ??
+      this.loginResponse?.UserID ??
+      this.loginResponse?.UserId;
+
+    this.isVerifyingOtp = true;
+    this.sharedService.triggerLoadComponent(true);
+
+    try {
+      const res: any = await firstValueFrom(
+        this.authService.validateOtp(userId, otpCode),
+      );
+
+      if (
+        res?.flag == 1 ||
+        res?.Flag == 1 ||
+        res?.status === 200 ||
+        res?.isOk ||
+        res?.success
+      ) {
+        this.isVerifyingOtp = false;
+        this.isOtpPopupVisible = false;
+        this.otpDigits = ['', '', '', '', '', ''];
+        this.completeLogin(this.loginResponse);
+      } else {
+        this.isVerifyingOtp = false;
+        this.sharedService.triggerLoadComponent(false);
+        this.showNotify(
+          res?.message || res?.Message || 'Invalid OTP. Please try again.',
+          'error',
+        );
+      }
+    } catch (err: any) {
+      this.isVerifyingOtp = false;
+      this.sharedService.triggerLoadComponent(false);
+      this.showNotify(
+        err?.error?.message ||
+          err?.message ||
+          'Failed to verify OTP. Please try again.',
+        'error',
+      );
+    }
+  }
+
+  // ====== Mask Email Helper ======
+  maskEmail(email: string): string {
+    if (!email || !email.includes('@')) return email || '';
+    const [name, domain] = email.split('@');
+    if (name.length <= 2) {
+      return `${name[0]}*@${domain}`;
+    }
+    const maskedName =
+      name.length > 4
+        ? `${name.slice(0, 2)}${'*'.repeat(name.length - 4)}${name.slice(-2)}`
+        : `${name[0]}${'*'.repeat(name.length - 1)}`;
+    return `${maskedName}@${domain}`;
   }
 
   // ====== Store session & persist ======

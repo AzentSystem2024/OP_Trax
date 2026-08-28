@@ -201,6 +201,15 @@ export class AuthService {
     }
   }
 
+  validateOtp(userId: any, otp: string) {
+    const API_URL = `${this.BaseURL}user/validateotp`;
+    const ReqBody = {
+      UserID: userId,
+      Otp: otp,
+    };
+    return this.http.post<any>(API_URL, ReqBody);
+  }
+
   logOut() {
     const API_URL = `${this.BaseURL}user/logout`;
     const token = JSON.parse(localStorage.getItem('logData') || '{}')?.Token;

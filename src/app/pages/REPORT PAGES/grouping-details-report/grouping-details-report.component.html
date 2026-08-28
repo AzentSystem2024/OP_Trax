@@ -310,7 +310,7 @@
         [applyFilter]="applyFilter"
       ></dxo-filter-row>
 
-      <dxo-export [enabled]="true" [formats]="['xlsx']"> </dxo-export>
+      <dxo-export [enabled]="userRoleId != 2" [formats]="['xlsx']"> </dxo-export>
 
       <dxo-toolbar>
         <dxi-item location="before">
@@ -372,10 +372,11 @@
             hint: 'Hide/Show Summary',
           }"
         ></dxi-item>
-        <dxi-item location="after" locateInMenu="auto">
+        <dxi-item *ngIf="userRoleId != 2" location="after" locateInMenu="auto">
           <div class="separator"></div>
         </dxi-item>
         <dxi-item
+          *ngIf="userRoleId != 2"
           name="exportButton"
           [disabled]="isEmptyDatagrid"
           [options]="{ icon: 'exportxlsx' }"

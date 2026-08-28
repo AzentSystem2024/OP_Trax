@@ -42,7 +42,7 @@ import { ReportEngineService } from '../report-engine.service';
 import DataSource from 'devextreme/data/data_source';
 import { Router } from '@angular/router';
 import notify from 'devextreme/ui/notify';
-import { DataService } from 'src/app/services';
+import { AuthService, DataService } from 'src/app/services';
 import { PopupStateService } from 'src/app/popupStateService.service';
 import validationEngine from 'devextreme/ui/validation_engine';
 import { OperationReportService } from '../../OPERATION PAGES/operation-report.service';
@@ -138,6 +138,8 @@ export class GroupingDetailsReportComponent implements OnInit {
   isGridLoading: boolean = false;
   columnFixed: boolean = true;
   initialized: boolean;
+  userRoleId: any;
+  userRoleID: any;
 
   constructor(
     private service: ReportService,
@@ -148,6 +150,7 @@ export class GroupingDetailsReportComponent implements OnInit {
     private popupStateService: PopupStateService,
     private cdr: ChangeDetectorRef,
     private operationService: OperationReportService,
+    private authService: AuthService,
   ) {
     // this.loadingVisible = true;
 
@@ -164,6 +167,13 @@ export class GroupingDetailsReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const logData =
+      this.authService.getUserData() ||
+      JSON.parse(localStorage.getItem('logData') || '{}');
+    this.userRoleId =
+      logData?.UserRoleID ?? logData?.UserRoleId ?? logData?.userRoleId;
+    this.userRoleID = this.userRoleId;
+
     const today = new Date();
     this.To_Date_Value = today;
     this.From_Date_Value = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -534,6 +544,10 @@ export class GroupingDetailsReportComponent implements OnInit {
 
   // ================Exporting Function===================
   onExporting(event: any) {
+    if (this.userRoleId == 2) {
+      notify('Export is not permitted for your role.', 'warning', 3000);
+      return;
+    }
     const fileName = 'ADOC Grouping Details';
     this.service.exportDataGrid(event, fileName);
   }

@@ -22,3 +22,26 @@
   }
 }
 
+.otp-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.otp-input {
+  width: 44px;
+  height: 52px;
+
+  ::ng-deep input {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 0 !important;
+  }
+
+  ::ng-deep .dx-texteditor.dx-editor-outlined {
+    border-radius: 8px;
+  }
+}
+
