@@ -1,11 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
-  Component,
-  EventEmitter,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
+  Component, NgModule, ViewChild
 } from '@angular/core';
 import {
   DxTabPanelModule,
@@ -217,6 +212,17 @@ export class UserLevelMasterComponent {
         event.component.refresh();
         this.dataGrid.instance.refresh();
       });
+  }
+
+  onCellPrepared(e: any) {
+    if (e.rowType === 'data' && e.column.command === 'edit') {
+      if (e.data.UserRoles === 'Administrator') {
+        const links = e.cellElement.querySelectorAll('.dx-link');
+        links.forEach((link: any) => {
+          link.style.display = 'none';
+        });
+      }
+    }
   }
 
   formatLastModifiedTime(rowData: any): string {
