@@ -17,6 +17,7 @@ import { ThemeSwitcherModule } from 'src/app/components/library/theme-switcher/t
 import { DxTooltipModule } from 'devextreme-angular';
 import { Router } from '@angular/router';
 import { CustomReuseStrategy } from 'src/app/custom-reuse-strategy';
+import { InactivityService } from 'src/app/services/inactivity.service';
 
 @Component({
   selector: 'app-header',
@@ -48,25 +49,25 @@ export class AppHeaderComponent implements OnInit {
       text: 'Logout',
       icon: 'runner',
       onClick: () => {
+        this.inactivityService.isManualLogout = true;
+        this.inactivityService.stopWatching();
         this.reuseStrategy.clearStoredData();
-        // Call the logout service
-        this.authService.logOut().subscribe((response: any) => {
-          if (response) {
-            // Clear storage
-            localStorage.removeItem('sidemenuItems');
-            localStorage.clear();
-            sessionStorage.clear();
-            // Clear stored routes again to ensure no leftovers
-            this.reuseStrategy.clearStoredData();
-            // Navigate to the login page
-            this.router.navigate(['/auth/login']).then(() => {
-              // window.location.reload();
-              // this.router.navigate(['/auth/login']);
-              setTimeout(() => {
-                window.location.reload();
-              }, 250);
-            });
-          }
+
+        const doFinishLogout = () => {
+          localStorage.removeItem('sidemenuItems');
+          localStorage.clear();
+          sessionStorage.clear();
+          this.reuseStrategy.clearStoredData();
+          this.router.navigate(['/auth/login']).then(() => {
+            setTimeout(() => {
+              window.location.reload();
+            }, 100);
+          });
+        };
+
+        this.authService.logOut().subscribe({
+          next: () => doFinishLogout(),
+          error: () => doFinishLogout(),
         });
       },
     },
@@ -78,6 +79,7 @@ export class AppHeaderComponent implements OnInit {
     private router: Router,
     private reuseStrategy: CustomReuseStrategy,
     private dataservice: DataService,
+    private inactivityService: InactivityService,
   ) {}
 
   ngOnInit() {

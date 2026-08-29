@@ -45,3 +45,47 @@
   }
 }
 
+.otp-timer-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0 16px;
+  min-height: 32px;
+
+  .timer-text {
+    color: #6c757d;
+    font-size: 14px;
+
+    strong {
+      color: #09743c;
+      font-weight: 700;
+    }
+  }
+
+  .resend-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 14px;
+
+    .resend-link {
+      color: rgba(25, 108, 153, 1);
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: none;
+      }
+
+      &.disabled {
+        pointer-events: none;
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+

@@ -189,6 +189,24 @@
       ></dx-text-box>
     </div>
 
+    <!-- OTP Countdown Timer & Resend Button -->
+    <div class="otp-timer-container">
+      <span *ngIf="!canResendOtp" class="timer-text">
+        Resend OTP in <strong>{{ otpCountdown }}s</strong>
+      </span>
+      <div *ngIf="canResendOtp" class="resend-container">
+        <span class="text-muted">Didn't receive the OTP?</span>
+        <a
+          href="javascript:void(0)"
+          (click)="onResendOtpClick()"
+          class="resend-link"
+          [class.disabled]="isResendingOtp"
+        >
+          {{ isResendingOtp ? 'Resending...' : 'Resend OTP' }}
+        </a>
+      </div>
+    </div>
+
     <div class="mt-3">
       <dx-button
         [text]="isVerifyingOtp ? 'Verifying...' : 'Verify'"

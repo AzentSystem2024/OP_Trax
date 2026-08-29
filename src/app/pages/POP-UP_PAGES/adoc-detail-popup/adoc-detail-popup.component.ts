@@ -4,6 +4,7 @@ import {
   Input,
   NgModule,
   OnChanges,
+  OnInit,
   Output,
   SimpleChanges,
   ViewChild,
@@ -24,7 +25,7 @@ import { Workbook } from 'exceljs';
 import { exportDataGrid } from 'devextreme/excel_exporter';
 import { saveAs } from 'file-saver';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
-import { DataService } from 'src/app/services';
+import { AuthService, DataService } from 'src/app/services';
 import { firstValueFrom } from 'rxjs';
 import { AdocClassEditFormModule } from '../adoc-class-edit-form/adoc-class-edit-form.component';
 
@@ -33,11 +34,12 @@ import { AdocClassEditFormModule } from '../adoc-class-edit-form/adoc-class-edit
   templateUrl: './adoc-detail-popup.component.html',
   styleUrls: ['./adoc-detail-popup.component.scss'],
 })
-export class AdocDetailPopupComponent implements OnChanges {
+export class AdocDetailPopupComponent implements OnInit, OnChanges {
   @ViewChild('popupGrid', { static: false }) popupGrid!: DxDataGridComponent;
 
   @Input() visible: boolean = false;
   @Input() rowData: any;
+  @Input() userRoleId: any;
 
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() dataLoaded = new EventEmitter<any>();
@@ -48,9 +50,9 @@ export class AdocDetailPopupComponent implements OnChanges {
   isReRunProcessing: boolean = false;
   isLoading: boolean = false;
   billableTotal: number = 0;
-  showDetails: boolean = false
-  selectedRow: any
-  dataGrid_DataSource: any[] = []
+  showDetails: boolean = false;
+  selectedRow: any;
+  dataGrid_DataSource: any[] = [];
   exportFormats = [
     { text: 'Excel', format: 'xlsx' },
     { text: 'CSV', format: 'csv' },
@@ -63,11 +65,29 @@ export class AdocDetailPopupComponent implements OnChanges {
   constructor(
     private operationService: OperationReportService,
     private masterService: MasterReportService,
-    private dataService: DataService
-  ) { }
+    private dataService: DataService,
+    private authService: AuthService
+  ) {
+    this.initUserRole();
+  }
+
+  ngOnInit(): void {
+    this.initUserRole();
+  }
+
+  private initUserRole(): void {
+    if (this.userRoleId === undefined || this.userRoleId === null) {
+      const logData =
+        this.authService?.getUserData() ||
+        JSON.parse(localStorage.getItem('logData') || '{}');
+      this.userRoleId =
+        logData?.UserRoleID ?? logData?.UserRoleId ?? logData?.userRoleId;
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['visible'] && changes['visible'].currentValue === true) {
+      this.initUserRole();
       this.getClinicalDataPopupData();
       this.get_ADOC_GROUP_Dropdown();
     }

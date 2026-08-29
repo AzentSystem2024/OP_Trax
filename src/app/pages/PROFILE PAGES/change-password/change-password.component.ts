@@ -114,15 +114,21 @@ export class ChangePasswordComponent implements OnInit {
           );
           // Navigate to login page after notification
           setTimeout(() => {
-            this.authService.logOut();
-            this.authService.logOut().subscribe((response: any) => {
-              if (response) {
+            this.authService.logOut().subscribe({
+              next: () => {
                 localStorage.removeItem('sidemenuItems');
                 localStorage.clear();
                 sessionStorage.clear();
                 this.reuseStrategy.clearStoredData();
                 this.route.navigate(['/auth/login']);
-              }
+              },
+              error: () => {
+                localStorage.removeItem('sidemenuItems');
+                localStorage.clear();
+                sessionStorage.clear();
+                this.reuseStrategy.clearStoredData();
+                this.route.navigate(['/auth/login']);
+              },
             });
           }); // Wait for notification to display before navigating
         } else {

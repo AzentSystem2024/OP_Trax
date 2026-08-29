@@ -91,7 +91,7 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
       visible: title && title.trim() !== '' ? true : false,
     });
     this.selectedIndex = this.tabs.findIndex((tab) => tab.path === path);
-    this.router.navigate([path]);
+    this.router.navigate([path], { replaceUrl: true });
 
     this.menuOpened = this.screen.sizes['screen-large'];
     this.screenSubscription = this.screen.changed.subscribe(() =>

@@ -5,6 +5,7 @@ import {
   NgModule,
   Input,
   OnInit,
+  OnDestroy,
   ViewChildren,
   QueryList,
 } from '@angular/core';
@@ -38,7 +39,7 @@ import { MasterReportService } from 'src/app/pages/MASTER PAGES/master-report.se
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.scss'],
 })
-export class LoginFormComponent implements OnInit {
+export class LoginFormComponent implements OnInit, OnDestroy {
   @Input() resetLink = '/auth/reset-password';
   @Input() createAccountLink = '/auth/create-account';
 
@@ -64,6 +65,11 @@ export class LoginFormComponent implements OnInit {
   isOtpPopupVisible: boolean = false;
   otpEmail: string = '';
   otpDigits: string[] = ['', '', '', '', '', ''];
+
+  otpCountdown: number = 60;
+  canResendOtp: boolean = false;
+  otpTimerInterval: any = null;
+  isResendingOtp: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -162,7 +168,12 @@ export class LoginFormComponent implements OnInit {
             response.EmailID ??
             '';
           this.otpEmail = this.maskEmail(rawEmail);
+          const token = response.data?.Token ?? response.Token;
+          if (token) {
+            sessionStorage.setItem('AuthToken', token);
+          }
           this.isOtpPopupVisible = true;
+          this.startOtpTimer();
           return;
         }
 
@@ -236,6 +247,7 @@ export class LoginFormComponent implements OnInit {
   }
 
   onPopupShown(): void {
+    this.startOtpTimer();
     setTimeout(() => {
       if (this.otpInputs && this.otpInputs.first) {
         this.focusNextInput(this.otpInputs.first);
@@ -245,6 +257,113 @@ export class LoginFormComponent implements OnInit {
 
   onPopupHiding(): void {
     this.otpDigits = ['', '', '', '', '', ''];
+    this.stopOtpTimer();
+    if (!sessionStorage.getItem('UserID')) {
+      sessionStorage.removeItem('AuthToken');
+    }
+  }
+
+  startOtpTimer(): void {
+    this.stopOtpTimer();
+    this.otpCountdown = 60;
+    this.canResendOtp = false;
+
+    this.otpTimerInterval = setInterval(() => {
+      if (this.otpCountdown > 0) {
+        this.otpCountdown--;
+      } else {
+        this.stopOtpTimer();
+        this.canResendOtp = true;
+      }
+    }, 1000);
+  }
+
+  stopOtpTimer(): void {
+    if (this.otpTimerInterval) {
+      clearInterval(this.otpTimerInterval);
+      this.otpTimerInterval = null;
+    }
+  }
+
+  async onResendOtpClick(): Promise<void> {
+    if (!this.canResendOtp || this.isResendingOtp) {
+      return;
+    }
+
+    const userId =
+      this.loginResponse?.data?.UserID ??
+      this.loginResponse?.data?.UserId ??
+      this.loginResponse?.data?.Id ??
+      this.loginResponse?.UserID ??
+      this.loginResponse?.UserId;
+
+    const sessionId =
+      this.loginResponse?.data?.SessionID ??
+      this.loginResponse?.data?.SessionId ??
+      this.loginResponse?.data?.sessionId ??
+      this.loginResponse?.SessionID ??
+      this.loginResponse?.SessionId ??
+      this.loginResponse?.sessionId;
+
+    const token =
+      this.loginResponse?.data?.Token ??
+      this.loginResponse?.Token ??
+      sessionStorage.getItem('AuthToken');
+
+    if (!userId || !sessionId) {
+      this.showNotify(
+        'Session details missing. Please re-enter login details.',
+        'error',
+      );
+      return;
+    }
+
+    this.isResendingOtp = true;
+    try {
+      const response: any = await firstValueFrom(
+        this.authService.resendOtp(userId, sessionId, token),
+      );
+
+      if (
+        response?.flag == 1 ||
+        response?.Flag == 1 ||
+        response?.status === 200 ||
+        response?.isOk ||
+        response?.success
+      ) {
+        this.otpDigits = ['', '', '', '', '', ''];
+        this.showNotify(
+          response?.message ||
+            response?.Message ||
+            'A new OTP has been sent to your email.',
+          'success',
+        );
+        this.startOtpTimer();
+        if (this.otpInputs && this.otpInputs.first) {
+          this.focusNextInput(this.otpInputs.first);
+        }
+      } else {
+        this.showNotify(
+          response?.message ||
+            response?.Message ||
+            'Failed to resend OTP. Please try again.',
+          'error',
+        );
+      }
+    } catch (err: any) {
+      this.showNotify(
+        err?.error?.message ||
+          err?.message ||
+          'Error while resending OTP. Please try again.',
+        'error',
+      );
+    } finally {
+      this.isResendingOtp = false;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.stopOtpTimer();
   }
 
   // ====== Verify OTP Click ======
@@ -262,12 +381,25 @@ export class LoginFormComponent implements OnInit {
       this.loginResponse?.UserID ??
       this.loginResponse?.UserId;
 
+    const sessionId =
+      this.loginResponse?.data?.SessionID ??
+      this.loginResponse?.data?.SessionId ??
+      this.loginResponse?.data?.sessionId ??
+      this.loginResponse?.SessionID ??
+      this.loginResponse?.SessionId ??
+      this.loginResponse?.sessionId;
+
+    const token =
+      this.loginResponse?.data?.Token ??
+      this.loginResponse?.Token ??
+      sessionStorage.getItem('AuthToken');
+
     this.isVerifyingOtp = true;
     this.sharedService.triggerLoadComponent(true);
 
     try {
       const res: any = await firstValueFrom(
-        this.authService.validateOtp(userId, otpCode),
+        this.authService.validateOtp(userId, otpCode, sessionId, token),
       );
 
       if (
@@ -277,9 +409,13 @@ export class LoginFormComponent implements OnInit {
         res?.isOk ||
         res?.success
       ) {
+        this.stopOtpTimer();
         this.isVerifyingOtp = false;
         this.isOtpPopupVisible = false;
         this.otpDigits = ['', '', '', '', '', ''];
+        if (res?.data) {
+          this.loginResponse.data = { ...this.loginResponse.data, ...res.data };
+        }
         this.completeLogin(this.loginResponse);
       } else {
         this.isVerifyingOtp = false;
@@ -391,10 +527,21 @@ export class LoginFormComponent implements OnInit {
           } else {
           }
 
-          // ====== Redirect logic (dashboard) ======
+          // ====== Redirect logic (dashboard / home) ======
+          const logData =
+            this.authService.getUserData() ||
+            JSON.parse(localStorage.getItem('logData') || '{}');
+          const userRoleId = Number(
+            logData?.UserRoleID ??
+              logData?.userRoleID ??
+              logData?.UserRoleId ??
+              logData?.userRoleId
+          );
+          const targetUrl = userRoleId === 2 ? '/Home' : '/analytics-dashboard';
+
           this.inactive.setUserlogginValue();
           this.sharedService.triggerLoadComponent(false);
-          this.router.navigateByUrl('/analytics-dashboard');
+          this.router.navigateByUrl(targetUrl, { replaceUrl: true });
         } else {
           // ====== Failure case ======
           notify(
@@ -407,9 +554,20 @@ export class LoginFormComponent implements OnInit {
           );
 
           // Still proceed with login flow
+          const logData =
+            this.authService.getUserData() ||
+            JSON.parse(localStorage.getItem('logData') || '{}');
+          const userRoleId = Number(
+            logData?.UserRoleID ??
+              logData?.userRoleID ??
+              logData?.UserRoleId ??
+              logData?.userRoleId
+          );
+          const targetUrl = userRoleId === 2 ? '/Home' : '/analytics-dashboard';
+
           this.inactive.setUserlogginValue();
           this.sharedService.triggerLoadComponent(false);
-          this.router.navigateByUrl('/analytics-dashboard');
+          this.router.navigateByUrl(targetUrl, { replaceUrl: true });
         }
       },
       (err) => {

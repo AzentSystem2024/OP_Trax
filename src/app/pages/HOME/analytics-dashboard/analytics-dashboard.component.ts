@@ -1,5 +1,6 @@
 import { Component, NgModule, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { DataService } from 'src/app/services';
 import {
   DxButtonModule,
@@ -56,9 +57,21 @@ export class AnalyticsDashboardComponent {
     private dataService: DataService,
     private service: ReportService,
     private masterService: MasterReportService,
+    private router: Router,
   ) {
-    this.userID = sessionStorage.getItem('UserID');
     const logData = JSON.parse(localStorage.getItem('logData') || '{}');
+    const userRoleId = Number(
+      logData?.UserRoleID ??
+        logData?.userRoleID ??
+        logData?.UserRoleId ??
+        logData?.userRoleId
+    );
+    if (userRoleId === 2) {
+      this.router.navigate(['/Home'], { replaceUrl: true });
+      return;
+    }
+
+    this.userID = sessionStorage.getItem('UserID');
     const lastProcessedYear = Number(logData?.LastProcessedYear || 0);
 
     const today = new Date();
@@ -150,10 +163,10 @@ export class AnalyticsDashboardComponent {
 
   // ============== load chart data =============
   loadChartData() {
-    if (!this.selectedFacilityIDs || this.selectedFacilityIDs.length === 0) {
-      this.showError('Please select at least one Facility.');
-      return;
-    }
+    // if (!this.selectedFacilityIDs || this.selectedFacilityIDs.length === 0) {
+    //   this.showError('Please select at least one Facility.');
+    //   return;
+    // }
     if (!this.fromDate) {
       this.showError('Please select From Date.');
       return;
