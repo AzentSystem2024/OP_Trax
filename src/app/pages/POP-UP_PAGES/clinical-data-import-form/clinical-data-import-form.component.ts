@@ -117,12 +117,12 @@ export class ClinicalDataImportFormComponent {
       IsNumeric: false,
     },
     {
-      dataField: 'PatientID',
-      caption: 'Patient ID',
+      dataField: 'PatientName',
+      caption: 'Patient Name',
       dataType: 'string',
       validationRules: [
         { type: 'required' },
-        { type: 'stringLength', max: 50 },
+        { type: 'stringLength', max: 200 },
       ],
       IsMandatory: true,
       IsNumeric: false,
@@ -225,8 +225,8 @@ export class ClinicalDataImportFormComponent {
       IsNumeric: false,
     },
     {
-      dataField: 'SecondaryDiagnosisCodes',
-      caption: 'Secondary Diagnosis Codes',
+      dataField: 'SecondoryDiagnosisCodes',
+      caption: 'Secondory Diagnosis Codes',
       dataType: 'string',
       validationRules: [
         { type: 'required' },
@@ -236,8 +236,8 @@ export class ClinicalDataImportFormComponent {
       IsNumeric: false,
     },
     {
-      dataField: 'ClaimActivityNumber',
-      caption: 'Claim Activity Number',
+      dataField: 'ActivityNumber',
+      caption: 'Activity Number',
       dataType: 'string',
       validationRules: [
         { type: 'required' },
@@ -645,11 +645,24 @@ export class ClinicalDataImportFormComponent {
           );
           continue;
         }
+        // Trim headers (keys) and cell values
+        const cleanedRows = rows.map((row: any) => {
+          const cleanedRow: any = {};
+          for (const key of Object.keys(row)) {
+            const trimmedKey = typeof key === 'string' ? key.trim() : key;
+            const val = row[key];
+            cleanedRow[trimmedKey] = typeof val === 'string' ? val.trim() : val;
+          }
+          return cleanedRow;
+        });
+
         // Header Validation
         const expectedColumns = this.combinedColumnMeta.map(
-          (x: any) => x.dataField,
+          (x: any) => (typeof x.dataField === 'string' ? x.dataField.trim() : x.dataField),
         );
-        const actualColumns = Object.keys(rows[0]);
+        const actualColumns = Object.keys(cleanedRows[0] || {}).map(
+          (col: any) => (typeof col === 'string' ? col.trim() : col),
+        );
         const missingColumns = expectedColumns.filter(
           (col: any) => !actualColumns.includes(col),
         );
@@ -667,7 +680,7 @@ export class ClinicalDataImportFormComponent {
           continue;
         }
         // Date Formatting
-        const formattedRows = this.formatDateFields(rows, [
+        const formattedRows = this.formatDateFields(cleanedRows, [
           'TransactionDate',
           'ActivityStartDate',
           'EncounterStartDate',
@@ -946,7 +959,14 @@ export class ClinicalDataImportFormComponent {
     this.isLoading = true;
     this.inactivityService.setApiInProgress(true);
     const chunkSize = 15000;
-    const importData = [...this.combinedDataSource];
+    const importData = (this.combinedDataSource || []).map((row: any) => {
+      const trimmedRow: any = {};
+      for (const key of Object.keys(row)) {
+        const val = row[key];
+        trimmedRow[key] = typeof val === 'string' ? val.trim() : val;
+      }
+      return trimmedRow;
+    });
     const maxChunks = Math.ceil(importData.length / chunkSize);
     const batchNo =
       this.userID +
