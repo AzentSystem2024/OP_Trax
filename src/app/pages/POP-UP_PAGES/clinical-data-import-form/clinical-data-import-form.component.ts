@@ -84,436 +84,246 @@ export class ClinicalDataImportFormComponent {
 
   combinedColumnMeta: any = [
     {
-      dataField: 'FacilityGroupID',
-      caption: 'Facility Group ID',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'HealthAuthority',
-      caption: 'Health Authority',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
       dataField: 'FacilityID',
       caption: 'Facility ID',
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 50 },
+      ],
       IsMandatory: true,
       IsNumeric: false,
     },
     {
-      dataField: 'Facility_Name',
+      dataField: 'FacilityName',
       caption: 'Facility Name',
-      IsMandatory: false,
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 200 },
+      ],
+      IsMandatory: true,
       IsNumeric: false,
     },
     {
-      dataField: 'InvoiceNo',
-      caption: 'Invoice No',
+      dataField: 'ClaimNumber',
+      caption: 'Claim Number',
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 100 },
+      ],
       IsMandatory: true,
       IsNumeric: false,
     },
     {
       dataField: 'PatientID',
       caption: 'Patient ID',
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 50 },
+      ],
       IsMandatory: true,
       IsNumeric: false,
     },
     {
+      dataField: 'Age',
+      caption: 'Age',
+      dataType: 'number',
+      format: '#0',
+      validationRules: [{ type: 'required' }],
+      IsMandatory: true,
+      IsNumeric: true,
+    },
+    {
       dataField: 'TransactionDate',
       caption: 'Transaction Date',
-      IsMandatory: false,
+      dataType: 'date',
+      format: 'dd/MM/yyyy',
+      validationRules: [{ type: 'required' }],
+      IsMandatory: true,
       IsNumeric: false,
     },
     {
-      dataField: 'ActivityStartDate',
-      caption: 'Activity Start Date',
+      dataField: 'EncounterID',
+      caption: 'Encounter ID',
+      dataType: 'string',
+      validationRules: [{ type: 'stringLength', max: 50 }],
       IsMandatory: false,
       IsNumeric: false,
     },
     {
       dataField: 'EncounterType',
       caption: 'Encounter Type',
-      IsMandatory: false,
-      IsNumeric: false,
+      dataType: 'number',
+      format: '#0',
+      validationRules: [{ type: 'required' }],
+      IsMandatory: true,
+      IsNumeric: true,
     },
     {
       dataField: 'EncounterStartDate',
       caption: 'Encounter Start Date',
-      IsMandatory: false,
+      dataType: 'date',
+      format: 'dd/MM/yyyy',
+      validationRules: [{ type: 'required' }],
+      IsMandatory: true,
       IsNumeric: false,
     },
     {
       dataField: 'EncounterEndDate',
       caption: 'Encounter End Date',
-      IsMandatory: false,
+      dataType: 'date',
+      format: 'dd/MM/yyyy',
+      validationRules: [{ type: 'required' }],
+      IsMandatory: true,
+      IsNumeric: false,
+    },
+    {
+      dataField: 'ReceiverID',
+      caption: 'Receiver ID',
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 50 },
+      ],
+      IsMandatory: true,
+      IsNumeric: false,
+    },
+    {
+      dataField: 'PayerID',
+      caption: 'Payer ID',
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 50 },
+      ],
+      IsMandatory: true,
+      IsNumeric: false,
+    },
+    {
+      dataField: 'MemberID',
+      caption: 'Member ID',
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 100 },
+      ],
+      IsMandatory: true,
+      IsNumeric: false,
+    },
+    {
+      dataField: 'PrimaryDiagnosisCode',
+      caption: 'Primary Diagnosis Code',
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 100 },
+      ],
+      IsMandatory: true,
+      IsNumeric: false,
+    },
+    {
+      dataField: 'SecondaryDiagnosisCodes',
+      caption: 'Secondary Diagnosis Codes',
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 2000 },
+      ],
+      IsMandatory: true,
       IsNumeric: false,
     },
     {
       dataField: 'ClaimActivityNumber',
       caption: 'Claim Activity Number',
-      IsMandatory: false,
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 100 },
+      ],
+      IsMandatory: true,
+      IsNumeric: false,
+    },
+    {
+      dataField: 'ActivityStartDate',
+      caption: 'Activity Start Date',
+      dataType: 'date',
+      format: 'dd/MM/yyyy',
+      validationRules: [{ type: 'required' }],
+      IsMandatory: true,
       IsNumeric: false,
     },
     {
       dataField: 'CPTCode',
       caption: 'CPT Code',
-      IsMandatory: false,
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 50 },
+      ],
+      IsMandatory: true,
       IsNumeric: false,
     },
     {
       dataField: 'CPTCategory',
       caption: 'CPT Category',
+      dataType: 'string',
+      validationRules: [{ type: 'stringLength', max: 100 }],
       IsMandatory: false,
       IsNumeric: false,
     },
     {
       dataField: 'CPTType',
       caption: 'CPT Type',
-      IsMandatory: false,
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 50 },
+      ],
+      IsMandatory: true,
       IsNumeric: false,
-    },
-    {
-      dataField: 'Quantity',
-      caption: 'Quantity',
-      IsMandatory: false,
-      IsNumeric: true,
     },
     {
       dataField: 'OrderingClinician',
       caption: 'Ordering Clinician',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'OrderingClinician_Name',
-      caption: 'Ordering Clinician Name',
-      IsMandatory: false,
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 100 },
+      ],
+      IsMandatory: true,
       IsNumeric: false,
     },
     {
       dataField: 'Clinician',
       caption: 'Clinician',
-      IsMandatory: false,
+      dataType: 'string',
+      validationRules: [
+        { type: 'required' },
+        { type: 'stringLength', max: 100 },
+      ],
+      IsMandatory: true,
       IsNumeric: false,
     },
     {
-      dataField: 'Clinician_Name',
-      caption: 'Clinician Name',
-      IsMandatory: false,
-      IsNumeric: false,
+      dataField: 'Quantity',
+      caption: 'Quantity',
+      dataType: 'number',
+      format: { type: 'fixedPoint', precision: 2 },
+      validationRules: [{ type: 'required' }],
+      IsMandatory: true,
+      IsNumeric: true,
     },
     {
-      dataField: 'ReceiverID',
-      caption: 'Receiver ID',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'Receiver_Name',
-      caption: 'Receiver Name',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'PayerID',
-      caption: 'Payer ID',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'Payer_Name',
-      caption: 'Payer Name',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'MemberID',
-      caption: 'Member ID',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'IDPayer',
-      caption: 'ID Payer',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'PaymentReference',
-      caption: 'Payment Reference',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'PriorAuthorizationID',
-      caption: 'Prior Authorization ID',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'NetAmt',
+      dataField: 'NetAmount',
       caption: 'Net Amount',
-      IsMandatory: false,
-      IsNumeric: true,
-      alignment: 'right',
+      dataType: 'number',
       format: { type: 'fixedPoint', precision: 2 },
-    },
-    {
-      dataField: 'InitialNetAmt',
-      caption: 'Initial Net Amount',
-      IsMandatory: false,
+      validationRules: [{ type: 'required' }],
+      IsMandatory: true,
       IsNumeric: true,
-      alignment: 'right',
-      format: { type: 'fixedPoint', precision: 2 },
-    },
-    {
-      dataField: 'Diagnosis',
-      caption: 'Diagnosis',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'PrimaryDiagnosis',
-      caption: 'Primary Diagnosis',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'LastResubmissionDate',
-      caption: 'Last Resubmission Date',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'FirstRemittanceDate',
-      caption: 'First Remittance Date',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'LastRemittanceDate',
-      caption: 'Last Remittance Date',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'RemittedAmt',
-      caption: 'Remitted Amount',
-      IsMandatory: false,
-      IsNumeric: true,
-      alignment: 'right',
-      format: { type: 'fixedPoint', precision: 2 },
-    },
-    {
-      dataField: 'LastRemittedAmount',
-      caption: 'Last Remitted Amount',
-      IsMandatory: false,
-      IsNumeric: true,
-      alignment: 'right',
-      format: { type: 'fixedPoint', precision: 2 },
-    },
-    {
-      dataField: 'InitialRejectedAmt',
-      caption: 'Initial Rejected Amount',
-      IsMandatory: false,
-      IsNumeric: true,
-      alignment: 'right',
-      format: { type: 'fixedPoint', precision: 2 },
-    },
-    {
-      dataField: 'RejectedAmt',
-      caption: 'Rejected Amount',
-      IsMandatory: false,
-      IsNumeric: true,
-      alignment: 'right',
-      format: { type: 'fixedPoint', precision: 2 },
-    },
-    {
-      dataField: 'UnprocessedAmt',
-      caption: 'Unprocessed Amount',
-      IsMandatory: false,
-      IsNumeric: true,
-      alignment: 'right',
-      format: { type: 'fixedPoint', precision: 2 },
-    },
-    {
-      dataField: 'RejectionPercentage',
-      caption: 'Rejection Percentage',
-      IsMandatory: false,
-      IsNumeric: true,
-    },
-    {
-      dataField: 'WriteOffAmt',
-      caption: 'Write Off Amount',
-      IsMandatory: false,
-      IsNumeric: true,
-      alignment: 'right',
-      format: { type: 'fixedPoint', precision: 2 },
-    },
-    {
-      dataField: 'WriteOffStatus',
-      caption: 'Write Off Status',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'WriteOffComment',
-      caption: 'Write Off Comment',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'LastDenailCode',
-      caption: 'Last Denial Code',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'DenialComment',
-      caption: 'Denial Comment',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'DenialCategory',
-      caption: 'Denial Category',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'DenialType',
-      caption: 'Denial Type',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'InitialDenialCode',
-      caption: 'Initial Denial Code',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'InitialDenialComment',
-      caption: 'Initial Denial Comment',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'InitialDenialCategory',
-      caption: 'Initial Denial Category',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'InitialDenialType',
-      caption: 'Initial Denial Type',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'ResubmissionCount',
-      caption: 'Resubmission Count',
-      IsMandatory: false,
-      IsNumeric: true,
-    },
-    {
-      dataField: 'RemittanceCount',
-      caption: 'Remittance Count',
-      IsMandatory: false,
-      IsNumeric: true,
-    },
-    {
-      dataField: 'RemittanceComment',
-      caption: 'Remittance Comment',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'ResubmissionComment',
-      caption: 'Resubmission Comment',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'ClaimYear',
-      caption: 'Claim Year',
-      IsMandatory: false,
-      IsNumeric: true,
-    },
-    {
-      dataField: 'ClaimMonth',
-      caption: 'Claim Month',
-      IsMandatory: false,
-      IsNumeric: true,
-    },
-    {
-      dataField: 'AllSubmissionFiles',
-      caption: 'All Submission Files',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'SubmissionAllTransactionIds',
-      caption: 'Submission All Transaction Ids',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'LastSubmissionFile',
-      caption: 'Last Submission File',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'LastSubmissionTransactionId',
-      caption: 'Last Submission Transaction Id',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'LastRemittanceFile',
-      caption: 'Last Remittance File',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'LastRemittanceTransactionId',
-      caption: 'Last Remittance Transaction Id',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'SettledAmt',
-      caption: 'Settled Amount',
-      IsMandatory: false,
-      IsNumeric: true,
-      alignment: 'right',
-      format: { type: 'fixedPoint', precision: 2 },
-    },
-    {
-      dataField: 'ReceiptStatus',
-      caption: 'Receipt Status',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'InitialDateSettlement',
-      caption: 'Initial Date Settlement',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'ClaimStatus',
-      caption: 'Claim Status',
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'PaymentStatus',
-      caption: 'Payment Status',
-      IsMandatory: false,
-      IsNumeric: false,
     },
   ];
 
@@ -1058,6 +868,29 @@ export class ClinicalDataImportFormComponent {
           // Store normalized numeric value back into row
           row[col.dataField] = numericValue;
         }
+        // String Length validation
+        if (
+          col.validationRules &&
+          val !== null &&
+          val !== undefined &&
+          val !== ''
+        ) {
+          const lengthRule = col.validationRules.find(
+            (r: any) => r.type === 'stringLength',
+          );
+          if (lengthRule && String(val).length > lengthRule.max) {
+            isValid = false;
+            break;
+          }
+        }
+        // Facility validation
+        if (col.dataField === 'FacilityID' && val) {
+          const facilityExists = this.selectedFacilityIDs?.includes(val);
+          if (!facilityExists) {
+            isValid = false;
+            break;
+          }
+        }
       }
       if (isValid) {
         validRows.push(row);
@@ -1362,6 +1195,28 @@ export class ClinicalDataImportFormComponent {
       this.highlightColumnHeader(e.column?.headerId);
       this.createTooltip(e.cellElement, 'Error: Value must be numeric');
       return;
+    }
+    // String Length validation
+    if (
+      column.validationRules &&
+      value !== null &&
+      value !== undefined &&
+      value !== ''
+    ) {
+      const lengthRule = column.validationRules.find(
+        (r: any) => r.type === 'stringLength',
+      );
+      if (lengthRule && String(value).length > lengthRule.max) {
+        e.cellElement.style.border = '2px solid #FFC1C3';
+        e.cellElement.style.color = 'red';
+        this.hasError = true;
+        this.highlightColumnHeader(e.column?.headerId);
+        this.createTooltip(
+          e.cellElement,
+          `Error: Max length is ${lengthRule.max}`,
+        );
+        return;
+      }
     }
     // Facility validation
     if (column.dataField === 'FacilityID' && value) {
