@@ -203,12 +203,20 @@
     *dxTemplate="let data of 'content'"
     style="height: 100%; display: flex; flex-direction: column"
   >
+    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+      <dx-check-box
+        [(value)]="showInvalidRowsOnly"
+        (onValueChanged)="onShowInvalidRowsOnlyChange($event)"
+        text="Show invalid rows only"
+      ></dx-check-box>
+    </div>
     <dx-data-grid
-      [dataSource]="combinedDataSource"
+      #importGrid
+      [dataSource]="filteredDataSource"
       [columns]="combinedColumnMeta"
       [showBorders]="true"
       [columnAutoWidth]="true"
-      [height]="'79vh'"
+      [height]="'75vh'"
       [allowColumnResizing]="true"
       [allowColumnReordering]="true"
       [rowAlternationEnabled]="true"

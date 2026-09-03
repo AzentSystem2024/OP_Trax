@@ -59,3 +59,11 @@
   background-color: #dc3545; /* red */
   color: white;
 }
+
+::ng-deep .dx-datagrid .dx-header-row > td.error-header-cell,
+::ng-deep .dx-datagrid-headers .dx-header-row > td.error-header-cell,
+::ng-deep .dx-datagrid-headers .dx-header-row > td.error-header-cell .dx-datagrid-text-content,
+::ng-deep .dx-datagrid .dx-header-row > td.error-header-cell .dx-column-indicators {
+  background-color: #FFC1C3 !important;
+  color: #FF0000 !important;
+}

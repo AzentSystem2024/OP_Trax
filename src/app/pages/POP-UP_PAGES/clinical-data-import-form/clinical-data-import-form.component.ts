@@ -74,258 +74,73 @@ export class ClinicalDataImportFormComponent {
   isLoading: boolean = false;
   isExcelLoading: boolean = false;
   hasError: boolean = false;
+  isValidationTriggered: boolean = false;
   isSaving: boolean = false;
   highlightedHeaderIds: string[] = [];
+  errorColumnDataFields: string[] = [];
   importedFileName: any;
   cptCodeList: any;
   clinicianLicenseList: any;
 
   combinedDataSource: any[] = [];
+  filteredDataSource: any[] = [];
+  showInvalidRowsOnly: boolean = false;
 
-  combinedColumnMeta: any = [
-    {
-      dataField: 'FacilityID',
-      caption: 'Facility ID',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 50 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'FacilityName',
-      caption: 'Facility Name',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 200 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'ClaimNumber',
-      caption: 'Claim Number',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 100 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'PatientName',
-      caption: 'Patient Name',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 200 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'Age',
-      caption: 'Age',
-      dataType: 'number',
-      format: '#0',
-      validationRules: [{ type: 'required' }],
-      IsMandatory: true,
-      IsNumeric: true,
-    },
-    {
-      dataField: 'TransactionDate',
-      caption: 'Transaction Date',
-      dataType: 'date',
-      format: 'dd/MM/yyyy',
-      validationRules: [{ type: 'required' }],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'EncounterID',
-      caption: 'Encounter ID',
-      dataType: 'string',
-      validationRules: [{ type: 'stringLength', max: 50 }],
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'EncounterType',
-      caption: 'Encounter Type',
-      dataType: 'number',
-      format: '#0',
-      validationRules: [{ type: 'required' }],
-      IsMandatory: true,
-      IsNumeric: true,
-    },
-    {
-      dataField: 'EncounterStartDate',
-      caption: 'Encounter Start Date',
-      dataType: 'date',
-      format: 'dd/MM/yyyy',
-      validationRules: [{ type: 'required' }],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'EncounterEndDate',
-      caption: 'Encounter End Date',
-      dataType: 'date',
-      format: 'dd/MM/yyyy',
-      validationRules: [{ type: 'required' }],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'ReceiverID',
-      caption: 'Receiver ID',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 50 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'PayerID',
-      caption: 'Payer ID',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 50 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'MemberID',
-      caption: 'Member ID',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 100 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'PrimaryDiagnosisCode',
-      caption: 'Primary Diagnosis Code',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 100 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'SecondoryDiagnosisCodes',
-      caption: 'Secondory Diagnosis Codes',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 2000 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'ActivityNumber',
-      caption: 'Activity Number',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 100 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'ActivityStartDate',
-      caption: 'Activity Start Date',
-      dataType: 'date',
-      format: 'dd/MM/yyyy',
-      validationRules: [{ type: 'required' }],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'CPTCode',
-      caption: 'CPT Code',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 50 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'CPTCategory',
-      caption: 'CPT Category',
-      dataType: 'string',
-      validationRules: [{ type: 'stringLength', max: 100 }],
-      IsMandatory: false,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'CPTType',
-      caption: 'CPT Type',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 50 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'OrderingClinician',
-      caption: 'Ordering Clinician',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 100 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'Clinician',
-      caption: 'Clinician',
-      dataType: 'string',
-      validationRules: [
-        { type: 'required' },
-        { type: 'stringLength', max: 100 },
-      ],
-      IsMandatory: true,
-      IsNumeric: false,
-    },
-    {
-      dataField: 'Quantity',
-      caption: 'Quantity',
-      dataType: 'number',
-      format: { type: 'fixedPoint', precision: 2 },
-      validationRules: [{ type: 'required' }],
-      IsMandatory: true,
-      IsNumeric: true,
-    },
-    {
-      dataField: 'NetAmount',
-      caption: 'Net Amount',
-      dataType: 'number',
-      format: { type: 'fixedPoint', precision: 2 },
-      validationRules: [{ type: 'required' }],
-      IsMandatory: true,
-      IsNumeric: true,
-    },
-  ];
+  onShowInvalidRowsOnlyChange(e: any) {
+    this.showInvalidRowsOnly = !!e?.value;
+    this.updateFilteredDataSource();
+  }
+
+  updateFilteredDataSource() {
+    if (this.showInvalidRowsOnly) {
+      this.filteredDataSource = (this.combinedDataSource || []).filter(
+        (row) => row.__hasError,
+      );
+    } else {
+      this.filteredDataSource = [...(this.combinedDataSource || [])];
+    }
+  }
+
+  isValidDDMMYYYY(val: any): boolean {
+    if (val === null || val === undefined || String(val).trim() === '') {
+      return true;
+    }
+    if (val instanceof Date) {
+      return !isNaN(val.getTime());
+    }
+    const str = String(val).trim();
+    const match = str.match(
+      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/,
+    );
+    if (!match) {
+      return false;
+    }
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10);
+    const year = parseInt(match[3], 10);
+
+    if (
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > 31 ||
+      year < 1900 ||
+      year > 2100
+    ) {
+      return false;
+    }
+    const dateObj = new Date(year, month - 1, day);
+    if (
+      dateObj.getFullYear() !== year ||
+      dateObj.getMonth() !== month - 1 ||
+      dateObj.getDate() !== day
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  combinedColumnMeta: any[] = [];
 
   get progressValue() {
     return this.uploadedCount;
@@ -346,11 +161,70 @@ export class ClinicalDataImportFormComponent {
   ) {
     this.userID = sessionStorage.getItem('UserID');
     this.getUserFacilityData();
+    this.loadColumnMetadata();
   }
+
+  // ================== Load column metadata from API ==================
+  async loadColumnMetadata(): Promise<void> {
+    try {
+      const res: any = await firstValueFrom(
+        this.operationservice.GetClinicalDataImportColumns(),
+      );
+      const rawData = res?.DATA || res?.data || res?.datas || [];
+      if (Array.isArray(rawData) && rawData.length > 0) {
+        this.combinedColumnMeta = this.mapColumnMetadata(rawData);
+      }
+    } catch (error) {
+      console.error('Error fetching clinical data import columns:', error);
+    }
+  }
+
+  mapColumnMetadata(apiColumns: any[]): any[] {
+    return apiColumns.map((col: any) => {
+      const rules: any[] = [];
+      if (col.IsMandatory) {
+        rules.push({ type: 'required' });
+      }
+      const rawMax = col.MaxLength ?? col.maxLength ?? col.validationRules;
+      const maxLen = Number(rawMax);
+      if (!isNaN(maxLen) && maxLen > 0) {
+        rules.push({ type: 'stringLength', max: maxLen });
+      }
+
+      let dataType = col.dataType || 'string';
+      let format: any = undefined;
+
+      if (col.dataType === 'decimal') {
+        dataType = 'number';
+        format = { type: 'fixedPoint', precision: 2 };
+      } else if (col.dataType === 'date') {
+        dataType = 'string';
+        format = undefined;
+      }
+
+      return {
+        dataField: col.dataField,
+        caption: col.caption,
+        dataType: dataType,
+        format: format,
+        validationRules: rules,
+        MaxLength: !isNaN(maxLen) && maxLen > 0 ? maxLen : null,
+        IsMandatory: !!col.IsMandatory,
+        IsNumeric:
+          !!col.IsNumeric ||
+          col.dataType === 'number' ||
+          col.dataType === 'decimal',
+        originalDataType: col.dataType,
+        rawValidationRules: rawMax,
+      };
+    });
+  }
+
   // ================== Load all initial lists in parallel ==================
   async loadInitialData(): Promise<void> {
     try {
       await Promise.all([
+        this.loadColumnMetadata(),
         this.loadcptCodeList(),
         this.loadclinicianLicenseList(),
       ]);
@@ -441,6 +315,8 @@ export class ClinicalDataImportFormComponent {
   // ================ Called when a file is selected
   async onFileSelected(event: any, fileInput: HTMLInputElement): Promise<void> {
     this.hasError = false;
+    this.isValidationTriggered = false;
+    this.showInvalidRowsOnly = false;
     this.importResults = [];
     this.isExcelLoading = true;
     this.inactivityService.setApiInProgress(true);
@@ -581,14 +457,15 @@ export class ClinicalDataImportFormComponent {
               if (fileName.endsWith('.csv')) {
                 workbook = XLSX.read(e.target.result, {
                   type: 'string',
-                  raw: true,
+                  raw: false,
                 });
               }
               // Excel
               else {
                 workbook = XLSX.read(new Uint8Array(e.target.result), {
                   type: 'array',
-                  cellDates: true,
+                  cellDates: false,
+                  raw: false,
                 });
               }
               if (
@@ -602,7 +479,7 @@ export class ClinicalDataImportFormComponent {
               const sheetName = workbook.SheetNames[0];
               const sheet = workbook.Sheets[sheetName];
               const importedRows = XLSX.utils.sheet_to_json(sheet, {
-                raw: true,
+                raw: false,
                 defval: '',
               });
               resolve(importedRows);
@@ -680,21 +557,33 @@ export class ClinicalDataImportFormComponent {
           continue;
         }
         // Date Formatting
-        const formattedRows = this.formatDateFields(cleanedRows, [
-          'TransactionDate',
-          'ActivityStartDate',
-          'EncounterStartDate',
-          'EncounterEndDate',
-          'LastResubmissionDate',
-          'FirstRemittanceDate',
-          'LastRemittanceDate',
-          'InitialDateSettlement',
-        ]);
+        const dateFields = (this.combinedColumnMeta || [])
+          .filter(
+            (col: any) =>
+              col.dataType === 'date' || col.originalDataType === 'date',
+          )
+          .map((col: any) => col.dataField);
+        const formattedRows = this.formatDateFields(
+          cleanedRows,
+          dateFields.length > 0
+            ? dateFields
+            : [
+                'TransactionDate',
+                'ActivityStartDate',
+                'EncounterStartDate',
+                'EncounterEndDate',
+                'LastResubmissionDate',
+                'FirstRemittanceDate',
+                'LastRemittanceDate',
+                'InitialDateSettlement',
+              ],
+        );
         // Validation
         this.combinedDataSource = this.validateAndSort(
           formattedRows,
           this.combinedColumnMeta,
         );
+        this.updateFilteredDataSource();
         if (!this.combinedDataSource || this.combinedDataSource.length === 0) {
           notify(
             {
@@ -776,75 +665,37 @@ export class ClinicalDataImportFormComponent {
       const newRow = { ...row };
       dateFields.forEach((field) => {
         const val = newRow[field];
-        if (val === null || val === undefined || val === '') {
+        if (val === null || val === undefined || String(val).trim() === '') {
           return;
         }
-        let dateObj: Date | null = null;
-        // Excel Date Object
-        if (val instanceof Date) {
-          dateObj = val;
-        }
-        // Excel Serial Number
-        else if (typeof val === 'number') {
-          const excelEpoch = new Date(1899, 11, 30);
-          dateObj = new Date(excelEpoch.getTime() + val * 86400000);
-        }
-        // String Dates
-        else if (typeof val === 'string') {
-          const value = val.trim();
-          // Try native parse first
-          const parsedDate = new Date(value);
-          if (!isNaN(parsedDate.getTime())) {
-            dateObj = parsedDate;
-          } else {
-            const [datePart, timePart] = value.split(' ');
-            const parts = datePart.split(/[\/\-]/);
-            if (parts.length === 3) {
-              let day = 0;
-              let month = 0;
-              let year = 0;
-              // yyyy/MM/dd
-              if (parts[0].length === 4) {
-                year = +parts[0];
-                month = +parts[1];
-                day = +parts[2];
-              }
-              // MM/dd/yyyy
-              else if (+parts[0] <= 12 && +parts[1] > 12) {
-                month = +parts[0];
-                day = +parts[1];
-                year = +parts[2];
-              }
-              // dd/MM/yyyy
-              else {
-                day = +parts[0];
-                month = +parts[1];
-                year = +parts[2];
-              }
-              let hours = 0;
-              let minutes = 0;
-              let seconds = 0;
-              if (timePart) {
-                const timeParts = timePart.split(':');
-                hours = Number(timeParts[0]) || 0;
-                minutes = Number(timeParts[1]) || 0;
-                seconds = Number(timeParts[2]) || 0;
-              }
-              dateObj = new Date(year, month - 1, day, hours, minutes, seconds);
+        const str = String(val).trim();
+        // String date: only format if it matches dd/MM/yyyy
+        const match = str.match(
+          /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/,
+        );
+        if (match) {
+          const day = parseInt(match[1], 10);
+          const month = parseInt(match[2], 10);
+          const year = parseInt(match[3], 10);
+          if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+            const dateObj = new Date(year, month - 1, day);
+            if (
+              dateObj.getFullYear() === year &&
+              dateObj.getMonth() === month - 1 &&
+              dateObj.getDate() === day
+            ) {
+              const formattedDay = String(day).padStart(2, '0');
+              const formattedMonth = String(month).padStart(2, '0');
+              const timePart = match[4]
+                ? ` ${match[4]}:${match[5]}${match[6] ? ':' + match[6] : ''}`
+                : '';
+              newRow[field] = `${formattedDay}/${formattedMonth}/${year}${timePart}`;
+              return;
             }
           }
         }
-        // Format Output
-        if (dateObj && !isNaN(dateObj.getTime())) {
-          const year = dateObj.getFullYear();
-          const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-          const day = String(dateObj.getDate()).padStart(2, '0');
-          const hours = String(dateObj.getHours()).padStart(2, '0');
-          const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-          newRow[field] = `${year}/${month}/${day}`;
-        } else {
-          newRow[field] = '';
-        }
+        // Keep raw value (e.g. 7/13/2026 or text) so it will be flagged as an error
+        newRow[field] = str;
       });
       return newRow;
     });
@@ -854,57 +705,101 @@ export class ClinicalDataImportFormComponent {
   validateAndSort(data: any[], columnMeta: any[]): any[] {
     const validRows: any[] = [];
     const invalidRows: any[] = [];
+    this.errorColumnDataFields = [];
     for (const row of data) {
       let isValid = true;
       for (const col of columnMeta) {
         let val = row[col.dataField];
+        let fieldHasError = false;
+
         // Mandatory validation
         if (
           col.IsMandatory &&
-          (val === null || val === undefined || val === '')
+          (val === null || val === undefined || String(val).trim() === '')
         ) {
-          isValid = false;
-          break;
+          fieldHasError = true;
         }
-        // Numeric validation
-        if (col.IsNumeric && val !== null && val !== undefined && val !== '') {
-          // Handle comma-separated values and currency symbols
+
+        // Numeric / Decimal / Integer validation
+        const isDecimalCol =
+          col.originalDataType === 'decimal' || col.dataType === 'decimal';
+        const isIntegerCol =
+          (col.dataType === 'number' ||
+            col.originalDataType === 'number') &&
+          !isDecimalCol;
+        const isNumericCol =
+          col.IsNumeric || isDecimalCol || isIntegerCol;
+
+        if (
+          !fieldHasError &&
+          isNumericCol &&
+          val !== null &&
+          val !== undefined &&
+          String(val).trim() !== ''
+        ) {
           const cleanedValue = String(val)
             .trim()
             .replace(/,/g, '')
             .replace(/[^0-9.-]/g, '');
           const numericValue = Number(cleanedValue);
-          if (isNaN(numericValue)) {
-            isValid = false;
-            break;
+          if (
+            isNaN(numericValue) ||
+            (isIntegerCol && !Number.isInteger(numericValue))
+          ) {
+            fieldHasError = true;
+          } else {
+            row[col.dataField] = numericValue;
           }
-          // Store normalized numeric value back into row
-          row[col.dataField] = numericValue;
         }
-        // String Length validation
+
+        // Date format validation (only dd/mm/yyyy allowed)
         if (
-          col.validationRules &&
+          !fieldHasError &&
+          (col.dataType === 'date' || col.originalDataType === 'date') &&
           val !== null &&
           val !== undefined &&
-          val !== ''
+          String(val).trim() !== ''
         ) {
-          const lengthRule = col.validationRules.find(
-            (r: any) => r.type === 'stringLength',
-          );
-          if (lengthRule && String(val).length > lengthRule.max) {
-            isValid = false;
-            break;
+          if (!this.isValidDDMMYYYY(val)) {
+            fieldHasError = true;
           }
         }
+
+        // Max Length validation
+        const maxLimit =
+          col.MaxLength ||
+          col.validationRules?.find((r: any) => r.type === 'stringLength')?.max;
+        if (
+          !fieldHasError &&
+          maxLimit &&
+          val !== null &&
+          val !== undefined &&
+          String(val).trim() !== ''
+        ) {
+          if (String(val).trim().length > maxLimit) {
+            fieldHasError = true;
+          }
+        }
+
         // Facility validation
-        if (col.dataField === 'FacilityID' && val) {
-          const facilityExists = this.selectedFacilityIDs?.includes(val);
+        if (!fieldHasError && col.dataField === 'FacilityID' && val) {
+          const facilityExists = this.selectedFacilityIDs?.includes(
+            String(val).trim(),
+          );
           if (!facilityExists) {
-            isValid = false;
-            break;
+            fieldHasError = true;
+          }
+        }
+
+        if (fieldHasError) {
+          isValid = false;
+          this.hasError = true;
+          if (!this.errorColumnDataFields.includes(col.dataField)) {
+            this.errorColumnDataFields.push(col.dataField);
           }
         }
       }
+      row.__hasError = !isValid;
       if (isValid) {
         validRows.push(row);
       } else {
@@ -945,6 +840,94 @@ export class ClinicalDataImportFormComponent {
       );
       return;
     }
+    this.isValidationTriggered = true;
+    this.clearHighlightedHeaders();
+    this.hasError = false;
+
+    // Check data validity across all records
+    for (const row of this.combinedDataSource) {
+      for (const col of this.combinedColumnMeta) {
+        const val = row[col.dataField];
+        // Mandatory validation
+        if (
+          col.IsMandatory &&
+          (val === null || val === undefined || String(val).trim() === '')
+        ) {
+          this.hasError = true;
+          break;
+        }
+        // Numeric / Decimal / Integer validation
+        const isDecimalCol =
+          col.originalDataType === 'decimal' || col.dataType === 'decimal';
+        const isIntegerCol =
+          (col.dataType === 'number' ||
+            col.originalDataType === 'number') &&
+          !isDecimalCol;
+        const isNumericCol =
+          col.IsNumeric || isDecimalCol || isIntegerCol;
+
+        if (
+          isNumericCol &&
+          val !== null &&
+          val !== undefined &&
+          String(val).trim() !== ''
+        ) {
+          const cleanedValue = String(val).trim().replace(/,/g, '');
+          const numericValue = Number(cleanedValue);
+          if (isNaN(numericValue)) {
+            this.hasError = true;
+            break;
+          }
+          if (isIntegerCol && !Number.isInteger(numericValue)) {
+            this.hasError = true;
+            break;
+          }
+        }
+        // Date format validation (only dd/mm/yyyy allowed)
+        if (
+          (col.dataType === 'date' || col.originalDataType === 'date') &&
+          val !== null &&
+          val !== undefined &&
+          String(val).trim() !== ''
+        ) {
+          if (!this.isValidDDMMYYYY(val)) {
+            this.hasError = true;
+            break;
+          }
+        }
+
+        // Max Length validation
+        const maxLimit =
+          col.MaxLength ||
+          col.validationRules?.find((r: any) => r.type === 'stringLength')?.max;
+        if (
+          maxLimit &&
+          val !== null &&
+          val !== undefined &&
+          String(val).trim() !== ''
+        ) {
+          if (String(val).trim().length > maxLimit) {
+            this.hasError = true;
+            break;
+          }
+        }
+        // Facility validation
+        if (col.dataField === 'FacilityID' && val) {
+          const facilityExists = this.selectedFacilityIDs?.includes(
+            String(val).trim(),
+          );
+          if (!facilityExists) {
+            this.hasError = true;
+            break;
+          }
+        }
+      }
+      if (this.hasError) break;
+    }
+
+    // Repaint grid to trigger onCellPrepared and show error styling
+    this.importGrid?.instance?.repaint();
+
     if (this.hasError) {
       notify(
         {
@@ -959,11 +942,19 @@ export class ClinicalDataImportFormComponent {
     this.isLoading = true;
     this.inactivityService.setApiInProgress(true);
     const chunkSize = 15000;
+    const expectedDataFields = (this.combinedColumnMeta || []).map(
+      (col: any) => col.dataField,
+    );
     const importData = (this.combinedDataSource || []).map((row: any) => {
       const trimmedRow: any = {};
-      for (const key of Object.keys(row)) {
-        const val = row[key];
-        trimmedRow[key] = typeof val === 'string' ? val.trim() : val;
+      for (const field of expectedDataFields) {
+        const val = row[field];
+        trimmedRow[field] =
+          typeof val === 'string'
+            ? val.trim()
+            : val === null || val === undefined
+            ? ''
+            : val;
       }
       return trimmedRow;
     });
@@ -997,12 +988,13 @@ export class ClinicalDataImportFormComponent {
         .Insert_Clinical_Data_Excel_Import(payload)
         .subscribe({
           next: (res: any) => {
-            if (res.flag === '1') {
+            const flag = String(res?.FLAG ?? res?.flag ?? '');
+            if (flag === '1') {
               sendChunk(index + 1);
             } else {
               notify(
                 {
-                  message: 'Import failed.',
+                  message: res?.MESSAGE || res?.message || 'Import failed.',
                   position: {
                     at: 'top right',
                     my: 'top right',
@@ -1040,10 +1032,14 @@ export class ClinicalDataImportFormComponent {
       .Insert_Clinical_Data_Excel_Import(finalData)
       .subscribe({
         next: (res: any) => {
-          if (res.flag === '1') {
+          const flag = String(res?.FLAG ?? res?.flag ?? '');
+          if (flag === '1') {
             notify(
               {
-                message: 'Data imported successfully.',
+                message:
+                  res?.MESSAGE ||
+                  res?.message ||
+                  'Data imported successfully.',
                 position: { at: 'top right', my: 'top right' },
                 displayTime: 1000,
               },
@@ -1053,7 +1049,7 @@ export class ClinicalDataImportFormComponent {
           } else {
             notify(
               {
-                message: 'Import failed.',
+                message: res?.MESSAGE || res?.message || 'Import failed.',
                 position: { at: 'top right', my: 'top right' },
                 displayTime: 1000,
               },
@@ -1160,24 +1156,52 @@ export class ClinicalDataImportFormComponent {
     this.clearHighlightedHeaders();
     this.isExcelpopupOpened = false;
     this.hasError = false;
+    this.isValidationTriggered = false;
+    this.showInvalidRowsOnly = false;
+    this.filteredDataSource = [];
     this.closeForm.emit();
   }
 
   clearHighlightedHeaders() {
-    this.highlightedHeaderIds.forEach((headerId) => {
-      const headerCell = document.getElementById(headerId);
-      if (headerCell) {
-        headerCell.style.backgroundColor = ''; // Reset to default
-        headerCell.style.color = ''; // Reset to default
-      }
-    });
-    this.highlightedHeaderIds = []; // Clear the list
+    this.errorColumnDataFields = [];
+    this.highlightedHeaderIds = [];
+    const gridElem =
+      this.importGrid?.instance?.element() ||
+      document.querySelector('dx-data-grid');
+    if (gridElem) {
+      const headerCells: NodeListOf<HTMLElement> =
+        gridElem.querySelectorAll('.dx-header-row > td');
+      headerCells.forEach((cell: HTMLElement) => {
+        cell.style.backgroundColor = '';
+        cell.style.color = '';
+      });
+    }
   }
 
   onCellPrepared(e: any) {
+    // Header cell prepared
+    if (e.rowType === 'header') {
+      const field = e.column?.dataField;
+      if (field && this.errorColumnDataFields.includes(field)) {
+        e.cellElement.classList.add('error-header-cell');
+        e.cellElement.style.setProperty(
+          'background-color',
+          '#FFC1C3',
+          'important',
+        );
+        e.cellElement.style.setProperty('color', '#FF0000', 'important');
+      } else {
+        e.cellElement.classList.remove('error-header-cell');
+        e.cellElement.style.backgroundColor = '';
+        e.cellElement.style.color = '';
+      }
+      return;
+    }
+
     if (e.rowType !== 'data') {
       return;
     }
+
     const column = this.combinedColumnMeta.find(
       (col: any) => col.dataField === e.column.dataField,
     );
@@ -1189,129 +1213,142 @@ export class ClinicalDataImportFormComponent {
     e.cellElement.style.color = '';
     e.cellElement.style.border = '';
     e.cellElement.removeAttribute('title');
+
+    let cellHasError = false;
+    let errorMessage = '';
+
     // Mandatory validation
     if (
       column.IsMandatory &&
-      (value === null || value === undefined || value === '')
+      (value === null || value === undefined || String(value).trim() === '')
     ) {
-      e.cellElement.style.border = '2px solid #FFC1C3';
-      e.cellElement.style.color = 'red';
-      this.hasError = true;
-      this.highlightColumnHeader(e.column?.headerId);
-      this.createTooltip(e.cellElement, 'Error: This field is required');
-      return;
+      cellHasError = true;
+      errorMessage = `Error: ${column.caption || column.dataField} is required`;
     }
-    // Numeric validation
+
+    // Numeric / Decimal / Integer validation
+    const isDecimalCol =
+      column.originalDataType === 'decimal' || column.dataType === 'decimal';
+    const isIntegerCol =
+      (column.dataType === 'number' ||
+        column.originalDataType === 'number') &&
+      !isDecimalCol;
+    const isNumericCol =
+      column.IsNumeric || isDecimalCol || isIntegerCol;
+
     if (
-      column.IsNumeric &&
+      !cellHasError &&
+      isNumericCol &&
       value !== null &&
       value !== undefined &&
-      value !== '' &&
-      isNaN(Number(value))
+      String(value).trim() !== ''
     ) {
-      e.cellElement.style.border = '2px solid #FFC1C3';
-      e.cellElement.style.color = 'red';
-      this.hasError = true;
-      this.highlightColumnHeader(e.column?.headerId);
-      this.createTooltip(e.cellElement, 'Error: Value must be numeric');
-      return;
-    }
-    // String Length validation
-    if (
-      column.validationRules &&
-      value !== null &&
-      value !== undefined &&
-      value !== ''
-    ) {
-      const lengthRule = column.validationRules.find(
-        (r: any) => r.type === 'stringLength',
-      );
-      if (lengthRule && String(value).length > lengthRule.max) {
-        e.cellElement.style.border = '2px solid #FFC1C3';
-        e.cellElement.style.color = 'red';
-        this.hasError = true;
-        this.highlightColumnHeader(e.column?.headerId);
-        this.createTooltip(
-          e.cellElement,
-          `Error: Max length is ${lengthRule.max}`,
-        );
-        return;
+      const cleanedValue = String(value).trim().replace(/,/g, '');
+      const numericValue = Number(cleanedValue);
+      if (isNaN(numericValue)) {
+        cellHasError = true;
+        errorMessage = 'Error: Value must be numeric';
+      } else if (isIntegerCol && !Number.isInteger(numericValue)) {
+        cellHasError = true;
+        errorMessage = 'Error: Value must be an integer (whole number)';
       }
     }
+
+    // Date format validation (only dd/mm/yyyy allowed)
+    if (
+      !cellHasError &&
+      (column.dataType === 'date' || column.originalDataType === 'date') &&
+      value !== null &&
+      value !== undefined &&
+      String(value).trim() !== ''
+    ) {
+      if (!this.isValidDDMMYYYY(value)) {
+        cellHasError = true;
+        errorMessage =
+          'Error: Invalid date format. Only dd/MM/yyyy is allowed';
+      }
+    }
+
+    // Max Length validation
+    const maxLimit =
+      column.MaxLength ||
+      column.validationRules?.find((r: any) => r.type === 'stringLength')?.max;
+    if (
+      !cellHasError &&
+      maxLimit &&
+      value !== null &&
+      value !== undefined &&
+      String(value).trim() !== ''
+    ) {
+      if (String(value).trim().length > maxLimit) {
+        cellHasError = true;
+        errorMessage = `Error: Max length is ${maxLimit}`;
+      }
+    }
+
     // Facility validation
-    if (column.dataField === 'FacilityID' && value) {
-      const facilityExists = this.selectedFacilityIDs?.includes(value);
+    if (!cellHasError && column.dataField === 'FacilityID' && value) {
+      const facilityExists = this.selectedFacilityIDs?.includes(
+        String(value).trim(),
+      );
       if (!facilityExists) {
-        e.cellElement.style.border = '2px solid #FFC1C3';
-        e.cellElement.style.color = 'red';
-        this.hasError = true;
-        this.highlightColumnHeader(e.column?.headerId);
-        this.createTooltip(e.cellElement, 'Error: Invalid Facility');
+        cellHasError = true;
+        errorMessage = 'Error: Invalid Facility ID';
       }
     }
-    // CPT Code validation
-    // if (column.dataField === 'CPTCode' && value) {
-    //   const exists = this.cptCodeList.some(
-    //     (d) =>
-    //       d.DESCRIPTION?.toLowerCase().trim() ===
-    //       value.toLowerCase().trim()
-    //   );
-    //
-    //   if (!exists) {
-    //     e.cellElement.style.border = '2px solid #FFC1C3';
-    //     e.cellElement.style.color = 'red';
-    //     this.hasError = true;
-    //     this.createTooltip(
-    //       e.cellElement,
-    //       'Error: CPT Code Not Found'
-    //     );
-    //   }
-    // }
-    // Ordering Clinician validation
-    // if (column.dataField === 'OrderingClinician' && value) {
-    //   const exists = this.clinicianLicenseList.some(
-    //     (d) =>
-    //       d.DESCRIPTION?.toLowerCase().trim() ===
-    //       value.toLowerCase().trim()
-    //   );
-    //
-    //   if (!exists) {
-    //     e.cellElement.style.border = '2px solid #FFC1C3';
-    //     e.cellElement.style.color = 'red';
-    //     this.hasError = true;
-    //     this.createTooltip(
-    //       e.cellElement,
-    //       'Error: Clinician Not Found'
-    //     );
-    //   }
-    // }
-    // Clinician validation
-    // if (column.dataField === 'Clinician' && value) {
-    //   const exists = this.clinicianLicenseList.some(
-    //     (d) =>
-    //       d.DESCRIPTION?.toLowerCase().trim() ===
-    //       value.toLowerCase().trim()
-    //   );
-    //
-    //   if (!exists) {
-    //     e.cellElement.style.border = '2px solid #FFC1C3';
-    //     e.cellElement.style.color = 'red';
-    //     this.hasError = true;
-    //     this.createTooltip(
-    //       e.cellElement,
-    //       'Error: Clinician Not Found'
-    //     );
-    //   }
-    // }
+
+    if (cellHasError) {
+      e.cellElement.style.border = '2px solid #FFC1C3';
+      e.cellElement.style.color = 'red';
+      this.hasError = true;
+      this.highlightColumnHeader(e.column?.dataField, e.columnIndex);
+      this.createTooltip(e.cellElement, errorMessage);
+    }
   }
 
-  highlightColumnHeader(headerId: string) {
-    const headerCell = document.getElementById(headerId);
-    if (headerCell) {
-      headerCell.style.backgroundColor = '#FFC1C3';
-      headerCell.style.color = '#FF0000';
-      if (!this.highlightedHeaderIds.includes(headerId)) {
-        this.highlightedHeaderIds.push(headerId);
+  highlightColumnHeader(dataField?: string, columnIndex?: number) {
+    if (!dataField) return;
+    if (!this.errorColumnDataFields.includes(dataField)) {
+      this.errorColumnDataFields.push(dataField);
+    }
+    const gridElem =
+      this.importGrid?.instance?.element() ||
+      document.querySelector('dx-data-grid');
+    if (gridElem) {
+      const headerCells: NodeListOf<HTMLElement> =
+        gridElem.querySelectorAll('.dx-header-row > td');
+      if (
+        columnIndex !== undefined &&
+        columnIndex >= 0 &&
+        headerCells[columnIndex]
+      ) {
+        headerCells[columnIndex].classList.add('error-header-cell');
+        headerCells[columnIndex].style.setProperty(
+          'background-color',
+          '#FFC1C3',
+          'important',
+        );
+        headerCells[columnIndex].style.setProperty(
+          'color',
+          '#FF0000',
+          'important',
+        );
+      } else {
+        const colIdx =
+          this.importGrid?.instance?.getVisibleColumnIndex(dataField);
+        if (colIdx !== undefined && colIdx >= 0 && headerCells[colIdx]) {
+          headerCells[colIdx].classList.add('error-header-cell');
+          headerCells[colIdx].style.setProperty(
+            'background-color',
+            '#FFC1C3',
+            'important',
+          );
+          headerCells[colIdx].style.setProperty(
+            'color',
+            '#FF0000',
+            'important',
+          );
+        }
       }
     }
   }

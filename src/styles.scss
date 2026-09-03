@@ -1629,6 +1629,14 @@ textarea {
   text-align: center;
 }
 
+.dx-datagrid .dx-header-row > td.error-header-cell,
+.dx-datagrid-headers .dx-header-row > td.error-header-cell,
+.dx-datagrid-headers .dx-header-row > td.error-header-cell .dx-datagrid-text-content,
+.dx-datagrid .dx-header-row > td.error-header-cell .dx-column-indicators {
+  background-color: #FFC1C3 !important;
+  color: #FF0000 !important;
+}
+
 .detail-grid {
   --grid-header-bg: var(--detail-grid-header-bg);
 }

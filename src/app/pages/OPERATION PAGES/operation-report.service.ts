@@ -36,9 +36,9 @@ export class OperationReportService {
     return this.http.post(url, data);
   }
 
-  Insert_Finance_Data_Import(data: any) {
-    const url = `${this.BASE_URL}FinanceDataImport/insert`;
-    return this.http.post(url, data);
+  GetClinicalDataImportColumns() {
+    const url = `${this.BASE_URL}ClinicalData/GetClinicalDataImportColumns`;
+    return this.http.post<any>(url, {});
   }
 
   getFinanceDataImportLog() {
