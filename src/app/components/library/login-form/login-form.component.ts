@@ -158,6 +158,9 @@ export class LoginFormComponent implements OnInit, OnDestroy {
           response.UserRoleID ??
           response.userRoleID;
 
+        // TEMPORARILY DISABLED: OTP Verification Screen
+        // To re-enable OTP, uncomment this block and the dx-popup in login-form.component.html
+        /*
         if (Number(userRoleId) === 2) {
           this.sharedService.triggerLoadComponent(false);
           const rawEmail =
@@ -176,6 +179,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
           this.startOtpTimer();
           return;
         }
+        */
 
         this.completeLogin(response);
       } else if (response.flag == 2 && !forcelogin) {

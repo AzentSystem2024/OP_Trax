@@ -66,10 +66,6 @@
             }"
           >
             <dxo-label text="Specialty"></dxo-label>
-            <dxi-validation-rule
-              type="required"
-              message="Specialty is required"
-            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="ICDCode"
@@ -90,6 +86,10 @@
             }"
           >
             <dxo-label text="ADOC Rule"></dxo-label>
+            <dxi-validation-rule
+              type="required"
+              message="ADOC Rule is required"
+            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="ADOCClassID"
@@ -103,12 +103,6 @@
             }"
           >
             <dxo-label text="ADOC Class"></dxo-label>
-            <dxi-validation-rule
-              type="custom"
-              [reevaluate]="true"
-              message="ADOC Class is required"
-              [validationCallback]="validateAdocClass"
-            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="EffectFrom"
@@ -223,7 +217,11 @@
       ></dxo-lookup>
     </dxi-column>
     <dxi-column dataField="ICDCode" caption="ICD Code"></dxi-column>
-    <dxi-column dataField="ADOCStatusID" caption="ADOC Rule">
+    <dxi-column
+      dataField="ADOCStatusID"
+      caption="ADOC Rule"
+      [calculateDisplayValue]="calculateAdocRuleDisplay"
+    >
       <dxo-lookup
         [dataSource]="adocRuleList"
         valueExpr="ID"
@@ -254,9 +252,15 @@
     [height]="'auto'"
     [showCloseButton]="true"
     [hideOnOutsideClick]="false"
+    (onHiding)="onPopupHiding()"
   >
     <div *dxTemplate="let data of 'content'">
-      <dx-form #addForm [formData]="newRule" labelMode="floating">
+      <dx-form
+        *ngIf="isAddPopupVisible"
+        #addForm
+        [formData]="newRule"
+        labelMode="floating"
+      >
         <dxi-item itemType="group" [colCount]="2" [colSpan]="2">
           <dxi-item
             dataField="CPTCode"
@@ -297,10 +301,6 @@
             }"
           >
             <dxo-label text="Specialty"></dxo-label>
-            <dxi-validation-rule
-              type="required"
-              message="Specialty is required"
-            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="ICDCode"
@@ -322,6 +322,10 @@
             }"
           >
             <dxo-label text="ADOC Rule"></dxo-label>
+            <dxi-validation-rule
+              type="required"
+              message="ADOC Rule is required"
+            ></dxi-validation-rule>
           </dxi-item>
           <dxi-item
             dataField="ADOCClassID"
@@ -334,13 +338,7 @@
               readOnly: isAdocClassReadOnly,
             }"
           >
-            <dxo-label text="ADOC Class"></dxo-label>
-            <dxi-validation-rule
-              type="custom"
-              [reevaluate]="true"
-              message="ADOC Class is required"
-              [validationCallback]="validateAdocClass"
-            ></dxi-validation-rule>
+            <dxo-label text="ADOC Class (C Series)"></dxo-label>
           </dxi-item>
           <dxi-item
             dataField="EffectFrom"

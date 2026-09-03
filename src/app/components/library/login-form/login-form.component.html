@@ -103,6 +103,8 @@
   </dx-form>
 </form>
 
+<!-- TEMPORARILY DISABLED: OTP Popup screen - uncomment below to re-enable OTP verification -->
+<!--
 <dx-popup
   [width]="440"
   [height]="'auto'"
@@ -189,7 +191,6 @@
       ></dx-text-box>
     </div>
 
-    <!-- OTP Countdown Timer & Resend Button -->
     <div class="otp-timer-container">
       <span *ngIf="!canResendOtp" class="timer-text">
         Resend OTP in <strong>{{ otpCountdown }}s</strong>
@@ -220,4 +221,5 @@
     </div>
   </div>
 </dx-popup>
+-->
 

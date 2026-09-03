@@ -83,7 +83,10 @@ export class ExclusionInclusionComponent {
                 ...item,
                 ClinicianID: item.ClinicianID === 0 ? null : item.ClinicianID,
                 SpecialtyID: item.SpecialtyID === 0 ? null : item.SpecialtyID,
-                ADOCClassID: item.ADOCClassID === 0 ? null : item.ADOCClassID,
+                ADOCClassID:
+                  item.ADOCClassID === null || item.ADOCClassID === undefined
+                    ? 0
+                    : item.ADOCClassID,
                 SlNo: index + 1,
               }),
             );
@@ -120,7 +123,7 @@ export class ExclusionInclusionComponent {
       this.adocRuleList = res.data || res || [];
     });
 
-    this.dataService.Get_GropDown('ADOC_CLASS').subscribe((res: any) => {
+    this.dataService.Get_GropDown('ADOC_CLASS_EXCINCL').subscribe((res: any) => {
       this.adocClassList = res;
     });
 
@@ -150,23 +153,46 @@ export class ExclusionInclusionComponent {
   showNewPopup() {
     this.newRule = {
       CPTCode: null,
-      Clinician: null,
-      Specialty: null,
+      ClinicianID: null,
+      SpecialtyID: null,
       ICDCode: null,
-      ADOCRule: null,
-      ADOCClass: null,
+      ADOCStatusID: null,
+      ADOCClassID: null,
       EffectFrom: null,
     };
     this.isSpecialtyReadOnly = false;
     this.isAdocClassReadOnly = false;
+    this.addForm?.instance?.reset();
     this.isAddPopupVisible = true;
   }
 
-  validateAdocClass = (e: any) => {
-    if (this.isAdocClassReadOnly) {
-      return true;
+  onPopupHiding() {
+    this.newRule = {
+      CPTCode: null,
+      ClinicianID: null,
+      SpecialtyID: null,
+      ICDCode: null,
+      ADOCStatusID: null,
+      ADOCClassID: null,
+      EffectFrom: null,
+    };
+    this.isSpecialtyReadOnly = false;
+    this.isAdocClassReadOnly = false;
+    this.addForm?.instance?.reset();
+  }
+
+  calculateAdocRuleDisplay = (rowData: any) => {
+    const id = Number(rowData?.ADOCStatusID);
+    if (id === 1) {
+      return 'Exclusion';
     }
-    return e.value !== null && e.value !== undefined && e.value !== '';
+    if (id === 2) {
+      return 'Inclusion';
+    }
+    const matchedRule = this.adocRuleList.find(
+      (r: any) => r.ID === rowData?.ADOCStatusID,
+    );
+    return matchedRule?.DESCRIPTION || rowData?.ADOCStatus || '';
   };
 
   onClinicianChangedInPopup = (e: any) => {
