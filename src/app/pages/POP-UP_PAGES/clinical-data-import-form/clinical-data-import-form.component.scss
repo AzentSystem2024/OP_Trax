@@ -67,3 +67,9 @@
   background-color: #FFC1C3 !important;
   color: #FF0000 !important;
 }
+
+::ng-deep .dx-loadpanel-message {
+  white-space: pre-line !important;
+  text-align: center;
+  line-height: 1.4;
+}

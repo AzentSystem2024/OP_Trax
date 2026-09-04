@@ -54,6 +54,9 @@ export class ClinicalDataImportFormComponent {
   importResults: any[] = [];
   isResponsePopupOpened: boolean = false;
   isExcelpopupOpened: boolean = false;
+  loadingMessage: string = 'Saving...';
+  grouperTotal: number = 0;
+  grouperCompleted: number = 0;
   totalFiles = 0;
   uploadedCount = 0;
   successCount = 0;
@@ -164,6 +167,16 @@ export class ClinicalDataImportFormComponent {
     this.loadColumnMetadata();
   }
 
+  isInvalidEncounterType(val: any): boolean {
+    if (val === null || val === undefined) return true;
+    const str = String(val).trim();
+    if (str === '' || str === '0') return true;
+    const rawWithoutCommas = str.replace(/,/g, '');
+    const num = Number(rawWithoutCommas);
+    if (isNaN(num) || num <= 0 || !Number.isInteger(num)) return true;
+    return false;
+  }
+
   // ================== Load column metadata from API ==================
   async loadColumnMetadata(): Promise<void> {
     try {
@@ -181,8 +194,10 @@ export class ClinicalDataImportFormComponent {
 
   mapColumnMetadata(apiColumns: any[]): any[] {
     return apiColumns.map((col: any) => {
+      const isEncounterType = col.dataField?.toLowerCase() === 'encountertype';
+      const isMandatory = !!col.IsMandatory || isEncounterType;
       const rules: any[] = [];
-      if (col.IsMandatory) {
+      if (isMandatory) {
         rules.push({ type: 'required' });
       }
       const rawMax = col.MaxLength ?? col.maxLength ?? col.validationRules;
@@ -191,29 +206,19 @@ export class ClinicalDataImportFormComponent {
         rules.push({ type: 'stringLength', max: maxLen });
       }
 
-      let dataType = col.dataType || 'string';
-      let format: any = undefined;
-
-      if (col.dataType === 'decimal') {
-        dataType = 'number';
-        format = { type: 'fixedPoint', precision: 2 };
-      } else if (col.dataType === 'date') {
-        dataType = 'string';
-        format = undefined;
-      }
-
       return {
         dataField: col.dataField,
         caption: col.caption,
-        dataType: dataType,
-        format: format,
+        dataType: 'string',
+        format: undefined,
         validationRules: rules,
         MaxLength: !isNaN(maxLen) && maxLen > 0 ? maxLen : null,
-        IsMandatory: !!col.IsMandatory,
+        IsMandatory: isMandatory,
         IsNumeric:
           !!col.IsNumeric ||
           col.dataType === 'number' ||
-          col.dataType === 'decimal',
+          col.dataType === 'decimal' ||
+          isEncounterType,
         originalDataType: col.dataType,
         rawValidationRules: rawMax,
       };
@@ -312,11 +317,23 @@ export class ClinicalDataImportFormComponent {
     return `${Math.round(ratio * 100)}% (${value}/${this.totalFiles} Completed, ${pending} Pending)`;
   };
 
-  // ================ Called when a file is selected
-  async onFileSelected(event: any, fileInput: HTMLInputElement): Promise<void> {
+  resetValidationState() {
     this.hasError = false;
     this.isValidationTriggered = false;
     this.showInvalidRowsOnly = false;
+    this.errorColumnDataFields = [];
+    this.highlightedHeaderIds = [];
+    this.combinedDataSource = [];
+    this.filteredDataSource = [];
+    this.grouperTotal = 0;
+    this.grouperCompleted = 0;
+    this.loadingMessage = 'Saving...';
+    this.clearHighlightedHeaders();
+  }
+
+  // ================ Called when a file is selected
+  async onFileSelected(event: any, fileInput: HTMLInputElement): Promise<void> {
+    this.resetValidationState();
     this.importResults = [];
     this.isExcelLoading = true;
     this.inactivityService.setApiInProgress(true);
@@ -720,12 +737,20 @@ export class ClinicalDataImportFormComponent {
           fieldHasError = true;
         }
 
+        // EncounterType validation (Mandatory, cannot be 0, negative, decimal, or string)
+        if (!fieldHasError && col.dataField?.toLowerCase() === 'encountertype') {
+          if (this.isInvalidEncounterType(val)) {
+            fieldHasError = true;
+          }
+        }
+
         // Numeric / Decimal / Integer validation
         const isDecimalCol =
           col.originalDataType === 'decimal' || col.dataType === 'decimal';
         const isIntegerCol =
           (col.dataType === 'number' ||
-            col.originalDataType === 'number') &&
+            col.originalDataType === 'number' ||
+            col.dataField?.toLowerCase() === 'encountertype') &&
           !isDecimalCol;
         const isNumericCol =
           col.IsNumeric || isDecimalCol || isIntegerCol;
@@ -737,18 +762,13 @@ export class ClinicalDataImportFormComponent {
           val !== undefined &&
           String(val).trim() !== ''
         ) {
-          const cleanedValue = String(val)
-            .trim()
-            .replace(/,/g, '')
-            .replace(/[^0-9.-]/g, '');
+          const cleanedValue = String(val).trim().replace(/,/g, '');
           const numericValue = Number(cleanedValue);
           if (
             isNaN(numericValue) ||
             (isIntegerCol && !Number.isInteger(numericValue))
           ) {
             fieldHasError = true;
-          } else {
-            row[col.dataField] = numericValue;
           }
         }
 
@@ -856,12 +876,22 @@ export class ClinicalDataImportFormComponent {
           this.hasError = true;
           break;
         }
+
+        // EncounterType validation (Mandatory, cannot be 0 or non-integer)
+        if (col.dataField?.toLowerCase() === 'encountertype') {
+          if (this.isInvalidEncounterType(val)) {
+            this.hasError = true;
+            break;
+          }
+        }
+
         // Numeric / Decimal / Integer validation
         const isDecimalCol =
           col.originalDataType === 'decimal' || col.dataType === 'decimal';
         const isIntegerCol =
           (col.dataType === 'number' ||
-            col.originalDataType === 'number') &&
+            col.originalDataType === 'number' ||
+            col.dataField?.toLowerCase() === 'encountertype') &&
           !isDecimalCol;
         const isNumericCol =
           col.IsNumeric || isDecimalCol || isIntegerCol;
@@ -940,6 +970,7 @@ export class ClinicalDataImportFormComponent {
     }
     this.isSaving = true;
     this.isLoading = true;
+    this.loadingMessage = 'Saving...';
     this.inactivityService.setApiInProgress(true);
     const chunkSize = 15000;
     const expectedDataFields = (this.combinedColumnMeta || []).map(
@@ -1018,6 +1049,30 @@ export class ClinicalDataImportFormComponent {
     sendChunk(0);
   }
 
+  async processGrouperClaims(claimUids: number[]): Promise<void> {
+    this.grouperTotal = claimUids.length;
+    this.grouperCompleted = 0;
+    this.isLoading = true;
+    this.isSaving = true;
+    this.loadingMessage = `Applying Grouper\n0/${this.grouperTotal}`;
+    this.inactivityService.setApiInProgress(true);
+
+    for (const uid of claimUids) {
+      const payload = { ClaimUID: uid };
+      try {
+        await firstValueFrom(
+          this.operationservice.getClinicalDataInPopup(payload),
+        );
+      } catch (err) {
+        console.error(`Error applying grouper for ClaimUID ${uid}:`, err);
+      }
+      this.grouperCompleted++;
+      this.loadingMessage = `Applying Grouper\n${this.grouperCompleted}/${this.grouperTotal}`;
+    }
+
+    this.inactivityService.setApiInProgress(false);
+  }
+
   // ======== New function to handle final request with consistent batchNo ======
   sendFinalRequest(batchNo: string) {
     const finalData = {
@@ -1031,20 +1086,49 @@ export class ClinicalDataImportFormComponent {
     this.operationservice
       .Insert_Clinical_Data_Excel_Import(finalData)
       .subscribe({
-        next: (res: any) => {
+        next: async (res: any) => {
           const flag = String(res?.FLAG ?? res?.flag ?? '');
           if (flag === '1') {
-            notify(
-              {
-                message:
-                  res?.MESSAGE ||
-                  res?.message ||
-                  'Data imported successfully.',
-                position: { at: 'top right', my: 'top right' },
-                displayTime: 1000,
-              },
-              'success',
-            );
+            const rawClaimUids =
+              res?.ClaimUID ??
+              res?.claimUID ??
+              res?.ClaimUIDs ??
+              res?.claimUIDs ??
+              res?.data ??
+              [];
+            const claimUids: number[] = Array.isArray(rawClaimUids)
+              ? rawClaimUids
+                  .map((x: any) => Number(x))
+                  .filter((x: number) => !isNaN(x) && x > 0)
+              : [];
+
+            if (this.isApplygrouper && claimUids.length > 0) {
+              await this.processGrouperClaims(claimUids);
+              notify(
+                {
+                  message: 'Data imported and grouper applied successfully.',
+                  position: { at: 'top right', my: 'top right' },
+                  displayTime: 2000,
+                },
+                'success',
+              );
+            } else {
+              notify(
+                {
+                  message:
+                    res?.MESSAGE ||
+                    res?.message ||
+                    'Data imported successfully.',
+                  position: { at: 'top right', my: 'top right' },
+                  displayTime: 1000,
+                },
+                'success',
+              );
+            }
+            this.isLoading = false;
+            this.isSaving = false;
+            this.isExcelpopupOpened = false;
+            this.resetValidationState();
             this.close();
           } else {
             notify(
@@ -1055,16 +1139,16 @@ export class ClinicalDataImportFormComponent {
               },
               'error',
             );
+            this.isLoading = false;
+            this.isSaving = false;
           }
-          this.isLoading = false;
-          this.isSaving = false;
-          this.inactivityService.setApiInProgress(false); // 🔥 stop progress
+          this.inactivityService.setApiInProgress(false);
         },
         error: (error) => {
           this.handleError(error);
           this.isLoading = false;
           this.isSaving = false;
-          this.inactivityService.setApiInProgress(false); // 🔥 stop progress
+          this.inactivityService.setApiInProgress(false);
         },
       });
   }
@@ -1126,10 +1210,15 @@ export class ClinicalDataImportFormComponent {
   }
 
   onImport(): void {
+    this.resetValidationState();
+    if (this.fileInputRef?.nativeElement) {
+      this.fileInputRef.nativeElement.value = '';
+    }
     this.fileInputRef.nativeElement.click(); // just trigger file dialog
   }
 
   close() {
+    this.resetValidationState();
     this.closeForm.emit();
   }
 
@@ -1147,19 +1236,29 @@ export class ClinicalDataImportFormComponent {
   }
 
   onXmlImportClose() {
+    this.resetValidationState();
     this.isResponsePopupOpened = false;
     this.importResults = [];
     this.closeForm.emit();
   }
 
   CloseExcelForm() {
-    this.clearHighlightedHeaders();
+    this.resetValidationState();
     this.isExcelpopupOpened = false;
-    this.hasError = false;
-    this.isValidationTriggered = false;
-    this.showInvalidRowsOnly = false;
-    this.filteredDataSource = [];
     this.closeForm.emit();
+  }
+
+  onExcelPopupHiding(e: any) {
+    if (this.isLoading || this.isSaving) {
+      e.cancel = true;
+      notify(
+        {
+          message: 'Please wait until the process is complete.',
+          position: { at: 'top right', my: 'top right' },
+        },
+        'warning',
+      );
+    }
   }
 
   clearHighlightedHeaders() {
@@ -1172,9 +1271,12 @@ export class ClinicalDataImportFormComponent {
       const headerCells: NodeListOf<HTMLElement> =
         gridElem.querySelectorAll('.dx-header-row > td');
       headerCells.forEach((cell: HTMLElement) => {
+        cell.classList.remove('error-header-cell');
         cell.style.backgroundColor = '';
         cell.style.color = '';
       });
+      const tooltips = gridElem.querySelectorAll('.error-tooltip');
+      tooltips.forEach((t: Element) => t.remove());
     }
   }
 
@@ -1213,6 +1315,8 @@ export class ClinicalDataImportFormComponent {
     e.cellElement.style.color = '';
     e.cellElement.style.border = '';
     e.cellElement.removeAttribute('title');
+    const existingTooltips = e.cellElement.querySelectorAll('.error-tooltip');
+    existingTooltips.forEach((t: HTMLElement) => t.remove());
 
     let cellHasError = false;
     let errorMessage = '';
@@ -1226,12 +1330,21 @@ export class ClinicalDataImportFormComponent {
       errorMessage = `Error: ${column.caption || column.dataField} is required`;
     }
 
+    // EncounterType validation (Mandatory, cannot be 0 or non-integer)
+    if (!cellHasError && column.dataField?.toLowerCase() === 'encountertype') {
+      if (this.isInvalidEncounterType(value)) {
+        cellHasError = true;
+        errorMessage = 'Error: Encounter Type must be a whole number';
+      }
+    }
+
     // Numeric / Decimal / Integer validation
     const isDecimalCol =
       column.originalDataType === 'decimal' || column.dataType === 'decimal';
     const isIntegerCol =
       (column.dataType === 'number' ||
-        column.originalDataType === 'number') &&
+        column.originalDataType === 'number' ||
+        column.dataField?.toLowerCase() === 'encountertype') &&
       !isDecimalCol;
     const isNumericCol =
       column.IsNumeric || isDecimalCol || isIntegerCol;

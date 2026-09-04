@@ -1,5 +1,6 @@
 import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
 import notify from 'devextreme/ui/notify';
+import { confirm } from 'devextreme/ui/dialog';
 import {
   DxButtonModule,
   DxDataGridComponent,
@@ -435,7 +436,7 @@ export class ClinicalDataComponent implements OnInit {
 
   CloseForm() {
     this.isAddFormPopupOpened = false;
-    // this.dataGrid.instance.refresh();
+    this.dataGrid?.instance?.refresh();
   }
 
   //===== Export data ============
@@ -454,6 +455,55 @@ export class ClinicalDataComponent implements OnInit {
     this.selectedRowIndex = e.row.rowIndex;
 
     this.isRowPopupVisible = true;
+  };
+
+  isDeleteVisible = (e: any) => {
+    return Number(e?.row?.data?.XMLBatchID || 0) === 0;
+  };
+
+  onDeleteClick = async (e: any) => {
+    const claimUID = e.row?.data?.ClaimUID;
+    if (!claimUID) {
+      this.notificationService.showNotification(
+        'Invalid Claim UID.',
+        'warning',
+      );
+      return;
+    }
+
+    const result = await confirm(
+      'Are you sure you want to delete this record?',
+      'Confirm Delete',
+    );
+    if (!result) {
+      return;
+    }
+
+    this.inactivityService.setApiInProgress(true);
+    this.operationService.delete_Clinical_Data(claimUID).subscribe({
+      next: (res: any) => {
+        this.inactivityService.setApiInProgress(false);
+        if (res?.flag === '1' || res?.flag === 1) {
+          this.notificationService.showNotification(
+            res?.message || 'Record deleted successfully.',
+            'success',
+          );
+          this.dataGrid.instance.refresh();
+        } else {
+          this.notificationService.showNotification(
+            res?.message || 'Failed to delete record.',
+            'error',
+          );
+        }
+      },
+      error: (err: any) => {
+        this.inactivityService.setApiInProgress(false);
+        this.notificationService.showNotification(
+          'Error deleting record.',
+          'error',
+        );
+      },
+    });
   };
 
   onPopupDataLoaded(rowData: any) {

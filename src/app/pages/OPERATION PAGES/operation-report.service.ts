@@ -317,4 +317,9 @@ export class OperationReportService {
     const url = `${this.BASE_URL}XMLBatch/deletebatch`;
     return this.http.post<any>(url, payload);
   }
+
+  delete_Clinical_Data(claimUID: any) {
+    const url = `${this.BASE_URL}ClinicalData/delete/${claimUID}`;
+    return this.http.post<any>(url, {});
+  }
 }
