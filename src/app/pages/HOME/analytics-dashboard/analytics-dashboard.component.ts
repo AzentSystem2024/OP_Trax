@@ -1,6 +1,6 @@
 import { Component, NgModule, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services';
 import {
   DxButtonModule,
@@ -52,13 +52,19 @@ export class AnalyticsDashboardComponent {
   userID: any;
   facilityData: any;
   selectedFacilityIDs: any[] = [];
+  menuPrevilage: any;
 
   constructor(
     private dataService: DataService,
     private service: ReportService,
     private masterService: MasterReportService,
     private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {
+    this.activatedRoute.url.subscribe((segments) => {
+      const fullUrl = segments.map((s) => s.path).join('/');
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+    });
     const logData = JSON.parse(localStorage.getItem('logData') || '{}');
     const userRoleId = Number(
       logData?.UserRoleID ??

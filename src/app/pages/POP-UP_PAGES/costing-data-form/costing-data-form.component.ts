@@ -44,6 +44,7 @@ export class CostingDataFormComponent implements OnInit {
   dataGrid!: DxDataGridComponent;
 
   @Input() selectedRowData: any = null;
+  @Input() menuPrevilage: any;
 
   //pagination side
   readonly allowedPageSizes = [25, 50, 'all'];

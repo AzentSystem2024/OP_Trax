@@ -60,7 +60,7 @@ export class ClinicianMajorComponent {
 
   currentPathName: any;
   initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
   addButtonOptions: any;
 
   constructor(

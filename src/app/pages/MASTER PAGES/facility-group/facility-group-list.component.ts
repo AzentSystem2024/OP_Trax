@@ -61,7 +61,7 @@ export class FacilityGroupListComponent {
         });
       }),
   });
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
   addButtonOptions: any;
 
   isFilterRowVisible: boolean = false;

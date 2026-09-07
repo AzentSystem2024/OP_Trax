@@ -14,6 +14,7 @@ import { SystemServicesService } from '../system-services.service';
 import DataSource from 'devextreme/data/data_source';
 import { DataService } from 'src/app/services';
 import notify from 'devextreme/ui/notify';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-license-info',
@@ -71,12 +72,18 @@ export class LicenseInfoComponent implements OnInit {
   initialized: boolean;
   isRowSearchVisible: boolean = false;
   importButtonVisibility: any;
+  menuPrevilage: any;
 
   constructor(
     private service: ReportService,
     private systemService: SystemServicesService,
     private dataService: DataService,
+    private activatedRoute: ActivatedRoute,
   ) {
+    this.activatedRoute.url.subscribe((segments) => {
+      const fullUrl = segments.map((s) => s.path).join('/');
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+    });
     this.importButtonVisibility = false;
     const sessionData = localStorage.getItem('logData');
     if (sessionData) {

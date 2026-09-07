@@ -19,7 +19,7 @@ import { ReportService } from 'src/app/services/Report-data.service';
 import { CommonModule } from '@angular/common';
 import { FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services';
 import { OperationReportService } from '../operation-report.service';
 import { ClinicalDataImportFormModule } from '../../POP-UP_PAGES/clinical-data-import-form/clinical-data-import-form.component';
@@ -111,6 +111,7 @@ export class ClinicalDataComponent implements OnInit {
   isLookupLoading: boolean = false;
   isMultiProcessing: boolean = false;
   processProgressMessage: string = '0/0 completed';
+  menuPrevilage: any;
 
   constructor(
     private service: ReportService,
@@ -122,7 +123,12 @@ export class ClinicalDataComponent implements OnInit {
     private notificationService: NotificationService,
     private inactivityService: InactivityService,
     private reportengine: ReportEngineService,
+    private activatedRoute: ActivatedRoute,
   ) {
+    this.activatedRoute.url.subscribe((segments) => {
+      const fullUrl = segments.map((s) => s.path).join('/');
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+    });
     this.minDate = new Date(2023, 0, 1);
     this.maxDate = new Date(); // Set the maximum date
     //============Year field dataSource===============

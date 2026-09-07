@@ -70,7 +70,7 @@ export class ImportMasterDataComponent implements OnInit {
 
   addButtonOptions: any;
   isFilterRowVisible: boolean = false;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
   constructor(
     private service: MasterReportService,
     private router: Router,

@@ -171,6 +171,7 @@ export class ReportService {
       exportDataGridToXLSX({
         component: e.component,
         worksheet,
+        keepColumnWidths: false,
         autoFilterEnabled: true,
         customizeCell: ({ gridCell, excelCell }) => {
           // Skip summary rows in Excel

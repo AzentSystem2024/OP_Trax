@@ -314,7 +314,7 @@
         [applyFilter]="applyFilter"
       ></dxo-filter-row>
 
-      <dxo-export [enabled]="userRoleId != 2" [formats]="['xlsx']">
+      <dxo-export [enabled]="menuPrevilage?.CanExport" [formats]="['xlsx']">
       </dxo-export>
 
       <dxo-toolbar>
@@ -385,13 +385,17 @@
           <div class="separator"></div>
         </dxi-item>
         <dxi-item
-          *ngIf="userRoleId != 2"
+          *ngIf="menuPrevilage?.CanExport"
           name="exportButton"
           location="after"
           [disabled]="isEmptyDatagrid"
           cssClass="custom-export-button"
         ></dxi-item>
-        <dxi-item location="after" locateInMenu="auto">
+        <dxi-item
+          *ngIf="menuPrevilage?.CanExport"
+          location="after"
+          locateInMenu="auto"
+        >
           <div class="separator"></div>
         </dxi-item>
 

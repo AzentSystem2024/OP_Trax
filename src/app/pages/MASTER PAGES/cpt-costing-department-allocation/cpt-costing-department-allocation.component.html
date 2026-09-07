@@ -50,7 +50,7 @@
     ></dxo-search-panel>
 
     <dxo-export
-      [enabled]="true"
+      [enabled]="menuPrevilage?.CanExport"
       [allowExportSelectedData]="false"
       [formats]="['xlsx']"
     ></dxo-export>
@@ -76,7 +76,7 @@
       ></dxi-item>
 
       <dxi-item
-        name="exportButton"
+        *ngIf="menuPrevilage?.CanExport" name="exportButton"
         location="after"
         cssClass="custom-export-button"
       ></dxi-item>

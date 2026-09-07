@@ -289,6 +289,7 @@ export class DataService {
           CanAdd: !!menuItem.CanAdd,
           CanEdit: !!menuItem.CanEdit,
           CanDelete: !!menuItem.CanDelete,
+          CanExport: !!menuItem.CanExport,
         };
         return previlages;
       }

@@ -232,7 +232,7 @@
         [expandMode]="'rowClick'"
       ></dxo-grouping>
       <dxo-export
-        [enabled]="true"
+        [enabled]="menuPrevilage?.CanExport"
         [allowExportSelectedData]="false"
         [formats]="['xlsx']"
       >
@@ -424,7 +424,9 @@
     width="400"
     (onHidden)="CloseForm()"
   >
-    <app-clinical-data-import-form (closeForm)="CloseForm()">
+    <app-clinical-data-import-form 
+      [menuPrevilage]="menuPrevilage"
+      (closeForm)="CloseForm()">
     </app-clinical-data-import-form>
   </dx-popup>
 

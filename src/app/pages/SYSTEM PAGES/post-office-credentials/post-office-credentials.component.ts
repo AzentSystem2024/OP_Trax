@@ -78,7 +78,7 @@ export class PostOfficeCredentialsComponent implements OnInit {
   showPassword = false;
   loginEditorOptions: any;
   passwordEditorOptions: any;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
 
   loadingMessage: string = 'Processing...';
   loadingVisible: boolean = false;

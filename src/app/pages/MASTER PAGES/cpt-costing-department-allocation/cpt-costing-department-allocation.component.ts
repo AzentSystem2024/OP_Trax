@@ -31,7 +31,7 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
   showPageSizeSelector = true;
   showInfo = true;
   showNavButtons = true;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
 
   dataSource: any[] = [];
 

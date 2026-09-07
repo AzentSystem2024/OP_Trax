@@ -9,7 +9,7 @@
         enabled: true,
         text: 'Loading...',
         showIndicator: true,
-        showPane: true
+        showPane: true,
       }"
       class="grid theme-dependent"
       [dataSource]="accountsGroupList"
@@ -50,13 +50,16 @@
         [visible]="isFilterRowVisible"
         [applyFilter]="auto"
       ></dxo-filter-row>
-      <dxo-search-panel [visible]="true" placeholder="Search"></dxo-search-panel>
-    <dxo-export
-      [enabled]="true"
-      [allowExportSelectedData]="false"
-      [formats]="['xlsx']"
-    >
-    </dxo-export>
+      <dxo-search-panel
+        [visible]="true"
+        placeholder="Search"
+      ></dxo-search-panel>
+      <dxo-export
+        [enabled]="menuPrevilage?.CanExport"
+        [allowExportSelectedData]="false"
+        [formats]="['xlsx']"
+      >
+      </dxo-export>
       <dxo-toolbar>
         <dxi-item location="before">
           <div class="grid-header">Chart Of Accounts</div>
@@ -73,7 +76,7 @@
             hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
             onClick: toggleFilterRow,
             stylingMode: 'text',
-            elementAttr: { class: 'commonButtons' }
+            elementAttr: { class: 'commonButtons' },
           }"
         ></dxi-item>
         <dxi-item
@@ -87,15 +90,15 @@
             icon: 'refresh',
             onClick: refresh,
             stylingMode: 'text',
-            elementAttr: { class: 'commonButtons' }
+            elementAttr: { class: 'commonButtons' },
           }"
         ></dxi-item>
 
         <dxi-item
-        name="exportButton"
-        location="after"
-        cssClass="custom-export-button"
-      ></dxi-item>
+          name="exportButton"
+          location="after"
+          cssClass="custom-export-button"
+        ></dxi-item>
 
         <dxi-item
           location="after"
@@ -103,7 +106,11 @@
           [options]="addButtonOptions"
         ></dxi-item>
       </dxo-toolbar>
-      <dxi-column dataField="sno" caption="S.No" alignment="center"></dxi-column>
+      <dxi-column
+        dataField="sno"
+        caption="S.No"
+        alignment="center"
+      ></dxi-column>
       <dxi-column dataField="MainGroup" caption="Main Group"></dxi-column>
       <dxi-column dataField="SubGroup" caption="Sub Group"></dxi-column>
       <dxi-column dataField="Category" caption="Category"></dxi-column>

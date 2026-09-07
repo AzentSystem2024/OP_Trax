@@ -94,12 +94,14 @@ export class UserLevelNewFormComponent implements OnInit {
           menu.canAdd = match.canAdd;
           menu.canEdit = match.canEdit;
           menu.canDelete = match.canDelete;
+          menu.canExport = match.canExport;
           menu.Selected = true;
           selectedRowKeys.push(menu);
         } else {
           menu.canAdd = false;
           menu.canEdit = false;
           menu.canDelete = false;
+          menu.canExport = false;
           menu.Selected = false;
         }
       });
@@ -133,6 +135,7 @@ export class UserLevelNewFormComponent implements OnInit {
         menu.canAdd = false;
         menu.canEdit = false;
         menu.canDelete = false;
+        menu.canExport = false;
       });
     });
   }
@@ -155,7 +158,7 @@ export class UserLevelNewFormComponent implements OnInit {
   onEditorPreparing(e: any): void {
     if (
       e.parentType === 'dataRow' &&
-      ['canAdd', 'canEdit', 'canDelete'].includes(e.dataField)
+      ['canAdd', 'canEdit', 'canDelete', 'canExport'].includes(e.dataField)
     ) {
       const isSelected = this.selectedRows[this.selectedTab]?.some(
         (row:any) => row === e.row.data
@@ -211,6 +214,7 @@ export class UserLevelNewFormComponent implements OnInit {
             menu.canAdd = copiedMenu.canAdd;
             menu.canEdit = copiedMenu.canEdit;
             menu.canDelete = copiedMenu.canDelete;
+            menu.canExport = copiedMenu.canExport;
             menu.Selected = true;
 
             matchedMenus.push(menu); // Mark as selected
@@ -219,6 +223,7 @@ export class UserLevelNewFormComponent implements OnInit {
             menu.canAdd = false;
             menu.canEdit = false;
             menu.canDelete = false;
+            menu.canExport = false;
             menu.Selected = false;
           }
         });
@@ -292,6 +297,7 @@ export class UserLevelNewFormComponent implements OnInit {
           canAdd: menu.canAdd,
           canEdit: menu.canEdit,
           canDelete: menu.canDelete,
+          canExport: menu.canExport,
         }));
 
         const existingEntry = this.allSelectedRows.find(

@@ -31,7 +31,7 @@
     <dxo-column-chooser [enabled]="true" [height]="400"></dxo-column-chooser>
     <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
     <dxo-export
-      [enabled]="true"
+      [enabled]="menuPrevilage?.CanExport"
       [allowExportSelectedData]="true"
       [formats]="['xlsx', 'pdf']"
     >

@@ -21,7 +21,7 @@ import { InsuranceNewFormComponent } from '../../POP-UP_PAGES/insurance-new-form
 import notify from 'devextreme/ui/notify';
 import { InsuranceNewFormModule } from '../../POP-UP_PAGES/insurance-new-form/insurance-new-form.component';
 import DataSource from 'devextreme/data/data_source';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services';
 import { MasterReportService } from '../master-report.service';
 import { ReportService } from 'src/app/services/Report-data.service';
@@ -76,13 +76,19 @@ export class InsuranceMasterComponent {
   currentPathName: any;
   initialized: boolean = false;
   insuranceClassificationList: any[] = [];
+  menuPrevilage: any;
 
   constructor(
     private masterService: MasterReportService,
     private service: ReportService,
-
+    private dataService: DataService,
+    private activatedRoute: ActivatedRoute,
   ) {
     this.fetch_classification_Dropdown();
+    this.activatedRoute.url.subscribe((segments) => {
+      const fullUrl = segments.map((s) => s.path).join('/');
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+    });
   }
 
   fetch_classification_Dropdown() {

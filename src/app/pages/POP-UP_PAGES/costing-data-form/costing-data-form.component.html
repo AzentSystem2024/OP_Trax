@@ -49,7 +49,7 @@
     <dxo-selection enabled="false"></dxo-selection>
     <dxo-filter-row [visible]="true" applyFilter="auto"></dxo-filter-row>
     <dxo-header-filter [visible]="true"></dxo-header-filter>
-    <dxo-export [enabled]="true" [allowExportSelectedData]="false"></dxo-export>
+    <dxo-export [enabled]="menuPrevilage?.CanExport" [allowExportSelectedData]="false"></dxo-export>
     <dxo-scrolling mode="virtual"></dxo-scrolling>
     <dxo-load-panel [enabled]="true" [showPane]="true"></dxo-load-panel>
     <dxo-paging [pageSize]="25"></dxo-paging>

@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Input,
   NgModule,
   Output,
   ViewChild,
@@ -45,6 +46,7 @@ import { InactivityService } from 'src/app/services/inactivity.service';
 export class ClinicalDataImportFormComponent {
   @Output() closeForm = new EventEmitter();
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
+  @Input() menuPrevilage: any;
   @ViewChild('importGrid', { static: false }) importGrid!: DxDataGridComponent;
   validationGroup!: DxValidationGroupComponent;
 
@@ -551,8 +553,8 @@ export class ClinicalDataImportFormComponent {
         });
 
         // Header Validation
-        const expectedColumns = this.combinedColumnMeta.map(
-          (x: any) => (typeof x.dataField === 'string' ? x.dataField.trim() : x.dataField),
+        const expectedColumns = this.combinedColumnMeta.map((x: any) =>
+          typeof x.dataField === 'string' ? x.dataField.trim() : x.dataField,
         );
         const actualColumns = Object.keys(cleanedRows[0] || {}).map(
           (col: any) => (typeof col === 'string' ? col.trim() : col),
@@ -706,7 +708,8 @@ export class ClinicalDataImportFormComponent {
               const timePart = match[4]
                 ? ` ${match[4]}:${match[5]}${match[6] ? ':' + match[6] : ''}`
                 : '';
-              newRow[field] = `${formattedDay}/${formattedMonth}/${year}${timePart}`;
+              newRow[field] =
+                `${formattedDay}/${formattedMonth}/${year}${timePart}`;
               return;
             }
           }
@@ -738,7 +741,10 @@ export class ClinicalDataImportFormComponent {
         }
 
         // EncounterType validation (Mandatory, cannot be 0, negative, decimal, or string)
-        if (!fieldHasError && col.dataField?.toLowerCase() === 'encountertype') {
+        if (
+          !fieldHasError &&
+          col.dataField?.toLowerCase() === 'encountertype'
+        ) {
           if (this.isInvalidEncounterType(val)) {
             fieldHasError = true;
           }
@@ -752,8 +758,7 @@ export class ClinicalDataImportFormComponent {
             col.originalDataType === 'number' ||
             col.dataField?.toLowerCase() === 'encountertype') &&
           !isDecimalCol;
-        const isNumericCol =
-          col.IsNumeric || isDecimalCol || isIntegerCol;
+        const isNumericCol = col.IsNumeric || isDecimalCol || isIntegerCol;
 
         if (
           !fieldHasError &&
@@ -893,8 +898,7 @@ export class ClinicalDataImportFormComponent {
             col.originalDataType === 'number' ||
             col.dataField?.toLowerCase() === 'encountertype') &&
           !isDecimalCol;
-        const isNumericCol =
-          col.IsNumeric || isDecimalCol || isIntegerCol;
+        const isNumericCol = col.IsNumeric || isDecimalCol || isIntegerCol;
 
         if (
           isNumericCol &&
@@ -984,8 +988,8 @@ export class ClinicalDataImportFormComponent {
           typeof val === 'string'
             ? val.trim()
             : val === null || val === undefined
-            ? ''
-            : val;
+              ? ''
+              : val;
       }
       return trimmedRow;
     });
@@ -1268,8 +1272,9 @@ export class ClinicalDataImportFormComponent {
       this.importGrid?.instance?.element() ||
       document.querySelector('dx-data-grid');
     if (gridElem) {
-      const headerCells: NodeListOf<HTMLElement> =
-        gridElem.querySelectorAll('.dx-header-row > td');
+      const headerCells: NodeListOf<HTMLElement> = gridElem.querySelectorAll(
+        '.dx-header-row > td',
+      );
       headerCells.forEach((cell: HTMLElement) => {
         cell.classList.remove('error-header-cell');
         cell.style.backgroundColor = '';
@@ -1346,8 +1351,7 @@ export class ClinicalDataImportFormComponent {
         column.originalDataType === 'number' ||
         column.dataField?.toLowerCase() === 'encountertype') &&
       !isDecimalCol;
-    const isNumericCol =
-      column.IsNumeric || isDecimalCol || isIntegerCol;
+    const isNumericCol = column.IsNumeric || isDecimalCol || isIntegerCol;
 
     if (
       !cellHasError &&
@@ -1377,8 +1381,7 @@ export class ClinicalDataImportFormComponent {
     ) {
       if (!this.isValidDDMMYYYY(value)) {
         cellHasError = true;
-        errorMessage =
-          'Error: Invalid date format. Only dd/MM/yyyy is allowed';
+        errorMessage = 'Error: Invalid date format. Only dd/MM/yyyy is allowed';
       }
     }
 
@@ -1428,8 +1431,9 @@ export class ClinicalDataImportFormComponent {
       this.importGrid?.instance?.element() ||
       document.querySelector('dx-data-grid');
     if (gridElem) {
-      const headerCells: NodeListOf<HTMLElement> =
-        gridElem.querySelectorAll('.dx-header-row > td');
+      const headerCells: NodeListOf<HTMLElement> = gridElem.querySelectorAll(
+        '.dx-header-row > td',
+      );
       if (
         columnIndex !== undefined &&
         columnIndex >= 0 &&

@@ -60,7 +60,7 @@ export class ClinicianCategoryComponent {
   currentPathName: any;
   initialized: boolean;
   isFilterRowVisible: boolean = false;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
 
   constructor(
     private service: ReportService,

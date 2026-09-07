@@ -40,6 +40,7 @@ export class AdocCountingRulesComponent {
 
   isFilterRowVisible = false;
   isAddPopupVisible = false;
+  menuPrevilage: any;
 
   dataSource = new DataSource<any>({
     load: () =>
@@ -56,7 +57,12 @@ export class AdocCountingRulesComponent {
     private masterService: MasterReportService,
     private route: ActivatedRoute,
     private dataService: DataService,
-  ) {}
+  ) {
+    this.route.url.subscribe((segments) => {
+      const fullUrl = segments.map((s) => s.path).join('/');
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+    });
+  }
 
   toggleFilterRow = () => {
     this.isFilterRowVisible = !this.isFilterRowVisible;

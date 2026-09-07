@@ -83,7 +83,7 @@ export class SubDepartmentListComponent  {
   currentPathName: string;
   initialized: boolean;
   selectedDepartment: any;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean; };
 
   constructor(
     private service: MasterReportService,

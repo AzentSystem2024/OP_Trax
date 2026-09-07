@@ -44,7 +44,7 @@
     <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
 
     <dxo-export
-      [enabled]="true"
+      [enabled]="menuPrevilage?.CanExport"
       [allowExportSelectedData]="false"
       [formats]="['xlsx']"
     >

@@ -61,7 +61,7 @@ export class FacilityTypeComponent {
   isFilterRowVisible: boolean = false;
   currentPathName: string;
   initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
 
   constructor(
     private service: ReportService,

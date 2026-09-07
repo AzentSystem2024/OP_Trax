@@ -40,7 +40,7 @@ import { FormPopupModule } from 'src/app/components';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { ReportEngineService } from '../report-engine.service';
 import DataSource from 'devextreme/data/data_source';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import notify from 'devextreme/ui/notify';
 import { AuthService, DataService } from 'src/app/services';
 import { PopupStateService } from 'src/app/popupStateService.service';
@@ -151,6 +151,7 @@ export class GroupingDetailsReportComponent implements OnInit {
   isCustomColumnChooserVisible: boolean = false;
   customColumnsList: any[] = [];
   tempSelectedColumns: any[] = [];
+  menuPrevilage: any;
 
   constructor(
     private service: ReportService,
@@ -162,6 +163,8 @@ export class GroupingDetailsReportComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private operationService: OperationReportService,
     private authService: AuthService,
+    private dataService: DataService,
+    private activatedRoute: ActivatedRoute,
   ) {
     // this.loadingVisible = true;
 
@@ -175,6 +178,11 @@ export class GroupingDetailsReportComponent implements OnInit {
     //=============month field datasource============
     this.monthDataSource = this.service.getMonths();
     this.get_searchParameters_Dropdown_Values();
+
+    this.activatedRoute.url.subscribe((segments) => {
+      const fullUrl = segments.map((s) => s.path).join('/');
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+    });
   }
 
   ngOnInit(): void {

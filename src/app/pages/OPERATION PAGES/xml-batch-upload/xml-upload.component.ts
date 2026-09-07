@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { firstValueFrom, Subscription } from 'rxjs';
+import { Router, ActivatedRoute } from '@angular/router';
 import notify from 'devextreme/ui/notify';
 import { confirm } from 'devextreme/ui/dialog';
 import DataSource from 'devextreme/data/data_source';
@@ -146,6 +147,7 @@ export class XmlUploadComponent implements OnInit {
   progressStatus = (ratio: number, value: number) => {
     return `Progress: ${Math.round(ratio * 100)}%`;
   };
+  menuPrevilage: any;
 
   constructor(
     private service: ReportService,
@@ -154,7 +156,12 @@ export class XmlUploadComponent implements OnInit {
     private datePipe: DatePipe,
     private notificationService: NotificationService,
     private inactivityService: InactivityService,
+    private activatedRoute: ActivatedRoute,
   ) {
+    this.activatedRoute.url.subscribe((segments) => {
+      const fullUrl = segments.map((s) => s.path).join('/');
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+    });
     this.minDate = new Date(2023, 0, 1);
     this.maxDate = new Date(); // Set the maximum date
     //============Year field dataSource===============

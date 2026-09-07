@@ -70,7 +70,7 @@
     <dxo-column-chooser [enabled]="true" [height]="400"></dxo-column-chooser>
     <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
     <dxo-export
-      [enabled]="true"
+      [enabled]="menuPrevilage?.CanExport"
       [allowExportSelectedData]="false"
       [formats]="['xlsx']"
     >
@@ -108,7 +108,7 @@
       ></dxi-item>
 
       <dxi-item
-        name="exportButton"
+        *ngIf="menuPrevilage?.CanExport" name="exportButton"
         location="after"
         cssClass="custom-export-button"
       ></dxi-item>

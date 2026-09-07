@@ -44,6 +44,7 @@ import { AddAccountModule } from '../add-account/add-account.component';
 import notify from 'devextreme/ui/notify';
 import { DataSource } from 'devextreme/common/data';
 import { ReportService } from 'src/app/services/Report-data.service';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-accounts-list',
@@ -58,6 +59,7 @@ export class AccountsListComponent {
   readonly allowedPageSizes: any = [10, 20, 'all'];
   displayMode: any = 'full';
   showPageSizeSelector = true;
+  menuPrevilage: any;
 
   showHeaderFilter: true;
   showFilterRow = true;
@@ -112,7 +114,13 @@ export class AccountsListComponent {
 
   constructor(private dataService: DataService, 
     private reportservice:ReportService,
-    private ngZone: NgZone) {}
+    private activatedRoute: ActivatedRoute,
+    private ngZone: NgZone) {
+      this.activatedRoute.url.subscribe((segments) => {
+        const fullUrl = segments.map((s) => s.path).join('/');
+        this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      });
+    }
 
   refresh = () => {
     this.dataGrid.instance.refresh();

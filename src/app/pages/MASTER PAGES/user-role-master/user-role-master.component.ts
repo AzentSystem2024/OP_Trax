@@ -66,7 +66,7 @@ export class UserLevelMasterComponent {
   addButtonOptions :any
 
   isFilterRowVisible: boolean = false;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
 
   constructor(
     private service: ReportService,

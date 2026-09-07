@@ -36,7 +36,7 @@
       <dxo-search [enabled]="true"></dxo-search>
     </dxo-header-filter>
 
-    <dxo-export [enabled]="true" [formats]="['xlsx']"> </dxo-export>
+    <dxo-export [enabled]="menuPrevilage?.CanExport" [formats]="['xlsx']"> </dxo-export>
     <dxo-toolbar>
       <dxi-item location="before">
         <div class="grid-header">License Info</div>

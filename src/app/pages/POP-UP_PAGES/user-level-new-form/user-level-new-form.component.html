@@ -92,33 +92,14 @@
             [showEditorAlways]="true"
           >
           </dxi-column>
+          <dxi-column
+            dataField="canExport"
+            caption="Export"
+            dataType="boolean"
+            [showEditorAlways]="true"
+          >
+          </dxi-column>
         </dx-data-grid>
-
-        <!-- <div class="mt-2 d-flex gap-2 ps-2 pt-1">
-          <dx-check-box
-            [(value)]="canVerifyCostingData"
-            text="Verify Costing Data"
-            (onValueChanged)="onPermissionCheckboxChanged()"
-          ></dx-check-box>
-
-          <dx-check-box
-            [(value)]="canApproveCostingData"
-            text="Approve Costing Data"
-            (onValueChanged)="onPermissionCheckboxChanged()"
-          ></dx-check-box>
-
-          <dx-check-box
-            [(value)]="canUploadCostingData"
-            text="Upload Costing Data"
-            (onValueChanged)="onPermissionCheckboxChanged()"
-          ></dx-check-box>
-
-          <dx-check-box
-            [(value)]="canReprocessCostingData"
-            text="Reprocess Costing Data"
-            (onValueChanged)="onPermissionCheckboxChanged()"
-          ></dx-check-box>
-        </div> -->
       </div>
     </div>
   </div>

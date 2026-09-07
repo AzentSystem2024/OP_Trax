@@ -59,7 +59,7 @@ export class FacilityRegionComponent {
 
   currentPathName: string;
   initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
 
   constructor(
     private service: ReportService,
