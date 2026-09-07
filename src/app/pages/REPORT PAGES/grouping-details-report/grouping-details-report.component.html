@@ -84,18 +84,6 @@
           <dx-select-box
             labelMode="floating"
             labelLocation="left"
-            label="Report Type"
-            [dataSource]="reportTypes"
-            displayExpr="text"
-            valueExpr="value"
-            [(value)]="selectedReportType"
-          ></dx-select-box>
-        </dxi-item>
-
-        <dxi-item [colSpan]="1">
-          <dx-select-box
-            labelMode="floating"
-            labelLocation="left"
             label="Year"
             [(value)]="selectedYear"
             [dataSource]="years"
@@ -164,6 +152,18 @@
           </dx-date-box>
         </dxi-item>
 
+        <dxi-item [colSpan]="1">
+          <dx-select-box
+            labelMode="floating"
+            labelLocation="left"
+            label="Report Type"
+            [dataSource]="reportTypes"
+            displayExpr="text"
+            valueExpr="value"
+            [(value)]="selectedReportType"
+          ></dx-select-box>
+        </dxi-item>
+
         <dxi-item [colSpan]="2" class="mt-1">
           <div class="d-flex justify-content-end align-items-center w-100">
             <dx-button
@@ -222,6 +222,7 @@
       [dataSource]="dataGrid_DataSource"
       [showBorders]="true"
       [allowColumnResizing]="true"
+      columnResizingMode="widget"
       [columnAutoWidth]="true"
       [rowAlternationEnabled]="true"
       rowAlternationInterval="2"
@@ -401,21 +402,30 @@
 
         <dxi-item
           class="columnfinderclass"
-          [disabled]="isEmptyDatagrid"
-          widget="dxDropDownButton"
-          [options]="{
-            dataSource: ColumnNames,
-            onItemClick: findColumnLocation,
-            placeholder: 'Search Column',
-            noDataText: 'Load data and try again',
-            hint: 'Column location finder',
-            icon: 'increaseindent',
-            dropDownOptions: {
-              width: 'auto',
-              height: '60vh',
-            },
-          }"
-        ></dxi-item>
+          location="after"
+          locateInMenu="auto"
+        >
+          <div *dxTemplate>
+            <dx-drop-down-button
+              icon="increaseindent"
+              hint="Column location finder"
+              [(opened)]="isColumnFinderOpened"
+              [disabled]="isEmptyDatagrid"
+              [dropDownOptions]="{ width: 220, height: '60vh' }"
+            >
+              <div *dxTemplate="let data of 'content'">
+                <dx-list
+                  [dataSource]="ColumnNames"
+                  [searchEnabled]="true"
+                  noDataText="Load data and try again"
+                  searchExpr="this"
+                  (onItemClick)="findColumnLocation($event)"
+                >
+                </dx-list>
+              </div>
+            </dx-drop-down-button>
+          </div>
+        </dxi-item>
       </dxo-toolbar>
 
       <dxo-grouping

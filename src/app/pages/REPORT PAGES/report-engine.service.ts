@@ -52,24 +52,35 @@ export class ReportEngineService {
     );
     if (columnIndex !== -1) {
       let scrollLeftOffset = 0;
-
-      // Calculate the total width of all preceding visible columns
-      for (let i = 0; i < columnIndex; i++) {
-        // Fallback to 150 if undefined
-        const colWidth =
-          (columns[i] as any).visibleWidth ||
-          (typeof columns[i].width === 'number' ? columns[i].width : 150);
-        scrollLeftOffset += Number(colWidth);
-      }
+      let targetColumnWidth = 150;
 
       const gridElement = dataGrid.instance.element();
-      const visibleWidth = gridElement.clientWidth;
+      const colElements = gridElement.querySelectorAll('.dx-datagrid-headers colgroup col');
 
-      const targetColumnWidth =
-        (columns[columnIndex] as any).visibleWidth ||
-        (typeof columns[columnIndex].width === 'number'
-          ? columns[columnIndex].width
-          : 150);
+      if (colElements && colElements.length > columnIndex) {
+        for (let i = 0; i < columnIndex; i++) {
+          const widthStr = (colElements[i] as HTMLElement).style.width;
+          scrollLeftOffset += parseFloat(widthStr || '150');
+        }
+        targetColumnWidth = parseFloat((colElements[columnIndex] as HTMLElement).style.width || '150');
+      } else {
+        // Calculate the total width of all preceding visible columns
+        for (let i = 0; i < columnIndex; i++) {
+          // Fallback to 150 if undefined
+          const colWidth =
+            (columns[i] as any).visibleWidth ||
+            (typeof columns[i].width === 'number' ? columns[i].width : 150);
+          scrollLeftOffset += Number(colWidth);
+        }
+
+        targetColumnWidth =
+          (columns[columnIndex] as any).visibleWidth ||
+          (typeof columns[columnIndex].width === 'number'
+            ? columns[columnIndex].width
+            : 150);
+      }
+
+      const visibleWidth = gridElement.clientWidth;
 
       // Calculate scrollLeft to center the column in the view
       let scrollLeft =
@@ -78,14 +89,16 @@ export class ReportEngineService {
 
       // Scroll to the calculated position
       dataGrid.instance.getScrollable().scrollTo({ left: scrollLeft });
+      
+      const targetDataField = columns[columnIndex].dataField || columns[columnIndex].name || columnName;
       // Highlight the column
       dataGrid.instance.columnOption(
-        columnName,
+        targetDataField,
         'cssClass',
         'highlighted-column',
       );
       setTimeout(() => {
-        dataGrid.instance.columnOption(columnName, 'cssClass', null);
+        dataGrid.instance.columnOption(targetDataField, 'cssClass', null);
       }, 3000);
     }
   }

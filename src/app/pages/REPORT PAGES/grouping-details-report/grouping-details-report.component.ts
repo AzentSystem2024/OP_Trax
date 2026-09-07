@@ -146,6 +146,9 @@ export class GroupingDetailsReportComponent implements OnInit {
   initialized: boolean;
   userRoleId: any;
   userRoleID: any;
+  exportDropdownOptions: any;
+
+  isColumnFinderOpened = false;
 
   // Custom Column Chooser State
   isCustomColumnChooserVisible: boolean = false;
@@ -536,6 +539,7 @@ export class GroupingDetailsReportComponent implements OnInit {
     const columnName = e.itemData;
     if (columnName != '' && columnName != null) {
       this.reportengine.makeColumnVisible(this.dataGrid, columnName);
+      this.isColumnFinderOpened = false;
     }
   };
 
