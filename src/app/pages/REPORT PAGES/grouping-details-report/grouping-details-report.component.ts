@@ -84,6 +84,12 @@ export class GroupingDetailsReportComponent implements OnInit {
 
   isRowPopupVisible: boolean = false;
   selectedRowData: any = {};
+  
+  reportTypes = [
+    { text: 'Claim Wise', value: false },
+    { text: 'Activity Wise', value: true }
+  ];
+  selectedReportType: boolean = false;
   selectedRowIndex: any;
 
   private filterSubscription?: Subscription;
@@ -140,6 +146,11 @@ export class GroupingDetailsReportComponent implements OnInit {
   initialized: boolean;
   userRoleId: any;
   userRoleID: any;
+
+  // Custom Column Chooser State
+  isCustomColumnChooserVisible: boolean = false;
+  customColumnsList: any[] = [];
+  tempSelectedColumns: any[] = [];
 
   constructor(
     private service: ReportService,
@@ -313,6 +324,7 @@ export class GroupingDetailsReportComponent implements OnInit {
       DateFrom: this.reportengine.formatDate(this.From_Date_Value),
       DateTo: this.reportengine.formatDate(this.To_Date_Value),
       CPTCodes: this.cptCodes || '',
+      ActivityWise: this.selectedReportType,
     };
 
     this.dataGrid.instance.beginCustomLoading('Loading...');
@@ -378,7 +390,8 @@ export class GroupingDetailsReportComponent implements OnInit {
       this.cancelLoad = undefined;
       this.isContentVisible = true;
 
-      const errMsg = typeof error === 'string' ? error : error?.message || String(error);
+      const errMsg =
+        typeof error === 'string' ? error : error?.message || String(error);
 
       if (!errMsg.includes('cancelled by user')) {
         console.error('Error loading data:', error);
@@ -451,10 +464,10 @@ export class GroupingDetailsReportComponent implements OnInit {
       valueFormat:
         formatType === 'decimal'
           ? {
-            style: 'decimal',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }
+              style: 'decimal',
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }
           : null,
       alignByColumn: isGroupItem, // Align by column if it's a group item
       showInGroupFooter: isGroupItem, // Show in group footer for group items
@@ -534,6 +547,71 @@ export class GroupingDetailsReportComponent implements OnInit {
     ) {
       this.updateVisibleColumnNames();
     }
+  }
+
+  // ============= Custom Column Chooser ================
+  showCustomColumnChooser = () => {
+    if (!this.columnsConfig) return;
+
+    this.customColumnsList = [];
+    this.tempSelectedColumns = [];
+
+    // Extract all flat columns including those inside bands
+    this.columnsConfig.forEach((col: any) => {
+      if (col.isBand && col.columns) {
+        col.columns.forEach((subCol: any) => {
+          if (subCol.dataField) {
+            this.customColumnsList.push({
+              dataField: subCol.dataField,
+              caption: subCol.caption || subCol.dataField,
+            });
+            if (subCol.visible !== false) {
+              this.tempSelectedColumns.push(subCol.dataField);
+            }
+          }
+        });
+      } else if (col.dataField) {
+        this.customColumnsList.push({
+          dataField: col.dataField,
+          caption: col.caption || col.dataField,
+        });
+        if (col.visible !== false) {
+          this.tempSelectedColumns.push(col.dataField);
+        }
+      }
+    });
+
+    this.isCustomColumnChooserVisible = true;
+  }
+
+  applyColumnChooser() {
+    this.dataGrid.instance.beginUpdate();
+    this.customColumnsList.forEach((col) => {
+      const isVisible = this.tempSelectedColumns.includes(col.dataField);
+      this.dataGrid.instance.columnOption(col.dataField, 'visible', isVisible);
+
+      // Sync back to columnsConfig
+      for (const configCol of this.columnsConfig) {
+        if (configCol.isBand && configCol.columns) {
+          const subCol = configCol.columns.find(
+            (c: any) => c.dataField === col.dataField,
+          );
+          if (subCol) {
+            subCol.visible = isVisible;
+            break;
+          }
+        } else if (configCol.dataField === col.dataField) {
+          configCol.visible = isVisible;
+          break;
+        }
+      }
+    });
+    this.dataGrid.instance.endUpdate();
+    this.isCustomColumnChooserVisible = false;
+  }
+
+  cancelColumnChooser() {
+    this.isCustomColumnChooserVisible = false;
   }
 
   //=============DataGrid Refreshing=====================
@@ -683,4 +761,4 @@ export class GroupingDetailsReportComponent implements OnInit {
   exports: [],
   declarations: [GroupingDetailsReportComponent],
 })
-export class ClaimDetailsModule { }
+export class ClaimDetailsModule {}
