@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgModule } from '@angular/core';
+import { Component, NgModule, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { CptTypeNewFormComponent } from '../cpt-type-new-form/cpt-type-new-form.component';
@@ -13,7 +13,7 @@ import validationEngine from 'devextreme/ui/validation_engine';
   templateUrl: './insurance-new-form.component.html',
   styleUrls: ['./insurance-new-form.component.scss'],
 })
-export class InsuranceNewFormComponent {
+export class InsuranceNewFormComponent implements OnInit {
 
   InsuranceData = {
     InsuranceID: '',
@@ -22,15 +22,21 @@ export class InsuranceNewFormComponent {
     ClassificationID: '',
 
   };
+  
   insuranceClassificationList: any;
 
 
   newInsuranceData = this.InsuranceData;
   constructor(private masterService: MasterReportService) { }
 
+  ngOnInit() {
+    this.fetch_classification_Dropdown();
+  }
+
   validateForm(): boolean {
     return validationEngine.validateGroup('InsuranceValidation').isValid || false;
   }
+
   fetch_classification_Dropdown() {
     this.masterService.Get_GropDown('INSURANCECLASSIFICATION').subscribe({
       next: (res: any) => {
