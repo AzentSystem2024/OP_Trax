@@ -126,6 +126,9 @@
 
     <dxi-column dataField="Category" caption="Category"> </dxi-column>
     <dxi-column dataField="Description" Caption="Description"></dxi-column>
+
+    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
+    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
 
   <form-popup

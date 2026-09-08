@@ -142,6 +142,9 @@
     </dxi-column>
     <dxi-column dataField="FacilityGroup" caption="Description"> </dxi-column>
     <dxi-column dataField="Description" caption="Long Description"></dxi-column>
+
+    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
+    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
   <form-popup
     class="formPopupClass"

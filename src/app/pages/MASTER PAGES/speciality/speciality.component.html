@@ -172,6 +172,9 @@
     <div *dxTemplate="let cell of 'billableCell'" class="billable-cell">
       <dx-check-box [value]="cell.value" [readOnly]="true"></dx-check-box>
     </div>
+
+    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
+    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
 
   <form-popup

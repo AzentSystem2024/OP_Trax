@@ -92,6 +92,10 @@
 
       <dxi-column dataField="HeadCode" caption="Code"></dxi-column>
       <dxi-column dataField="HeadName" caption="Head Name"></dxi-column>
+
+      <dxo-header-filter [visible]="isFilterRowVisible"></dxo-header-filter>
+      <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
+      <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
     </dx-data-grid>
   </div>
 </div>

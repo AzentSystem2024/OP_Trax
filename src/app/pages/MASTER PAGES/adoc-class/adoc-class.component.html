@@ -136,6 +136,9 @@
         ⚑
       </span>
     </div>
+
+    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
+    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
 
   <!-- ========= new form popup ========= -->
@@ -270,6 +273,9 @@
 
         <dxi-column dataField="ICDCode" caption="ICD Code" width="150">
         </dxi-column>
+
+        <dxo-filter-panel [visible]="true"></dxo-filter-panel>
+        <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
       </dx-data-grid>
     </div>
   </dx-popup>

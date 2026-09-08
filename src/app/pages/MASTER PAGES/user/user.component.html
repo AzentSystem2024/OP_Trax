@@ -99,6 +99,9 @@
 
       <dxi-button name="delete" [visible]="canShowDelete"></dxi-button>
     </dxi-column>
+
+    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
+    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
 
   <form-popup

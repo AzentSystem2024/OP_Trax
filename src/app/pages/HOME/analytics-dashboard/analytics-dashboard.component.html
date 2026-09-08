@@ -26,7 +26,11 @@
             <dx-data-grid
               [dataSource]="facilityData"
               [columns]="[
-                { dataField: 'FacilityLicense', caption: 'License', width: 100 },
+                {
+                  dataField: 'FacilityLicense',
+                  caption: 'License',
+                  width: 100,
+                },
                 { dataField: 'FacilityName', caption: 'Name' },
                 { dataField: 'FacilityRegion', caption: 'Region', width: 110 },
               ]"
@@ -327,6 +331,10 @@
                 {{ cell.value | number: "1.2-2" }}
               </span>
             </div>
+
+            <dxo-filter-panel [visible]="false"></dxo-filter-panel>
+            <dxo-filter-builder [allowHierarchicalFields]="true">
+            </dxo-filter-builder>
           </dx-data-grid>
         </div>
       </div>

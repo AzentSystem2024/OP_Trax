@@ -114,6 +114,9 @@
         ></dx-button>
       </dxi-item>
     </dxo-toolbar>
+
+    <dxo-filter-panel [visible]="true"></dxo-filter-panel>
+    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
 </div>
 
@@ -174,6 +177,9 @@
       >
       </dxi-total-item>
     </dxo-summary>
+
+    <dxo-filter-panel [visible]="true"></dxo-filter-panel>
+    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
 </dx-popup>
 
@@ -315,6 +321,10 @@
           {{ cell.data.ProductionUpload }}
         </span>
       </div>
+
+      <dxo-filter-row [visible]="true"></dxo-filter-row>
+      <dxo-filter-panel [visible]="true"></dxo-filter-panel>
+      <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
     </dx-data-grid>
   </div>
 

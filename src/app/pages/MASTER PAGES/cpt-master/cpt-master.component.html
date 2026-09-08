@@ -99,6 +99,9 @@
     <dxi-column dataField="CPTType" caption="CPT Type"></dxi-column>
     <dxi-column dataField="ADOCGroup" caption="ADOC Category"></dxi-column>
     <dxi-column dataField="ADOCClass" caption="ADOC Class"></dxi-column>
+
+    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
+    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
 
   <!-- ============ add new cpt data ============ -->
