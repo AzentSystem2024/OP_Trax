@@ -118,6 +118,9 @@ export class XmlUploadComponent implements OnInit {
   newToDate: any | null = null;
   newSelectedMonth: any = '';
   newSelectedYear: any = null;
+  newSelectedReceiverID: any = '';
+
+  receiverListDataSource: any;
 
   isXmlPopupVisible: boolean = false;
   xmlContent: string = '';
@@ -176,6 +179,7 @@ export class XmlUploadComponent implements OnInit {
   async ngOnInit() {
     try {
       await this.loadFacilityData();
+      this.loadReceiverData();
       this.initializeDefaults();
       this.isFilterRowVisible = false;
     } catch (error) {
@@ -286,6 +290,12 @@ export class XmlUploadComponent implements OnInit {
     } catch (error) {
       console.error('Error fetching facility data:', error);
     }
+  }
+
+  loadReceiverData() {
+    this.dataService.Get_GropDown('RECEIVER').subscribe((response: any) => {
+      this.receiverListDataSource = response;
+    });
   }
 
   initializeDefaults(): void {
@@ -586,6 +596,7 @@ export class XmlUploadComponent implements OnInit {
         : '',
       DateFrom: formatDate(this.newFromDate),
       DateTo: formatDate(this.newToDate),
+      ReceiverID: this.newSelectedReceiverID || '',
     };
 
     this.newFilterSubscription = this.operationService

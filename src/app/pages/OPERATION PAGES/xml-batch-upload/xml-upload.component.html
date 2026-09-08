@@ -365,14 +365,15 @@
         [ngClass]="{ 'hide-content': !isNewContentVisible }"
       >
         <dx-form>
+          <!-- Row 1 -->
           <dxi-item
             itemType="group"
             cssClass="form-group"
             class="rowGroup"
-            [colCount]="16"
-            [colCountByScreen]="{ xs: 16, sm: 16, md: 16, lg: 16 }"
+            [colCount]="10"
+            [colCountByScreen]="{ xs: 10, sm: 10, md: 10, lg: 10 }"
           >
-            <dxi-item [colSpan]="5">
+            <dxi-item [colSpan]="7">
               <dx-drop-down-box
                 label="Facility"
                 labelMode="floating"
@@ -418,6 +419,29 @@
               </dx-drop-down-box>
             </dxi-item>
 
+            <dxi-item [colSpan]="3">
+              <dx-select-box
+                label="Receiver ID"
+                labelMode="floating"
+                labelLocation="left"
+                [(value)]="newSelectedReceiverID"
+                [dataSource]="receiverListDataSource"
+                displayExpr="DESCRIPTION"
+                valueExpr="DESCRIPTION"
+                [showClearButton]="true"
+                [searchEnabled]="true"
+              ></dx-select-box>
+            </dxi-item>
+          </dxi-item>
+
+          <!-- Row 2 -->
+          <dxi-item
+            itemType="group"
+            cssClass="form-group"
+            class="rowGroup mt-2"
+            [colCount]="12"
+            [colCountByScreen]="{ xs: 12, sm: 12, md: 12, lg: 12 }"
+          >
             <dxi-item [colSpan]="2">
               <dx-select-box
                 labelMode="floating"
@@ -472,7 +496,7 @@
               </dx-date-box>
             </dxi-item>
 
-            <dxi-item [colSpan]="3" class="mt-1">
+            <dxi-item [colSpan]="4" class="mt-1">
               <div class="d-flex justify-content-end align-items-center w-100">
                 <dx-button
                   text="Apply"

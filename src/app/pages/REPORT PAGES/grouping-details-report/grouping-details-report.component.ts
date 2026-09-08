@@ -111,6 +111,8 @@ export class GroupingDetailsReportComponent implements OnInit {
   selectedmonth: any;
   selectedYear: number | null;
   cptCodes: string = '';
+  receiverListDataSource: any;
+  selectedReceiverID: any = '';
 
   //========Variables for Pagination ====================
   readonly allowedPageSizes: any = [10, 20, 'all'];
@@ -202,6 +204,13 @@ export class GroupingDetailsReportComponent implements OnInit {
 
     this.selectedYear = today.getFullYear();
     this.selectedmonth = today.getMonth();
+    this.loadReceiverData();
+  }
+
+  loadReceiverData() {
+    this.dataService.Get_GropDown('RECEIVER').subscribe((response: any) => {
+      this.receiverListDataSource = response;
+    });
   }
 
   //================Show and Hide Search parameters========
@@ -336,6 +345,7 @@ export class GroupingDetailsReportComponent implements OnInit {
       DateTo: this.reportengine.formatDate(this.To_Date_Value),
       CPTCodes: this.cptCodes || '',
       ActivityWise: this.selectedReportType,
+      ReceiverID: this.selectedReceiverID || '',
     };
 
     this.dataGrid.instance.beginCustomLoading('Loading...');

@@ -98,6 +98,9 @@ export class ClinicalDataComponent implements OnInit {
   selectedCptCodeData: any;
   isCptEditFormPopupOpened: boolean = false;
 
+  receiverListDataSource: any;
+  selectedReceiverID: any = '';
+
   selectedmonth: any = '';
   selectedYear: any = null;
   minDate: Date;
@@ -143,6 +146,7 @@ export class ClinicalDataComponent implements OnInit {
   async ngOnInit() {
     try {
       await this.loadFacilityData();
+      this.loadReceiverData();
       this.initializeDefaults();
       this.isFilterRowVisible = false;
     } catch (error) {
@@ -225,6 +229,12 @@ export class ClinicalDataComponent implements OnInit {
     }
   }
 
+  loadReceiverData() {
+    this.dataService.Get_GropDown('RECEIVER').subscribe((response: any) => {
+      this.receiverListDataSource = response;
+    });
+  }
+
   // ================= load grid data by using filter values ==============
   onApplyFilter() {
     if (this.isLookupLoading) {
@@ -243,6 +253,7 @@ export class ClinicalDataComponent implements OnInit {
       DateFrom: formatDate(this.fromDate),
       DateTo: formatDate(this.toDate),
       CPTCodes: this.cptCodes || '',
+      ReceiverID: this.selectedReceiverID || '',
     };
 
     this.dataSource = new DataSource<any>({
@@ -382,8 +393,14 @@ export class ClinicalDataComponent implements OnInit {
 
   //======= Update data ==========
   onClickUpdateNewCptType = () => {
-    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings, ADOCApplicationID } =
-      this.CptEditFormComponent.getUpdateCptMasterData();
+    const {
+      ID,
+      CPTTypeID,
+      CPTCode,
+      CPTName,
+      CPTADOCMappings,
+      ADOCApplicationID,
+    } = this.CptEditFormComponent.getUpdateCptMasterData();
 
     this.masterService
       .update_CptMaster_data(

@@ -10,8 +10,8 @@
           itemType="group"
           cssClass="form-group"
           class="rowGroup"
-          [colCount]="8"
-          [colCountByScreen]="{ xs: 8, sm: 8, md: 8, lg: 8 }"
+          [colCount]="10"
+          [colCountByScreen]="{ xs: 10, sm: 10, md: 10, lg: 10 }"
         >
           <dxi-item [colSpan]="4">
             <dx-drop-down-box
@@ -23,7 +23,7 @@
               [displayExpr]="displayFacility"
               [showClearButton]="true"
               [dataSource]="facilityListDataSource"
-              [dropDownOptions]="{ width: '400' }"
+              [dropDownOptions]="{ width: 'auto' }"
             >
               <div *dxTemplate="let data of 'content'">
                 <dx-data-grid
@@ -31,9 +31,17 @@
                   [dataSource]="facilityListDataSource"
                   keyExpr="FacilityLicense"
                   [columns]="[
-                    { dataField: 'FacilityLicense', caption: 'License' },
-                    { dataField: 'FacilityName', caption: 'Name' },
-                    { dataField: 'FacilityRegion', caption: 'Region' },
+                    {
+                      dataField: 'FacilityLicense',
+                      caption: 'License',
+                      width: 150,
+                    },
+                    { dataField: 'FacilityName', caption: 'Name', width: 200 },
+                    {
+                      dataField: 'FacilityRegion',
+                      caption: 'Region',
+                      width: 'auto',
+                    },
                   ]"
                   [selection]="{ mode: 'multiple' }"
                   [hoverStateEnabled]="true"
@@ -54,6 +62,20 @@
               labelMode="floating"
               [(value)]="cptCodes"
             ></dx-text-box>
+          </dxi-item>
+
+          <dxi-item [colSpan]="2">
+            <dx-select-box
+              label="Receiver ID"
+              labelMode="floating"
+              labelLocation="left"
+              [(value)]="selectedReceiverID"
+              [dataSource]="receiverListDataSource"
+              displayExpr="DESCRIPTION"
+              valueExpr="DESCRIPTION"
+              [showClearButton]="true"
+              [searchEnabled]="true"
+            ></dx-select-box>
           </dxi-item>
         </dxi-item>
 
@@ -142,7 +164,7 @@
               </dx-button>
 
               <dx-button
-                *ngIf="isLookupLoading"
+                [disabled]="!isLookupLoading"
                 text="Cancel"
                 type="danger"
                 class="add-card ms-2"
@@ -424,9 +446,10 @@
     width="400"
     (onHidden)="CloseForm()"
   >
-    <app-clinical-data-import-form 
+    <app-clinical-data-import-form
       [menuPrevilage]="menuPrevilage"
-      (closeForm)="CloseForm()">
+      (closeForm)="CloseForm()"
+    >
     </app-clinical-data-import-form>
   </dx-popup>
 
