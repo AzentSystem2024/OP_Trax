@@ -22,7 +22,7 @@
             </div>
 
             <div class="mb-2">
-              <strong>Patient ID :</strong>
+              <strong>Patient Name :</strong>
               {{ rowData?.PatientID }}
             </div>
 
@@ -77,9 +77,10 @@
                   ></i>
                 </div>
               </dx-button>
+
               <dx-drop-down-button
                 *ngIf="userRoleId != 2"
-                icon="export"
+                icon="exportxlsx"
                 hint="Export"
                 stylingMode="contained"
                 type="default"
@@ -88,6 +89,7 @@
                 displayExpr="text"
                 keyExpr="format"
                 [elementAttr]="{ class: 'custom-export-btn' }"
+                [dropDownOptions]="{ width: 'auto' }"
                 (onItemClick)="onExportClick($event)"
               >
               </dx-drop-down-button>
@@ -162,6 +164,11 @@
       <dxi-column
         dataField="OrderingClinician"
         caption="Ordering Clinician"
+      ></dxi-column>
+
+       <dxi-column
+        dataField="RenderingClinician"
+        caption="Rendering Clinician"
       ></dxi-column>
 
       <dxi-column dataField="Speciality" caption="Specialty"></dxi-column>
