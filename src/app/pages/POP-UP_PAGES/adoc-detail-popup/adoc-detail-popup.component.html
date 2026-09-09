@@ -16,9 +16,16 @@
         <div class="d-flex">
           <!-- Left Section -->
           <div>
-            <div class="mb-2">
+            <div class="mb-2 d-flex align-items-center">
               <strong>Invoice No / Visit ID :</strong>
-              {{ rowData?.ClaimNumber }}
+              <span class="ms-1">{{ rowData?.ClaimNumber }}</span>
+              <i
+                *ngIf="rowData?.ClaimNumber"
+                class="dx-icon-copy ms-2"
+                style="cursor: pointer; color: #0d6efd; font-size: 14px"
+                title="Copy to clipboard"
+                (click)="copyToClipboard(rowData?.ClaimNumber)"
+              ></i>
             </div>
 
             <div class="mb-2">
@@ -166,7 +173,7 @@
         caption="Ordering Clinician"
       ></dxi-column>
 
-       <dxi-column
+      <dxi-column
         dataField="RenderingClinician"
         caption="Rendering Clinician"
       ></dxi-column>
@@ -290,8 +297,7 @@
   </div>
 </dx-popup>
 
-<!-- ===================ADOC price histrory==================== -->
-
+<!-- ====== ADOC price histrory ====== -->
 <dx-popup
   title="Price Details"
   [(visible)]="showDetails"

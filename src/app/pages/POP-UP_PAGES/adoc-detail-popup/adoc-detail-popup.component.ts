@@ -185,6 +185,38 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
     this.popupGridData = [];
   }
 
+  copyToClipboard(text: string) {
+    if (!text) return;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(
+        () => notify('Copied to clipboard', 'success', 2000),
+        () => notify('Failed to copy', 'error', 2000)
+      );
+    } else {
+      // Fallback for insecure contexts (e.g. HTTP over local IP) or older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          notify('Copied to clipboard', 'success', 2000);
+        } else {
+          notify('Failed to copy', 'error', 2000);
+        }
+      } catch (err) {
+        notify('Failed to copy', 'error', 2000);
+      }
+      textArea.remove();
+    }
+  }
+
   async onExportClick(e: any) {
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet('ADOC Report');

@@ -91,60 +91,6 @@ export class ClinicalDataImportFormComponent {
   filteredDataSource: any[] = [];
   showInvalidRowsOnly: boolean = false;
 
-  onShowInvalidRowsOnlyChange(e: any) {
-    this.showInvalidRowsOnly = !!e?.value;
-    this.updateFilteredDataSource();
-  }
-
-  updateFilteredDataSource() {
-    if (this.showInvalidRowsOnly) {
-      this.filteredDataSource = (this.combinedDataSource || []).filter(
-        (row) => row.__hasError,
-      );
-    } else {
-      this.filteredDataSource = [...(this.combinedDataSource || [])];
-    }
-  }
-
-  isValidDDMMYYYY(val: any): boolean {
-    if (val === null || val === undefined || String(val).trim() === '') {
-      return true;
-    }
-    if (val instanceof Date) {
-      return !isNaN(val.getTime());
-    }
-    const str = String(val).trim();
-    const match = str.match(
-      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/,
-    );
-    if (!match) {
-      return false;
-    }
-    const day = parseInt(match[1], 10);
-    const month = parseInt(match[2], 10);
-    const year = parseInt(match[3], 10);
-
-    if (
-      month < 1 ||
-      month > 12 ||
-      day < 1 ||
-      day > 31 ||
-      year < 1900 ||
-      year > 2100
-    ) {
-      return false;
-    }
-    const dateObj = new Date(year, month - 1, day);
-    if (
-      dateObj.getFullYear() !== year ||
-      dateObj.getMonth() !== month - 1 ||
-      dateObj.getDate() !== day
-    ) {
-      return false;
-    }
-    return true;
-  }
-
   combinedColumnMeta: any[] = [];
 
   get progressValue() {
@@ -176,6 +122,82 @@ export class ClinicalDataImportFormComponent {
     const rawWithoutCommas = str.replace(/,/g, '');
     const num = Number(rawWithoutCommas);
     if (isNaN(num) || num <= 0 || !Number.isInteger(num)) return true;
+    return false;
+  }
+
+  onShowInvalidRowsOnlyChange(e: any) {
+    this.showInvalidRowsOnly = !!e?.value;
+    this.updateFilteredDataSource();
+  }
+
+  updateFilteredDataSource() {
+    if (this.showInvalidRowsOnly) {
+      this.filteredDataSource = (this.combinedDataSource || []).filter(
+        (row) => row.__hasError,
+      );
+    } else {
+      this.filteredDataSource = [...(this.combinedDataSource || [])];
+    }
+  }
+
+  isValidDDMMYYYY(val: any): boolean {
+    if (val === null || val === undefined || String(val).trim() === '') {
+      return true;
+    }
+    if (val instanceof Date) {
+      return !isNaN(val.getTime());
+    }
+    const str = String(val).trim();
+    
+    // Custom regex for standard formats
+    const match = str.match(
+      /^(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})(?:\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:AM|PM|am|pm))?))?$/
+    );
+    if (match) {
+      let year: number, month: number, day: number;
+      const p1 = parseInt(match[1], 10);
+      const p2 = parseInt(match[2], 10);
+      const p3 = parseInt(match[3], 10);
+
+      if (p1 > 100) {
+        year = p1;
+        month = p2;
+        day = p3;
+      } else {
+        year = p3;
+        if (year < 100) {
+          year += (year >= 50 ? 1900 : 2000); // Support 2-digit years
+        }
+        day = p1;
+        month = p2;
+        if (month > 12 && day <= 12) {
+          month = p1;
+          day = p2;
+        }
+      }
+
+      if (
+        month >= 1 && month <= 12 &&
+        day >= 1 && day <= 31 &&
+        year >= 1900 && year <= 2100
+      ) {
+        const dateObj = new Date(year, month - 1, day);
+        if (
+          dateObj.getFullYear() === year &&
+          dateObj.getMonth() === month - 1 &&
+          dateObj.getDate() === day
+        ) {
+          return true;
+        }
+      }
+    }
+
+    // Fallback: Use standard JS Date parsing
+    const fbDate = new Date(str);
+    if (!isNaN(fbDate.getTime())) {
+      return true;
+    }
+
     return false;
   }
 
@@ -678,7 +700,7 @@ export class ClinicalDataImportFormComponent {
     return format.join(sep);
   }
 
-  //========== Format date as dd/MM/yyyy
+  //========== Format date as dd/MM/yyyy or dd-MM-yyyy
   formatDateFields(data: any[], dateFields: string[]): any[] {
     return data.map((row) => {
       const newRow = { ...row };
@@ -688,14 +710,34 @@ export class ClinicalDataImportFormComponent {
           return;
         }
         const str = String(val).trim();
-        // String date: only format if it matches dd/MM/yyyy
+        // String date: check if it matches a date format with optional time
         const match = str.match(
-          /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/,
+          /^(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})(?:\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:AM|PM|am|pm))?))?$/
         );
+        
         if (match) {
-          const day = parseInt(match[1], 10);
-          const month = parseInt(match[2], 10);
-          const year = parseInt(match[3], 10);
+          let year: number, month: number, day: number;
+          const p1 = parseInt(match[1], 10);
+          const p2 = parseInt(match[2], 10);
+          const p3 = parseInt(match[3], 10);
+
+          if (p1 > 100) {
+            year = p1;
+            month = p2;
+            day = p3;
+          } else {
+            year = p3;
+            if (year < 100) {
+              year += (year >= 50 ? 1900 : 2000); // Support 2-digit years
+            }
+            day = p1;
+            month = p2;
+            if (month > 12 && day <= 12) {
+              month = p1;
+              day = p2;
+            }
+          }
+
           if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
             const dateObj = new Date(year, month - 1, day);
             if (
@@ -705,16 +747,44 @@ export class ClinicalDataImportFormComponent {
             ) {
               const formattedDay = String(day).padStart(2, '0');
               const formattedMonth = String(month).padStart(2, '0');
-              const timePart = match[4]
-                ? ` ${match[4]}:${match[5]}${match[6] ? ':' + match[6] : ''}`
-                : '';
-              newRow[field] =
-                `${formattedDay}/${formattedMonth}/${year}${timePart}`;
+              const timePart = match[4] ? ` ${match[4]}` : '';
+              const separator = str.includes('-') ? '-' : '/';
+              
+              newRow[field] = `${formattedDay}${separator}${formattedMonth}${separator}${year}${timePart}`;
               return;
             }
           }
         }
-        // Keep raw value (e.g. 7/13/2026 or text) so it will be flagged as an error
+        
+        // Fallback: JS Date formatting
+        const fbDate = new Date(str);
+        if (!isNaN(fbDate.getTime())) {
+          const year = fbDate.getFullYear();
+          const month = fbDate.getMonth() + 1;
+          const day = fbDate.getDate();
+          
+          const formattedDay = String(day).padStart(2, '0');
+          const formattedMonth = String(month).padStart(2, '0');
+          
+          let timePart = '';
+          if (str.includes(':')) {
+            const matchTime = str.match(/(\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:AM|PM|am|pm))?)/);
+            if (matchTime) {
+                timePart = ` ${matchTime[1]}`;
+            } else {
+                const hours = String(fbDate.getHours()).padStart(2, '0');
+                const mins = String(fbDate.getMinutes()).padStart(2, '0');
+                const secs = String(fbDate.getSeconds()).padStart(2, '0');
+                timePart = ` ${hours}:${mins}:${secs}`;
+            }
+          }
+          
+          const separator = str.includes('-') ? '-' : '/';
+          newRow[field] = `${formattedDay}${separator}${formattedMonth}${separator}${year}${timePart}`;
+          return;
+        }
+
+        // Keep raw value (e.g. text) so it will be flagged as an error
         newRow[field] = str;
       });
       return newRow;
