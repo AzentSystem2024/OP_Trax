@@ -302,7 +302,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
         });
       }
     } else if (e.column.dataField === 'ADOCClass') {
-      const isProcessed = this.rowData?.Status?.toLowerCase() === 'applied';
+      const isProcessed = e.data?.Billable === false;
       const notInBatch = Number(this.rowData?.XMLBatchID || 0) === 0;
 
       if (!isProcessed) {
