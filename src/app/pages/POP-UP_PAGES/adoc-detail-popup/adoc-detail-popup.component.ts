@@ -308,7 +308,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
         return;
       }
 
-      const isProcessed = e.data?.Billable === false;
+      const isProcessed = this.rowData?.Status?.toLowerCase() === 'applied';
       const notInBatch = Number(this.rowData?.XMLBatchID || 0) === 0;
 
       if (!isProcessed) {
