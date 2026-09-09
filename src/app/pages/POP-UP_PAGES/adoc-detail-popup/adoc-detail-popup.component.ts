@@ -40,6 +40,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
   @Input() visible: boolean = false;
   @Input() rowData: any;
   @Input() userRoleId: any;
+  @Input() menuPrevilage: any;
 
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() dataLoaded = new EventEmitter<any>();
@@ -302,6 +303,11 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
         });
       }
     } else if (e.column.dataField === 'ADOCClass') {
+      if (this.menuPrevilage && !this.menuPrevilage.CanEdit) {
+        notify('You do not have permission to edit this record.', 'warning', 3000);
+        return;
+      }
+
       const isProcessed = e.data?.Billable === false;
       const notInBatch = Number(this.rowData?.XMLBatchID || 0) === 0;
 

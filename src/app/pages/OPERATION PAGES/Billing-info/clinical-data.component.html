@@ -457,6 +457,7 @@
   <app-adoc-detail-popup
     [(visible)]="isRowPopupVisible"
     [rowData]="selectedRowData"
+    [menuPrevilage]="menuPrevilage"
     (cellClick)="onCellClick($event)"
     (dataLoaded)="onPopupDataLoaded($event)"
   ></app-adoc-detail-popup>
