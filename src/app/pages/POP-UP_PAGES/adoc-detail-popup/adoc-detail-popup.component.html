@@ -330,9 +330,10 @@
   </dx-data-grid>
 </dx-popup>
 
-<app-adoc-class-edit-form
+<app-adoc-class-change-popup
   [(visible)]="showAdocClassEdit"
   [formData]="selectedAdocClassData"
   [adocCategoryList]="ADOC_Category_List"
+  [claimActivityUID]="selectedActivityUID"
   (onSaved)="getClinicalDataPopupData()"
-></app-adoc-class-edit-form>
+></app-adoc-class-change-popup>

@@ -27,7 +27,7 @@ import { saveAs } from 'file-saver';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import { AuthService, DataService } from 'src/app/services';
 import { firstValueFrom } from 'rxjs';
-import { AdocClassEditFormModule } from '../adoc-class-edit-form/adoc-class-edit-form.component';
+import { AdocClassChangePopupModule } from '../adoc-class-change-popup/adoc-class-change-popup.component';
 
 @Component({
   selector: 'app-adoc-detail-popup',
@@ -61,6 +61,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
   showAdocClassEdit: boolean = false;
   selectedAdocClassData: any = null;
   ADOC_Category_List: any[] = [];
+  selectedActivityUID: number = 0;
 
   constructor(
     private operationService: OperationReportService,
@@ -288,6 +289,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       }
     } else if (e.column.dataField === 'ADOCClass') {
       const adocClassID = e.data.ADOCClassID;
+      this.selectedActivityUID = e.data.ActivityUID;
       if (adocClassID) {
         this.isPopupProcessing = true;
         this.masterService.Select_adocClass_Row_Data(adocClassID).subscribe({
@@ -328,7 +330,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
     DxDropDownButtonModule,
     DxLoadPanelModule,
     DxoSummaryModule,
-    AdocClassEditFormModule
+    AdocClassChangePopupModule
   ],
   declarations: [AdocDetailPopupComponent],
   exports: [AdocDetailPopupComponent],

@@ -282,6 +282,11 @@ export class OperationReportService {
   }
 
   // =================== DMO API Services =====================
+
+  updateADOCClass(payload: any) {
+    const url = `${this.BASE_URL}ClinicalData/updateADOCClass`;
+    return this.http.post<any>(url, payload);
+  }
   get_XML_Batch_List_Data(payload: any) {
     const url = `${this.BASE_URL}XMLBatch/list`;
     return this.http.post<any>(url, payload);
