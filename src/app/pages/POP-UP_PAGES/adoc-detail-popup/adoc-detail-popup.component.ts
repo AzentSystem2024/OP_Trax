@@ -67,7 +67,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
     private operationService: OperationReportService,
     private masterService: MasterReportService,
     private dataService: DataService,
-    private authService: AuthService
+    private authService: AuthService,
   ) {
     this.initUserRole();
   }
@@ -96,7 +96,9 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
 
   async get_ADOC_GROUP_Dropdown(): Promise<void> {
     try {
-      const response: any = await firstValueFrom(this.dataService.Get_GropDown('ADOC_GROUP'));
+      const response: any = await firstValueFrom(
+        this.dataService.Get_GropDown('ADOC_GROUP'),
+      );
       if (response) {
         this.ADOC_Category_List = response;
       }
@@ -192,7 +194,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(text).then(
         () => notify('Copied to clipboard', 'success', 2000),
-        () => notify('Failed to copy', 'error', 2000)
+        () => notify('Failed to copy', 'error', 2000),
       );
     } else {
       // Fallback for insecure contexts (e.g. HTTP over local IP) or older browsers
@@ -268,18 +270,30 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       if (e.data.Billable === true) {
         this.showDetails = true;
         const payload = {
-          ClaimActivityUID: e.data.ActivityUID
-        }
+          ClaimActivityUID: e.data.ActivityUID,
+        };
         this.operationService.get_price(payload).subscribe((res: any) => {
           if (res && res.flag === '1' && res.data && res.data.length > 0) {
             const priceData = res.data[0];
             this.dataGrid_DataSource = [
               { field: 'Base Price', value: priceData.BasePrice ?? 0 },
-              { field: 'Pediatric Adjuster', value: priceData.PediatricAdjuster ?? 0 },
-              { field: 'Senior Adjuster', value: priceData.SeniorAdjuster ?? 0 },
-              { field: 'Region Adjuster', value: priceData.RegionAdjuster ?? 0 },
+              {
+                field: 'Pediatric Adjuster',
+                value: priceData.PediatricAdjuster ?? 0,
+              },
+              {
+                field: 'Senior Adjuster',
+                value: priceData.SeniorAdjuster ?? 0,
+              },
+              {
+                field: 'Region Adjuster',
+                value: priceData.RegionAdjuster ?? 0,
+              },
               { field: 'CoE Adjuster', value: priceData.CoEAdjuster ?? 0 },
-              { field: 'Facility Multiplier', value: priceData.FacilityMultiplier ?? 0 },
+              {
+                field: 'Facility Multiplier',
+                value: priceData.FacilityMultiplier ?? 0,
+              },
               { field: 'ADOC Price', value: priceData.ADOCPrice ?? 0 },
             ];
           } else {
@@ -288,6 +302,27 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
         });
       }
     } else if (e.column.dataField === 'ADOCClass') {
+      const isProcessed = this.rowData?.Status?.toLowerCase() === 'applied';
+      const notInBatch = Number(this.rowData?.XMLBatchID || 0) === 0;
+
+      if (!isProcessed) {
+        notify(
+          'Cannot modify ADOC Class: Claim is not yet processed.',
+          'warning',
+          3000,
+        );
+        return;
+      }
+
+      if (!notInBatch) {
+        notify(
+          'Cannot modify ADOC Class: Claim is already added to an XML Batch.',
+          'warning',
+          3000,
+        );
+        return;
+      }
+
       const adocClassID = e.data.ADOCClassID;
       this.selectedActivityUID = e.data.ActivityUID;
       if (adocClassID) {
@@ -307,8 +342,12 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
           },
           error: () => {
             this.isPopupProcessing = false;
-            notify('Failed to load ADOC Classification details.', 'error', 2000);
-          }
+            notify(
+              'Failed to load ADOC Classification details.',
+              'error',
+              2000,
+            );
+          },
         });
       }
     }
@@ -330,9 +369,9 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
     DxDropDownButtonModule,
     DxLoadPanelModule,
     DxoSummaryModule,
-    AdocClassChangePopupModule
+    AdocClassChangePopupModule,
   ],
   declarations: [AdocDetailPopupComponent],
   exports: [AdocDetailPopupComponent],
 })
-export class AdocDetailPopupModule { }
+export class AdocDetailPopupModule {}

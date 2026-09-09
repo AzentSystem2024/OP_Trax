@@ -116,7 +116,7 @@
       [columnAutoWidth]="true"
       [showRowLines]="true"
       [showColumnLines]="true"
-      [height]="'50vh'"
+      [height]="'60vh'"
       (onCellPrepared)="onCellPrepared($event)"
       (onCellClick)="onCellClick($event)"
     >
@@ -129,7 +129,7 @@
       <dxo-scrolling
         mode="virtual"
         columnRenderingMode="virtual"
-        showScrollbar="always"
+        showScrollbar="onHover"
       ></dxo-scrolling>
 
       <dxi-column
@@ -232,7 +232,8 @@
         <span
           class="cpt-link"
           title="'Click for ADOC Class Details'"
-          style="cursor: pointer; color: var(--dx-color-primary)"
+          [style.color]="cell.data.IsADOCClassModified ? '#e74c3c' : 'var(--dx-color-primary)'"
+          style="cursor: pointer;"
         >
           {{ cell.value }}
         </span>

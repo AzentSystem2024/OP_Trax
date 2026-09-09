@@ -358,6 +358,7 @@ export class ClinicalDataComponent implements OnInit {
       'Processing completed successfully.',
       'success',
     );
+    this.dataGrid.instance.clearSelection();
     this.onApplyFilter(); // Refresh grid
   }
 
