@@ -25,6 +25,7 @@
           >
             <div *dxTemplate="let data of 'content'">
               <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
                 #facilityGrid
                 [dataSource]="facilityListDataSource"
                 keyExpr="FacilityLicense"
@@ -149,6 +150,7 @@
   </div>
 
   <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
     [height]="isContentVisible ? '76vh' : '82vh'"
     class="grid theme-dependent"
     [noDataText]="!isContentVisible ? 'No Data Available' : ' '"
@@ -194,8 +196,7 @@
     <dxo-sorting mode="multiple"></dxo-sorting>
     <dxo-header-filter [visible]="isFilterRowVisible"></dxo-header-filter>
     <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
-    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
-    <dxo-filter-builder [allowHierarchicalFields]="true"> </dxo-filter-builder>
+    <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
     <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
     <dxo-grouping
       [autoExpandAll]="false"
@@ -387,6 +388,7 @@
               >
                 <div *dxTemplate="let data of 'content'">
                   <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
                     [dataSource]="facilityListDataSource"
                     keyExpr="FacilityLicense"
                     [columns]="[
@@ -531,6 +533,7 @@
       </div>
 
       <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
         #newBatchGrid
         [dataSource]="newBatchDataSource"
         class="grid new-batch-grid theme-dependent mt-2 flex-grow-1"
@@ -632,6 +635,7 @@
   >
     <div *dxTemplate="let data of 'content'" class="d-flex flex-column h-100">
       <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
         [dataSource]="batchClaimDataSource"
         class="grid theme-dependent mt-2 flex-grow-1"
         [showBorders]="true"
@@ -792,6 +796,7 @@
       </div>
 
       <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
         [dataSource]="uploadProgressDataSource"
         class="flex-grow-1 progress-grid"
         [showBorders]="true"

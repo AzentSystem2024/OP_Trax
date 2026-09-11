@@ -1,5 +1,6 @@
 <div class="view-wrapper list-page">
   <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
     class="main-grid grid theme-dependent"
     noDataText=""
     height="600"
@@ -143,8 +144,7 @@
     <dxi-column dataField="FacilityGroup" caption="Description"> </dxi-column>
     <dxi-column dataField="Description" caption="Long Description"></dxi-column>
 
-    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
-    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
+    <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
   </dx-data-grid>
   <form-popup
     class="formPopupClass"

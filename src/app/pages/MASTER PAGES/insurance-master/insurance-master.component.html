@@ -76,7 +76,7 @@
     <dxo-load-panel [showPane]="false"></dxo-load-panel>
     <dxo-scrolling mode="virtual"></dxo-scrolling>
     <dxo-sorting mode="multiple"></dxo-sorting>
-    <dxo-header-filter [visible]="true"></dxo-header-filter>
+    <dxo-header-filter [visible]="isFilterRowVisible"></dxo-header-filter>
     <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
     <dxo-search-panel [visible]="true" placeholder=" Search"></dxo-search-panel>
     <dxo-export
@@ -136,7 +136,7 @@
       ></dxi-item>
     </dxo-toolbar>
 
-    <dxo-header-filter [visible]="true">
+    <dxo-header-filter [visible]="isFilterRowVisible">
       <dxo-search [enabled]="true"></dxo-search>
     </dxo-header-filter>
 
@@ -153,7 +153,6 @@
     </dxi-column>
 
     <dxo-filter-panel [visible]="true"></dxo-filter-panel>
-    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
   <!-- ==========add popup =========== -->
   <form-popup

@@ -82,11 +82,10 @@
       ></dxi-item>
     </dxo-toolbar>
 
-    <dxo-header-filter [visible]="true">
+    <dxo-header-filter [visible]="isFilterRowVisible">
       <dxo-search [enabled]="true"></dxo-search>
     </dxo-header-filter>
 
     <dxo-filter-panel [visible]="false"></dxo-filter-panel>
-    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
 </div>

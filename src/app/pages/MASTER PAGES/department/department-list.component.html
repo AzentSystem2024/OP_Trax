@@ -36,7 +36,7 @@
     <dxo-load-panel [showPane]="false"></dxo-load-panel>
     <dxo-scrolling mode="virtual"></dxo-scrolling>
     <dxo-sorting mode="multiple"></dxo-sorting>
-    <dxo-header-filter [visible]="true">
+    <dxo-header-filter [visible]="isFilterRowVisible">
       <dxo-search [enabled]="isFilterRowVisible"></dxo-search>
     </dxo-header-filter>
     <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
@@ -61,7 +61,7 @@
           hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
           onClick: toggleFilterRow,
           stylingMode: 'text',
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
       <dxi-item
@@ -74,12 +74,13 @@
           icon: 'refresh',
           hint: 'refresh',
           onClick: refresh,
-          stylingMode: 'text'
+          stylingMode: 'text',
         }"
       ></dxi-item>
 
       <dxi-item
-        *ngIf="menuPrevilage?.CanExport" name="exportButton"
+        *ngIf="menuPrevilage?.CanExport"
+        name="exportButton"
         location="after"
         cssClass="custom-export-button"
       ></dxi-item>
@@ -114,7 +115,6 @@
     <dxi-column dataField="STATUS" caption="Status"></dxi-column>
 
     <dxo-filter-panel [visible]="true"></dxo-filter-panel>
-    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
 
   <dx-popup

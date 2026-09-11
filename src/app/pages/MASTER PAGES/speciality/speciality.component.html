@@ -1,5 +1,6 @@
 <div class="view-wrapper list-page">
   <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
     class="grid theme-dependent"
     noDataText=""
     height="82vh"
@@ -173,8 +174,7 @@
       <dx-check-box [value]="cell.value" [readOnly]="true"></dx-check-box>
     </div>
 
-    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
-    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
+    <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
   </dx-data-grid>
 
   <form-popup

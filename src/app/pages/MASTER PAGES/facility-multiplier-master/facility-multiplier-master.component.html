@@ -1,5 +1,6 @@
 <div class="view-wrapper list-page">
   <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
     #cptPriceGrid
     class="grid theme-dependent"
     [dataSource]="cptPriceData"
@@ -294,8 +295,7 @@
       </dxi-button>
     </dxi-column>
 
-    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
-    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
+    <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
   </dx-data-grid>
 
   <!-- =========== History Popup =========== -->
@@ -308,6 +308,7 @@
     (onShown)="onHistoryPopupShown()"
   >
     <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
       #historyGrid
       [dataSource]="PriceHistoryData"
       [showBorders]="true"

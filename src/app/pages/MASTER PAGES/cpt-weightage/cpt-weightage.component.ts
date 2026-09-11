@@ -309,6 +309,20 @@ export class CPTWeightageComponent {
     const data = JSON.parse(localStorage.getItem('logData') || '');
     this.IsWeightGlobal = data.cptWeightGlobal;
   }
+
+    isFilterApplied: boolean = false;
+
+    onGridOptionChanged(e: any) {
+
+            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+              setTimeout(() => {
+                if (this.cptWeightageGrid && this.cptWeightageGrid.instance) {
+                  this.isFilterApplied = !!this.cptWeightageGrid.instance.getCombinedFilter();
+                }
+              });
+            }
+                    
+    }
 }
 @NgModule({
   imports: [

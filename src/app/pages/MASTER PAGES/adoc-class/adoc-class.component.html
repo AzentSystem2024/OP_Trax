@@ -1,5 +1,6 @@
 <div class="view-wrapper list-page">
   <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
     class="grid theme-dependent"
     noDataText="No Data Available"
     height="82vh"
@@ -137,8 +138,7 @@
       </span>
     </div>
 
-    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
-    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
+    <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
   </dx-data-grid>
 
   <!-- ========= new form popup ========= -->
@@ -228,6 +228,7 @@
   >
     <div *dxTemplate="let data of 'content'">
       <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
         #detailGrid
         [dataSource]="DetailedClassData"
         [showBorders]="true"
@@ -251,7 +252,7 @@
         <dxo-load-panel [showPane]="true"></dxo-load-panel>
         <dxo-scrolling mode="virtual"></dxo-scrolling>
         <dxo-sorting mode="multiple"></dxo-sorting>
-        <dxo-header-filter [visible]="true">
+        <dxo-header-filter [visible]="isFilterRowVisible">
           <dxo-search [enabled]="true"></dxo-search>
         </dxo-header-filter>
 
@@ -275,7 +276,6 @@
         </dxi-column>
 
         <dxo-filter-panel [visible]="true"></dxo-filter-panel>
-        <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
       </dx-data-grid>
     </div>
   </dx-popup>

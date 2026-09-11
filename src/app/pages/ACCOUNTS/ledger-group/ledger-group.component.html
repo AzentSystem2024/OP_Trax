@@ -1,6 +1,7 @@
 <div class="view-wrapper list-page">
   <div class="grid-container">
     <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
       #dataGrid
       noDataText="No data available"
       [width]="'100%'"
@@ -94,8 +95,7 @@
       <dxi-column dataField="HeadName" caption="Head Name"></dxi-column>
 
       <dxo-header-filter [visible]="isFilterRowVisible"></dxo-header-filter>
-      <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
-      <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
+      <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
     </dx-data-grid>
   </div>
 </div>

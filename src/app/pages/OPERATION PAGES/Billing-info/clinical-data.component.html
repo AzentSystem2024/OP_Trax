@@ -27,6 +27,7 @@
             >
               <div *dxTemplate="let data of 'content'">
                 <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
                   #facilityGrid
                   [dataSource]="facilityListDataSource"
                   keyExpr="FacilityLicense"
@@ -194,6 +195,7 @@
     </div>
 
     <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
       [height]="isContentVisible ? '70vh' : '82vh'"
       class="grid theme-dependent"
       [noDataText]="!isContentVisible ? 'No Data Available' : ' '"
@@ -241,9 +243,7 @@
       <dxo-sorting mode="multiple"></dxo-sorting>
       <dxo-header-filter [visible]="isFilterRowVisible"></dxo-header-filter>
       <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
-      <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
-      <dxo-filter-builder [allowHierarchicalFields]="true">
-      </dxo-filter-builder>
+      <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
       <dxo-search-panel
         [visible]="true"
         placeholder=" Search"

@@ -413,6 +413,20 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     console.log('Retrieved log data from local storage:', data);
     this.IsGlobalPrice = data.cptPriceGlobal;
   }
+
+    isFilterApplied: boolean = false;
+
+    onGridOptionChanged(e: any) {
+
+            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+              setTimeout(() => {
+                if (this.cptPriceGrid && this.cptPriceGrid.instance) {
+                  this.isFilterApplied = !!this.cptPriceGrid.instance.getCombinedFilter();
+                }
+              });
+            }
+                    
+    }
 }
 
 @NgModule({

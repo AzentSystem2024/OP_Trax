@@ -61,6 +61,7 @@ export class ExclusionInclusionComponent {
 
   isSpecialtyReadOnly = false;
   isAdocClassReadOnly = false;
+  isFilterApplied: boolean = false;
 
   isAddPopupVisible = false;
   newRule: any = {
@@ -101,7 +102,8 @@ export class ExclusionInclusionComponent {
   constructor(
     private masterService: MasterReportService,
     private dataService: DataService,
-    private route: ActivatedRoute, private notificationService: NotificationService
+    private route: ActivatedRoute,
+    private notificationService: NotificationService,
   ) {
     this.dataService.Get_GropDown('SPECIALITY').subscribe((res: any) => {
       this.specialityList = res || [];
@@ -123,9 +125,11 @@ export class ExclusionInclusionComponent {
       this.adocRuleList = res.data || res || [];
     });
 
-    this.dataService.Get_GropDown('ADOC_CLASS_EXCINCL').subscribe((res: any) => {
-      this.adocClassList = res;
-    });
+    this.dataService
+      .Get_GropDown('ADOC_CLASS_EXCINCL')
+      .subscribe((res: any) => {
+        this.adocClassList = res;
+      });
 
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -249,16 +253,25 @@ export class ExclusionInclusionComponent {
       next: (response: any) => {
         if (response && response.flag === '1') {
           this.dataGrid.instance.refresh();
-          this.notificationService.showNotification(response.message || 'New data saved Successfully', 'success');
+          this.notificationService.showNotification(
+            response.message || 'New data saved Successfully',
+            'success',
+          );
           this.isAddPopupVisible = false;
         } else {
-          this.notificationService.showNotification(response?.message || 'Your Data Not Saved', 'error');
+          this.notificationService.showNotification(
+            response?.message || 'Your Data Not Saved',
+            'error',
+          );
         }
       },
       error: (err: any) => {
-        this.notificationService.showNotification(err?.error?.message ||
-                        err?.message ||
-                        'An error occurred while saving data.', 'error');
+        this.notificationService.showNotification(
+          err?.error?.message ||
+            err?.message ||
+            'An error occurred while saving data.',
+          'error',
+        );
       },
     });
   }
@@ -353,17 +366,26 @@ export class ExclusionInclusionComponent {
       next: (data: any) => {
         if (data && data.flag === '1') {
           this.dataGrid.instance.refresh();
-          this.notificationService.showNotification(data.message || 'Data updated Successfully', 'success');
+          this.notificationService.showNotification(
+            data.message || 'Data updated Successfully',
+            'success',
+          );
         } else {
-          this.notificationService.showNotification(data?.message || 'Your Data Not Saved', 'error');
+          this.notificationService.showNotification(
+            data?.message || 'Your Data Not Saved',
+            'error',
+          );
         }
         event.component.cancelEditData();
         this.dataGrid.instance.refresh();
       },
       error: (err: any) => {
-        this.notificationService.showNotification(err?.error?.message ||
-                        err?.message ||
-                        'An error occurred while updating data.', 'error');
+        this.notificationService.showNotification(
+          err?.error?.message ||
+            err?.message ||
+            'An error occurred while updating data.',
+          'error',
+        );
         event.component.cancelEditData();
       },
     });
@@ -378,17 +400,26 @@ export class ExclusionInclusionComponent {
     this.masterService.Remove_ExclusionInclusion_Row_Data(id).subscribe({
       next: (response: any) => {
         if (response && response.flag === '1') {
-          this.notificationService.showNotification(response.message || 'Delete operation successful', 'success');
+          this.notificationService.showNotification(
+            response.message || 'Delete operation successful',
+            'success',
+          );
         } else {
-          this.notificationService.showNotification(response?.message || 'Delete operation failed', 'error');
+          this.notificationService.showNotification(
+            response?.message || 'Delete operation failed',
+            'error',
+          );
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
       },
       error: (err: any) => {
-        this.notificationService.showNotification(err?.error?.message ||
-                        err?.message ||
-                        'An error occurred while deleting data.', 'error');
+        this.notificationService.showNotification(
+          err?.error?.message ||
+            err?.message ||
+            'An error occurred while deleting data.',
+          'error',
+        );
       },
     });
   }
@@ -396,6 +427,16 @@ export class ExclusionInclusionComponent {
   toggleFilterRow = () => {
     this.isFilterRowVisible = !this.isFilterRowVisible;
   };
+
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+        }
+      });
+    }
+  }
 
   refresh = () => {
     if (this.dataGrid && this.dataGrid.instance) {

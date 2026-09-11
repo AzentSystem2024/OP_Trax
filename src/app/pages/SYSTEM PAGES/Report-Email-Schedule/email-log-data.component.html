@@ -29,7 +29,7 @@
     <dxo-load-panel [showPane]="false"></dxo-load-panel>
     <dxo-scrolling mode="virtual"></dxo-scrolling>
     <dxo-sorting mode="multiple"></dxo-sorting>
-    <dxo-header-filter [visible]="true">
+    <dxo-header-filter [visible]="isFilterRowVisible">
       <dxo-search [enabled]="true"></dxo-search>
     </dxo-header-filter>
 
@@ -81,7 +81,6 @@
     </dxo-toolbar>
 
     <dxo-filter-panel [visible]="true"></dxo-filter-panel>
-    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
   </dx-data-grid>
 
   <!-- =========Custom Add new  popup form========= -->

@@ -290,6 +290,20 @@ export class IcdAdocMappingComponent {
     const fileGroupName = 'ICD-ADOC-Mapping';
     this.service.exportDataGrid(event, fileGroupName);
   }
+
+    isFilterApplied: boolean = false;
+
+    onGridOptionChanged(e: any) {
+
+            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+              setTimeout(() => {
+                if (this.dataGrid && this.dataGrid.instance) {
+                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+                }
+              });
+            }
+                    
+    }
 }
 
 @NgModule({

@@ -331,6 +331,20 @@ export class ClinicianComponent implements OnInit {
     const query = event.value;
     this.dataGrid.instance.searchByText(query);
   }
+
+    isFilterApplied: boolean = false;
+
+    onGridOptionChanged(e: any) {
+
+            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+              setTimeout(() => {
+                if (this.dataGrid && this.dataGrid.instance) {
+                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+                }
+              });
+            }
+                    
+    }
 }
 
 @NgModule({

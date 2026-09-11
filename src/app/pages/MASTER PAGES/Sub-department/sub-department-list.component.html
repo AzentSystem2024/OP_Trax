@@ -1,5 +1,6 @@
 <div class="view-wrapper list-page">
   <dx-data-grid
+    (onOptionChanged)="onGridOptionChanged($event)"
     class="grid theme-dependent custom-grid"
     noDataText=""
     height="82vh"
@@ -100,8 +101,7 @@
     <dxi-column dataField="DEPARTMENT" caption="Department"></dxi-column>
     <dxi-column dataField="STATUS" caption="Status"></dxi-column>
 
-    <dxo-filter-panel [visible]="isFilterRowVisible"></dxo-filter-panel>
-    <dxo-filter-builder [allowHierarchicalFields]="true"></dxo-filter-builder>
+    <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
   </dx-data-grid>
 
   <dx-popup

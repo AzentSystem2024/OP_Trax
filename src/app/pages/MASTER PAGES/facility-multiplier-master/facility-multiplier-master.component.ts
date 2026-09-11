@@ -429,6 +429,20 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     const data = JSON.parse(localStorage.getItem('logData') || '{}');
     this.IsGlobalPrice = data.cptPriceGlobal || false;
   }
+
+    isFilterApplied: boolean = false;
+
+    onGridOptionChanged(e: any) {
+
+            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+              setTimeout(() => {
+                if (this.cptPriceGrid && this.cptPriceGrid.instance) {
+                  this.isFilterApplied = !!this.cptPriceGrid.instance.getCombinedFilter();
+                }
+              });
+            }
+                    
+    }
 }
 
 @NgModule({
