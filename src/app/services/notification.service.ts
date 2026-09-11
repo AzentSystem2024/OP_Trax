@@ -12,8 +12,8 @@ export class NotificationService {
       type === 'success'
         ? 'bg-success text-white'
         : type === 'error'
-        ? 'bg-danger text-white'
-        : 'bg-warning text-dark';
+          ? 'bg-danger text-white'
+          : 'bg-warning text-dark';
 
     // Create toast element
     const toastEl = document.createElement('div');
@@ -36,8 +36,7 @@ export class NotificationService {
 
     // Initialize and show toast
     const toast = new bootstrap.Toast(toastEl, {
-      autohide: type === 'error' ? false : true, // error stays until user closes
-      delay: type === 'error' ? 0 : 3000, // success/warning auto-hide
+      autohide: false,
     });
 
     toast.show();
