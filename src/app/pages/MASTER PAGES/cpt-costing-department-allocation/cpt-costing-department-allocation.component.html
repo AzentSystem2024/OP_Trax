@@ -71,12 +71,13 @@
           icon: 'refresh',
           onClick: refresh,
           stylingMode: 'text',
-          elementAttr: { class: 'commonButtons' }
+          elementAttr: { class: 'commonButtons' },
         }"
       ></dxi-item>
 
       <dxi-item
-        *ngIf="menuPrevilage?.CanExport" name="exportButton"
+        *ngIf="menuPrevilage?.CanExport"
+        name="exportButton"
         location="after"
         cssClass="custom-export-button"
       ></dxi-item>
@@ -90,7 +91,7 @@
           type: 'default',
           stylingMode: 'contained',
           disabled: !menuPrevilage.CanAdd,
-          onClick: onAddRowClick
+          onClick: onAddRowClick,
         }"
       ></dxi-item>
     </dxo-toolbar>
