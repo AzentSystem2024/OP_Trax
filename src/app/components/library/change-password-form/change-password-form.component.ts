@@ -4,10 +4,10 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ValidationCallbackData } from 'devextreme-angular/common';
 import { DxFormModule } from 'devextreme-angular/ui/form';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
-import notify from 'devextreme/ui/notify';
 import { AuthService } from '../../../services';
 
 import { Subscription } from 'rxjs';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'app-change-password-form',
@@ -22,7 +22,7 @@ export class ChangePasswordFormComponent implements OnInit, OnDestroy {
 
   paramMapSubscription: Subscription;
 
-  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute) { }
+  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute, private notificationService: NotificationService) { }
 
   ngOnInit() {
     this.paramMapSubscription = this.route.paramMap.subscribe((params) => {
@@ -41,7 +41,7 @@ export class ChangePasswordFormComponent implements OnInit, OnDestroy {
     if (result.isOk) {
       this.router.navigate(['/auth/login']);
     } else {
-      notify(result.message, 'error', 2000);
+      this.notificationService.showNotification(result.message, 'error');
     }
   }
 

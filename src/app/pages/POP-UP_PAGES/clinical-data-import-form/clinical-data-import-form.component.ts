@@ -31,12 +31,12 @@ import {
 } from 'devextreme-angular';
 import { FormTextboxModule, FormPhotoUploaderModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
-import notify from 'devextreme/ui/notify';
 import * as XLSX from 'xlsx';
 import { OperationReportService } from '../../OPERATION PAGES/operation-report.service';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { firstValueFrom } from 'rxjs';
 import { InactivityService } from 'src/app/services/inactivity.service';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'app-clinical-data-import-form',
@@ -108,7 +108,7 @@ export class ClinicalDataImportFormComponent {
     private service: MasterReportService,
     private operationservice: OperationReportService,
     private reportservice: ReportService,
-    private inactivityService: InactivityService,
+    private inactivityService: InactivityService, private notificationService: NotificationService
   ) {
     this.userID = sessionStorage.getItem('UserID');
     this.getUserFacilityData();
@@ -440,16 +440,8 @@ export class ClinicalDataImportFormComponent {
         try {
           await processXmlFile(file);
         } catch (err: any) {
-          notify(
-            {
-              message:
-                err?.message ||
-                'Network error occurred during import. Process stopped.',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 5000,
-            },
-            'error',
-          );
+          this.notificationService.showNotification(err?.message ||
+                            'Network error occurred during import. Process stopped.', 'error');
           this.isResponsePopupOpened = false;
           break;
         }
@@ -462,25 +454,13 @@ export class ClinicalDataImportFormComponent {
         !fileName.endsWith('.xls') &&
         !fileName.endsWith('.csv')
       ) {
-        notify(
-          {
-            message: `Invalid file type: ${file.name}. Supported types: XML, XLS, XLSX, CSV`,
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error',
-        );
+        this.notificationService.showNotification(`Invalid file type: ${file.name}. Supported types: XML, XLS, XLSX, CSV`, 'error');
         continue;
       }
 
       // File Size Validation (50MB limit)
       if (file.size > 50 * 1024 * 1024) {
-        notify(
-          {
-            message: `File size exceeds 50MB limit: ${file.name}`,
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error',
-        );
+        this.notificationService.showNotification(`File size exceeds 50MB limit: ${file.name}`, 'error');
         continue;
       }
       try {
@@ -536,31 +516,13 @@ export class ClinicalDataImportFormComponent {
         });
         // Empty File Validation
         if (!rows || rows.length === 0) {
-          notify(
-            {
-              message: 'Selected file contains no data.',
-              position: {
-                at: 'top right',
-                my: 'top right',
-              },
-            },
-            'warning',
-          );
+          this.notificationService.showNotification('Selected file contains no data.', 'warning');
           continue;
         }
 
         // Row Count Validation
         if (rows.length > 50000) {
-          notify(
-            {
-              message: 'Selected file contains more than 50,000 rows.',
-              position: {
-                at: 'top right',
-                my: 'top right',
-              },
-            },
-            'error',
-          );
+          this.notificationService.showNotification('Selected file contains more than 50,000 rows.', 'error');
           continue;
         }
         // Trim headers (keys) and cell values
@@ -585,16 +547,7 @@ export class ClinicalDataImportFormComponent {
           (col: any) => !actualColumns.includes(col),
         );
         if (missingColumns.length > 0) {
-          notify(
-            {
-              message: 'Missing Columns: ' + missingColumns.join(', '),
-              position: {
-                at: 'top right',
-                my: 'top right',
-              },
-            },
-            'error',
-          );
+          this.notificationService.showNotification('Missing Columns: ' + missingColumns.join(', '), 'error');
           continue;
         }
         // Date Formatting
@@ -626,42 +579,15 @@ export class ClinicalDataImportFormComponent {
         );
         this.updateFilteredDataSource();
         if (!this.combinedDataSource || this.combinedDataSource.length === 0) {
-          notify(
-            {
-              message: 'No valid records found.',
-              position: {
-                at: 'top right',
-                my: 'top right',
-              },
-            },
-            'warning',
-          );
+          this.notificationService.showNotification('No valid records found.', 'warning');
           continue;
         }
         console.log('Imported Data:', this.combinedDataSource);
-        notify(
-          {
-            message: `${this.combinedDataSource.length.toLocaleString()} records loaded successfully.`,
-            position: {
-              at: 'top right',
-              my: 'top right',
-            },
-          },
-          'success',
-        );
+        this.notificationService.showNotification(`${this.combinedDataSource.length.toLocaleString()} records loaded successfully.`, 'success');
         this.isExcelpopupOpened = true;
       } catch (error: any) {
         console.error('Import Error:', error);
-        notify(
-          {
-            message: error?.message || 'Failed to import file.',
-            position: {
-              at: 'top right',
-              my: 'top right',
-            },
-          },
-          'error',
-        );
+        this.notificationService.showNotification(error?.message || 'Failed to import file.', 'error');
       }
     }
     this.isExcelLoading = false;
@@ -926,13 +852,7 @@ export class ClinicalDataImportFormComponent {
   // ============ excel data saving click ========
   onSaveClick() {
     if (!this.combinedDataSource?.length) {
-      notify(
-        {
-          message: 'Please import your file',
-          position: { at: 'top right', my: 'top right' },
-        },
-        'error',
-      );
+      this.notificationService.showNotification('Please import your file', 'error');
       return;
     }
     this.isValidationTriggered = true;
@@ -1033,13 +953,7 @@ export class ClinicalDataImportFormComponent {
     this.importGrid?.instance?.repaint();
 
     if (this.hasError) {
-      notify(
-        {
-          message: 'Please fix the validation errors before saving.',
-          position: { at: 'top right', my: 'top right' },
-        },
-        'error',
-      );
+      this.notificationService.showNotification('Please fix the validation errors before saving.', 'error');
       return;
     }
     this.isSaving = true;
@@ -1097,16 +1011,7 @@ export class ClinicalDataImportFormComponent {
             if (flag === '1') {
               sendChunk(index + 1);
             } else {
-              notify(
-                {
-                  message: res?.MESSAGE || res?.message || 'Import failed.',
-                  position: {
-                    at: 'top right',
-                    my: 'top right',
-                  },
-                },
-                'error',
-              );
+              this.notificationService.showNotification(res?.MESSAGE || res?.message || 'Import failed.', 'error');
               this.isSaving = false;
               this.isLoading = false;
               this.inactivityService.setApiInProgress(false);
@@ -1178,26 +1083,11 @@ export class ClinicalDataImportFormComponent {
 
             if (this.isApplygrouper && claimUids.length > 0) {
               await this.processGrouperClaims(claimUids);
-              notify(
-                {
-                  message: 'Data imported and grouper applied successfully.',
-                  position: { at: 'top right', my: 'top right' },
-                  displayTime: 2000,
-                },
-                'success',
-              );
+              this.notificationService.showNotification('Data imported and grouper applied successfully.', 'success');
             } else {
-              notify(
-                {
-                  message:
-                    res?.MESSAGE ||
-                    res?.message ||
-                    'Data imported successfully.',
-                  position: { at: 'top right', my: 'top right' },
-                  displayTime: 1000,
-                },
-                'success',
-              );
+              this.notificationService.showNotification(res?.MESSAGE ||
+                                    res?.message ||
+                                    'Data imported successfully.', 'success');
             }
             this.isLoading = false;
             this.isSaving = false;
@@ -1205,14 +1095,7 @@ export class ClinicalDataImportFormComponent {
             this.resetValidationState();
             this.close();
           } else {
-            notify(
-              {
-                message: res?.MESSAGE || res?.message || 'Import failed.',
-                position: { at: 'top right', my: 'top right' },
-                displayTime: 1000,
-              },
-              'error',
-            );
+            this.notificationService.showNotification(res?.MESSAGE || res?.message || 'Import failed.', 'error');
             this.isLoading = false;
             this.isSaving = false;
           }
@@ -1230,32 +1113,11 @@ export class ClinicalDataImportFormComponent {
   // ============ common function for notification handler ========
   handleError(error: any) {
     if (error.status === 0) {
-      notify(
-        {
-          message: 'Network error: Please check your internet connection.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'error',
-      );
+      this.notificationService.showNotification('Network error: Please check your internet connection.', 'error');
     } else if (error.status === 500) {
-      notify(
-        {
-          message: 'Server error: Unable to process request. Try later.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'error',
-      );
+      this.notificationService.showNotification('Server error: Unable to process request. Try later.', 'error');
     } else {
-      notify(
-        {
-          message: 'Failed to import data. Please try again.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'error',
-      );
+      this.notificationService.showNotification('Failed to import data. Please try again.', 'error');
     }
     console.error('Error during data import:', error);
     this.isSaving = false;
@@ -1299,13 +1161,7 @@ export class ClinicalDataImportFormComponent {
   onXmlPopupHiding(e: any) {
     if (this.isExcelLoading) {
       e.cancel = true;
-      notify(
-        {
-          message: 'Please wait until the file upload process is complete.',
-          position: { at: 'top right', my: 'top right' },
-        },
-        'warning',
-      );
+      this.notificationService.showNotification('Please wait until the file upload process is complete.', 'warning');
     }
   }
 
@@ -1325,13 +1181,7 @@ export class ClinicalDataImportFormComponent {
   onExcelPopupHiding(e: any) {
     if (this.isLoading || this.isSaving) {
       e.cancel = true;
-      notify(
-        {
-          message: 'Please wait until the process is complete.',
-          position: { at: 'top right', my: 'top right' },
-        },
-        'warning',
-      );
+      this.notificationService.showNotification('Please wait until the process is complete.', 'warning');
     }
   }
 

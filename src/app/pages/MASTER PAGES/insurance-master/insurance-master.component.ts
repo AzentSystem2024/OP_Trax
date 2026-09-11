@@ -18,10 +18,10 @@ import {
 } from 'devextreme-angular';
 import { FormPopupModule } from 'src/app/components';
 import { InsuranceNewFormComponent } from '../../POP-UP_PAGES/insurance-new-form/insurance-new-form.component';
-import notify from 'devextreme/ui/notify';
 import { InsuranceNewFormModule } from '../../POP-UP_PAGES/insurance-new-form/insurance-new-form.component';
 import DataSource from 'devextreme/data/data_source';
 import { Router, ActivatedRoute } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { MasterReportService } from '../master-report.service';
 import { ReportService } from 'src/app/services/Report-data.service';
@@ -82,7 +82,7 @@ export class InsuranceMasterComponent {
     private masterService: MasterReportService,
     private service: ReportService,
     private dataService: DataService,
-    private activatedRoute: ActivatedRoute,
+    private activatedRoute: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.fetch_classification_Dropdown();
     this.activatedRoute.url.subscribe((segments) => {
@@ -148,14 +148,7 @@ export class InsuranceMasterComponent {
     );
 
     if (duplicateID) {
-      notify(
-        {
-          message: 'Insurance ID already exists.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 2000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Insurance ID already exists.', 'error');
       return false;
     }
 
@@ -167,14 +160,7 @@ export class InsuranceMasterComponent {
     );
 
     if (duplicateName) {
-      notify(
-        {
-          message: 'Insurance Name already exists.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 2000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Insurance Name already exists.', 'error');
       return false;
     }
 
@@ -186,14 +172,7 @@ export class InsuranceMasterComponent {
     );
 
     if (duplicateShortName) {
-      notify(
-        {
-          message: 'Insurance Short Name already exists.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 2000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Insurance Short Name already exists.', 'error');
       return false;
     }
 
@@ -216,21 +195,9 @@ export class InsuranceMasterComponent {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `New Insurance "${InsuranceID} ${InsuranceName} ${InsuranceShortName}" saved Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`New Insurance "${InsuranceID} ${InsuranceName} ${InsuranceShortName}" saved Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
       });
   };
@@ -248,23 +215,9 @@ export class InsuranceMasterComponent {
       .Remove_Insurance_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          notify(
-            {
-              message: 'Delete operation successful',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Delete operation successful', 'success');
         } catch (error) {
-          notify(
-            {
-              message: 'Delete operation failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification('Delete operation failed', 'error');
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
@@ -290,13 +243,7 @@ export class InsuranceMasterComponent {
     );
 
     if (duplicateID) {
-      notify(
-        {
-          message: 'Insurance ID already exists.',
-          position: { at: 'top right', my: 'top right' },
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Insurance ID already exists.', 'error');
       event.cancel = true;
       return;
     }
@@ -310,13 +257,7 @@ export class InsuranceMasterComponent {
     );
 
     if (duplicateName) {
-      notify(
-        {
-          message: 'Insurance Name already exists.',
-          position: { at: 'top right', my: 'top right' },
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Insurance Name already exists.', 'error');
       event.cancel = true;
       return;
     }
@@ -330,13 +271,7 @@ export class InsuranceMasterComponent {
     );
 
     if (duplicateShortName) {
-      notify(
-        {
-          message: 'Insurance Short Name already exists.',
-          position: { at: 'top right', my: 'top right' },
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Insurance Short Name already exists.', 'error');
       event.cancel = true;
       return;
     }
@@ -355,23 +290,9 @@ export class InsuranceMasterComponent {
         if (data) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `f Insurance updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`f Insurance updated Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
         // event.component.refresh();
         event.component.cancelEditData(); // Close the popup

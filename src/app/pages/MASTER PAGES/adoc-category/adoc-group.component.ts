@@ -16,10 +16,10 @@ import {
   DxFormComponent,
 } from 'devextreme-angular';
 import DataSource from 'devextreme/data/data_source';
-import notify from 'devextreme/ui/notify';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
 import { ActivatedRoute } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import validationEngine from 'devextreme/ui/validation_engine';
 
@@ -75,7 +75,7 @@ export class ADOCGroupComponent {
     private service: ReportService,
     private masterService: MasterReportService,
     private route: ActivatedRoute,
-    private dataService: DataService,
+    private dataService: DataService, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -134,28 +134,14 @@ export class ADOCGroupComponent {
     const result = validationEngine.validateGroup('adocGroupValidation');
 
     if (!result.isValid) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'warning',
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
       return;
     }
 
 
     if (this.isDuplicateGroupCode(this.newADOCGroup.GroupCode)) {
 
-    notify(
-      {
-        message: 'Code already exists',
-        position: { at: 'top right', my: 'top right' },
-        displayTime: 1000,
-      },
-      'error',
-    );
+    this.notificationService.showNotification('Code already exists', 'error');
 
     return;
   }
@@ -169,14 +155,7 @@ export class ADOCGroupComponent {
       )
       .subscribe({
         next: () => {
-          notify(
-            {
-              message: 'ADOC Group Added Successfully',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification('ADOC Group Added Successfully', 'success');
 
           this.isAddPopupVisible = false;
 
@@ -190,14 +169,7 @@ export class ADOCGroupComponent {
           this.dataGrid.instance.refresh();
         },
         error: () => {
-          notify(
-            {
-              message: 'Save Failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification('Save Failed', 'error');
         },
       });
   }
@@ -216,14 +188,7 @@ export class ADOCGroupComponent {
       combinedData.IsChargeable === undefined ||
       combinedData.IsChargeable === ''
     ) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'warning',
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
 
       event.cancel = true;
       return;
@@ -239,23 +204,9 @@ export class ADOCGroupComponent {
       .update_adocGroup_data(id, GroupCode, GroupName, Chargeable, IsInactive)
       .subscribe((res: any) => {
         if (res.flag === '1') {
-          notify(
-            {
-              message: 'Data Updated Successfully',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification('Data Updated Successfully', 'success');
         } else {
-          notify(
-            {
-              message: 'Your Data Not Saved',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification('Your Data Not Saved', 'error');
         }
 
         event.component.cancelEditData();
@@ -273,23 +224,9 @@ export class ADOCGroupComponent {
       .Remove_adocGroupList_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          notify(
-            {
-              message: 'Delete operation successful',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification('Delete operation successful', 'success');
         } catch (error) {
-          notify(
-            {
-              message: 'Delete operation failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification('Delete operation failed', 'error');
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();

@@ -44,8 +44,8 @@ import {
   DxiGroupModule,
   DxoSummaryModule,
 } from 'devextreme-angular/ui/nested';
-import notify from 'devextreme/ui/notify';
 import { FormTextboxModule } from 'src/app/components';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { firstValueFrom } from 'rxjs';
 
@@ -143,7 +143,7 @@ export class AddAccountComponent implements OnInit {
   isEditingSupport: any;
   ExpenseTypeDataSource:any;
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService, private notificationService: NotificationService) {}
 
   async ngOnInit() {
     this.loadingVisible = true;
@@ -578,7 +578,7 @@ export class AddAccountComponent implements OnInit {
     });
 
     if (isDuplicate) {
-      notify('Duplicate combination not allowed.', 'error', 2000);
+      this.notificationService.showNotification('Duplicate combination not allowed.', 'error');
       if (e.column.dataField === 'Department') row['Department'] = null;
       if (e.column.dataField === 'CPT Department') row['CPT Department'] = [];
       if (e.column.dataField === 'CPT Code') row['CPT Code'] = [];
@@ -685,16 +685,7 @@ export class AddAccountComponent implements OnInit {
         this.summaryTotalValid = total === 100;
 
         if (total > 100) {
-          notify(
-            {
-              message: `Total Percentage cannot exceed 100%. Current total: ${total}%`,
-              type: 'error',
-              displayTime: 3000,
-              position: { my: 'top right', at: 'top right' },
-            },
-            'error',
-            3000
-          );
+          this.notificationService.showNotification(`Total Percentage cannot exceed 100%. Current total: ${total}%`, 'error');
 
           row['Percentage'] = oldValue;
           grid.cellValue(rowIndex, 'Percentage', oldValue);
@@ -828,11 +819,7 @@ export class AddAccountComponent implements OnInit {
             });
 
           if (isDisabled) {
-            notify(
-              'This department is fully used and cannot be selected.',
-              'warning',
-              3000
-            );
+            this.notificationService.showNotification('This department is fully used and cannot be selected.', 'warning');
             args.component.option('value', null);
             return;
           }
@@ -998,7 +985,7 @@ export class AddAccountComponent implements OnInit {
 
         // Disallow invalid or excessive totals
         if (isNaN(newValue) || newValue < 0 || newValue > 100) {
-          notify('Percentage must be between 0 and 100.', 'error', 3000);
+          this.notificationService.showNotification('Percentage must be between 0 and 100.', 'error');
           args.component.option('value', oldValue);
           e.setValue(oldValue);
           return;
@@ -1009,7 +996,7 @@ export class AddAccountComponent implements OnInit {
         }, 0);
 
         if (total > 100) {
-          notify('Total percentage cannot exceed 100%.', 'error', 3000);
+          this.notificationService.showNotification('Total percentage cannot exceed 100%.', 'error');
           args.component.option('value', oldValue);
           e.setValue(oldValue);
           return;
@@ -1106,13 +1093,7 @@ export class AddAccountComponent implements OnInit {
       const newGroupId = response?.Data?.GroupID;
       if (!newGroupId) return;
 
-      notify(
-        {
-          message: 'Sub Group Added Successfully',
-          position: { at: 'top center', my: 'top center' },
-        },
-        'success'
-      );
+      this.notificationService.showNotification('Sub Group Added Successfully', 'success');
 
       this.subGroupName = '';
 
@@ -1153,13 +1134,7 @@ export class AddAccountComponent implements OnInit {
       const newGroupId = response?.Data?.GroupID;
       if (!newGroupId) return;
 
-      notify(
-        {
-          message: 'Category Added Successfully',
-          position: { at: 'top center', my: 'top center' },
-        },
-        'success'
-      );
+      this.notificationService.showNotification('Category Added Successfully', 'success');
 
       this.categoryName = ''; // reset input
 
@@ -1243,7 +1218,7 @@ export class AddAccountComponent implements OnInit {
   saveAccountHead() {
     const validationResult = this.validationGroup.instance.validate();
     if (!validationResult.isValid) {
-      notify('Please fill all required fields.', 'error', 3000);
+      this.notificationService.showNotification('Please fill all required fields.', 'error');
       return;
     }
 
@@ -1268,7 +1243,7 @@ export class AddAccountComponent implements OnInit {
         const msg = `Total percentage must be exactly 100% for Facility(s): ${invalidFacilities.join(
           ', '
         )}`;
-        notify(msg, 'error', 5000);
+        this.notificationService.showNotification(msg, 'error');
         return;
       }
     }
@@ -1299,24 +1274,16 @@ export class AddAccountComponent implements OnInit {
             : 'Failed to save Account Head.');
 
         if (response?.flag === 1) {
-          notify(
-            { message, position: { at: 'top right', my: 'top right' } },
-            'success',
-            3000
-          );
+          this.notificationService.showNotification('', 'success');
           this.popupVisible = false;
           this.popupClosed.emit();
         } else {
-          notify(
-            { message, position: { at: 'top right', my: 'top right' } },
-            'error',
-            3000
-          );
+          this.notificationService.showNotification('', 'error');
         }
       },
       error: (err) => {
         console.error('Insert failed:', err);
-        notify('Something went wrong while saving.', 'error', 3000);
+        this.notificationService.showNotification('Something went wrong while saving.', 'error');
       },
     });
   }
@@ -1325,7 +1292,7 @@ export class AddAccountComponent implements OnInit {
   updateAccountHead() {
     const validationResult = this.validationGroup.instance.validate();
     if (!validationResult.isValid) {
-      notify('Please fill all required fields.', 'error', 3000);
+      this.notificationService.showNotification('Please fill all required fields.', 'error');
       return;
     }
 
@@ -1349,7 +1316,7 @@ export class AddAccountComponent implements OnInit {
         const msg = `Total percentage must be exactly 100% for Facility(s): ${invalidFacilities.join(
           ', '
         )}`;
-        notify(msg, 'error', 5000);
+        this.notificationService.showNotification(msg, 'error');
         return;
       }
     }
@@ -1381,26 +1348,18 @@ export class AddAccountComponent implements OnInit {
             : 'Failed to update Account Head.');
 
         if (response?.flag === 1) {
-          notify(
-            { message, position: { at: 'top center', my: 'top center' } },
-            'success',
-            3000
-          );
+          this.notificationService.showNotification('', 'success');
           this.popupVisible = false;
           this.popupClosed.emit();
           this.categoryPopup = false;
           this.getGroupingList();
         } else {
-          notify(
-            { message, position: { at: 'top center', my: 'top center' } },
-            'error',
-            3000
-          );
+          this.notificationService.showNotification('', 'error');
         }
       },
       error: (err) => {
         console.error('Update failed:', err);
-        notify('Something went wrong while updating.', 'error', 3000);
+        this.notificationService.showNotification('Something went wrong while updating.', 'error');
       },
     });
   }

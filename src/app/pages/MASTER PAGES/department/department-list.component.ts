@@ -19,11 +19,11 @@ import { exportDataGrid as exportDataGridToXLSX } from 'devextreme/excel_exporte
 // import { CardActivitiesModule, ContactStatusModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver-es';
 import { jsPDF } from 'jspdf';
-import notify from 'devextreme/ui/notify';
 import { FormPopupModule } from 'src/app/components';
 import { ContactPanelModule } from 'src/app/components/library/contact-panel/contact-panel.component';
 // import {
@@ -90,7 +90,7 @@ export class DepartmentListComponent  {
     private router: Router,
     private route: ActivatedRoute,
     private reportservice: ReportService,
-    private dataService: DataService
+    private dataService: DataService, private notificationService: NotificationService
   ) {
     this.getDenial_DropDown();
     this.route.url.subscribe((segments) => {
@@ -176,25 +176,11 @@ export class DepartmentListComponent  {
     var SelectedRow = event.key;
     this.service.removeDepartment(SelectedRow.ID).subscribe(() => {
       try {
-        notify(
-          {
-            message: 'Delete operation successful',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'success'
-        );
+        this.notificationService.showNotification('Delete operation successful', 'success');
 
         // window.location.reload();
       } catch (error) {
-        notify(
-          {
-            message: 'Delete operation failed',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error'
-        );
+        this.notificationService.showNotification('Delete operation failed', 'error');
       }
       event.component.refresh();
       this.dataGrid.instance.refresh();

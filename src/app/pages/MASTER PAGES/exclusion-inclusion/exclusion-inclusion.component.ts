@@ -13,10 +13,10 @@ import {
   DxDateBoxModule,
 } from 'devextreme-angular';
 import DataSource from 'devextreme/data/data_source';
-import notify from 'devextreme/ui/notify';
 import { MasterReportService } from '../master-report.service';
 import { DataService } from 'src/app/services';
 import { ActivatedRoute } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-exclusion-inclusion',
@@ -101,7 +101,7 @@ export class ExclusionInclusionComponent {
   constructor(
     private masterService: MasterReportService,
     private dataService: DataService,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.dataService.Get_GropDown('SPECIALITY').subscribe((res: any) => {
       this.specialityList = res || [];
@@ -249,35 +249,16 @@ export class ExclusionInclusionComponent {
       next: (response: any) => {
         if (response && response.flag === '1') {
           this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: response.message || 'New data saved Successfully',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success',
-          );
+          this.notificationService.showNotification(response.message || 'New data saved Successfully', 'success');
           this.isAddPopupVisible = false;
         } else {
-          notify(
-            {
-              message: response?.message || 'Your Data Not Saved',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error',
-          );
+          this.notificationService.showNotification(response?.message || 'Your Data Not Saved', 'error');
         }
       },
       error: (err: any) => {
-        notify(
-          {
-            message:
-              err?.error?.message ||
-              err?.message ||
-              'An error occurred while saving data.',
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error',
-        );
+        this.notificationService.showNotification(err?.error?.message ||
+                        err?.message ||
+                        'An error occurred while saving data.', 'error');
       },
     });
   }
@@ -372,39 +353,17 @@ export class ExclusionInclusionComponent {
       next: (data: any) => {
         if (data && data.flag === '1') {
           this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: data.message || 'Data updated Successfully',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification(data.message || 'Data updated Successfully', 'success');
         } else {
-          notify(
-            {
-              message: data?.message || 'Your Data Not Saved',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification(data?.message || 'Your Data Not Saved', 'error');
         }
         event.component.cancelEditData();
         this.dataGrid.instance.refresh();
       },
       error: (err: any) => {
-        notify(
-          {
-            message:
-              err?.error?.message ||
-              err?.message ||
-              'An error occurred while updating data.',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error',
-        );
+        this.notificationService.showNotification(err?.error?.message ||
+                        err?.message ||
+                        'An error occurred while updating data.', 'error');
         event.component.cancelEditData();
       },
     });
@@ -419,39 +378,17 @@ export class ExclusionInclusionComponent {
     this.masterService.Remove_ExclusionInclusion_Row_Data(id).subscribe({
       next: (response: any) => {
         if (response && response.flag === '1') {
-          notify(
-            {
-              message: response.message || 'Delete operation successful',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification(response.message || 'Delete operation successful', 'success');
         } else {
-          notify(
-            {
-              message: response?.message || 'Delete operation failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification(response?.message || 'Delete operation failed', 'error');
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
       },
       error: (err: any) => {
-        notify(
-          {
-            message:
-              err?.error?.message ||
-              err?.message ||
-              'An error occurred while deleting data.',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error',
-        );
+        this.notificationService.showNotification(err?.error?.message ||
+                        err?.message ||
+                        'An error occurred while deleting data.', 'error');
       },
     });
   }

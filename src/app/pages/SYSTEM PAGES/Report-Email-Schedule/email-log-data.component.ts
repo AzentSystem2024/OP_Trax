@@ -17,9 +17,9 @@ import {
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import { ReportService } from 'src/app/services/Report-data.service';
 import DataSource from 'devextreme/data/data_source';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import CustomStore from 'devextreme/data/custom_store';
-import notify from 'devextreme/ui/notify';
 
 @Component({
   selector: 'app-email-log-data',
@@ -87,7 +87,7 @@ export class EmailLogDataComponent {
   constructor(
     private masterService: MasterReportService,
     private service: ReportService,
-    private dataService: DataService
+    private dataService: DataService, private notificationService: NotificationService
   ) {
     this.get_filter_dropdownValues();
     this.get_dropdown_Datasource();
@@ -264,21 +264,9 @@ export class EmailLogDataComponent {
         if (response.Flag === 1) {
           this.resert_addNew_Form();
           this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: `${response.message}`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`${response.message}`, 'success');
         } else {
-          notify(
-            {
-              message: `${response.message}`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`${response.message}`, 'error');
         }
       });
   }
@@ -296,21 +284,9 @@ export class EmailLogDataComponent {
         if (response.Flag === 1) {
           this.resert_addNew_Form();
           this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: `${response.message}`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`${response.message}`, 'success');
         } else {
-          notify(
-            {
-              message: `${response.message}`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`${response.message}`, 'error');
         }
       });
   }

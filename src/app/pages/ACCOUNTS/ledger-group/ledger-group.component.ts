@@ -38,8 +38,8 @@ import {
 } from 'devextreme-angular/ui/nested';
 import { DataSource } from 'devextreme/common/data';
 import { FormTextboxModule } from 'src/app/components';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
-import notify from 'devextreme/ui/notify';
 import { NewLedgerGroupPopupModule } from '../new-ledger-group-popup/ledger-group-popup.component';
 
 @Component({
@@ -101,7 +101,7 @@ export class LedgerGroupComponent {
       }),
   });
 
-  constructor(private dataService: DataService, private ngZone: NgZone) {}
+  constructor(private dataService: DataService, private ngZone: NgZone, private notificationService: NotificationService) {}
 
   // ======== filter row show and hide =========
   toggleFilterRow = () => {
@@ -118,16 +118,12 @@ export class LedgerGroupComponent {
           this.selectedRowData = response;
           this.editAccountPopupOpened = true;
         } else {
-          notify('No ledger group details found for this ID.', 'warning', 3000);
+          this.notificationService.showNotification('No ledger group details found for this ID.', 'warning');
         }
       },
       error: (err) => {
         console.error('Error fetching account details:', err);
-        notify(
-          'Failed to load ledger group details. Please try again later.',
-          'error',
-          3000
-        );
+        this.notificationService.showNotification('Failed to load ledger group details. Please try again later.', 'error');
       },
     });
   }
@@ -145,22 +141,10 @@ export class LedgerGroupComponent {
     this.dataService.delete_Ledger_Group(Id).subscribe(
       (response: any) => {
         if (response) {
-          notify(
-            {
-              message: 'Account Head Deleted Successfully',
-              position: { at: 'top center', my: 'top center' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Account Head Deleted Successfully', 'success');
           this.refresh();
         } else {
-          notify(
-            {
-              message: 'Your Data Not deleted',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification('Your Data Not deleted', 'error');
         }
       },
       (error) => {

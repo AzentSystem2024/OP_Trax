@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, NgModule, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import notify from 'devextreme/ui/notify';
 import {
   DxButtonModule,
   DxDataGridComponent,
@@ -14,6 +13,7 @@ import {
   DxCheckBoxModule,
   DxLoadPanelModule,
 } from 'devextreme-angular';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
@@ -66,7 +66,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     private masterService: MasterReportService,
     private service: ReportService,
     private route: ActivatedRoute,
-    private dataService: DataService,
+    private dataService: DataService, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -163,7 +163,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       },
       error: (error: any) => {
         this.hideLoading();
-        notify('Failed to load facility list', 'error', 2000);
+        this.notificationService.showNotification('Failed to load facility list', 'error');
       },
     });
   }
@@ -197,17 +197,13 @@ export class AdocPriceMasterComponent implements AfterViewInit {
 
                 resolve(data);
               } else {
-                notify('Failed to load CPT Price List', 'error', 2000);
+                this.notificationService.showNotification('Failed to load CPT Price List', 'error');
                 reject('Failed to load CPT Price List');
               }
             },
             error: (error) => {
               this.hideLoading();
-              notify(
-                'An error occurred while fetching CPT Price List',
-                'error',
-                2000,
-              );
+              this.notificationService.showNotification('An error occurred while fetching CPT Price List', 'error');
 
               reject(error);
             },
@@ -227,13 +223,13 @@ export class AdocPriceMasterComponent implements AfterViewInit {
           this.historyPopupVisible = true;
           this.hideLoading();
         } else {
-          notify('Failed to load Price History', 'error', 2000);
+          this.notificationService.showNotification('Failed to load Price History', 'error');
           this.hideLoading();
         }
       },
       error: (error: any) => {
         this.hideLoading();
-        notify('An error occurred while fetching Price History', 'error', 2000);
+        this.notificationService.showNotification('An error occurred while fetching Price History', 'error');
       },
     });
   }
@@ -350,7 +346,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     });
 
     if (modifiedRows.length === 0) {
-      notify('No changes found', 'warning', 2000);
+      this.notificationService.showNotification('No changes found', 'warning');
       return;
     }
 
@@ -369,15 +365,15 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       next: (response: any) => {
         this.hideLoading();
         if (response.flag === '1') {
-          notify('Price Master Saved Successfully', 'success', 2000);
+          this.notificationService.showNotification('Price Master Saved Successfully', 'success');
           this.fetch_ADOC_Price_List();
         } else {
-          notify('Failed to save Price Master', 'error', 2000);
+          this.notificationService.showNotification('Failed to save Price Master', 'error');
         }
       },
       error: (error: any) => {
         this.hideLoading();
-        notify('An error occurred while saving Price Master', 'error', 2000);
+        this.notificationService.showNotification('An error occurred while saving Price Master', 'error');
       },
     });
   }

@@ -21,7 +21,6 @@ import { DxNumberBoxModule } from 'devextreme-angular';
 import { DxButtonModule } from 'devextreme-angular';
 import { DxProgressBarModule } from 'devextreme-angular';
 import { DataService } from 'src/app/services';
-import notify from 'devextreme/ui/notify';
 import { DxToastModule } from 'devextreme-angular';
 import { Subscription, forkJoin } from 'rxjs';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
@@ -220,13 +219,7 @@ export class DownloadFromFacilityComponent implements OnInit, OnDestroy {
       let expiryDate = new Date(isFacilityExists.Expiry_Date);
 
       if (expiryDate < currentDate) {
-        notify(
-          {
-            message: `Your selected facility has expired.`,
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error',
-        );
+        this.notificationService.showNotification(`Your selected facility has expired.`, 'error');
         return false; // Facility is expired
       } else {
         return true; // Facility is valid
@@ -428,16 +421,7 @@ export class DownloadFromFacilityComponent implements OnInit, OnDestroy {
         if (response.Flag === 1) {
           // this.disableButtons = true;
           // Notify immediately
-          notify(
-            {
-              message: response.Message,
-              position: {
-                at: 'top right',
-                my: 'top right',
-              },
-            },
-            'success',
-          );
+          this.notificationService.showNotification(response.Message, 'success');
           // // Clear any existing interval to avoid duplication
           // if (this.intervalId) {
           //   clearInterval(this.intervalId);

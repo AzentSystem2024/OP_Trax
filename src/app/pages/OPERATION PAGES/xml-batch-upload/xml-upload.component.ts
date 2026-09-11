@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
-import notify from 'devextreme/ui/notify';
 import { confirm } from 'devextreme/ui/dialog';
 import DataSource from 'devextreme/data/data_source';
 import {
@@ -372,7 +371,7 @@ export class XmlUploadComponent implements OnInit {
       this.cancelLoad = undefined;
     }
     this.isLookupLoading = false;
-    notify('Data loading cancelled', 'warning', 3000);
+    this.notificationService.showNotification('Data loading cancelled', 'warning');
   }
 
   onSelectionChanged(e: any) {
@@ -630,7 +629,7 @@ export class XmlUploadComponent implements OnInit {
       this.newFilterSubscription = undefined;
     }
     this.isNewLookupLoading = false;
-    notify('Data loading cancelled', 'warning', 3000);
+    this.notificationService.showNotification('Data loading cancelled', 'warning');
   }
 
   onCreateBatchClick() {

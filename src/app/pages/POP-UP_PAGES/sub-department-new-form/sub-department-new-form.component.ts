@@ -4,12 +4,12 @@ import { DxButtonModule, DxCheckBoxModule, DxFormComponent, DxFormModule, DxText
 import { FormTextboxModule, FormPhotoUploaderModule } from 'src/app/components';
 import { getSizeQualifier } from 'src/app/services/screen.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { DxSelectBoxModule } from 'devextreme-angular';
 import { DxTextBoxModule } from 'devextreme-angular/ui/text-box';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import validationEngine from 'devextreme/ui/validation_engine';
-import notify from 'devextreme/ui/notify';
 
 @Component({
   selector: 'sub-department-new-form',
@@ -35,7 +35,7 @@ export class SubDepartmentNewFormComponent {
 
   getSizeQualifier = getSizeQualifier;
 
-  constructor(private service: MasterReportService) {
+  constructor(private service: MasterReportService, private notificationService: NotificationService) {
     this.getCostBucket_DropDown();
   }
 
@@ -97,12 +97,12 @@ proceedToSave() {
 
   this.service.addSubDepartment(subdep, departmentID).subscribe((res: any) => {
     if (res.flag === '1') {
-      notify({ message: "Sub Department saved successfully!", type: "success", position: { at: "top center", my: "top center" } });
+      this.notificationService.showNotification("Sub Department saved successfully!", "success");
       this.newDepartmentData.SUB_DEPARTMENT = '';
       this.newDepartmentData.DEPARTMENT_ID = '';
       this.formClosed.emit();
     } else {
-      notify({ message: "Failed to save Sub Department. Please try again.", type: "error", position: { at: "top center", my: "top center" } });
+      this.notificationService.showNotification("Failed to save Sub Department. Please try again.", "error");
     }
   });
 }

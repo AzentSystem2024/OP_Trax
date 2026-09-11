@@ -11,7 +11,6 @@ import {
   DxDataGridModule,
   DxDataGridComponent,
 } from 'devextreme-angular';
-import notify from 'devextreme/ui/notify';
 import { DxTabsModule } from 'devextreme-angular/ui/tabs';
 import { DxTextBoxModule } from 'devextreme-angular/ui/text-box';
 import { DxTreeViewModule } from 'devextreme-angular';
@@ -23,6 +22,7 @@ import { MasterReportService } from '../master-report.service';
 import { ReportService } from 'src/app/services/Report-data.service';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 
 @Component({
@@ -73,7 +73,7 @@ export class UserLevelMasterComponent {
     private masterService: MasterReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -127,21 +127,9 @@ export class UserLevelMasterComponent {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `New User Level  saved Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`New User Level  saved Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: ` Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(` Your Data Not Saved`, 'error');
         }
       });
   }
@@ -161,23 +149,9 @@ export class UserLevelMasterComponent {
         if (data) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `User Level updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`User Level updated Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
         this.dataGrid.instance.refresh();
       });
@@ -191,23 +165,9 @@ export class UserLevelMasterComponent {
       .Remove_userLevel_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          notify(
-            {
-              message: 'Delete operation successful',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Delete operation successful', 'success');
         } catch (error) {
-          notify(
-            {
-              message: 'Delete operation failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification('Delete operation failed', 'error');
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();

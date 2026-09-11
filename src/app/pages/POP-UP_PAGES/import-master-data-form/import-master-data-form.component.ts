@@ -25,10 +25,10 @@ import {
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import { ChangeDetectorRef } from '@angular/core';
 import * as XLSX from 'xlsx';
-import notify from 'devextreme/ui/notify';
 import { Router } from '@angular/router';
 import * as pako from 'pako';
 import { debounce } from 'lodash';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'app-import-master-data-form',
@@ -86,7 +86,7 @@ export class ImportMasterDataFormComponent implements OnInit {
   constructor(
     private service: MasterReportService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router, private notificationService: NotificationService
   ) {
     this.UserID = sessionStorage.getItem('UserID');
   }
@@ -413,12 +413,7 @@ export class ImportMasterDataFormComponent implements OnInit {
         );
 
         if (!this.newImportData.masters) {
-          notify({
-            message: 'Error: Please select a Master before importing the file.',
-            type: 'error',
-            displayTime: 1000,
-            position: 'top right',
-          });
+          this.notificationService.showNotification('Error: Please select a Master before importing the file.', 'error');
           this.resetFileInput();
           this.beforeLoading = false;
           return;
@@ -426,12 +421,7 @@ export class ImportMasterDataFormComponent implements OnInit {
 
         if (!isCorrectTemplate) {
           // Show error notification if the imported template columns don't match the grid columns
-          notify({
-            message: 'Error: Column count or names do not match.',
-            type: 'error',
-            displayTime: 1000,
-            position: 'top right',
-          });
+          this.notificationService.showNotification('Error: Column count or names do not match.', 'error');
           this.beforeLoading = false;
           this.resetFileInput();
           return;
@@ -441,12 +431,7 @@ export class ImportMasterDataFormComponent implements OnInit {
         const data = XLSX.utils.sheet_to_json(sheet);
 
         if (data.length === 0) {
-          notify({
-            message: 'Error: The file does not contain any data.',
-            type: 'error',
-            displayTime: 1000,
-            position: 'top right',
-          });
+          this.notificationService.showNotification('Error: The file does not contain any data.', 'error');
           this.beforeLoading = false;
           this.resetFileInput();
         } else {
@@ -623,13 +608,7 @@ export class ImportMasterDataFormComponent implements OnInit {
       this.isLoading = true;
 
       if (this.hasError) {
-        notify(
-          {
-            message: 'Please fix the validation errors before saving.',
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error'
-        );
+        this.notificationService.showNotification('Please fix the validation errors before saving.', 'error');
         this.resetFileInput();
         this.isLoading = false;
         this.isSaving = false;
@@ -680,13 +659,7 @@ export class ImportMasterDataFormComponent implements OnInit {
             data.import_chartOfAccounts = chunkData;
             break;
           default:
-            notify(
-              {
-                message: 'Invalid master ID selected.',
-                position: { at: 'top right', my: 'top right' },
-              },
-              'error'
-            );
+            this.notificationService.showNotification('Invalid master ID selected.', 'error');
             this.isSaving = false;
             this.isLoading = false;
             return;
@@ -706,14 +679,7 @@ export class ImportMasterDataFormComponent implements OnInit {
                 this.sendFinalRequest(batchNo);
               }
             } else {
-              notify(
-                {
-                  message: 'Import operation failed.',
-                  position: { at: 'top right', my: 'top right' },
-                  displayTime: 1000,
-                },
-                'error'
-              );
+              this.notificationService.showNotification('Import operation failed.', 'error');
               this.isLoading = false;
               this.isSaving = false;
             }
@@ -739,14 +705,7 @@ export class ImportMasterDataFormComponent implements OnInit {
       // Start sending the first chunk
       sendNextChunk();
     } else {
-      notify(
-        {
-          message: 'Please import your file',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 500,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Please import your file', 'error');
       this.isSaving = false;
       this.isLoading = false;
     }
@@ -765,24 +724,10 @@ export class ImportMasterDataFormComponent implements OnInit {
     this.service.Insert_Imported_Data(finalData).subscribe(
       (res: any) => {
         if (res.flag === 1) {
-          notify(
-            {
-              message: 'Data imported successfully.',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 1000,
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Data imported successfully.', 'success');
           this.close();
         } else {
-          notify(
-            {
-              message: 'Import operation failed.',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 1000,
-            },
-            'error'
-          );
+          this.notificationService.showNotification('Import operation failed.', 'error');
         }
         this.isLoading = false;
         this.isSaving = false;
@@ -796,34 +741,11 @@ export class ImportMasterDataFormComponent implements OnInit {
   // Error handler to manage error notifications and state
   handleError(error: any) {
     if (error.status === 0) {
-      notify(
-        {
-          message:
-            'Network error: Please check your internet connection and try again.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Network error: Please check your internet connection and try again.', 'error');
     } else if (error.status === 500) {
-      notify(
-        {
-          message:
-            'Server error: Unable to process the request right now. Please try again later.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Server error: Unable to process the request right now. Please try again later.', 'error');
     } else {
-      notify(
-        {
-          message: 'Failed to import data. Please try again.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Failed to import data. Please try again.', 'error');
     }
     console.error('Error during data import:', error);
     this.isSaving = false;

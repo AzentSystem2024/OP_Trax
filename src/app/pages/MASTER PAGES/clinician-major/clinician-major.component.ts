@@ -6,7 +6,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ClinicianMajorNewFormModule } from '../../POP-UP_PAGES/clinician-major-new-form/clinician-major-new-form.component';
-import notify from 'devextreme/ui/notify';
 import {
   DxButtonModule,
   DxDataGridComponent,
@@ -23,6 +22,7 @@ import { CommonModule } from '@angular/common';
 import { FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 @Component({
   selector: 'app-clinician-major',
@@ -68,7 +68,7 @@ export class ClinicianMajorComponent {
     private masterService: MasterReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -106,22 +106,10 @@ export class ClinicianMajorComponent {
       .subscribe((response: any) => {
         if (response) {
           this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: `New data saved Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`New data saved Successfully`, 'success');
           this.ClinicianMajor.reset_newclinicianMajorFormData();
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
       });
   };
@@ -132,23 +120,9 @@ export class ClinicianMajorComponent {
     let SelectedRow = event.key;
     this.masterService.remove_ClinicianMajor(SelectedRow.ID).subscribe(() => {
       try {
-        notify(
-          {
-            message: 'Delete operation successful',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'success'
-        );
+        this.notificationService.showNotification('Delete operation successful', 'success');
       } catch (error) {
-        notify(
-          {
-            message: 'Delete operation failed',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error'
-        );
+        this.notificationService.showNotification('Delete operation failed', 'error');
       }
       event.component.refresh();
       this.dataGrid.instance.refresh();
@@ -168,23 +142,9 @@ export class ClinicianMajorComponent {
       .subscribe((data: any) => {
         if (data) {
           this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: `Data updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`Data updated Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
 
         event.component.cancelEditData();

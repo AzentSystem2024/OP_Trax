@@ -16,7 +16,7 @@ import {
   DxLoadPanelModule,
 } from 'devextreme-angular';
 import { DataSource } from 'devextreme/common/data';
-import notify from 'devextreme/ui/notify';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
@@ -87,7 +87,7 @@ export class ADOCClassComponent {
     private service: ReportService,
     private masterService: MasterReportService,
     private route: ActivatedRoute,
-    private dataService: DataService,
+    private dataService: DataService, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -159,28 +159,14 @@ export class ADOCClassComponent {
     const result = validationEngine.validateGroup('adocClassValidation');
 
     if (!result.isValid) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'warning',
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
       return;
     }
 
     // ===== Duplicate Check =====
 
     if (this.isDuplicateClassCode(this.newADOCClass.Code)) {
-      notify(
-        {
-          message: 'Class Code already exists',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'error',
-      );
+      this.notificationService.showNotification('Class Code already exists', 'error');
 
       return;
     }
@@ -194,14 +180,7 @@ export class ADOCClassComponent {
       )
       .subscribe({
         next: () => {
-          notify(
-            {
-              message: 'ADOC Classification Added Successfully',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification('ADOC Classification Added Successfully', 'success');
 
           this.isAddPopupVisible = false;
 
@@ -215,14 +194,7 @@ export class ADOCClassComponent {
           this.dataGrid.instance.refresh();
         },
         error: () => {
-          notify(
-            {
-              message: 'Save Failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification('Save Failed', 'error');
         },
       });
   }
@@ -242,12 +214,12 @@ export class ADOCClassComponent {
           this.selectedAdocClassData = res.data;
           this.showAdocClassEdit = true;
         } else {
-          notify('Failed to load ADOC Classification details.', 'error', 2000);
+          this.notificationService.showNotification('Failed to load ADOC Classification details.', 'error');
         }
       },
       error: () => {
         this.loadingVisible = false;
-        notify('Failed to fetch ADOC Classification.', 'error', 2000);
+        this.notificationService.showNotification('Failed to fetch ADOC Classification.', 'error');
       }
     });
   }
@@ -260,14 +232,7 @@ export class ADOCClassComponent {
     };
 
     if (!combinedData.ClassName?.trim() || !combinedData.GroupID) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'warning',
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
 
       event.cancel = true;
       return;
@@ -284,23 +249,9 @@ export class ADOCClassComponent {
         if (data) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `data updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification(`data updated Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
         event.component.cancelEditData(); // Close the popup
         this.dataGrid.instance.refresh();
@@ -317,23 +268,9 @@ export class ADOCClassComponent {
       .Remove_adocClass_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          notify(
-            {
-              message: 'Delete operation successful',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification('Delete operation successful', 'success');
         } catch (error) {
-          notify(
-            {
-              message: 'Delete operation failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification('Delete operation failed', 'error');
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
@@ -357,14 +294,7 @@ export class ADOCClassComponent {
         }, 100);
       } else {
         this.loadingVisible = false;
-        notify(
-          {
-            message: 'No data available',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 400,
-          },
-          'error',
-        );
+        this.notificationService.showNotification('No data available', 'error');
       }
     });
   };

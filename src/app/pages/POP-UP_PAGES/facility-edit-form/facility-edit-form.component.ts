@@ -4,12 +4,12 @@ import { DxButtonModule, DxCheckBoxModule, DxFormComponent, DxFormModule, DxText
 import { FormTextboxModule, FormPhotoUploaderModule } from 'src/app/components';
 import { getSizeQualifier } from 'src/app/services/screen.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { DxSelectBoxModule } from 'devextreme-angular';
 import { DxTextBoxModule } from 'devextreme-angular/ui/text-box';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import validationEngine from 'devextreme/ui/validation_engine';
-import notify from 'devextreme/ui/notify';
 
 @Component({
   selector: 'facility-edit-form',
@@ -38,7 +38,7 @@ export class FacilityEditFormComponent {
   Denial_Category_DropDownData: any;
   getSizeQualifier = getSizeQualifier;
 
-  constructor(private service: MasterReportService) {
+  constructor(private service: MasterReportService, private notificationService: NotificationService) {
     this.postoffice_DropDown();
   }
 
@@ -71,15 +71,7 @@ export class FacilityEditFormComponent {
       this.newFacilityData.IS_VERIFIED = false;
       this.newFacilityData.VERIFIED_ON = null;
 
-      notify({
-          message: "Invalid Credentials",
-          type: "error",
-          displayTime: 2000,
-          position: {
-            at: "top center",
-            my: "top center"
-          }
-        });
+      this.notificationService.showNotification("Invalid Credentials", "error");
     }
   }, error => {
     this.newFacilityData.IS_VERIFIED = false;
@@ -97,25 +89,12 @@ export class FacilityEditFormComponent {
     const isVerified = this.newFacilityData.IS_VERIFIED;
     this.service.addFacility(facility_license,facility_name,postofficeID,loginName,password,isVerified).subscribe((res:any)=>{
       if(res.flag=="1"){
-        notify(
-        {
-          message: "Facility saved successfully!",
-          type: "success",
-          position: { at: "top center", my: "top center" }
-        },
-      );
+        this.notificationService.showNotification("Facility saved successfully!", "success");
       this.clearForm();
       this.formClosed.emit();
       }
       else{
-        notify(
-        {
-          message: "Failed to save Facility. Please try again.",
-          type: "error",
-          position: { at: "top center", my: "top center" }
-        },
-      
-      );
+        this.notificationService.showNotification("Failed to save Facility. Please try again.", "error");
       }
     })
   }

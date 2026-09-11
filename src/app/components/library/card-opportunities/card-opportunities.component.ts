@@ -6,9 +6,9 @@ import {
   DxButtonModule,
   DxLoadPanelModule,
 } from 'devextreme-angular';
-import notify from 'devextreme/ui/notify';
 import { Opportunity } from 'src/app/types/opportunities';
 import { OpportunityTileModule } from 'src/app/components/utils/opportunity-tile/opportunity-tile.component';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'card-opportunities',
@@ -28,6 +28,9 @@ export class CardOpportunitiesComponent implements OnChanges {
 
     this.isLoading = isLoadActive || isLoadClosed;
   }
+
+    constructor(private notificationService: NotificationService) {
+    }
 }
 
 @NgModule({

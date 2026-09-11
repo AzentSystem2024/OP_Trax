@@ -1,5 +1,4 @@
 import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
-import notify from 'devextreme/ui/notify';
 import { confirm } from 'devextreme/ui/dialog';
 import {
   DxButtonModule,
@@ -294,7 +293,7 @@ export class ClinicalDataComponent implements OnInit {
       this.cancelLoad = undefined;
     }
     this.isLookupLoading = false;
-    notify('Data loading cancelled', 'warning', 3000);
+    this.notificationService.showNotification('Data loading cancelled', 'warning');
   }
 
   // ========== process button hide and show depends row selection ========
@@ -371,7 +370,7 @@ export class ClinicalDataComponent implements OnInit {
     const dataField = e.column.dataField;
     // --- Helper to avoid repeated notify options---
     const showError = (message: string) => {
-      notify(message, 'error', 3000);
+      this.notificationService.showNotification(message, 'error');
     };
 
     if (dataField === 'CPTCode') {
@@ -416,23 +415,11 @@ export class ClinicalDataComponent implements OnInit {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: 'Cpt Master Updated Successfully',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success',
-          );
+          this.notificationService.showNotification('Cpt Master Updated Successfully', 'success');
 
           this.resetCptForm();
         } else {
-          notify(
-            {
-              message: 'Your Data Not Updated',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error',
-          );
+          this.notificationService.showNotification('Your Data Not Updated', 'error');
         }
       });
   };

@@ -7,13 +7,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import * as XLSX from 'xlsx';
-import notify from 'devextreme/ui/notify';
 import {
   DxDataGridModule,
   DxButtonModule,
   DxDataGridComponent,
 } from 'devextreme-angular';
 import { ReportEngineService } from '../../REPORT PAGES/report-engine.service';
+import { NotificationService } from "src/app/services/notification.service";
+
 @Component({
   selector: 'app-advance-filter-popup',
   templateUrl: './advance-filter-popup.component.html',
@@ -33,7 +34,7 @@ export class AdvanceFilterPopupComponent {
   GridTabledata: any[];
   isFileNameAvailable: boolean = false;
   importedFileName: string;
-  constructor(private reportEngine: ReportEngineService) {}
+  constructor(private reportEngine: ReportEngineService, private notificationService: NotificationService) {}
 
   //===================Import Excel Data to datagrid==================
   import_ExcelData(event: any) {
@@ -59,13 +60,7 @@ export class AdvanceFilterPopupComponent {
         excelColumnNames.length === dataGridColumnNames.length &&
         excelColumnNames.every((col) => dataGridColumnNames.includes(col));
       if (!columnsMatched) {
-        notify(
-          {
-            message: `Column count or names do not match.`,
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error'
-        );
+        this.notificationService.showNotification(`Column count or names do not match.`, 'error');
         return; // Exit if columns do not match
       }
       // Proceed to map the data if columns match

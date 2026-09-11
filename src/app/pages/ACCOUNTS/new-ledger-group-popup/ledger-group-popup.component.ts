@@ -46,8 +46,8 @@ import {
   DxoSummaryModule,
 } from 'devextreme-angular/ui/nested';
 import { FormTextboxModule } from 'src/app/components';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
-import notify from 'devextreme/ui/notify';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -121,7 +121,7 @@ export class NewLedgerGroupPopupComponent implements OnInit {
   };
   isEditingSupport: boolean;
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService, private notificationService: NotificationService) {}
 
   async ngOnInit() {
     this.loadingVisible = true;
@@ -415,7 +415,7 @@ export class NewLedgerGroupPopupComponent implements OnInit {
     });
 
     if (isDuplicate) {
-      notify('This department is already used.', 'error', 2000);
+      this.notificationService.showNotification('This department is already used.', 'error');
 
       if (e.column.dataField === 'Department') row['Department'] = null;
       if (e.column.dataField === 'Percentage') row['Percentage'] = null;
@@ -438,16 +438,7 @@ export class NewLedgerGroupPopupComponent implements OnInit {
         this.summaryTotalValid = total === 100;
 
         if (total > 100) {
-          notify(
-            {
-              message: `Total Percentage cannot exceed 100%. Current total: ${total}%`,
-              type: 'error',
-              displayTime: 3000,
-              position: { my: 'top right', at: 'top right' },
-            },
-            'error',
-            3000
-          );
+          this.notificationService.showNotification(`Total Percentage cannot exceed 100%. Current total: ${total}%`, 'error');
 
           // Revert back
           row['Percentage'] = oldValue;
@@ -505,7 +496,7 @@ export class NewLedgerGroupPopupComponent implements OnInit {
 
         // Validation
         if (newValue < 0 || newValue > 100) {
-          notify('Percentage must be between 0 and 100.', 'error', 3000);
+          this.notificationService.showNotification('Percentage must be between 0 and 100.', 'error');
           args.component.option('value', oldValue);
           e.setValue(oldValue);
           return;
@@ -513,7 +504,7 @@ export class NewLedgerGroupPopupComponent implements OnInit {
 
         if (row['Percentage'] == null || newValue > oldValue) {
           if (totalPercentage > 100) {
-            notify('Total percentage cannot exceed 100%.', 'error', 3000);
+            this.notificationService.showNotification('Total percentage cannot exceed 100%.', 'error');
             args.component.option('value', oldValue);
             e.setValue(oldValue);
             return;
@@ -542,12 +533,12 @@ export class NewLedgerGroupPopupComponent implements OnInit {
           (row: any) => row.ID !== e.ID
         );
 
-        notify('Row deleted successfully', 'success', 2000);
+        this.notificationService.showNotification('Row deleted successfully', 'success');
       } else {
-        notify('Failed to delete row', 'error', 2000);
+        this.notificationService.showNotification('Failed to delete row', 'error');
       }
     } catch (error) {
-      notify('Error deleting row', 'error', 2000);
+      this.notificationService.showNotification('Error deleting row', 'error');
     }
   }
 
@@ -555,7 +546,7 @@ export class NewLedgerGroupPopupComponent implements OnInit {
   saveLedgerGroup() {
     const validationResult = this.validationGroup.instance.validate();
     if (!validationResult.isValid) {
-      notify('Please fill all required fields.', 'error', 3000);
+      this.notificationService.showNotification('Please fill all required fields.', 'error');
       return;
     }
     const convertedData = this.getConvertedDataSource();
@@ -577,7 +568,7 @@ export class NewLedgerGroupPopupComponent implements OnInit {
         const msg = `Total percentage must be exactly 100% for Facility(s): ${invalidFacilities.join(
           ', '
         )}`;
-        notify(msg, 'error', 5000);
+        this.notificationService.showNotification(msg, 'error');
         return;
       }
     }
@@ -600,24 +591,16 @@ export class NewLedgerGroupPopupComponent implements OnInit {
             : 'Failed to save Ledger Group.');
 
         if (response?.flag === '1') {
-          notify(
-            { message, position: { at: 'top right', my: 'top right' } },
-            'success',
-            3000
-          );
+          this.notificationService.showNotification('', 'success');
 
           this.popupClosed.emit();
         } else {
-          notify(
-            { message, position: { at: 'top right', my: 'top right' } },
-            'error',
-            3000
-          );
+          this.notificationService.showNotification('', 'error');
         }
       },
       error: (err) => {
         console.error('Insert failed:', err);
-        notify('Something went wrong while saving.', 'error', 3000);
+        this.notificationService.showNotification('Something went wrong while saving.', 'error');
       },
     });
   }
@@ -626,7 +609,7 @@ export class NewLedgerGroupPopupComponent implements OnInit {
   updateLedgerGroup() {
     const validationResult = this.validationGroup.instance.validate();
     if (!validationResult.isValid) {
-      notify('Please fill all required fields.', 'error', 3000);
+      this.notificationService.showNotification('Please fill all required fields.', 'error');
       return;
     }
 
@@ -650,7 +633,7 @@ export class NewLedgerGroupPopupComponent implements OnInit {
         const msg = `Total percentage must be exactly 100% for Facility(s): ${invalidFacilities.join(
           ', '
         )}`;
-        notify(msg, 'error', 5000);
+        this.notificationService.showNotification(msg, 'error');
         return;
       }
     }
@@ -676,24 +659,16 @@ export class NewLedgerGroupPopupComponent implements OnInit {
             : 'Failed to update ledger Group');
 
         if (response?.flag === '1') {
-          notify(
-            { message, position: { at: 'top center', my: 'top center' } },
-            'success',
-            3000
-          );
+          this.notificationService.showNotification('', 'success');
 
           this.popupClosed.emit();
         } else {
-          notify(
-            { message, position: { at: 'top center', my: 'top center' } },
-            'error',
-            3000
-          );
+          this.notificationService.showNotification('', 'error');
         }
       },
       error: (err) => {
         console.error('Update failed:', err);
-        notify('Something went wrong while updating.', 'error', 3000);
+        this.notificationService.showNotification('Something went wrong while updating.', 'error');
       },
     });
   }

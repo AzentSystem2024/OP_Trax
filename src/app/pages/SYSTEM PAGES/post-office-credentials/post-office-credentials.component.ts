@@ -21,9 +21,9 @@ import {
 } from 'devextreme-angular';
 import { SystemServicesService } from '../system-services.service';
 import { ReportService } from 'src/app/services/Report-data.service';
-import notify from 'devextreme/ui/notify';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { of, switchMap } from 'rxjs';
 import { delay } from 'rxjs/operators';
@@ -92,7 +92,7 @@ export class PostOfficeCredentialsComponent implements OnInit {
     private service: ReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -289,34 +289,16 @@ export class PostOfficeCredentialsComponent implements OnInit {
       next: (res: any) => {
         if (res.flag === '1' || res.flag === 1) {
           this.isVerified = true;
-          notify(
-            {
-              message: res.message || 'Verification successful',
-              position: 'top right',
-            },
-            'success',
-            3000
-          );
+          this.notificationService.showNotification(res.message || 'Verification successful', 'success');
         } else {
           this.isVerified = false;
-          notify(
-            {
-              message: res.message || 'Verification failed',
-              position: 'top right',
-            },
-            'error',
-            3000
-          );
+          this.notificationService.showNotification(res.message || 'Verification failed', 'error');
         }
         this.loadingVisible = false;
       },
       error: (err) => {
         this.isVerified = false;
-        notify(
-          { message: `Error: ${err.message}`, position: 'top right' },
-          'error',
-          3000
-        );
+        this.notificationService.showNotification(`Error: ${err.message}`, 'error');
         this.loadingVisible = false;
       },
     });
@@ -337,31 +319,16 @@ export class PostOfficeCredentialsComponent implements OnInit {
     ).subscribe({
       next: (res: any) => {
         if (res.flag === '1') {
-          notify(
-            {
-              message: res.message || 'Data updated successfully',
-              position: 'top right',
-            },
-            'success',
-            3000
-          );
+          this.notificationService.showNotification(res.message || 'Data updated successfully', 'success');
           this.dataGrid.instance.refresh();
           this.editPopupVisible = false;
         } else {
-          notify(
-            { message: res.message || 'Update failed', position: 'top right' },
-            'error',
-            3000
-          );
+          this.notificationService.showNotification(res.message || 'Update failed', 'error');
         }
         this.loadingVisible = false;
       },
       error: (err) => {
-        notify(
-          { message: `Error: ${err.message}`, position: 'top right' },
-          'error',
-          3000
-        );
+        this.notificationService.showNotification(`Error: ${err.message}`, 'error');
         this.loadingVisible = false;
       },
     });

@@ -24,8 +24,8 @@ import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { OperationReportService } from 'src/app/pages/OPERATION PAGES/operation-report.service';
-import notify from 'devextreme/ui/notify';
 import validationEngine from 'devextreme/ui/validation_engine';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'app-adoc-class-change-popup',
@@ -51,7 +51,7 @@ export class AdocClassChangePopupComponent implements OnChanges, OnInit {
     private masterService: MasterReportService, 
     private dataService: DataService,
     private operationService: OperationReportService,
-    private authService: AuthService
+    private authService: AuthService, private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -83,11 +83,11 @@ export class AdocClassChangePopupComponent implements OnChanges, OnInit {
           } else if (res && res.data && !Array.isArray(res.data)) {
             this.editData = { ...res.data };
           } else {
-            notify('ADOC Classification details not found.', 'error', 2000);
+            this.notificationService.showNotification('ADOC Classification details not found.', 'error');
           }
         },
         error: () => {
-          notify('Failed to load ADOC Classification details.', 'error', 2000);
+          this.notificationService.showNotification('Failed to load ADOC Classification details.', 'error');
         }
       });
     }
@@ -96,26 +96,12 @@ export class AdocClassChangePopupComponent implements OnChanges, OnInit {
   onSave() {
     const result = validationEngine.validateGroup('adocClassChangeValidation');
     if (!result.isValid) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'warning',
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
       return;
     }
 
     if (!this.editData.ClassName?.trim() || !this.editData.GroupID) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'warning',
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
       return;
     }
 
@@ -135,26 +121,12 @@ export class AdocClassChangePopupComponent implements OnChanges, OnInit {
       .updateADOCClass(payload)
       .subscribe((res: any) => {
         if (res && res.flag === '1') {
-          notify(
-            {
-              message: res.message || `Data updated successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification(res.message || `Data updated successfully`, 'success');
           this.onSaved.emit();
           this.visible = false;
           this.visibleChange.emit(false);
         } else {
-          notify(
-            {
-              message: res?.message || `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification(res?.message || `Your Data Not Saved`, 'error');
         }
       });
   }

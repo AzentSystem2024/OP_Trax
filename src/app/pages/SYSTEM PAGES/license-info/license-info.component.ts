@@ -12,8 +12,8 @@ import {
 import { ReportService } from 'src/app/services/Report-data.service';
 import { SystemServicesService } from '../system-services.service';
 import DataSource from 'devextreme/data/data_source';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
-import notify from 'devextreme/ui/notify';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -78,7 +78,7 @@ export class LicenseInfoComponent implements OnInit {
     private service: ReportService,
     private systemService: SystemServicesService,
     private dataService: DataService,
-    private activatedRoute: ActivatedRoute,
+    private activatedRoute: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.activatedRoute.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -193,14 +193,14 @@ export class LicenseInfoComponent implements OnInit {
         this.systemService.importLicense(payload).subscribe({
           next: (res: any) => {
             if (res.flag === 1 || res.flag === '1') {
-              notify(res.message || 'License imported successfully', 'success');
+              this.notificationService.showNotification(res.message || 'License imported successfully', 'success');
               this.refresh();
             } else {
-              notify(res.message || 'Failed to import license', 'error');
+              this.notificationService.showNotification(res.message || 'Failed to import license', 'error');
             }
           },
           error: (err: any) => {
-            notify('Error importing license', 'error');
+            this.notificationService.showNotification('Error importing license', 'error');
             console.error('Error importing license', err);
           },
         });

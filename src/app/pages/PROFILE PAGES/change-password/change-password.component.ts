@@ -11,7 +11,7 @@ import {
 import { FormPopupModule } from 'src/app/components';
 import { UserService } from 'src/app/services/user.service';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
-import notify from 'devextreme/ui/notify';
+import { NotificationService } from 'src/app/services/notification.service';
 import { AuthService } from 'src/app/services';
 import { Router } from '@angular/router';
 import { CustomReuseStrategy } from 'src/app/custom-reuse-strategy';
@@ -45,7 +45,7 @@ export class ChangePasswordComponent implements OnInit {
     private service: MasterReportService,
     private authService: AuthService,
     private route: Router,
-    private reuseStrategy: CustomReuseStrategy
+    private reuseStrategy: CustomReuseStrategy, private notificationService: NotificationService
   ) {
     this.UserID = sessionStorage.getItem('UserID');
     console.log(this.dummyId, 'dummy');
@@ -82,14 +82,7 @@ export class ChangePasswordComponent implements OnInit {
     if (!this.checkPasswordStrength()) {
       this.isSaving = false;
       // Show error message if the password does not meet the security policy
-      notify(
-        {
-          message: 'New password does not meet the security requirements.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 500,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('New password does not meet the security requirements.', 'error');
       return; // Stop execution if the password does not meet the policy
     }
 
@@ -104,14 +97,7 @@ export class ChangePasswordComponent implements OnInit {
     this.service.reset_Password(PasswordData).subscribe((res) => {
       try {
         if (res.message === 'Success') {
-          notify(
-            {
-              message: 'Password Updated successfully',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Password Updated successfully', 'success');
           // Navigate to login page after notification
           setTimeout(() => {
             this.authService.logOut().subscribe({
@@ -133,25 +119,11 @@ export class ChangePasswordComponent implements OnInit {
           }); // Wait for notification to display before navigating
         } else {
           this.isSaving = false;
-          notify(
-            {
-              message: res.message,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification(res.message, 'error');
         }
       } catch (error) {
         this.isSaving = false;
-        notify(
-          {
-            message: 'Password update operation failed',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error'
-        );
+        this.notificationService.showNotification('Password update operation failed', 'error');
       }
     });
   }

@@ -6,7 +6,7 @@ import { LoginOauthModule } from 'src/app/components/library/login-oauth/login-o
 import { ValidationCallbackData } from 'devextreme-angular/common';
 import { DxFormModule } from 'devextreme-angular/ui/form';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
-import notify from 'devextreme/ui/notify';
+import { NotificationService } from 'src/app/services/notification.service';
 import { AuthService, IResponse } from 'src/app/services';
 
 @Component({
@@ -23,7 +23,7 @@ export class CreateAccountFormComponent implements OnInit {
 
   formData: any = {};
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private notificationService: NotificationService) { }
 
   async onSubmit(e: Event) {
     e.preventDefault();
@@ -36,7 +36,7 @@ export class CreateAccountFormComponent implements OnInit {
     if (result.isOk) {
       this.router.navigate([this.buttonLink]);
     } else {
-      notify(result.message, 'error', 2000);
+      this.notificationService.showNotification(result.message, 'error');
     }
   }
 

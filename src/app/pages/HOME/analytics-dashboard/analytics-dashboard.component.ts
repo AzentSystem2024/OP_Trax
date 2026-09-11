@@ -1,6 +1,7 @@
 import { Component, NgModule, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import {
   DxButtonModule,
@@ -15,7 +16,6 @@ import {
   DxTagBoxModule,
   DxToolbarModule,
 } from 'devextreme-angular';
-import notify from 'devextreme/ui/notify';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import html2canvas from 'html2canvas';
@@ -59,7 +59,7 @@ export class AnalyticsDashboardComponent {
     private service: ReportService,
     private masterService: MasterReportService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.activatedRoute.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -326,10 +326,7 @@ export class AnalyticsDashboardComponent {
 
   // ============== helper notify ============
   private showError(message: string) {
-    notify(
-      { message, position: { at: 'top right', my: 'top right' } },
-      'error',
-    );
+    this.notificationService.showNotification('', 'error');
   }
 
   // ====== format date as yyyy-MM-dd =====

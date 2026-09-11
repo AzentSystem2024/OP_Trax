@@ -41,7 +41,7 @@ import { ReportService } from 'src/app/services/Report-data.service';
 import { ReportEngineService } from '../report-engine.service';
 import DataSource from 'devextreme/data/data_source';
 import { Router, ActivatedRoute } from '@angular/router';
-import notify from 'devextreme/ui/notify';
+import { NotificationService } from 'src/app/services/notification.service';
 import { AuthService, DataService } from 'src/app/services';
 import { PopupStateService } from 'src/app/popupStateService.service';
 import validationEngine from 'devextreme/ui/validation_engine';
@@ -169,7 +169,7 @@ export class GroupingDetailsReportComponent implements OnInit {
     private operationService: OperationReportService,
     private authService: AuthService,
     private dataService: DataService,
-    private activatedRoute: ActivatedRoute,
+    private activatedRoute: ActivatedRoute, private notificationService: NotificationService
   ) {
     // this.loadingVisible = true;
 
@@ -329,14 +329,7 @@ export class GroupingDetailsReportComponent implements OnInit {
     const validationResult = validationEngine.validateGroup('resubValidation');
 
     if (!validationResult.isValid) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-        },
-        'warning',
-        3000,
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
       return;
     }
     const formData = {
@@ -395,13 +388,7 @@ export class GroupingDetailsReportComponent implements OnInit {
         });
       } else {
         this.isContentVisible = true;
-        notify(
-          {
-            message: `${response?.message}`,
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error',
-        );
+        this.notificationService.showNotification(`${response?.message}`, 'error');
         this.dataGrid_DataSource = new DataSource<any>({
           load: () => Promise.resolve([]),
         });
@@ -416,14 +403,7 @@ export class GroupingDetailsReportComponent implements OnInit {
 
       if (!errMsg.includes('cancelled by user')) {
         console.error('Error loading data:', error);
-        notify(
-          {
-            message: `An error occurred while fetching the data. Please try again later.`,
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 3000,
-          },
-          'error',
-        );
+        this.notificationService.showNotification(`An error occurred while fetching the data. Please try again later.`, 'error');
       }
 
       this.dataGrid_DataSource = new DataSource<any>({
@@ -445,7 +425,7 @@ export class GroupingDetailsReportComponent implements OnInit {
       this.cancelLoad = undefined;
     }
     this.isGridLoading = false;
-    notify('Data loading cancelled', 'warning', 3000);
+    this.notificationService.showNotification('Data loading cancelled', 'warning');
   }
 
   generateSummaryColumns(reportColumns) {
@@ -645,7 +625,7 @@ export class GroupingDetailsReportComponent implements OnInit {
   // ================Exporting Function===================
   onExporting(event: any) {
     if (this.userRoleId == 2) {
-      notify('Export is not permitted for your role.', 'warning', 3000);
+      this.notificationService.showNotification('Export is not permitted for your role.', 'warning');
       return;
     }
     const fileName = 'ADOC Grouping Details';
@@ -681,7 +661,7 @@ export class GroupingDetailsReportComponent implements OnInit {
     const dataField = e.column.dataField;
     // --- Helper to avoid repeated notify options---
     const showError = (message: string) => {
-      notify(message, 'error', 3000);
+      this.notificationService.showNotification(message, 'error');
     };
 
     if (dataField === 'CPTCode') {
@@ -720,23 +700,11 @@ export class GroupingDetailsReportComponent implements OnInit {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: 'Cpt Master Updated Successfully',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success',
-          );
+          this.notificationService.showNotification('Cpt Master Updated Successfully', 'success');
 
           this.resetCptForm();
         } else {
-          notify(
-            {
-              message: 'Your Data Not Updated',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error',
-          );
+          this.notificationService.showNotification('Your Data Not Updated', 'error');
         }
       });
   };

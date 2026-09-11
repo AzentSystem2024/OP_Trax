@@ -18,10 +18,10 @@ import { FormsModule } from '@angular/forms';
 import { CardAuthModule } from '../card-auth/card-auth.component';
 import { ResetPasswordFormModule } from '../reset-password-form/reset-password-form.component';
 import { SingleCardModule } from 'src/app/layouts';
-import notify from 'devextreme/ui/notify';
 import { confirm } from 'devextreme/ui/dialog';
 import { InactivityService } from 'src/app/services/inactivity.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'app-two-step-verification',
@@ -83,7 +83,7 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
     private router: Router,
     private inactive: InactivityService,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService,
+    private authService: AuthService, private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -320,11 +320,7 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
     if (this.currentOtpStep === 'sms') {
       const smsCode = this.smsOtpDigits.join('');
       if (smsCode !== this.expectedsmsOTP) {
-        notify({
-          message: this.MFASingleToken ? 'Invalid OTP' : 'Invalid SMS OTP',
-          type: 'error',
-          position: { at: 'top right', my: 'top right' },
-        });
+        this.notificationService.showNotification(this.MFASingleToken ? 'Invalid OTP' : 'Invalid SMS OTP', 'error');
         return;
       }
       this.goToNextStep();
@@ -334,11 +330,7 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
     if (this.currentOtpStep === 'email' && this.mfaEmail) {
       const emailCode = this.emailOtpDigits.join('');
       if (emailCode !== this.expectedEmailOTP) {
-        notify({
-          message: 'Invalid Email OTP',
-          type: 'error',
-          position: { at: 'top right', my: 'top right' },
-        });
+        this.notificationService.showNotification('Invalid Email OTP', 'error');
         return;
       }
       this.goToNextStep();
@@ -348,11 +340,7 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
     if (this.currentOtpStep === 'whatsapp' && this.mfaWhatsapp) {
       const whatsappCode = this.whatsappOtpDigits.join('');
       if (whatsappCode !== this.expectedwhatsappOTP) {
-        notify({
-          message: 'Invalid WhatsApp OTP',
-          type: 'error',
-          position: { at: 'top right', my: 'top right' },
-        });
+        this.notificationService.showNotification('Invalid WhatsApp OTP', 'error');
         return;
       }
       this.goToNextStep();
@@ -366,19 +354,11 @@ export class TwoStepVerificationComponent implements OnInit, AfterViewInit {
           if (res && res.success) {
             this.goToNextStep();
           } else {
-            notify({
-              message: 'Invalid Authenticator Code',
-              type: 'error',
-              position: { at: 'top right', my: 'top right' },
-            });
+            this.notificationService.showNotification('Invalid Authenticator Code', 'error');
           }
         },
         error: (err: any) => {
-          notify({
-            message: 'Error verifying Authenticator Code',
-            type: 'error',
-            position: { at: 'top right', my: 'top right' },
-          });
+          this.notificationService.showNotification('Error verifying Authenticator Code', 'error');
         },
       });
       return;

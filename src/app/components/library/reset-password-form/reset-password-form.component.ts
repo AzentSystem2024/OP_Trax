@@ -22,8 +22,8 @@ import {
 } from 'devextreme-angular';
 import { DxFormModule } from 'devextreme-angular/ui/form';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
-import notify from 'devextreme/ui/notify';
 import { MasterReportService } from 'src/app/pages/MASTER PAGES/master-report.service';
+import { NotificationService } from 'src/app/services/notification.service';
 import { AuthService, IResponse } from 'src/app/services';
 import { UserService } from 'src/app/services/user.service';
 
@@ -76,7 +76,7 @@ export class ResetPasswordFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef,
-    private userservice: MasterReportService
+    private userservice: MasterReportService, private notificationService: NotificationService
   ) {}
 
   validateEmailOrPhone(value: string): boolean {
@@ -128,14 +128,7 @@ export class ResetPasswordFormComponent implements OnInit, OnDestroy {
           this.cdr.detectChanges();
         } else {
           clearInterval(this.interval); // Stop the timer when it reaches 0
-          notify(
-            {
-              message: 'OTP expired. Please request a new one.',
-              position: { at: 'top center', my: 'top center' },
-              delay: 4000,
-            },
-            'error'
-          );
+          this.notificationService.showNotification('OTP expired. Please request a new one.', 'error');
           this.isGetOtpButtonDisabled = false;
           this.otpSent = false;
           this.formHeight = 300;
@@ -186,14 +179,7 @@ export class ResetPasswordFormComponent implements OnInit, OnDestroy {
     }
 
     if (!this.formData.email) {
-      notify(
-        {
-          message: 'Please enter your email or phone number',
-          position: { at: 'top center', my: 'top center' },
-          delay: 4000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Please enter your email or phone number', 'error');
       return;
     }
 
@@ -217,14 +203,7 @@ export class ResetPasswordFormComponent implements OnInit, OnDestroy {
         this.UserID = res.UserID;
         const maskedContact = this.maskEmailOrPhone(res.EmailID);
         // console.log(maskedContact,"maskedcontact")
-        notify(
-          {
-            message: `OTP has been sent to ${maskedContact}`,
-            position: { at: 'top center', my: 'top center' },
-            delay: 4000,
-          },
-          'success'
-        );
+        this.notificationService.showNotification(`OTP has been sent to ${maskedContact}`, 'success');
         this.otpMessage = `OTP has been sent to ${maskedContact}`;
         this.generatedOtp = res.EmailOTP;
         // console.log(this.generatedOtp, 'generated otp');
@@ -237,14 +216,7 @@ export class ResetPasswordFormComponent implements OnInit, OnDestroy {
         this.startTimer();
       } else if (res.Flag === 0) {
         this.loading = false;
-        notify(
-          {
-            message: `${res.Message}`,
-            position: { at: 'top center', my: 'top center' },
-            delay: 4000,
-          },
-          'error'
-        );
+        this.notificationService.showNotification(`${res.Message}`, 'error');
       }
     });
   }
@@ -287,28 +259,14 @@ export class ResetPasswordFormComponent implements OnInit, OnDestroy {
       this.isVerifyOtpButtonDisabled = true;
       clearInterval(this.interval);
       this.Verifyloading = false;
-      notify(
-        {
-          message: 'OTP verified successfully',
-          position: { at: 'top center', my: 'top center' },
-          delay: 4000,
-        },
-        'success'
-      );
+      this.notificationService.showNotification('OTP verified successfully', 'success');
       this.otpSent = false;
       this.otpVerified = true; // Show new password form
       this.headerTitle = 'Set New Password'; // Change header after OTP is verified
       this.formHeight = 500;
     } else {
       this.Verifyloading = false;
-      notify(
-        {
-          message: 'Invalid OTP. Please try again.',
-          position: { at: 'top center', my: 'top center' },
-          delay: 4000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Invalid OTP. Please try again.', 'error');
     }
   }
 
@@ -324,14 +282,7 @@ export class ResetPasswordFormComponent implements OnInit, OnDestroy {
     // Check if the new password meets the security policy
     if (!this.checkPasswordStrength()) {
       // Show error message if the password does not meet the security policy
-      notify(
-        {
-          message: 'New password does not meet the security requirements.',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 500,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('New password does not meet the security requirements.', 'error');
       return; // Stop execution if the password does not meet the policy
     }
 
@@ -346,28 +297,14 @@ export class ResetPasswordFormComponent implements OnInit, OnDestroy {
 
     this.userservice.reset_Password(data).subscribe((res) => {
       if (res.flag === '1') {
-        notify(
-          {
-            message: 'Password reset successfully. Redirecting to login...',
-            position: { at: 'top center', my: 'top center' },
-            delay: 3000,
-          },
-          'success'
-        );
+        this.notificationService.showNotification('Password reset successfully. Redirecting to login...', 'success');
         // Redirect to login page after successful password reset
         setTimeout(() => {
           this.router.navigate([this.buttonLink]);
           // Reset the form after submission or redirect
         }, 3000);
       } else if (res.flag === '0') {
-        notify(
-          {
-            message: `${res.message}`,
-            position: { at: 'top center', my: 'top center' },
-            delay: 2000,
-          },
-          'error'
-        );
+        this.notificationService.showNotification(`${res.message}`, 'error');
       }
     });
   }

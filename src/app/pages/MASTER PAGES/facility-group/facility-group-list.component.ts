@@ -16,10 +16,10 @@ import {
   DxSelectBoxModule,
   DxTextBoxModule,
 } from 'devextreme-angular';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
-import notify from 'devextreme/ui/notify';
 import {
   FacilityGroupNewFormComponent,
   FacilityGroupNewFormModule,
@@ -73,7 +73,7 @@ export class FacilityGroupListComponent {
     private service: ReportService,
     private masterService: MasterReportService,
     private dataservice: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.get_FacilityGroup_DropDown();
     this.route.url.subscribe((segments) => {
@@ -128,21 +128,9 @@ export class FacilityGroupListComponent {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `New Facility Group "${FacilityGroupValue} ${DescriptionValue}" saved Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`New Facility Group "${FacilityGroupValue} ${DescriptionValue}" saved Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
       });
   };
@@ -155,23 +143,9 @@ export class FacilityGroupListComponent {
       .Remove_Facility_Group_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          notify(
-            {
-              message: 'Delete operation successful',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Delete operation successful', 'success');
         } catch (error) {
-          notify(
-            {
-              message: 'Delete operation failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification('Delete operation failed', 'error');
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
@@ -198,23 +172,9 @@ export class FacilityGroupListComponent {
         if (data) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `New Facility Group updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`New Facility Group updated Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
         // event.component.refresh();
         event.component.cancelEditData(); // Close the popup

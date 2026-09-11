@@ -3,14 +3,13 @@ import {Component, EventEmitter, Input, NgModule, Output, ViewChild} from '@angu
 import { DxFormModule } from 'devextreme-angular/ui/form';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
 import {FormPopupComponent, FormPopupModule} from 'src/app/components/utils/form-popup/form-popup.component';
-import notify from 'devextreme/ui/notify';
-
 import {
   PasswordTextBoxComponent,
   PasswordTextBoxModule,
 } from 'src/app/components/library/password-text-box/password-text-box.component';
 
 import { ValidationRule } from 'devextreme-angular/common';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'change-profile-password-form',
@@ -45,7 +44,7 @@ export class ChangeProfilePasswordFormComponent {
   }
 
   saveNewPassword(): void {
-    notify({ message: 'Password Changed', position: {at: 'bottom center', my: 'bottom center'}}, 'success');
+    this.notificationService.showNotification('Password Changed', 'success');
   }
 
   checkConfirm(): void {
@@ -61,6 +60,9 @@ export class ChangeProfilePasswordFormComponent {
     this.visible = visible;
     this.visibleChange.emit(this.visible);
   }
+
+    constructor(private notificationService: NotificationService) {
+    }
 }
 
 @NgModule({

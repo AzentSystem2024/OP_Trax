@@ -18,7 +18,7 @@ import {
   DxValidatorModule,
 } from 'devextreme-angular';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
-import notify from 'devextreme/ui/notify';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'app-reset-password',
@@ -36,7 +36,7 @@ export class ResetPasswordComponent implements OnChanges {
   formData: any;
   newFormData: any;
 
-  constructor(private service: MasterReportService) {
+  constructor(private service: MasterReportService, private notificationService: NotificationService) {
     this.loginuserId = sessionStorage.getItem('UserID');
     console.log(this.loginuserId, 'userid');
 
@@ -181,25 +181,11 @@ export class ResetPasswordComponent implements OnChanges {
     this.service.reset_Password(this.newFormData).subscribe((data) => {
       try {
         if (data.message === 'Success') {
-          notify(
-            {
-              message: 'Password reset done successfully',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification('Password reset done successfully', 'success');
           this.close();
         }
       } catch (error) {
-        notify(
-          {
-            message: 'Password reset operation failed',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error',
-        );
+        this.notificationService.showNotification('Password reset operation failed', 'error');
       }
     });
   }

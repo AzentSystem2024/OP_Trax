@@ -1,11 +1,11 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
-import notify from 'devextreme/ui/notify';
 import { confirm, custom } from 'devextreme/ui/dialog';
 import { SystemServicesService } from '../pages/SYSTEM PAGES/system-services.service';
 import { SharedServiceService } from './shared-service.service';
 import { ReuseStrategyService } from '../reuse-strategy.service';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +24,7 @@ export class InactivityService {
     private router: Router,
     private systemservice: SystemServicesService,
     private sharedService: SharedServiceService,
-    private reuseStrategyService: ReuseStrategyService
+    private reuseStrategyService: ReuseStrategyService, private notificationService: NotificationService
   ) {
     this.setupStorageListener();
   }

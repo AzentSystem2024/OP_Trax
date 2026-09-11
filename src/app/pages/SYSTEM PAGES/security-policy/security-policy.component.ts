@@ -12,10 +12,10 @@ import {
   DxTemplateModule,
   DxButtonModule,
 } from 'devextreme-angular';
-import notify from 'devextreme/ui/notify';
 import { DxFormModule } from 'devextreme-angular';
 import { SystemServicesService } from '../system-services.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 @Component({
   selector: 'app-security-policy',
@@ -84,7 +84,7 @@ export class SecurityPolicyComponent implements OnInit {
     private router: Router,
     private dataService: DataService,
     private dataservice: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -191,22 +191,10 @@ export class SecurityPolicyComponent implements OnInit {
       .save_security_Policy_Data(formData)
       .subscribe((response: any) => {
         if (response) {
-          notify(
-            {
-              message: `Security Policy saved Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`Security Policy saved Successfully`, 'success');
           this.get_Present_Security_Policy();
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
           this.isLoading = false;
         }
       });

@@ -14,7 +14,7 @@ import {
   DxValidatorComponent,
 } from 'devextreme-angular';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
-import notify from 'devextreme/ui/notify';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'app-user-level-new-form',
@@ -53,7 +53,7 @@ export class UserLevelNewFormComponent implements OnInit {
   canReprocessCostingData:boolean = false; 
 
   // ======= constructor – injects the masterservice to call backend APIs ==============
-  constructor(private masterservice: MasterReportService) {}
+  constructor(private masterservice: MasterReportService, private notificationService: NotificationService) {}
 
   // ======= lifecycle hook – gets called on component initialization ==============
   ngOnInit(): void {
@@ -174,7 +174,7 @@ export class UserLevelNewFormComponent implements OnInit {
   onUserRoleCopySelectionChange(event: any): void {
     if (!this.UserLevelValue) {
       this.isErrorVisible = true;
-      notify('User Role is required before copying user role', 'error', 2000);
+      this.notificationService.showNotification('User Role is required before copying user role', 'error');
 
       if (this.userRoleValidator?.instance) {
         this.userRoleValidator.instance.validate();
@@ -248,11 +248,7 @@ export class UserLevelNewFormComponent implements OnInit {
       this.combineSelectedRows();
     } else {
       // Optional: show notify or validation if needed
-      notify(
-        'Please select a User Role before updating permissions',
-        'warning',
-        2000
-      );
+      this.notificationService.showNotification('Please select a User Role before updating permissions', 'warning');
     }
   }
 
@@ -260,7 +256,7 @@ export class UserLevelNewFormComponent implements OnInit {
   onSelectionChanged(event: any): void {
     if (!this.UserLevelValue) {
       this.isErrorVisible = true;
-      notify('User Role is required before selecting rows', 'error', 2000);
+      this.notificationService.showNotification('User Role is required before selecting rows', 'error');
       if (this.userRoleValidator?.instance) {
         this.userRoleValidator.instance.validate();
       }

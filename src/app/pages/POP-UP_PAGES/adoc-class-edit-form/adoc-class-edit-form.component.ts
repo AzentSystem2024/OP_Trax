@@ -11,8 +11,8 @@ import {
   DxFormComponent,
 } from 'devextreme-angular';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
-import notify from 'devextreme/ui/notify';
 import validationEngine from 'devextreme/ui/validation_engine';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'app-adoc-class-edit-form',
@@ -32,7 +32,7 @@ export class AdocClassEditFormComponent implements OnChanges {
 
   editData: any = {};
 
-  constructor(private masterService: MasterReportService) {}
+  constructor(private masterService: MasterReportService, private notificationService: NotificationService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['formData'] && changes['formData'].currentValue) {
@@ -47,26 +47,12 @@ export class AdocClassEditFormComponent implements OnChanges {
   onSave() {
     const result = validationEngine.validateGroup('adocClassEditValidation');
     if (!result.isValid) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'warning'
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
       return;
     }
 
     if (!this.editData.ClassName?.trim() || !this.editData.GroupID) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'warning'
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
       return;
     }
 
@@ -80,26 +66,12 @@ export class AdocClassEditFormComponent implements OnChanges {
       .update_adocClass_data(id, Code, Name, adocCategory, IsInactive)
       .subscribe((data: any) => {
         if (data) {
-          notify(
-            {
-              message: `data updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`data updated Successfully`, 'success');
           this.onSaved.emit();
           this.visible = false;
           this.visibleChange.emit(false);
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
       });
   }

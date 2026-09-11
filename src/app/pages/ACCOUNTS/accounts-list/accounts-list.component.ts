@@ -38,10 +38,9 @@ import {
   DxoSummaryModule,
 } from 'devextreme-angular/ui/nested';
 import { FormTextboxModule } from 'src/app/components';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { AddAccountModule } from '../add-account/add-account.component';
-
-import notify from 'devextreme/ui/notify';
 import { DataSource } from 'devextreme/common/data';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -115,7 +114,7 @@ export class AccountsListComponent {
   constructor(private dataService: DataService, 
     private reportservice:ReportService,
     private activatedRoute: ActivatedRoute,
-    private ngZone: NgZone) {
+    private ngZone: NgZone, private notificationService: NotificationService) {
       this.activatedRoute.url.subscribe((segments) => {
         const fullUrl = segments.map((s) => s.path).join('/');
         this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
@@ -157,22 +156,10 @@ export class AccountsListComponent {
     this.dataService.deleteAccountHeadlData(accHeadId).subscribe(
       (response: any) => {
         if (response) {
-          notify(
-            {
-              message: 'Account Head Deleted Successfully',
-              position: { at: 'top center', my: 'top center' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Account Head Deleted Successfully', 'success');
           this.refresh();
         } else {
-          notify(
-            {
-              message: 'Your Data Not deleted',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification('Your Data Not deleted', 'error');
         }
       },
       (error) => {

@@ -21,9 +21,9 @@ import {
 } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
 import { Component, NgModule, ViewChild } from '@angular/core';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { DxTreeListTypes } from 'devextreme-angular/ui/tree-list';
-import notify from 'devextreme/ui/notify';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -75,7 +75,7 @@ export class AutoDownloadSettingsComponent {
   InstanceCount: number = 0;
   menuPrevilage:any;
 
-  constructor(private dataService: DataService, private route: ActivatedRoute) {
+  constructor(private dataService: DataService, private route: ActivatedRoute, private notificationService: NotificationService) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
@@ -195,15 +195,7 @@ export class AutoDownloadSettingsComponent {
     );
 
     if (this.filteredFacilityDataSource.length === 0) {
-      notify(
-        {
-          message:
-            'All facilities are already assigned to existing instances. No facilities available to add at this time.',
-          position: { at: 'top right', my: 'top right' },
-          hideDuration: 3000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('All facilities are already assigned to existing instances. No facilities available to add at this time.', 'error');
     } else {
       console.log('datasorce::>>', this.dataSource);
       this.InstanceValue = this.getNextInstanceNumber();
@@ -413,24 +405,10 @@ export class AutoDownloadSettingsComponent {
 
     this.dataService.autoDownload_Instance_Settings_insert(finalData).subscribe(
       (response) => {
-        notify(
-          {
-            message: 'Download settings saved successfully',
-            position: { at: 'top right', my: 'top right' },
-            hideDuration: 3000,
-          },
-          'success'
-        );
+        this.notificationService.showNotification('Download settings saved successfully', 'success');
       },
       (error) => {
-        notify(
-          {
-            message: 'Save Download settings failed',
-            position: { at: 'top right', my: 'top right' },
-            hideDuration: 3000,
-          },
-          'error'
-        );
+        this.notificationService.showNotification('Save Download settings failed', 'error');
       }
     );
   };

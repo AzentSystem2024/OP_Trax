@@ -25,7 +25,6 @@ import {
   FormPhotoUploaderModule,
   FormPopupModule,
 } from 'src/app/components';
-import notify from 'devextreme/ui/notify';
 import { OperationReportService } from '../../OPERATION PAGES/operation-report.service';
 import { DataSource } from 'devextreme/common/data';
 import { switchMap, tap } from 'rxjs/operators';
@@ -148,14 +147,7 @@ export class CostingDataFormComponent implements OnInit {
 
         this.fetch_costView_Report();
       } else {
-        notify(
-          {
-            message: `An error occurred while fetching the data. Please try again later.`,
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 3000,
-          },
-          'error',
-        );
+        this.notificationService.showNotification(`An error occurred while fetching the data. Please try again later.`, 'error');
         this.loadingVisible = false;
       }
     }, 50);
@@ -195,27 +187,13 @@ export class CostingDataFormComponent implements OnInit {
             this.dataGrid.instance.endCustomLoading();
           }
         } else {
-          notify(
-            {
-              message: response.message,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error',
-          );
+          this.notificationService.showNotification(response.message, 'error');
         }
       },
       () => {
         this.loadingVisible = false;
         this.dataGrid.instance.endCustomLoading();
-        notify(
-          {
-            message:
-              'An error occurred while fetching the data. Please try again later.',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 3000,
-          },
-          'error',
-        );
+        this.notificationService.showNotification('An error occurred while fetching the data. Please try again later.', 'error');
       },
     );
   }
@@ -421,7 +399,7 @@ export class CostingDataFormComponent implements OnInit {
     const rowData = e.data;
 
     const showError = (message: string) => {
-      notify(message, 'error', 3000);
+      this.notificationService.showNotification(message, 'error');
     };
 
     // ===== Band + caption detection =====
@@ -511,10 +489,7 @@ export class CostingDataFormComponent implements OnInit {
             return this.loadGeneratedXmlData(); // ⬅️ separate function call
           } else {
             this.loadingVisible = false;
-            notify(
-              { message: response.message, position: 'top right' },
-              'error',
-            );
+            this.notificationService.showNotification(response.message, 'error');
             return EMPTY;
           }
         }),
@@ -526,15 +501,12 @@ export class CostingDataFormComponent implements OnInit {
             this.xmlGridData = res.data;
             this.showXmlPopup = true;
           } else {
-            notify({ message: res.message, position: 'top right' }, 'error');
+            this.notificationService.showNotification(res.message, 'error');
           }
         },
         error: () => {
           this.loadingVisible = false;
-          notify(
-            { message: 'Failed to load XML data.', position: 'top right' },
-            'error',
-          );
+          this.notificationService.showNotification('Failed to load XML data.', 'error');
         },
       });
   }
@@ -634,14 +606,7 @@ export class CostingDataFormComponent implements OnInit {
     this.operationService.update_clicked_Row_Xml_data(payload).subscribe({
       next: (res: any) => {
         if (res.flag === '1') {
-          notify(
-            {
-              message: 'XML updated successfully!',
-              type: 'success',
-              displayTime: 2000,
-            },
-            { position: 'top right' },
-          );
+          this.notificationService.showNotification('XML updated successfully!', { position: 'top right' });
           const payload = { XMLFileID: this.clickedrowData.XMLFileID };
           this.operationService
             .get_clicked_Row_Xml_data(payload)
@@ -652,26 +617,12 @@ export class CostingDataFormComponent implements OnInit {
             });
           this.isxmlEditMode = false;
         } else {
-          notify(
-            {
-              message: res.message || 'Update failed. Please try again.',
-              type: 'warning',
-              displayTime: 2500,
-            },
-            { position: 'top right' },
-          );
+          this.notificationService.showNotification(res.message || 'Update failed. Please try again.', { position: 'top right' });
         }
       },
       error: (err) => {
         console.error('Error updating XML:', err);
-        notify(
-          {
-            message: 'An error occurred while updating. Please try later.',
-            type: 'error',
-            displayTime: 3000,
-          },
-          { position: 'top right' },
-        );
+        this.notificationService.showNotification('An error occurred while updating. Please try later.', { position: 'top right' });
       },
     });
   }
@@ -694,12 +645,7 @@ export class CostingDataFormComponent implements OnInit {
   // ==== download xml file to system ====
   downloadXmlFile() {
     if (!this.xmlData || !this.XmlFileName) {
-      notify({
-        message: 'No XML data to download.',
-        type: 'warning',
-        displayTime: 2000,
-        position: 'top right',
-      });
+      this.notificationService.showNotification('No XML data to download.', 'warning');
       return;
     }
 
@@ -939,28 +885,13 @@ export class CostingDataFormComponent implements OnInit {
                 }.zip`;
                 link.click();
 
-                notify(
-                  { message: 'Error report downloaded', position: 'top right' },
-                  'success',
-                );
+                this.notificationService.showNotification('Error report downloaded', 'success');
               } else {
-                notify(
-                  {
-                    message: res.message || 'No error report available',
-                    position: 'top right',
-                  },
-                  'warning',
-                );
+                this.notificationService.showNotification(res.message || 'No error report available', 'warning');
               }
             },
             error: () => {
-              notify(
-                {
-                  message: 'Failed to download error report',
-                  position: 'top right',
-                },
-                'error',
-              );
+              this.notificationService.showNotification('Failed to download error report', 'error');
             },
             complete: () => {
               this.loadingVisible = false;

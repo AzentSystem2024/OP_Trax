@@ -31,8 +31,8 @@ import {
 import { DxTabPanelModule } from 'devextreme-angular';
 import { SystemServicesService } from '../system-services.service';
 import { DxTextBoxTypes } from 'devextreme-angular/ui/text-box';
-import notify from 'devextreme/ui/notify';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 type EditorOptions = DxTextBoxTypes.Properties;
 @Component({
@@ -158,7 +158,7 @@ export class NotificationSettingsComponent implements OnInit {
     private service: SystemServicesService,
     private router: Router,
     private dataservice: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -281,38 +281,20 @@ export class NotificationSettingsComponent implements OnInit {
         this.isSending = false;
         this.sendButtonText = 'Send';
         if (response.message?.includes('Email sent successfully')) {
-          notify(
-            {
-              message: 'The test e-mail has been sent successfully',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification('The test e-mail has been sent successfully', 'success');
           this.testMailpopupVisible = false;
           this.getNotificationSettingsData();
         } else {
           this.isSending = false;
           this.sendButtonText = 'Send';
-          notify(
-            {
-              message: response.message || 'Failed to send email',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(response.message || 'Failed to send email', 'error');
           this.getNotificationSettingsData();
         }
       },
       (err) => {
         this.isSending = false;
         this.sendButtonText = 'Send';
-        notify(
-          {
-            message: err?.error?.message || 'Internal server error',
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error'
-        );
+        this.notificationService.showNotification(err?.error?.message || 'Internal server error', 'error');
       }
     );
   }
@@ -344,23 +326,11 @@ export class NotificationSettingsComponent implements OnInit {
       .subscribe((response: any) => {
         if (response.flag == 1) {
           this.isRowDataEditing = false;
-          notify(
-            {
-              message: response.message,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(response.message, 'success');
           this.getNotificationSettingsTemplateList();
         } else {
           this.isRowDataEditing = false;
-          notify(
-            {
-              message: response.message,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(response.message, 'error');
         }
       });
   }
@@ -388,13 +358,7 @@ export class NotificationSettingsComponent implements OnInit {
         this.saveButtonText = 'Save';
 
         if (response) {
-          notify(
-            {
-              message: 'Your notification settings updated successfully',
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Your notification settings updated successfully', 'success');
 
           this.getNotificationSettingsData();
         }
@@ -403,13 +367,7 @@ export class NotificationSettingsComponent implements OnInit {
         this.isSaving = false;
         this.saveButtonText = 'Save';
 
-        notify(
-          {
-            message: error?.error?.message || 'Internal server error',
-            position: { at: 'top right', my: 'top right' },
-          },
-          'error'
-        );
+        this.notificationService.showNotification(error?.error?.message || 'Internal server error', 'error');
       }
     );
   }

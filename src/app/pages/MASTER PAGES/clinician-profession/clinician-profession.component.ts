@@ -21,9 +21,9 @@ import { FormPopupModule } from 'src/app/components';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
 import { ClinicianProfessionNewFormComponent } from '../../POP-UP_PAGES/clinician-profession-new-form/clinician-profession-new-form.component';
-import notify from 'devextreme/ui/notify';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 
 @Component({
@@ -69,7 +69,7 @@ export class ClinicianProfessionComponent {
     private masterService: MasterReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -123,13 +123,7 @@ export class ClinicianProfessionComponent {
 
   if (this.isDuplicateProfession(ProfessionValue)) {
 
-    notify(
-      {
-        message: 'Profession already exists',
-        position: { at: 'top right', my: 'top right' },
-      },
-      'error'
-    );
+    this.notificationService.showNotification('Profession already exists', 'error');
 
     return false;
   }
@@ -139,22 +133,10 @@ export class ClinicianProfessionComponent {
       .subscribe((response: any) => {
         if (response) {
           this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: `New Insurance Classification saved Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`New Insurance Classification saved Successfully`, 'success');
           this.ClinicianProfession.reset_newclinicianProfessionFormData();
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
       });
   };
@@ -167,23 +149,9 @@ export class ClinicianProfessionComponent {
       .remove_ClinicianProfession(SelectedRow.ID)
       .subscribe(() => {
         try {
-          notify(
-            {
-              message: 'Delete operation successful',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Delete operation successful', 'success');
         } catch (error) {
-          notify(
-            {
-              message: 'Delete operation failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification('Delete operation failed', 'error');
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
@@ -207,13 +175,7 @@ export class ClinicianProfessionComponent {
     )
   ) {
 
-    notify(
-      {
-        message: 'Profession already exists',
-        position: { at: 'top right', my: 'top right' },
-      },
-      'error'
-    );
+    this.notificationService.showNotification('Profession already exists', 'error');
 
     event.cancel = true;
     return;
@@ -225,23 +187,9 @@ export class ClinicianProfessionComponent {
       .subscribe((data: any) => {
         if (data) {
           this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: `Insurance classification updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`Insurance classification updated Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
 
         event.component.cancelEditData();

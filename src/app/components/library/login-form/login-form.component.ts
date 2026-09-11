@@ -14,13 +14,8 @@ import { LoginOauthModule } from 'src/app/components/library/login-oauth/login-o
 import { DxFormModule } from 'devextreme-angular/ui/form';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
 import { DxButtonModule, DxButtonTypes } from 'devextreme-angular/ui/button';
-import notify from 'devextreme/ui/notify';
-import {
-  AuthService,
-  DataService,
-  IResponse,
-  ThemeService,
-} from 'src/app/services';
+import { NotificationService } from 'src/app/services/notification.service';
+import { AuthService, DataService, IResponse, ThemeService } from 'src/app/services';
 import { SharedServiceService } from 'src/app/services/shared-service.service';
 import { confirm } from 'devextreme/ui/dialog';
 import { InactivityService } from 'src/app/services/inactivity.service';
@@ -79,7 +74,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
     private inactive: InactivityService,
     private SystemService: SystemServicesService,
     private dataService: DataService,
-    private userservice: MasterReportService,
+    private userservice: MasterReportService, private notificationService: NotificationService
   ) {
     this.formData = {};
     this.themeService.isDark.subscribe((value: boolean) => {
@@ -482,14 +477,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
           // ====== Success case ======
           if (response.failurecount > 0) {
             // Notify with failure count and response message
-            notify(
-              {
-                message: `Verified with ${response.failurecount} failures.\n${response.message}`,
-                position: { at: 'top right', my: 'top right' },
-                displayTime: 8000,
-              },
-              'warning',
-            );
+            this.notificationService.showNotification(`Verified with ${response.failurecount} failures.\n${response.message}`, 'warning');
 
             this.SystemService.get_PostOfficeCredencial_List().subscribe(
               (listResponse: any) => {
@@ -506,26 +494,12 @@ export class LoginFormComponent implements OnInit, OnDestroy {
                       )
                       .join('\n');
 
-                    notify(
-                      {
-                        message: `Post office credentials failed for facilities:\n${facilityNames}`,
-                        position: { at: 'top right', my: 'top right' },
-                        displayTime: 10000,
-                      },
-                      'error',
-                    );
+                    this.notificationService.showNotification(`Post office credentials failed for facilities:\n${facilityNames}`, 'error');
                   }
                 }
               },
               (error) => {
-                notify(
-                  {
-                    message: 'Error while fetching failed facility list.',
-                    position: { at: 'top right', my: 'top right' },
-                    displayTime: 5000,
-                  },
-                  'error',
-                );
+                this.notificationService.showNotification('Error while fetching failed facility list.', 'error');
               },
             );
           } else {
@@ -548,14 +522,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
           this.router.navigateByUrl(targetUrl, { replaceUrl: true });
         } else {
           // ====== Failure case ======
-          notify(
-            {
-              message: response.message || 'Verification failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 5000,
-            },
-            'error',
-          );
+          this.notificationService.showNotification(response.message || 'Verification failed', 'error');
 
           // Still proceed with login flow
           const logData =
@@ -575,28 +542,14 @@ export class LoginFormComponent implements OnInit, OnDestroy {
         }
       },
       (err) => {
-        notify(
-          {
-            message: `Error: ${err.message}`,
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 5000,
-          },
-          'error',
-        );
+        this.notificationService.showNotification(`Error: ${err.message}`, 'error');
       },
     );
   }
 
   // ====== Notify helper ======
   private showNotify(message: string, type: 'success' | 'error') {
-    notify(
-      {
-        message,
-        position: { at: 'top right', my: 'top right' },
-        displayTime: 5000,
-      },
-      type,
-    );
+    this.notificationService.showNotification('', type);
   }
 
   onCreateAccountClick = () => {
@@ -627,12 +580,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
       this.router.navigate([this.resetLink]);
     } else {
       // Show toast notification
-      notify({
-        message:
-          'Password Reset is not allowed because Email service is disabled. Please contact your Administrator.',
-        position: { at: 'top right', my: 'top right' },
-        type: 'error',
-      });
+      this.notificationService.showNotification('Password Reset is not allowed because Email service is disabled. Please contact your Administrator.', 'error');
     }
   }
 }

@@ -11,8 +11,8 @@ import {
   DxValidatorModule,
 } from 'devextreme-angular';
 import DataSource from 'devextreme/data/data_source';
-import notify from 'devextreme/ui/notify';
 import { MasterReportService } from '../master-report.service';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ActivatedRoute } from '@angular/router';
 
@@ -84,7 +84,7 @@ export class CustomRulesComponent {
   constructor(
     private masterService: MasterReportService,
     private dataService: DataService,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.dataService.Get_GropDown('CPT_CODE').subscribe((res: any) => {
       this.cptCodeList = res || [];
@@ -156,22 +156,10 @@ export class CustomRulesComponent {
       .subscribe((response: any) => {
         if (response) {
           this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: `New data saved Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success',
-          );
+          this.notificationService.showNotification(`New data saved Successfully`, 'success');
           this.isAddPopupVisible = false;
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error',
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
       });
   }
@@ -211,23 +199,9 @@ export class CustomRulesComponent {
       .subscribe((data: any) => {
         if (data) {
           this.dataGrid.instance.refresh();
-          notify(
-            {
-              message: `Data updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification(`Data updated Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
 
         event.component.cancelEditData();
@@ -245,23 +219,9 @@ export class CustomRulesComponent {
 
     this.masterService.Remove_CustomRules_Row_Data(id).subscribe(() => {
       try {
-        notify(
-          {
-            message: 'Delete operation successful',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'success',
-        );
+        this.notificationService.showNotification('Delete operation successful', 'success');
       } catch (error) {
-        notify(
-          {
-            message: 'Delete operation failed',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error',
-        );
+        this.notificationService.showNotification('Delete operation failed', 'error');
       }
       event.component.refresh();
       this.dataGrid.instance.refresh();

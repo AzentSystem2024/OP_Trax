@@ -18,13 +18,13 @@ import {
 } from 'devextreme-angular';
 import { FormPopupModule } from 'src/app/components';
 import { InsuranceNewFormModule } from '../../POP-UP_PAGES/insurance-new-form/insurance-new-form.component';
-import notify from 'devextreme/ui/notify';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
 import { SpecialityNewFormComponent } from '../../POP-UP_PAGES/speciality-new-form/speciality-new-form.component';
 import { SpecialityNewFormModule } from '../../POP-UP_PAGES/speciality-new-form/speciality-new-form.component';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 @Component({
   selector: 'app-speciality',
@@ -68,7 +68,7 @@ export class SpecialityComponent {
     private masterService: MasterReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -121,14 +121,7 @@ export class SpecialityComponent {
     );
 
     if (duplicate) {
-      notify(
-        {
-          message: 'Speciality Code already exists',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 2000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Speciality Code already exists', 'error');
 
       return false;
     }
@@ -155,21 +148,9 @@ export class SpecialityComponent {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `New speciality  saved Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`New speciality  saved Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
       });
   };
@@ -188,23 +169,9 @@ export class SpecialityComponent {
       .Remove_Speciality_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          notify(
-            {
-              message: 'Delete operation successful',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Delete operation successful', 'success');
         } catch (error) {
-          notify(
-            {
-              message: 'Delete operation failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification('Delete operation failed', 'error');
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
@@ -234,14 +201,7 @@ export class SpecialityComponent {
     );
 
     if (duplicate) {
-      notify(
-        {
-          message: 'Speciality Code already exists',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 2000,
-        },
-        'error'
-      );
+      this.notificationService.showNotification('Speciality Code already exists', 'error');
 
       event.cancel = true;
       return;
@@ -260,23 +220,9 @@ export class SpecialityComponent {
         if (data) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `New speciality updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`New speciality updated Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
         // event.component.refresh();
         event.component.cancelEditData(); // Close the popup

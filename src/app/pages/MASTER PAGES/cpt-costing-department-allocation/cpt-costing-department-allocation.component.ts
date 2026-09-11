@@ -12,9 +12,9 @@ import {
   DxTagBoxModule,
   DxLoadPanelModule,
 } from 'devextreme-angular';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { MasterReportService } from '../master-report.service';
-import notify from 'devextreme/ui/notify';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -51,7 +51,7 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private route: ActivatedRoute,
-    private masterService: MasterReportService
+    private masterService: MasterReportService, private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -333,7 +333,7 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
       !hasCosting ||
       !hasPrinciple
     ) {
-      notify('Please fill all required fields before adding.', 'error', 3000);
+      this.notificationService.showNotification('Please fill all required fields before adding.', 'error');
       e.component.cancelEditData();
       return;
     }
@@ -354,21 +354,11 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
     // ===== API call =====
     this.masterService.addCptCostingDepartmentAllocation(payload).subscribe({
       next: () => {
-        notify({
-          message: 'Row saved successfully',
-          type: 'success',
-          displayTime: 3000,
-          position: 'top right',
-        });
+        this.notificationService.showNotification('Row saved successfully', 'success');
         this.getDataSource();
       },
       error: () => {
-        notify({
-          message: 'Error saving row',
-          type: 'error',
-          displayTime: 3000,
-          position: 'top right',
-        });
+        this.notificationService.showNotification('Error saving row', 'error');
       },
     });
 
@@ -396,7 +386,7 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
       !hasCosting ||
       !hasPrinciple
     ) {
-      notify('Please fill all required fields before updating.', 'error', 3000);
+      this.notificationService.showNotification('Please fill all required fields before updating.', 'error');
       e.component.cancelEditData();
       return;
     }
@@ -418,21 +408,11 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
 
     this.masterService.updateCptCostingDepartmentAllocation(payload).subscribe({
       next: (res) => {
-        notify({
-          message: 'Row updated successfully',
-          type: 'success',
-          displayTime: 3000,
-          position: 'top right',
-        });
+        this.notificationService.showNotification('Row updated successfully', 'success');
         this.getDataSource();
       },
       error: (err) => {
-        notify({
-          message: 'Error updating row',
-          type: 'error',
-          displayTime: 3000,
-          position: 'top right',
-        });
+        this.notificationService.showNotification('Error updating row', 'error');
       },
     });
   }
@@ -442,7 +422,7 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
     const rowData = e.data || {};
 
     if (!rowData.ID) {
-      notify('Invalid row selected for deletion.', 'error', 3000);
+      this.notificationService.showNotification('Invalid row selected for deletion.', 'error');
       return;
     }
 
@@ -450,21 +430,11 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
       .removeCptCostingDepartmentAllocation(rowData.ID)
       .subscribe({
         next: (res) => {
-          notify({
-            message: 'Row deleted successfully',
-            type: 'success',
-            displayTime: 3000,
-            position: 'top right',
-          });
+          this.notificationService.showNotification('Row deleted successfully', 'success');
           this.getDataSource();
         },
         error: (err) => {
-          notify({
-            message: 'Error deleting row',
-            type: 'error',
-            displayTime: 3000,
-            position: 'top right',
-          });
+          this.notificationService.showNotification('Error deleting row', 'error');
         },
       });
   }

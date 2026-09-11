@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, NgModule, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import notify from 'devextreme/ui/notify';
 import {
   DxButtonModule,
   DxDataGridComponent,
@@ -15,6 +14,7 @@ import {
   DxLoadPanelModule,
   DxTextBoxModule,
 } from 'devextreme-angular';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
@@ -71,7 +71,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     private masterService: MasterReportService,
     private service: ReportService,
     private route: ActivatedRoute,
-    private dataService: DataService,
+    private dataService: DataService, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -164,7 +164,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       },
       error: (error: any) => {
         this.hideLoading();
-        notify('Failed to load facility list', 'error', 2000);
+        this.notificationService.showNotification('Failed to load facility list', 'error');
       },
     });
   }
@@ -211,17 +211,13 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
 
                   resolve(data);
                 } else {
-                  notify('Failed to load Facility Multipliers', 'error', 2000);
+                  this.notificationService.showNotification('Failed to load Facility Multipliers', 'error');
                   reject('Failed to load Facility Multipliers');
                 }
               },
               error: (error) => {
                 this.hideLoading();
-                notify(
-                  'An error occurred while fetching Facility Multipliers',
-                  'error',
-                  2000,
-                );
+                this.notificationService.showNotification('An error occurred while fetching Facility Multipliers', 'error');
 
                 reject(error);
               },
@@ -243,13 +239,13 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
             this.historyPopupVisible = true;
             this.hideLoading();
           } else {
-            notify('Failed to load History', 'error', 2000);
+            this.notificationService.showNotification('Failed to load History', 'error');
             this.hideLoading();
           }
         },
         error: (error: any) => {
           this.hideLoading();
-          notify('An error occurred while fetching History', 'error', 2000);
+          this.notificationService.showNotification('An error occurred while fetching History', 'error');
         },
       });
   }
@@ -385,19 +381,15 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       next: (response: any) => {
         this.hideLoading();
         if (response.flag === '1' || response.flag === 'true') {
-          notify('Multiplier Master Saved Successfully', 'success', 2000);
+          this.notificationService.showNotification('Multiplier Master Saved Successfully', 'success');
           this.fetch_ADOC_Price_List();
         } else {
-          notify('Failed to save Multiplier Master', 'error', 2000);
+          this.notificationService.showNotification('Failed to save Multiplier Master', 'error');
         }
       },
       error: (error: any) => {
         this.hideLoading();
-        notify(
-          'An error occurred while saving Multiplier Master',
-          'error',
-          2000,
-        );
+        this.notificationService.showNotification('An error occurred while saving Multiplier Master', 'error');
       },
     });
   }

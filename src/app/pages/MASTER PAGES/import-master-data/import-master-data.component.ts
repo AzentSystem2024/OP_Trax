@@ -18,13 +18,13 @@ import {
   ImportMasterDataFormComponent,
   ImportMasterDataFormModule,
 } from '../../POP-UP_PAGES/import-master-data-form/import-master-data-form.component';
-import notify from 'devextreme/ui/notify';
 import { MasterReportService } from '../master-report.service';
 import {
   ViewImportedMasterDataFormComponent,
   ViewImportedMasterDataFormModule,
 } from '../../POP-UP_PAGES/view-imported-master-data-form/view-imported-master-data-form.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { DataSource } from 'devextreme/common/data';
 
@@ -75,7 +75,7 @@ export class ImportMasterDataComponent implements OnInit {
     private service: MasterReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.UserID = sessionStorage.getItem('UserID');
   }

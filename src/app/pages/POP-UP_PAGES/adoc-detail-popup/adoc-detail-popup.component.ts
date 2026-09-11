@@ -20,7 +20,6 @@ import {
 } from 'devextreme-angular';
 import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
 import { OperationReportService } from 'src/app/pages/OPERATION PAGES/operation-report.service';
-import notify from 'devextreme/ui/notify';
 import { Workbook } from 'exceljs';
 import { exportDataGrid } from 'devextreme/excel_exporter';
 import { saveAs } from 'file-saver';
@@ -28,6 +27,7 @@ import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import { AuthService, DataService } from 'src/app/services';
 import { firstValueFrom } from 'rxjs';
 import { AdocClassChangePopupModule } from '../adoc-class-change-popup/adoc-class-change-popup.component';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-adoc-detail-popup',
@@ -68,7 +68,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
     private operationService: OperationReportService,
     private masterService: MasterReportService,
     private dataService: DataService,
-    private authService: AuthService,
+    private authService: AuthService, private notificationService: NotificationService
   ) {
     this.initUserRole();
   }
@@ -131,13 +131,13 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
         } else {
           this.popupGridData = [];
           this.popupGrid?.instance.endCustomLoading();
-          notify('No data found', 'warning', 3000);
+          this.notificationService.showNotification('No data found', 'warning');
         }
       },
       error: (err: any) => {
         this.popupGrid?.instance.endCustomLoading();
         console.error(err);
-        notify('Error loading popup data', 'error', 3000);
+        this.notificationService.showNotification('Error loading popup data', 'error');
       },
     });
   }
@@ -171,13 +171,13 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       next: (res: any) => {
         if (res.flag === '1') {
           this.getClinicalDataPopupData();
-          notify('Grouper re-run successfully', 'success', 3000);
+          this.notificationService.showNotification('Grouper re-run successfully', 'success');
         }
         this.isReRunProcessing = false;
       },
       error: (err: any) => {
         console.error(err);
-        notify('Error re-running grouper', 'error', 3000);
+        this.notificationService.showNotification('Error re-running grouper', 'error');
         this.isReRunProcessing = false;
       },
     });
@@ -194,8 +194,8 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
 
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(text).then(
-        () => notify('Copied to clipboard', 'success', 2000),
-        () => notify('Failed to copy', 'error', 2000),
+        () => this.notificationService.showNotification('Copied to clipboard', 'success'),
+        () => this.notificationService.showNotification('Failed to copy', 'error'),
       );
     } else {
       // Fallback for insecure contexts (e.g. HTTP over local IP) or older browsers
@@ -210,12 +210,12 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       try {
         const successful = document.execCommand('copy');
         if (successful) {
-          notify('Copied to clipboard', 'success', 2000);
+          this.notificationService.showNotification('Copied to clipboard', 'success');
         } else {
-          notify('Failed to copy', 'error', 2000);
+          this.notificationService.showNotification('Failed to copy', 'error');
         }
       } catch (err) {
-        notify('Failed to copy', 'error', 2000);
+        this.notificationService.showNotification('Failed to copy', 'error');
       }
       textArea.remove();
     }
@@ -304,11 +304,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       }
     } else if (e.column.dataField === 'ADOCClass') {
       if (this.menuPrevilage && !this.menuPrevilage.CanEdit) {
-        notify(
-          'You do not have permission to edit this record.',
-          'warning',
-          3000,
-        );
+        this.notificationService.showNotification('You do not have permission to edit this record.', 'warning');
         return;
       }
 
@@ -316,20 +312,12 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       const notInBatch = Number(this.rowData?.XMLBatchID || 0) === 0;
 
       if (!isProcessed) {
-        notify(
-          'Cannot modify ADOC Class: Claim is not yet processed.',
-          'warning',
-          3000,
-        );
+        this.notificationService.showNotification('Cannot modify ADOC Class: Claim is not yet processed.', 'warning');
         return;
       }
 
       if (!notInBatch) {
-        notify(
-          'Cannot modify ADOC Class: Claim is already added to an XML Batch.',
-          'warning',
-          3000,
-        );
+        this.notificationService.showNotification('Cannot modify ADOC Class: Claim is already added to an XML Batch.', 'warning');
         return;
       }
 
@@ -347,16 +335,12 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
               this.selectedAdocClassData = res.data;
               this.showAdocClassEdit = true;
             } else {
-              notify('ADOC Classification details not found.', 'error', 2000);
+              this.notificationService.showNotification('ADOC Classification details not found.', 'error');
             }
           },
           error: () => {
             this.isPopupProcessing = false;
-            notify(
-              'Failed to load ADOC Classification details.',
-              'error',
-              2000,
-            );
+            this.notificationService.showNotification('Failed to load ADOC Classification details.', 'error');
           },
         });
       }

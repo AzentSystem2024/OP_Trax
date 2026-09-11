@@ -4,10 +4,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { DxButtonModule, DxToastModule } from 'devextreme-angular';
-import notify from 'devextreme/ui/notify';
-
 import { Task } from 'src/app/types/task';
 import { UserAvatarModule } from 'src/app/components/library/user-avatar/user-avatar.component';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'task-kanban-card',
@@ -17,14 +16,14 @@ import { UserAvatarModule } from 'src/app/components/library/user-avatar/user-av
 export class TaskKanbanCardComponent {
   @Input() task: Task;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private notificationService: NotificationService) {
   }
 
   getAvatarText = (name: string) => name.split(' ').map((name) => name[0]).join('');
 
   notify = (e) => {
     e.event.stopPropagation();
-    notify(`Edit '${this.task.text}' card event`);
+    this.notificationService.showNotification(`Edit '${this.task.text}' card event`, 'success');
   };
 
   navigateToDetails = () => {

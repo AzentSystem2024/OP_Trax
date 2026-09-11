@@ -16,7 +16,7 @@ import {
   DxValidatorModule,
   DxDateBoxModule
 } from 'devextreme-angular';
-import notify from 'devextreme/ui/notify';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
@@ -76,7 +76,7 @@ export class IcdAdocMappingComponent {
     private service: ReportService,
     private masterService: MasterReportService,
     private route: ActivatedRoute,
-    private dataService: DataService,
+    private dataService: DataService, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -165,14 +165,7 @@ export class IcdAdocMappingComponent {
     const result = validationEngine.validateGroup('icdAdocMappingValidation');
 
     if (!result.isValid) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'warning',
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
       return;
     }
 
@@ -190,14 +183,7 @@ export class IcdAdocMappingComponent {
           res &&
           (res.flag === '1' || res.status === 'success' || res === '1')
         ) {
-          notify(
-            {
-              message: 'ICD ADOC Mapping Added Successfully',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification('ICD ADOC Mapping Added Successfully', 'success');
 
           this.isAddPopupVisible = false;
 
@@ -210,25 +196,11 @@ export class IcdAdocMappingComponent {
 
           this.dataGrid.instance.refresh();
         } else {
-          notify(
-            {
-              message: res?.message || 'Save Failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification(res?.message || 'Save Failed', 'error');
         }
       },
       error: (err: any) => {
-        notify(
-          {
-            message: err?.message || 'Save Failed',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error',
-        );
+        this.notificationService.showNotification(err?.message || 'Save Failed', 'error');
       },
     });
   }
@@ -246,14 +218,7 @@ export class IcdAdocMappingComponent {
       !combinedData.ADOCClassID ||
       !combinedData.EffectFrom
     ) {
-      notify(
-        {
-          message: 'Please fill all required fields',
-          position: { at: 'top right', my: 'top right' },
-          displayTime: 1000,
-        },
-        'warning',
-      );
+      this.notificationService.showNotification('Please fill all required fields', 'warning');
 
       event.cancel = true;
       return;
@@ -274,37 +239,16 @@ export class IcdAdocMappingComponent {
           res &&
           (res.flag === '1' || res.status === 'success' || res === '1')
         ) {
-          notify(
-            {
-              message: 'Data Updated Successfully',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success',
-          );
+          this.notificationService.showNotification('Data Updated Successfully', 'success');
         } else {
-          notify(
-            {
-              message: res?.message || 'Your Data Not Saved',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification(res?.message || 'Your Data Not Saved', 'error');
         }
 
         event.component.cancelEditData();
         this.dataGrid.instance.refresh();
       },
       error: (err: any) => {
-        notify(
-          {
-            message: err?.message || 'Update Failed',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error',
-        );
+        this.notificationService.showNotification(err?.message || 'Update Failed', 'error');
         event.component.cancelEditData();
       },
     });
@@ -327,36 +271,15 @@ export class IcdAdocMappingComponent {
               res === '1' ||
               res.data === 'Deleted Successfully')
           ) {
-            notify(
-              {
-                message: 'Delete operation successful',
-                position: { at: 'top right', my: 'top right' },
-                displayTime: 500,
-              },
-              'success',
-            );
+            this.notificationService.showNotification('Delete operation successful', 'success');
           } else {
-            notify(
-              {
-                message: res?.message || 'Delete operation failed',
-                position: { at: 'top right', my: 'top right' },
-                displayTime: 500,
-              },
-              'error',
-            );
+            this.notificationService.showNotification(res?.message || 'Delete operation failed', 'error');
           }
           event.component.refresh();
           this.dataGrid.instance.refresh();
         },
         error: (err: any) => {
-          notify(
-            {
-              message: err?.message || 'Delete operation failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error',
-          );
+          this.notificationService.showNotification(err?.message || 'Delete operation failed', 'error');
           event.component.refresh();
         },
       });

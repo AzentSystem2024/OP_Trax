@@ -19,7 +19,6 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import notify from 'devextreme/ui/notify';
 import {
   DxTabPanelModule,
   DxCheckBoxModule,
@@ -55,6 +54,7 @@ import {
   ResetPasswordComponent,
   ResetPasswordModule,
 } from '../reset-password/reset-password.component';
+import { NotificationService } from "src/app/services/notification.service";
 
 @Component({
   selector: 'app-user-edit-form',
@@ -175,7 +175,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
 
   constructor(
     private service: MasterReportService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef, private notificationService: NotificationService
   ) {}
 
   onTabClick(event: any) {
@@ -856,34 +856,13 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     this.service.update_User_Data(this.newUserData).subscribe((res: any) => {
       try {
         if (res.message === 'Success') {
-          notify(
-            {
-              message: 'data updated successfully',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification('data updated successfully', 'success');
           this.close();
         } else {
-          notify(
-            {
-              message: 'An unexpected error occurred',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification('An unexpected error occurred', 'error');
         }
       } catch (error) {
-        notify(
-          {
-            message: 'update operation failed',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error'
-        );
+        this.notificationService.showNotification('update operation failed', 'error');
       }
     });
   }

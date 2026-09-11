@@ -19,10 +19,10 @@ import { FormPopupModule } from 'src/app/components';
 import { CptTypeNewFormModule } from '../../POP-UP_PAGES/cpt-type-new-form/cpt-type-new-form.component';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
-import notify from 'devextreme/ui/notify';
 import { CptTypeNewFormComponent } from '../../POP-UP_PAGES/cpt-type-new-form/cpt-type-new-form.component';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 @Component({
   selector: 'app-cpt-type',
@@ -67,7 +67,7 @@ export class CPTTypeComponent {
     private masterService: MasterReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -133,21 +133,9 @@ export class CPTTypeComponent {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `New Cpt Type "${CptTypeValue} ${DescriptionValue}" saved Successfully`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`New Cpt Type "${CptTypeValue} ${DescriptionValue}" saved Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
       });
   };
@@ -165,23 +153,9 @@ export class CPTTypeComponent {
     let SelectedRow = event.key;
     this.masterService.Remove_CPTType_Row_Data(SelectedRow.ID).subscribe(() => {
       try {
-        notify(
-          {
-            message: 'Delete operation successful',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'success'
-        );
+        this.notificationService.showNotification('Delete operation successful', 'success');
       } catch (error) {
-        notify(
-          {
-            message: 'Delete operation failed',
-            position: { at: 'top right', my: 'top right' },
-            displayTime: 500,
-          },
-          'error'
-        );
+        this.notificationService.showNotification('Delete operation failed', 'error');
       }
       event.component.refresh();
       this.dataGrid.instance.refresh();
@@ -202,23 +176,9 @@ export class CPTTypeComponent {
         if (data) {
           this.dataGrid.instance.refresh();
 
-          notify(
-            {
-              message: `New Cpt Type updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`New Cpt Type updated Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
         // event.component.refresh();
         event.component.cancelEditData(); // Close the popup

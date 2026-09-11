@@ -4,12 +4,12 @@ import { DxButtonModule, DxCheckBoxModule, DxFormComponent, DxFormModule, DxText
 import { FormTextboxModule, FormPhotoUploaderModule } from 'src/app/components';
 import { getSizeQualifier } from 'src/app/services/screen.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { DxSelectBoxModule } from 'devextreme-angular';
 import { DxTextBoxModule } from 'devextreme-angular/ui/text-box';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import validationEngine from 'devextreme/ui/validation_engine';
-import notify from 'devextreme/ui/notify';
 
 @Component({
   selector: 'sub-department-edit-form',
@@ -35,7 +35,7 @@ export class SubDepartmentEditFormComponent implements OnChanges {
   Denial_Category_DropDownData: any;
   getSizeQualifier = getSizeQualifier;
 
-  constructor(private service: MasterReportService) {
+  constructor(private service: MasterReportService, private notificationService: NotificationService) {
     this.getCostBucket_DropDown();
   }
 
@@ -102,10 +102,10 @@ proceedToUpdate() {
 
   this.service.updateSubDepartment(ID, SUB_DEPARTMENT, DEPARTMENT_ID, IS_INACTIVE).subscribe((res: any) => {
     if (res.flag == '1') {
-      notify({ message: 'Sub Department updated successfully!', type: 'success', position: { at: 'top center', my: 'top center' } });
+      this.notificationService.showNotification('Sub Department updated successfully!', 'success');
       this.formClosed.emit();
     } else {
-      notify({ message: 'Failed to update. Please try again.', type: 'error', position: { at: 'top center', my: 'top center' } });
+      this.notificationService.showNotification('Failed to update. Please try again.', 'error');
     }
   });
 }

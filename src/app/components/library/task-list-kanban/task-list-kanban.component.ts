@@ -5,14 +5,13 @@ import { CommonModule } from '@angular/common';
 import { DxButtonModule } from 'devextreme-angular/ui/button';
 import { DxScrollViewModule } from 'devextreme-angular/ui/scroll-view';
 import { DxSortableModule, DxSortableComponent } from 'devextreme-angular/ui/sortable';
-
-import notify from 'devextreme/ui/notify';
 import { DxSortableTypes } from 'devextreme-angular/ui/sortable';
 
 import { CardMenuModule } from 'src/app/components';
 import { Task } from 'src/app/types/task';
 import { TaskStatus, taskStatusList } from 'src/app/types/task';
 import { TaskKanbanCardModule } from '../task-kanban-card/task-kanban-card.component';
+import { NotificationService } from "src/app/services/notification.service";
 
 type Board = {
   name: TaskStatus
@@ -94,6 +93,9 @@ export class TaskListKanbanComponent implements OnChanges {
   addTask() {
     this.addTaskEvent.emit();
   }
+
+    constructor(private notificationService: NotificationService) {
+    }
 }
 
 @NgModule({

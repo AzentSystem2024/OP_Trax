@@ -9,10 +9,10 @@ import {
   DxFormComponent,
   DxDataGridComponent,
 } from 'devextreme-angular';
-import notify from 'devextreme/ui/notify';
 import DataSource from 'devextreme/data/data_source';
 import { MasterReportService } from '../master-report.service';
 import { ReportService } from 'src/app/services/Report-data.service';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 
 @Component({
@@ -68,7 +68,7 @@ export class IcdMasterComponent implements OnInit {
     private masterService: MasterReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private notificationService: NotificationService
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -108,23 +108,9 @@ export class IcdMasterComponent implements OnInit {
       .Remove_IcdMaster_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          notify(
-            {
-              message: 'Delete operation successful',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification('Delete operation successful', 'success');
         } catch (error) {
-          notify(
-            {
-              message: 'Delete operation failed',
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification('Delete operation failed', 'error');
         }
         e.component.refresh();
         if (this.dataGrid && this.dataGrid.instance) {
@@ -150,23 +136,9 @@ export class IcdMasterComponent implements OnInit {
           if (this.dataGrid && this.dataGrid.instance) {
             this.dataGrid.instance.refresh();
           }
-          notify(
-            {
-              message: `ICD Master updated Successfully`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'success'
-          );
+          this.notificationService.showNotification(`ICD Master updated Successfully`, 'success');
         } else {
-          notify(
-            {
-              message: `Your Data Not Saved`,
-              position: { at: 'top right', my: 'top right' },
-              displayTime: 500,
-            },
-            'error'
-          );
+          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
         e.component.cancelEditData(); // Close the popup
         if (this.dataGrid && this.dataGrid.instance) {
@@ -202,21 +174,9 @@ export class IcdMasterComponent implements OnInit {
             if (this.dataGrid && this.dataGrid.instance) {
                 this.dataGrid.instance.refresh();
             }
-            notify(
-              {
-                message: `New ICD Master "${ICDCode}" saved Successfully`,
-                position: { at: 'top right', my: 'top right' },
-              },
-              'success'
-            );
+            this.notificationService.showNotification(`New ICD Master "${ICDCode}" saved Successfully`, 'success');
           } else {
-            notify(
-              {
-                message: `Your Data Not Saved`,
-                position: { at: 'top right', my: 'top right' },
-              },
-              'error'
-            );
+            this.notificationService.showNotification(`Your Data Not Saved`, 'error');
           }
         });
       this.isAddPopupVisible = false;

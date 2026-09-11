@@ -21,12 +21,12 @@ import {
 import { FormTextboxModule, FormPhotoUploaderModule } from 'src/app/components';
 import { getSizeQualifier } from 'src/app/services/screen.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { DxSelectBoxModule } from 'devextreme-angular';
 import { DxTextBoxModule } from 'devextreme-angular/ui/text-box';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import validationEngine from 'devextreme/ui/validation_engine';
-import notify from 'devextreme/ui/notify';
 import { DxValidationGroupComponent } from 'devextreme-angular';
 
 @Component({
@@ -61,7 +61,7 @@ export class DepartmentNewFormComponent {
   OverheadCostCenterList: any;
 
   newDepartment = this.newDepartmentData;
-  constructor(private service: MasterReportService) {
+  constructor(private service: MasterReportService, private notificationService: NotificationService) {
     this.getCostBucket_DropDown();
   }
 
@@ -150,22 +150,14 @@ export class DepartmentNewFormComponent {
       )
       .subscribe((res: any) => {
         if (res.flag === '1') {
-          notify({
-            message: 'Department saved successfully!',
-            type: 'success',
-            position: { at: 'top center', my: 'top center' },
-          });
+          this.notificationService.showNotification('Department saved successfully!', 'success');
           this.newDepartmentData.DEPARTMENT = '';
           this.newDepartmentData.COST_BUCKET_ID = '';
           (this.newDepartment.OverheadAllocationType = 0),
             (this.newDepartment.OverheadAllocationDepartmentID = []);
           this.formClosed.emit();
         } else {
-          notify({
-            message: 'Failed to save department. Please try again.',
-            type: 'error',
-            position: { at: 'top center', my: 'top center' },
-          });
+          this.notificationService.showNotification('Failed to save department. Please try again.', 'error');
         }
       });
   }
