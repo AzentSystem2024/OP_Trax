@@ -13,12 +13,16 @@
       </div>
 
       <div class="header d-flex flex-column align-items-center text-center">
-        <div class="logo mb-1">
+        <div class="logo mb-1 d-flex align-items-end justify-content-center">
           <img
             src="../../../../assets/OPtrax Logo.png"
             alt="{{ title }}"
             height="50"
+            class="me-1"
           />
+          <span class="fw-bold versionText small" style="margin-bottom: -2px"
+            >V {{ version }}</span
+          >
         </div>
         <div class="description">{{ description }}</div>
       </div>

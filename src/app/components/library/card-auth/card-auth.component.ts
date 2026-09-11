@@ -1,22 +1,32 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, Input } from '@angular/core';
+import { Component, NgModule, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DxButtonModule } from 'devextreme-angular';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
+import { DataService } from 'src/app/services';
 
 @Component({
   selector: 'app-card-auth',
   templateUrl: './card-auth.component.html',
   styleUrls: ['./card-auth.component.scss'],
 })
-export class CardAuthComponent {
+export class CardAuthComponent implements OnInit {
   @Input()
   title!: string;
 
   @Input()
   description!: string;
 
-  constructor(private router: Router) {}
+  version: string = '';
+
+  constructor(
+    private router: Router,
+    private dataService: DataService,
+  ) {}
+
+  ngOnInit() {
+    this.version = this.dataService.get_version();
+  }
 
   get isResetPasswordPage(): boolean {
     return (

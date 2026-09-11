@@ -462,6 +462,7 @@ export class ExclusionInclusionComponent {
 
   refresh = () => {
     if (this.dataGrid && this.dataGrid.instance) {
+      this.dataGrid.instance.clearFilter();
       this.dataGrid.instance.refresh();
     }
   };
