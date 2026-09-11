@@ -304,7 +304,11 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       }
     } else if (e.column.dataField === 'ADOCClass') {
       if (this.menuPrevilage && !this.menuPrevilage.CanEdit) {
-        notify('You do not have permission to edit this record.', 'warning', 3000);
+        notify(
+          'You do not have permission to edit this record.',
+          'warning',
+          3000,
+        );
         return;
       }
 
