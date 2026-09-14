@@ -291,11 +291,6 @@ export class AuthGuardService implements CanActivate {
 
       // If user is restricted (userRoleId === 2), enforce strict page access
       if (userRoleId === 2) {
-        if (requestedPath === 'analytics-dashboard') {
-          this.router.navigate(['/Home'], { replaceUrl: true });
-          return false;
-        }
-
         const alwaysAllowed = ['home', 'change-password', 'about', ''];
         if (!alwaysAllowed.includes(requestedPath)) {
           const rawMenu = localStorage.getItem('sidemenuItems');

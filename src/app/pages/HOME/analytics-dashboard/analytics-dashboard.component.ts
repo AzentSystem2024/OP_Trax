@@ -66,17 +66,6 @@ export class AnalyticsDashboardComponent {
       this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
     });
     const logData = JSON.parse(localStorage.getItem('logData') || '{}');
-    const userRoleId = Number(
-      logData?.UserRoleID ??
-        logData?.userRoleID ??
-        logData?.UserRoleId ??
-        logData?.userRoleId
-    );
-    if (userRoleId === 2) {
-      this.router.navigate(['/Home'], { replaceUrl: true });
-      return;
-    }
-
     this.userID = sessionStorage.getItem('UserID');
     const lastProcessedYear = Number(logData?.LastProcessedYear || 0);
 

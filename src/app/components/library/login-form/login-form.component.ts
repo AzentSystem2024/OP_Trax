@@ -506,16 +506,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
           }
 
           // ====== Redirect logic (dashboard / home) ======
-          const logData =
-            this.authService.getUserData() ||
-            JSON.parse(localStorage.getItem('logData') || '{}');
-          const userRoleId = Number(
-            logData?.UserRoleID ??
-              logData?.userRoleID ??
-              logData?.UserRoleId ??
-              logData?.userRoleId
-          );
-          const targetUrl = userRoleId === 2 ? '/Home' : '/analytics-dashboard';
+          const targetUrl = '/analytics-dashboard';
 
           this.inactive.setUserlogginValue();
           this.sharedService.triggerLoadComponent(false);
@@ -525,16 +516,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
           this.notificationService.showNotification(response.message || 'Verification failed', 'error');
 
           // Still proceed with login flow
-          const logData =
-            this.authService.getUserData() ||
-            JSON.parse(localStorage.getItem('logData') || '{}');
-          const userRoleId = Number(
-            logData?.UserRoleID ??
-              logData?.userRoleID ??
-              logData?.UserRoleId ??
-              logData?.userRoleId
-          );
-          const targetUrl = userRoleId === 2 ? '/Home' : '/analytics-dashboard';
+          const targetUrl = '/analytics-dashboard';
 
           this.inactive.setUserlogginValue();
           this.sharedService.triggerLoadComponent(false);
