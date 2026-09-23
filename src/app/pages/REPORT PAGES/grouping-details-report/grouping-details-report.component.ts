@@ -113,6 +113,8 @@ export class GroupingDetailsReportComponent implements OnInit {
   cptCodes: string = '';
   receiverListDataSource: any;
   selectedReceiverID: any = '';
+  payerListDataSource: any;
+  selectedPayerID: any = '';
 
   //========Variables for Pagination ====================
   readonly allowedPageSizes: any = [10, 20, 'all'];
@@ -205,11 +207,18 @@ export class GroupingDetailsReportComponent implements OnInit {
     this.selectedYear = today.getFullYear();
     this.selectedmonth = today.getMonth();
     this.loadReceiverData();
+    this.loadPayerData();
   }
 
   loadReceiverData() {
     this.dataService.Get_GropDown('RECEIVER').subscribe((response: any) => {
       this.receiverListDataSource = response;
+    });
+  }
+
+  loadPayerData() {
+    this.dataService.Get_GropDown('Payer').subscribe((response: any) => {
+      this.payerListDataSource = response;
     });
   }
 
@@ -339,6 +348,7 @@ export class GroupingDetailsReportComponent implements OnInit {
       CPTCodes: this.cptCodes || '',
       ActivityWise: this.selectedReportType,
       ReceiverID: this.selectedReceiverID || '',
+      PayerID: this.selectedPayerID || '',
     };
 
     this.dataGrid.instance.beginCustomLoading('Loading...');
@@ -428,6 +438,29 @@ export class GroupingDetailsReportComponent implements OnInit {
     this.notificationService.showNotification('Data loading cancelled', 'warning');
   }
 
+  calculateCustomSummary = (options: any) => {
+    if (options.name === 'distinctClaimCount') {
+      if (options.summaryProcess === 'start') {
+        options.totalValue = new Set();
+      } else if (options.summaryProcess === 'calculate') {
+        const val =
+          options.value !== undefined && options.value !== null && options.value !== ''
+            ? options.value
+            : options.data?.ClaimNumber ??
+              options.data?.['Claim Number'] ??
+              options.data?.Claim_Number ??
+              options.data?.ClaimNo ??
+              options.data?.InvoiceNo ??
+              options.data?.['Invoice No'];
+        if (val !== undefined && val !== null && val !== '') {
+          options.totalValue.add(val);
+        }
+      } else if (options.summaryProcess === 'finalize') {
+        options.totalValue = options.totalValue ? options.totalValue.size : 0;
+      }
+    }
+  };
+
   generateSummaryColumns(reportColumns) {
     const decimalColumns = reportColumns.filter(
       (col) => col.Type && col.Type.toLowerCase() === 'decimal' && col.Summary,
@@ -437,8 +470,37 @@ export class GroupingDetailsReportComponent implements OnInit {
       (col) => col.Type && col.Type.toLowerCase() === 'int32' && col.Summary,
     );
 
+    // Find the claim number / encounter column in report columns
+    const claimColumn = reportColumns.find(
+      (col) =>
+        col.Name &&
+        /^(claim|invoice)/i.test(col.Name.replace(/[\s_-]/g, '')),
+    );
+    const claimColName = claimColumn?.Name || 'ClaimNumber';
+
+    const distinctClaimSummaryTotal = {
+      name: 'distinctClaimCount',
+      column: claimColName,
+      showInColumn: claimColName,
+      summaryType: 'custom',
+      displayFormat: 'Encounters: {0}',
+      alignByColumn: true,
+      showInGroupFooter: false,
+    };
+
+    const distinctClaimSummaryGroup = {
+      name: 'distinctClaimCount',
+      column: claimColName,
+      showInColumn: claimColName,
+      summaryType: 'custom',
+      displayFormat: 'Encounters: {0}',
+      alignByColumn: true,
+      showInGroupFooter: true,
+    };
+
     return {
       totalItems: [
+        distinctClaimSummaryTotal,
         ...decimalColumns.map((col) =>
           this.createSummaryItem(col, false, 'sum', 'decimal'),
         ),
@@ -447,6 +509,7 @@ export class GroupingDetailsReportComponent implements OnInit {
         ),
       ],
       groupItems: [
+        distinctClaimSummaryGroup,
         ...decimalColumns.map((col) =>
           this.createSummaryItem(col, true, 'sum', 'decimal'),
         ),
@@ -454,6 +517,7 @@ export class GroupingDetailsReportComponent implements OnInit {
           this.createSummaryItem(col, true, 'sum', 'count'),
         ),
       ],
+      calculateCustomSummary: this.calculateCustomSummary,
     };
   }
 
@@ -624,10 +688,6 @@ export class GroupingDetailsReportComponent implements OnInit {
 
   // ================Exporting Function===================
   onExporting(event: any) {
-    if (this.userRoleId == 2) {
-      this.notificationService.showNotification('Export is not permitted for your role.', 'warning');
-      return;
-    }
     const fileName = 'ADOC Grouping Details';
     this.service.exportDataGrid(event, fileName);
   }

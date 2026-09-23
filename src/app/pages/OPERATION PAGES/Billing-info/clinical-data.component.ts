@@ -100,6 +100,9 @@ export class ClinicalDataComponent implements OnInit {
   receiverListDataSource: any;
   selectedReceiverID: any = '';
 
+  payerListDataSource: any;
+  selectedPayerID: any = '';
+
   selectedmonth: any = '';
   selectedYear: any = null;
   minDate: Date;
@@ -146,6 +149,7 @@ export class ClinicalDataComponent implements OnInit {
     try {
       await this.loadFacilityData();
       this.loadReceiverData();
+      this.loadPayerData();
       this.initializeDefaults();
       this.isFilterRowVisible = false;
     } catch (error) {
@@ -234,6 +238,12 @@ export class ClinicalDataComponent implements OnInit {
     });
   }
 
+  loadPayerData() {
+    this.dataService.Get_GropDown('Payer').subscribe((response: any) => {
+      this.payerListDataSource = response;
+    });
+  }
+
   // ================= load grid data by using filter values ==============
   onApplyFilter() {
     if (this.isLookupLoading) {
@@ -253,6 +263,7 @@ export class ClinicalDataComponent implements OnInit {
       DateTo: formatDate(this.toDate),
       CPTCodes: this.cptCodes || '',
       ReceiverID: this.selectedReceiverID || '',
+      PayerID: this.selectedPayerID || '',
     };
 
     this.dataSource = new DataSource<any>({

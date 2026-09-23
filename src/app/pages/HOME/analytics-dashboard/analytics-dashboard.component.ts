@@ -41,6 +41,7 @@ export class AnalyticsDashboardComponent {
   MonthlyTrend: any;
 
   loadingVisible = false;
+  loadingMessage = 'Loading...';
 
   selectedmonth: any = '';
   selectedYear: any = null;
@@ -52,6 +53,10 @@ export class AnalyticsDashboardComponent {
   userID: any;
   facilityData: any;
   selectedFacilityIDs: any[] = [];
+  payerDataSource: any[] = [];
+  selectedPayer: any = null;
+  receiverDataSource: any[] = [];
+  selectedReceiver: any = null;
   menuPrevilage: any;
 
   constructor(
@@ -93,10 +98,35 @@ export class AnalyticsDashboardComponent {
     }
     //=============month field datasource============
     this.monthDataSource = this.service.getMonths();
+    this.getPayerDropdown();
+    this.getReceiverDropdown();
     this.getUserFacilityData();
   }
 
+  getPayerDropdown() {
+    this.dataService.Get_GropDown('Payer').subscribe({
+      next: (res: any) => {
+        this.payerDataSource = res || [];
+      },
+      error: (err: any) => {
+        console.error('Failed to load Payer dropdown', err);
+      },
+    });
+  }
+
+  getReceiverDropdown() {
+    this.dataService.Get_GropDown('RECEIVER').subscribe({
+      next: (res: any) => {
+        this.receiverDataSource = res || [];
+      },
+      error: (err: any) => {
+        console.error('Failed to load Receiver dropdown', err);
+      },
+    });
+  }
+
   getUserFacilityData() {
+    this.loadingMessage = 'Loading...';
     this.loadingVisible = true;
     this.masterService
       .Get_User_Facility_List_Data(this.userID)
@@ -117,6 +147,26 @@ export class AnalyticsDashboardComponent {
   // dispaly Facility for dropdown
   displayFacility = (item: any): string => {
     return item ? `${item.FacilityLicense} - ${item.FacilityName}` : '';
+  };
+
+  // display Receiver for dropdown
+  displayReceiver = (item: any): string => {
+    if (!item) return '';
+    if (typeof item === 'string') return item;
+    if (item.CODE && item.DESCRIPTION && item.CODE !== item.DESCRIPTION) {
+      return `${item.CODE} - ${item.DESCRIPTION}`;
+    }
+    return item.DESCRIPTION || item.Name || item.CODE || item.ID || '';
+  };
+
+  // display Payer for dropdown
+  displayPayer = (item: any): string => {
+    if (!item) return '';
+    if (typeof item === 'string') return item;
+    if (item.CODE && item.DESCRIPTION && item.CODE !== item.DESCRIPTION) {
+      return `${item.CODE} - ${item.DESCRIPTION}`;
+    }
+    return item.DESCRIPTION || item.Name || item.CODE || item.ID || '';
   };
 
   //================ Year value change ===================
@@ -175,11 +225,14 @@ export class AnalyticsDashboardComponent {
       return;
     }
 
+    this.loadingMessage = 'Loading...';
     this.loadingVisible = true;
     const inputData = {
       FacilityID: this.selectedFacilityIDs.join(','),
       DateFrom: this.formatDate(this.fromDate),
       DateTo: this.formatDate(this.toDate),
+      PayerID: this.selectedPayer || '',
+      ReceiverID: this.selectedReceiver || '',
     };
     this.dataService.fetch_chart_data_List(inputData).subscribe({
       next: (res: any) => {
@@ -276,23 +329,35 @@ export class AnalyticsDashboardComponent {
 
   customizeSpecialityTooltip = (arg: any) => {
     const data = arg.point?.data;
+    const specialityName = data?.SpecialityName || arg.argument || '';
+    const cptVal = Number(data?.CPTRevenue || 0).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    const adocVal = Number(data?.ADOCRevenue || 0).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    const impactVal = Number(data?.ImpactValue || 0);
+    const impactValStr =
+      (impactVal > 0 ? '+' : '') +
+      impactVal.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    const impactPct = Number(data?.ImpactPercent || 0);
+    const impactPctStr =
+      (impactPct > 0 ? '+' : '') + impactPct.toFixed(2) + '%';
 
-    let html = `
+    const html = `
     <div style="padding:6px;min-width:180px">
-      <div><b>${arg.argument}</b></div>
+      <div><b>${specialityName}</b></div>
       <hr style="margin:4px 0">
-      <div>Specialty: <b>${data?.SpecialityName}</b></div>
-      <div>Series: <b>${arg.seriesName}</b></div>
-      <div>Value: <b>${Number(arg.value).toLocaleString()}</b></div>
-  `;
-
-    if (arg.seriesName === 'ADOC Revenue') {
-      html += `
-      <div>Impact : <b>${Number(data?.ImpactPercent || 0).toFixed(2)}%</b></div>
+      <div>CPT Value : <b>${cptVal}</b></div>
+      <div>ADOC Value : <b>${adocVal}</b></div>
+      <div>Impact : <b>${impactValStr} (${impactPctStr})</b></div>
+    </div>
     `;
-    }
-
-    html += `</div>`;
 
     return { html };
   };
@@ -329,6 +394,7 @@ export class AnalyticsDashboardComponent {
 
   //==================== Export to PDF ====================
   export() {
+    this.loadingMessage = 'Exporting...';
     this.loadingVisible = true;
 
     const elements: HTMLElement[] = [];
