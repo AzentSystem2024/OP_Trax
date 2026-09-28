@@ -26,7 +26,7 @@
           <div class="form-column" style="flex: 2">
             <dx-text-box
               [(value)]="newUserData.UserName"
-              label="User Name" [tabIndex]="1"
+              label="User Name *" [tabIndex]="1"
               hint="User Name"
               [readOnly]="newUserData.UserName==='admin'"
             >
@@ -81,7 +81,7 @@
 
             <div style="display: flex">
               <dx-select-box
-                label="Mobile" [tabIndex]="7"
+                label="Mobile *" [tabIndex]="7"
                 [searchEnabled]="true"
                 [acceptCustomValue]="false"
                 [(value)]="newUserData.countryCode"
@@ -112,7 +112,7 @@
               </dx-select-box>
 
               <dx-text-box
-                label="No." [tabIndex]="8"
+                label="No. *" [tabIndex]="8"
                 [(value)]="newUserData.Mobile"
                 [width]="'100%'"
                 style="margin-left: 10px"
@@ -136,7 +136,7 @@
           </div>
           <div class="form-column" style="flex: 2">
             <dx-text-box
-              label="Login Name" [tabIndex]="2"
+              label="Login Name *" [tabIndex]="2"
               [(value)]="newUserData.LoginName"
               hint="Login Name"
               (input)="onLoginNameInput($event)"
@@ -164,7 +164,7 @@
               </dx-validator>
             </dx-text-box>
             <dx-select-box
-              label="User Role" [tabIndex]="4"
+              label="User Role *" [tabIndex]="4"
               [(value)]="newUserData.UserRoleID"
               [items]="userRole"
               displayExpr="DESCRIPTION"
@@ -191,7 +191,7 @@
             ></dx-date-box>
 
             <dx-text-box
-              label="Email" [tabIndex]="9"
+              label="Email *" [tabIndex]="9"
               [(value)]="newUserData.Email"
               hint="Email"
               (input)="onEmailInput($event)"
