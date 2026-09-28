@@ -7,7 +7,7 @@ import { formatDate } from '@angular/common';
 import { ConfigService } from './config.service';
 
 const Token = JSON.parse(localStorage.getItem('Token') || '{}');
-const version = '2.02';
+const version = '2.04';
 
 @Injectable({
   providedIn: 'root',

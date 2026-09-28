@@ -10,10 +10,10 @@
           itemType="group"
           cssClass="form-group"
           class="rowGroup"
-          [colCount]="10"
-          [colCountByScreen]="{ xs: 10, sm: 10, md: 10, lg: 10 }"
+          [colCount]="12"
+          [colCountByScreen]="{ xs: 12, sm: 12, md: 12, lg: 12 }"
         >
-          <dxi-item [colSpan]="4">
+          <dxi-item [colSpan]="3">
             <dx-drop-down-box
               label="Facility"
               labelMode="floating"
@@ -57,7 +57,7 @@
             </dx-drop-down-box>
           </dxi-item>
 
-          <dxi-item [colSpan]="4">
+          <dxi-item [colSpan]="3">
             <dx-text-box
               label="CPT Codes"
               labelMode="floating"
@@ -65,13 +65,27 @@
             ></dx-text-box>
           </dxi-item>
 
-          <dxi-item [colSpan]="2">
+          <dxi-item [colSpan]="3">
             <dx-select-box
               label="Receiver ID"
               labelMode="floating"
               labelLocation="left"
               [(value)]="selectedReceiverID"
               [dataSource]="receiverListDataSource"
+              displayExpr="DESCRIPTION"
+              valueExpr="DESCRIPTION"
+              [showClearButton]="true"
+              [searchEnabled]="true"
+            ></dx-select-box>
+          </dxi-item>
+
+          <dxi-item [colSpan]="3">
+            <dx-select-box
+              label="Payer ID"
+              labelMode="floating"
+              labelLocation="left"
+              [(value)]="selectedPayerID"
+              [dataSource]="payerListDataSource"
               displayExpr="DESCRIPTION"
               valueExpr="DESCRIPTION"
               [showClearButton]="true"
@@ -346,6 +360,13 @@
         caption="Encounter Type"
         [allowEditing]="false"
       ></dxi-column>
+
+      <dxi-column
+        dataField="PayerID"
+        caption="Payer"
+        [allowEditing]="false"
+      ></dxi-column>
+
       <dxi-column
         dataField="ReceiverID"
         caption="Receiver"

@@ -3,127 +3,180 @@
     <div
       class="topDiv d-flex flex-column w-100 sticky-top firstChartDiv ExportDiv1"
     >
-      <div class="d-flex align-items-center ps-3 pt-2" style="font-size: 20px">
+      <div
+        class="d-flex align-items-center justify-content-between px-3 pt-2 pb-1"
+        style="font-size: 20px"
+      >
         <div class="grid-header">Financial Impact Analyzer</div>
       </div>
 
-      <div
-        class="d-flex align-items-center flex-wrap h-100 ms-3 mt-2 mb-2 me-2 gap-2"
-      >
-        <dx-drop-down-box
-          #facilityDropDown
-          labelMode="floating"
-          label="Facility"
-          [(value)]="selectedFacilityIDs"
-          valueExpr="FacilityLicense"
-          [displayExpr]="displayFacility"
-          [showClearButton]="true"
-          [dataSource]="facilityData"
-          width="300"
-          [dropDownOptions]="{ width: 480 }"
-        >
-          <div *dxTemplate="let data of 'content'">
-            <dx-data-grid
+      <!-- Professional 2-Row Filter Bar -->
+      <div class="filters-wrapper px-3 pb-2 pt-1">
+        <!-- Row 1: Primary Entity Filters -->
+        <div class="row g-2 align-items-center mb-2">
+          <div class="col-12 col-sm-6 col-lg-3">
+            <dx-drop-down-box
+              #facilityDropDown
+              labelMode="floating"
+              label="Facility"
+              [(value)]="selectedFacilityIDs"
+              valueExpr="FacilityLicense"
+              [displayExpr]="displayFacility"
+              [showClearButton]="true"
               [dataSource]="facilityData"
-              [columns]="[
-                {
-                  dataField: 'FacilityLicense',
-                  caption: 'License',
-                  width: 100,
-                },
-                { dataField: 'FacilityName', caption: 'Name' },
-                { dataField: 'FacilityRegion', caption: 'Region', width: 110 },
-              ]"
-              keyExpr="FacilityLicense"
-              [selection]="{ mode: 'multiple' }"
-              [hoverStateEnabled]="true"
-              [paging]="{ enabled: true, pageSize: 10 }"
-              [filterRow]="{ visible: true }"
-              [headerFilter]="{ visible: true }"
-              [scrolling]="{ mode: 'virtual' }"
-              [height]="facilityData?.length < 5 ? 'auto' : '250px'"
-              [(selectedRowKeys)]="selectedFacilityIDs"
+              width="100%"
+              [dropDownOptions]="{ width: 480 }"
             >
-            </dx-data-grid>
+              <div *dxTemplate="let data of 'content'">
+                <dx-data-grid
+                  [dataSource]="facilityData"
+                  [columns]="[
+                    {
+                      dataField: 'FacilityLicense',
+                      caption: 'License',
+                      width: 100,
+                    },
+                    { dataField: 'FacilityName', caption: 'Name' },
+                    { dataField: 'FacilityRegion', caption: 'Region', width: 110 },
+                  ]"
+                  keyExpr="FacilityLicense"
+                  [selection]="{ mode: 'multiple' }"
+                  [hoverStateEnabled]="true"
+                  [paging]="{ enabled: true, pageSize: 10 }"
+                  [filterRow]="{ visible: true }"
+                  [headerFilter]="{ visible: true }"
+                  [scrolling]="{ mode: 'virtual' }"
+                  [height]="facilityData?.length < 5 ? 'auto' : '250px'"
+                  [(selectedRowKeys)]="selectedFacilityIDs"
+                >
+                </dx-data-grid>
+              </div>
+            </dx-drop-down-box>
           </div>
-        </dx-drop-down-box>
 
-        <dx-select-box
-          labelMode="floating"
-          labelLocation="left"
-          label="Search On"
-          [items]="['Encounter End Date']"
-          value="Encounter End Date"
-          width="200"
-        ></dx-select-box>
+          <div class="col-12 col-sm-6 col-lg-3">
+            <dx-select-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Receiver"
+              [dataSource]="receiverDataSource"
+              [displayExpr]="displayReceiver"
+              valueExpr="DESCRIPTION"
+              [(value)]="selectedReceiver"
+              [showClearButton]="true"
+              [searchEnabled]="true"
+              placeholder="Receiver"
+              width="100%"
+            ></dx-select-box>
+          </div>
 
-        <dx-select-box
-          labelMode="floating"
-          labelLocation="left"
-          label="Year"
-          [(value)]="selectedYear"
-          [dataSource]="years"
-          (onValueChanged)="onYearChanged($event)"
-          placeholder="Year"
-          width="100"
-        ></dx-select-box>
+          <div class="col-12 col-sm-6 col-lg-3">
+            <dx-select-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Payer"
+              [dataSource]="payerDataSource"
+              [displayExpr]="displayPayer"
+              valueExpr="DESCRIPTION"
+              [(value)]="selectedPayer"
+              [showClearButton]="true"
+              [searchEnabled]="true"
+              placeholder="Payer"
+              width="100%"
+            ></dx-select-box>
+          </div>
 
-        <dx-select-box
-          labelMode="floating"
-          labelLocation="left"
-          label="month"
-          [dataSource]="monthDataSource"
-          displayExpr="name"
-          valueExpr="value"
-          [(value)]="selectedmonth"
-          (onValueChanged)="onMonthValueChanged($event)"
-          width="100"
-        >
-        </dx-select-box>
+          <div class="col-12 col-sm-6 col-lg-3">
+            <dx-select-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Search On"
+              [items]="['Encounter End Date']"
+              value="Encounter End Date"
+              width="100%"
+            ></dx-select-box>
+          </div>
+        </div>
 
-        <dx-date-box
-          labelMode="floating"
-          labelLocation="left"
-          label="From Date"
-          [min]="minDate"
-          [max]="maxDate"
-          [(value)]="fromDate"
-          [displayFormat]="'dd/MM/yyyy'"
-          width="120"
-        ></dx-date-box>
+        <!-- Row 2: Date & Period Filters + Action Buttons -->
+        <div class="row g-2 align-items-center">
+          <div class="col-6 col-sm-3 col-lg-2">
+            <dx-select-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Year"
+              [(value)]="selectedYear"
+              [dataSource]="years"
+              (onValueChanged)="onYearChanged($event)"
+              placeholder="Year"
+              width="100%"
+            ></dx-select-box>
+          </div>
 
-        <dx-date-box
-          labelMode="floating"
-          labelLocation="left"
-          label="To Date"
-          [min]="minDate"
-          [max]="maxDate"
-          [(value)]="toDate"
-          [displayFormat]="'dd/MM/yyyy'"
-          width="120"
-        ></dx-date-box>
+          <div class="col-6 col-sm-3 col-lg-2">
+            <dx-select-box
+              labelMode="floating"
+              labelLocation="left"
+              label="Month"
+              [dataSource]="monthDataSource"
+              displayExpr="name"
+              valueExpr="value"
+              [(value)]="selectedmonth"
+              (onValueChanged)="onMonthValueChanged($event)"
+              placeholder="Month"
+              width="100%"
+            >
+            </dx-select-box>
+          </div>
 
-        <dx-button
-          class="mt-2 ms-2"
-          [width]="'auto'"
-          icon="refresh"
-          hint="Apply"
-          type="default"
-          stylingMode="contained"
-          (onClick)="loadChartData()"
-        >
-        </dx-button>
+          <div class="col-6 col-sm-3 col-lg-2">
+            <dx-date-box
+              labelMode="floating"
+              labelLocation="left"
+              label="From Date"
+              [min]="minDate"
+              [max]="maxDate"
+              [(value)]="fromDate"
+              [displayFormat]="'dd/MM/yyyy'"
+              width="100%"
+            ></dx-date-box>
+          </div>
 
-        <dx-button
-          class="mt-2 ms-2"
-          icon="export"
-          hint="Export To PDF"
-          type="default"
-          [width]="'auto'"
-          stylingMode="contained"
-          (onClick)="export()"
-        >
-        </dx-button>
+          <div class="col-6 col-sm-3 col-lg-2">
+            <dx-date-box
+              labelMode="floating"
+              labelLocation="left"
+              label="To Date"
+              [min]="minDate"
+              [max]="maxDate"
+              [(value)]="toDate"
+              [displayFormat]="'dd/MM/yyyy'"
+              width="100%"
+            ></dx-date-box>
+          </div>
+
+          <div class="col-12 col-sm-12 col-lg-4 d-flex justify-content-end align-items-center gap-2">
+            <dx-button
+              [width]="'auto'"
+              icon="refresh"
+              hint="Apply"
+              type="default"
+              stylingMode="contained"
+              (onClick)="loadChartData()"
+            >
+            </dx-button>
+
+            <dx-button
+              icon="export"
+              hint="Export To PDF"
+              type="default"
+              [width]="'auto'"
+              stylingMode="contained"
+              (onClick)="export()"
+            >
+            </dx-button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -174,7 +227,7 @@
             <!-- CPT Revenue -->
             <dxi-series
               valueField="CPTRevenue"
-              name="CPT Revenue"
+              name="CPT"
               type="bar"
               color="rgb(30, 58, 138)"
               axis="revenueAxis"
@@ -242,46 +295,40 @@
             <dxo-header-filter [visible]="false"></dxo-header-filter>
             <dxo-filter-row [visible]="false"></dxo-filter-row>
 
-            <dxi-column dataField="CPT" caption="CPT" alignment="left">
+            <dxi-column dataField="CPT" caption="CPT" alignment="left" width="60">
             </dxi-column>
 
             <dxi-column
               dataField="Description"
               caption="Description"
-              width="120"
-            >
-            </dxi-column>
-
-            <!-- Series Badge -->
-            <dxi-column
-              dataField="Series"
-              caption="Series"
-              cellTemplate="seriesTemplate"
-              width="90"
-              alignment="center"
+              cellTemplate="descriptionTemplate"
+              minWidth="95"
             >
             </dxi-column>
 
             <dxi-column
               dataField="Volume"
-              caption="Volume"
+              caption="Encounters"
               alignment="center"
-              width="90"
+              width="82"
             >
             </dxi-column>
 
             <dxi-column
               dataField="CPTValue"
-              caption="CPT Value"
-              format="currency"
+              caption="CPT"
+              alignment="right"
               cellTemplate="cptValueTemplate"
+              width="70"
             >
             </dxi-column>
 
             <dxi-column
               dataField="ADOCValue"
-              caption="ADOC Value"
+              caption="ADOC"
+              alignment="right"
               cellTemplate="adocValueTemplate"
+              width="65"
             >
             </dxi-column>
 
@@ -289,19 +336,28 @@
             <dxi-column
               dataField="ImpactValue"
               caption="Impact"
+              alignment="right"
               cellTemplate="impactTemplate"
+              minWidth="135"
             >
             </dxi-column>
 
-            <!-- Series Badge -->
-            <div *dxTemplate="let cell of 'seriesTemplate'">
+            <!-- Description with Series Badge -->
+            <div
+              *dxTemplate="let cell of 'descriptionTemplate'"
+              class="d-flex align-items-center gap-1"
+            >
+              <span class="text-truncate" [title]="cell.value">{{
+                cell.value
+              }}</span>
               <span
+                *ngIf="cell.data?.Series"
                 class="series-badge"
                 [ngClass]="{
                   'series-c': cell.data.Series === 'C',
                   'series-p': cell.data.Series === 'P',
                   'series-s': cell.data.Series === 'S',
-                  'series-d': cell.data.Series === 'D',
+                  'series-d': cell.data.Series === 'D'
                 }"
               >
                 {{ cell.data.Series }}
@@ -327,8 +383,19 @@
                   'impact-zero': cell.value === 0,
                 }"
               >
-                {{ cell.value > 0 ? "+" : "" }}
-                {{ cell.value | number: "1.2-2" }}
+                {{ cell.value > 0 ? "+" : "" }}{{ cell.value | number: "1.2-2" }}
+                <ng-container
+                  *ngIf="
+                    cell.data?.ImpactPercent !== undefined &&
+                    cell.data?.ImpactPercent !== null
+                  "
+                >
+                  <span class="impact-percent">
+                    ({{ cell.data.ImpactPercent > 0 ? "+" : "" }}{{
+                      cell.data.ImpactPercent | number: "1.2-2"
+                    }}%)
+                  </span>
+                </ng-container>
               </span>
             </div>
 
@@ -356,8 +423,8 @@
             <dxo-scrolling mode="virtual"></dxo-scrolling>
             <dxi-column
               dataField="Description"
-              caption="Description"
-              width="130"
+              caption="Speciality"
+              width="140"
             >
             </dxi-column>
 
@@ -365,24 +432,34 @@
               dataField="Encounters"
               caption="Encounters"
               alignment="center"
+              width="82"
             >
             </dxi-column>
 
             <dxi-column
               dataField="CPTRevenue"
-              caption="CPT Revenue"
+              caption="CPT"
               alignment="right"
               cellTemplate="cptRevenueTemplate"
-              width="120"
+              width="78"
             >
             </dxi-column>
 
             <dxi-column
               dataField="ADOCRevenue"
-              caption="ADOC Revenue"
+              caption="ADOC"
               alignment="right"
               cellTemplate="adocRevenueTemplate"
-              width="120"
+              width="72"
+            >
+            </dxi-column>
+
+            <dxi-column
+              dataField="ExclusionAmount"
+              caption="Exclusion"
+              alignment="right"
+              cellTemplate="excTemplate"
+              width="72"
             >
             </dxi-column>
 
@@ -391,6 +468,7 @@
               caption="Impact"
               alignment="right"
               cellTemplate="impactTemplate"
+              minWidth="135"
             >
             </dxi-column>
 
@@ -403,6 +481,12 @@
             <div *dxTemplate="let cell of 'adocRevenueTemplate'">
               {{ cell.value | number: "1.2-2" }}
             </div>
+            
+            <!-- Exc Amount -->
+
+            <div *dxTemplate="let cell of 'excTemplate'">
+              {{ cell.value | number: "1.2-2" }}
+            </div>
 
             <!-- Impact -->
             <div *dxTemplate="let cell of 'impactTemplate'">
@@ -413,8 +497,19 @@
                   'impact-zero': cell.value === 0,
                 }"
               >
-                {{ cell.value > 0 ? "+" : "" }}
-                {{ cell.value | number: "1.2-2" }}
+                {{ cell.value > 0 ? "+" : "" }}{{ cell.value | number: "1.2-2" }}
+                <ng-container
+                  *ngIf="
+                    cell.data?.ImpactPercent !== undefined &&
+                    cell.data?.ImpactPercent !== null
+                  "
+                >
+                  <span class="impact-percent">
+                    ({{ cell.data.ImpactPercent > 0 ? "+" : "" }}{{
+                      cell.data.ImpactPercent | number: "1.2-2"
+                    }}%)
+                  </span>
+                </ng-container>
               </span>
             </div>
           </dx-data-grid>
@@ -479,6 +574,6 @@
   [showIndicator]="true"
   [showPane]="true"
   [shading]="true"
-  [message]="'Loading...'"
+  [message]="loadingMessage"
 >
 </dx-load-panel>

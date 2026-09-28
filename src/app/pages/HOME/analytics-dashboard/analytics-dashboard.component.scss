@@ -40,29 +40,38 @@
   background: #fff;
   border-radius: 8px;
   overflow: hidden;
-}
 
-.impact-grid .dx-header-row {
-  background: #173d68;
-  color: #fff;
-  font-weight: 600;
-}
+  .dx-header-row {
+    background: #173d68;
+    color: #fff;
+    font-weight: 600;
 
-.impact-grid .dx-header-row td {
-  background: #173d68 !important;
-  color: #fff !important;
-  border: none !important;
+    td {
+      background: #173d68 !important;
+      color: #fff !important;
+      border: none !important;
+      padding: 6px 8px !important;
+      font-size: 12px;
+    }
+  }
+
+  .dx-data-row td {
+    padding: 6px 8px !important;
+    font-size: 12px;
+  }
 }
 
 .series-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .series-c {
@@ -86,17 +95,33 @@
 }
 
 .impact-positive {
-  color: #16a34a;
-  font-weight: 600;
+  color: #15803d;
+  font-weight: 500;
+
+  .impact-percent {
+    font-size: 11.5px;
+    font-weight: 600;
+  }
 }
 
 .impact-negative {
-  color: #dc2626;
-  font-weight: 600;
+  color: #b91c1c;
+  font-weight: 500;
+
+  .impact-percent {
+    font-size: 11.5px;
+    font-weight: 600;
+  }
 }
 
 .impact-zero {
   color: #64748b;
+  font-weight: 500;
+
+  .impact-percent {
+    font-size: 11.5px;
+    font-weight: 600;
+  }
 }
 
 .datagrid-title {
@@ -107,9 +132,18 @@
   cursor: default;
   padding-bottom: 5px;
 }
-::ng-deep .topDiv .d-flex .dx-button.dx-button-default {
+::ng-deep .topDiv .dx-button.dx-button-default {
   border-radius: 8px !important;
   background-color: teal !important;
-  padding: 4px 10px !important;
+  padding: 4px 12px !important;
   color: #fff !important;
+  height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease-in-out;
+}
+
+::ng-deep .topDiv .dx-button.dx-button-default:hover {
+  background-color: #006666 !important;
 }
