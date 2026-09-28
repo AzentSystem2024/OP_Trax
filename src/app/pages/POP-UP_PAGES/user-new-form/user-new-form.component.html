@@ -25,7 +25,7 @@
         <div class="form-column" style="flex: 2">
           <dx-text-box
             [(value)]="newUserData.UserName"
-            label="User Name"
+            label="User Name" [tabIndex]="1"
             hint="User Name"
             (input)="onUserNameInput($event)"
           >
@@ -39,7 +39,7 @@
 
           <div style="position: relative; display: flex">
             <dx-text-box
-              label="Password"
+              label="Password" [tabIndex]="3"
               [(value)]="newUserData.Password"
               [readOnly]="true"
               [(value)]="generatedPassword"
@@ -97,7 +97,7 @@
           </div>
 
           <dx-select-box
-            label="Gender"
+            label="Gender" [tabIndex]="5"
             [(value)]="newUserData.GenderID"
             [items]="gender"
             displayExpr="DESCRIPTION"
@@ -109,7 +109,7 @@
 
           <div style="display: flex">
             <dx-select-box
-              label="Mobile"
+              label="Mobile" [tabIndex]="7"
               [searchEnabled]="true"
               [acceptCustomValue]="false"
               [(value)]="newUserData.countryCode"
@@ -140,7 +140,7 @@
             </dx-select-box>
 
             <dx-text-box
-              label="No."
+              label="No." [tabIndex]="8"
               [(value)]="newUserData.Mobile"
               [width]="'100%'"
               style="margin-left: 10px"
@@ -165,7 +165,7 @@
 
         <div class="form-column" style="flex: 2">
           <dx-text-box
-            label="Login Name"
+            label="Login Name" [tabIndex]="2"
             [(value)]="newUserData.LoginName"
             hint="Login Name"
             (input)="onLoginNameInput($event)"
@@ -194,7 +194,7 @@
           </dx-text-box>
 
           <dx-select-box
-            label="User Role"
+            label="User Role" [tabIndex]="4"
             [(value)]="newUserData.UserRoleID"
             [items]="userRole"
             displayExpr="DESCRIPTION"
@@ -211,7 +211,7 @@
           </dx-select-box>
 
           <dx-date-box
-            label="Date of Birth"
+            label="Date of Birth" [tabIndex]="6"
             type="date"
             [displayFormat]="'dd/MM/yyyy'"
             placeholder="Select Date of Birth"
@@ -221,7 +221,7 @@
           ></dx-date-box>
 
           <dx-text-box
-            label="Email"
+            label="Email" [tabIndex]="9"
             [(value)]="newUserData.Email"
             hint="Email"
             (input)="onEmailInput($event)"
@@ -270,7 +270,7 @@
             />
 
             <!-- Conditionally show the button if no images are uploaded -->
-            <button *ngIf="images.length === 0" (click)="fileInput.click()">
+            <button *ngIf="images.length === 0" (click)="fileInput.click()" tabindex="10">
               Select a file
             </button>
 
@@ -285,7 +285,7 @@
           </div>
 
           <dx-text-box
-            label="Whatsapp No"
+            label="Whatsapp No" [tabIndex]="11"
             [(value)]="newUserData.Whatsapp"
             (input)="validateWhatsapp($event)"
             hint="Whatsapp No"

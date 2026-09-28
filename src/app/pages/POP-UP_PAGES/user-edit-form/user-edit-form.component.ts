@@ -637,7 +637,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
 
   onDateFormatChange(event: any): void {
     // Directly set the value from the event
-    const selectedFormat = this.dateFormat.find(
+    const selectedFormat = this.dateFormat?.find(
       (format) => format.DESCRIPTION === event.value
     )?.DESCRIPTION;
     if (selectedFormat) {
@@ -649,7 +649,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
   }
 
   onTimeFormatChange(event: any) {
-    const selectedTimeFormat = this.timeFormat.find(
+    const selectedTimeFormat = this.timeFormat?.find(
       (format) => format.DESCRIPTION === event.value
     )?.DESCRIPTION;
     if (selectedTimeFormat) {
@@ -886,7 +886,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       this.newUserData = { ...this.formdata };
       if (this.newUserData.PhotoFile) {
         this.isImageUploaded = true;
-        this.images = this.newUserData.PhotoFile;
+        this.images = [this.newUserData.PhotoFile];
         console.log(this.images, 'photo');
       } else {
         this.isImageUploaded = false;
@@ -894,7 +894,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
         console.log('No photo available');
       }
 
-      const selectedFormat = this.dateFormat.find(
+      const selectedFormat = this.dateFormat?.find(
         (format) => format.DESCRIPTION === this.formdata.Date_Format
       )?.DESCRIPTION;
       if (selectedFormat) {
@@ -903,7 +903,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       } else {
         this.exampleDateFormat = '';
       }
-      const selectedTimeFormat = this.timeFormat.find(
+      const selectedTimeFormat = this.timeFormat?.find(
         (format) => format.DESCRIPTION === this.formdata.Time_Format
       )?.DESCRIPTION;
       if (selectedTimeFormat) {
@@ -921,7 +921,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
         this.newUserData.countryCode = extractedCountryCode;
       }
 
-      this.selectedRows = this.facilityList
+      this.selectedRows = (this.facilityList || [])
         .filter((column) =>
           this.newUserData.user_facility.some(
             (facility) => facility.FacilityID === column.ID
@@ -932,7 +932,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       console.log(this.selectedRows, 'selected rows');
 
       // Reorder facilityList based on selectedRows
-      this.facilityList = [
+      if(this.facilityList) this.facilityList = [
         // Selected facilities first
         ...this.facilityList.filter((facility) =>
           this.selectedRows.includes(facility.ID)

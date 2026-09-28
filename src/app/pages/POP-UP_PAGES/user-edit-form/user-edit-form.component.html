@@ -26,7 +26,7 @@
           <div class="form-column" style="flex: 2">
             <dx-text-box
               [(value)]="newUserData.UserName"
-              label="User Name"
+              label="User Name" [tabIndex]="1"
               hint="User Name"
               [readOnly]="newUserData.UserName==='admin'"
             >
@@ -40,7 +40,7 @@
 
             <div style="position: relative; display: flex">
               <dx-text-box
-                label="Password"
+                label="Password" [tabIndex]="3"
                 [(value)]="newUserData.Password"
                 [readOnly]="true"
                 [mode]="'password'"
@@ -69,19 +69,19 @@
                 <i class="undoButton dx-icon-undo"></i>
               </button>
             </div>
-
-            <dx-date-box
-              label="Date of Birth"
-              [(value)]="newUserData.DateofBirth"
-              [displayFormat]="'dd/MM/yyyy'"
-              placeholder="Select Date of Birth"
-              stylingMode="outlined"
-              hint="Date Of Birth"
-            ></dx-date-box>
+            <dx-select-box
+              label="Gender" [tabIndex]="5"
+              [(value)]="newUserData.GenderID"
+              [items]="gender"
+              displayExpr="DESCRIPTION"
+              valueExpr="ID"
+              placeholder="Select Gender"
+              hint="Gender"
+            ></dx-select-box>
 
             <div style="display: flex">
               <dx-select-box
-                label="Code"
+                label="Mobile" [tabIndex]="7"
                 [searchEnabled]="true"
                 [acceptCustomValue]="false"
                 [(value)]="newUserData.countryCode"
@@ -112,7 +112,7 @@
               </dx-select-box>
 
               <dx-text-box
-                label="Mobile No"
+                label="No." [tabIndex]="8"
                 [(value)]="newUserData.Mobile"
                 [width]="'100%'"
                 style="margin-left: 10px"
@@ -136,7 +136,7 @@
           </div>
           <div class="form-column" style="flex: 2">
             <dx-text-box
-              label="Login Name"
+              label="Login Name" [tabIndex]="2"
               [(value)]="newUserData.LoginName"
               hint="Login Name"
               (input)="onLoginNameInput($event)"
@@ -164,7 +164,7 @@
               </dx-validator>
             </dx-text-box>
             <dx-select-box
-              label="User Role"
+              label="User Role" [tabIndex]="4"
               [(value)]="newUserData.UserRoleID"
               [items]="userRole"
               displayExpr="DESCRIPTION"
@@ -180,18 +180,18 @@
                 ></dxi-validation-rule>
               </dx-validator>
             </dx-select-box>
-            <dx-select-box
-              label="Gender"
-              [(value)]="newUserData.GenderID"
-              [items]="gender"
-              displayExpr="DESCRIPTION"
-              valueExpr="ID"
-              placeholder="Select Gender"
-              hint="Gender"
-            ></dx-select-box>
+
+            <dx-date-box
+              label="Date of Birth" [tabIndex]="6"
+              [(value)]="newUserData.DateofBirth"
+              [displayFormat]="'dd/MM/yyyy'"
+              placeholder="Select Date of Birth"
+              stylingMode="outlined"
+              hint="Date Of Birth"
+            ></dx-date-box>
 
             <dx-text-box
-              label="Email"
+              label="Email" [tabIndex]="9"
               [(value)]="newUserData.Email"
               hint="Email"
               (input)="onEmailInput($event)"
@@ -237,7 +237,7 @@
               />
 
               <!-- Conditionally show the button if no images are uploaded -->
-              <button *ngIf="images.length === 0" (click)="fileInput.click()">
+              <button *ngIf="images.length === 0" (click)="fileInput.click()" tabindex="10">
                 Select a file
               </button>
 
@@ -253,7 +253,7 @@
               </div>
             </div>
             <dx-text-box
-              label="Whatsapp No"
+              label="Whatsapp No" [tabIndex]="11"
               [(value)]="newUserData.Whatsapp"
               hint="Whatsapp No"
               (onFocusIn)="autoBindWhatsapp()"
