@@ -15,7 +15,12 @@ import { DxFormModule } from 'devextreme-angular/ui/form';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
 import { DxButtonModule, DxButtonTypes } from 'devextreme-angular/ui/button';
 import { NotificationService } from 'src/app/services/notification.service';
-import { AuthService, DataService, IResponse, ThemeService } from 'src/app/services';
+import {
+  AuthService,
+  DataService,
+  IResponse,
+  ThemeService,
+} from 'src/app/services';
 import { SharedServiceService } from 'src/app/services/shared-service.service';
 import { confirm } from 'devextreme/ui/dialog';
 import { InactivityService } from 'src/app/services/inactivity.service';
@@ -65,6 +70,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
   canResendOtp: boolean = false;
   otpTimerInterval: any = null;
   isResendingOtp: boolean = false;
+  isVerifyingOtp: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -74,7 +80,8 @@ export class LoginFormComponent implements OnInit, OnDestroy {
     private inactive: InactivityService,
     private SystemService: SystemServicesService,
     private dataService: DataService,
-    private userservice: MasterReportService, private notificationService: NotificationService
+    private userservice: MasterReportService,
+    private notificationService: NotificationService,
   ) {
     this.formData = {};
     this.themeService.isDark.subscribe((value: boolean) => {
@@ -214,8 +221,6 @@ export class LoginFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  isVerifyingOtp: boolean = false;
-
   get isOtpComplete(): boolean {
     return (
       this.otpDigits &&
@@ -237,8 +242,9 @@ export class LoginFormComponent implements OnInit, OnDestroy {
 
   focusNextInput(inputComponent: DxTextBoxComponent): void {
     if (inputComponent) {
-      const inputElement =
-        inputComponent.instance?.element()?.querySelector('input');
+      const inputElement = inputComponent.instance
+        ?.element()
+        ?.querySelector('input');
       if (inputElement) {
         inputElement.focus();
       }
@@ -477,7 +483,10 @@ export class LoginFormComponent implements OnInit, OnDestroy {
           // ====== Success case ======
           if (response.failurecount > 0) {
             // Notify with failure count and response message
-            this.notificationService.showNotification(`Verified with ${response.failurecount} failures.\n${response.message}`, 'warning');
+            this.notificationService.showNotification(
+              `Verified with ${response.failurecount} failures.\n${response.message}`,
+              'warning',
+            );
 
             this.SystemService.get_PostOfficeCredencial_List().subscribe(
               (listResponse: any) => {
@@ -494,12 +503,18 @@ export class LoginFormComponent implements OnInit, OnDestroy {
                       )
                       .join('\n');
 
-                    this.notificationService.showNotification(`Post office credentials failed for facilities:\n${facilityNames}`, 'error');
+                    this.notificationService.showNotification(
+                      `Post office credentials failed for facilities:\n${facilityNames}`,
+                      'error',
+                    );
                   }
                 }
               },
               (error) => {
-                this.notificationService.showNotification('Error while fetching failed facility list.', 'error');
+                this.notificationService.showNotification(
+                  'Error while fetching failed facility list.',
+                  'error',
+                );
               },
             );
           } else {
@@ -513,7 +528,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
             logData?.UserRoleID ??
               logData?.userRoleID ??
               logData?.UserRoleId ??
-              logData?.userRoleId
+              logData?.userRoleId,
           );
           const targetUrl = userRoleId === 2 ? '/Home' : '/analytics-dashboard';
 
@@ -522,7 +537,10 @@ export class LoginFormComponent implements OnInit, OnDestroy {
           this.router.navigateByUrl(targetUrl, { replaceUrl: true });
         } else {
           // ====== Failure case ======
-          this.notificationService.showNotification(response.message || 'Verification failed', 'error');
+          this.notificationService.showNotification(
+            response.message || 'Verification failed',
+            'error',
+          );
 
           // Still proceed with login flow
           const logData =
@@ -532,7 +550,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
             logData?.UserRoleID ??
               logData?.userRoleID ??
               logData?.UserRoleId ??
-              logData?.userRoleId
+              logData?.userRoleId,
           );
           const targetUrl = userRoleId === 2 ? '/Home' : '/analytics-dashboard';
 
@@ -542,14 +560,17 @@ export class LoginFormComponent implements OnInit, OnDestroy {
         }
       },
       (err) => {
-        this.notificationService.showNotification(`Error: ${err.message}`, 'error');
+        this.notificationService.showNotification(
+          `Error: ${err.message}`,
+          'error',
+        );
       },
     );
   }
 
   // ====== Notify helper ======
   private showNotify(message: string, type: 'success' | 'error') {
-    this.notificationService.showNotification('', type);
+    this.notificationService.showNotification(message, type);
   }
 
   onCreateAccountClick = () => {
@@ -580,7 +601,10 @@ export class LoginFormComponent implements OnInit, OnDestroy {
       this.router.navigate([this.resetLink]);
     } else {
       // Show toast notification
-      this.notificationService.showNotification('Password Reset is not allowed because Email service is disabled. Please contact your Administrator.', 'error');
+      this.notificationService.showNotification(
+        'Password Reset is not allowed because Email service is disabled. Please contact your Administrator.',
+        'error',
+      );
     }
   }
 }

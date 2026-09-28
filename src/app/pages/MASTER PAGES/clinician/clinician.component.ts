@@ -133,7 +133,7 @@ export class ClinicianComponent implements OnInit {
   ];
 
   addButtonOptions: any;
-
+  isFilterApplied: boolean = false;
   isFilterRowVisible: boolean = false;
   selectedClinician: any;
   menuPrevilage: any;
@@ -144,7 +144,8 @@ export class ClinicianComponent implements OnInit {
     private dataService: DataService,
     private router: Router,
     private popupStateService: PopupStateService,
-    private route: ActivatedRoute, private notificationService: NotificationService
+    private route: ActivatedRoute,
+    private notificationService: NotificationService,
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -245,11 +246,17 @@ export class ClinicianComponent implements OnInit {
       )
       .subscribe((response: any) => {
         if (response) {
-          this.notificationService.showNotification(`New Clinician saved Successfully`, 'success');
+          this.notificationService.showNotification(
+            `New Clinician saved Successfully`,
+            'success',
+          );
           this.isAddClinicianPopupOpened = false;
           this.dataGrid.instance.refresh();
         } else {
-          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
+          this.notificationService.showNotification(
+            `Your Data Not Saved`,
+            'error',
+          );
         }
       });
   };
@@ -285,11 +292,17 @@ export class ClinicianComponent implements OnInit {
       )
       .subscribe((response: any) => {
         if (response) {
-          this.notificationService.showNotification(`Clinician updated Successfully`, 'success');
+          this.notificationService.showNotification(
+            `Clinician updated Successfully`,
+            'success',
+          );
           this.isEditClinicianPopupOpened = false;
           this.dataGrid.instance.refresh();
         } else {
-          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
+          this.notificationService.showNotification(
+            `Your Data Not Saved`,
+            'error',
+          );
         }
       });
   };
@@ -301,9 +314,15 @@ export class ClinicianComponent implements OnInit {
       .Remove_Clinician_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          this.notificationService.showNotification('Delete operation successful', 'success');
+          this.notificationService.showNotification(
+            'Delete operation successful',
+            'success',
+          );
         } catch (error) {
-          this.notificationService.showNotification('Delete operation failed', 'error');
+          this.notificationService.showNotification(
+            'Delete operation failed',
+            'error',
+          );
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
@@ -332,19 +351,15 @@ export class ClinicianComponent implements OnInit {
     this.dataGrid.instance.searchByText(query);
   }
 
-    isFilterApplied: boolean = false;
-
-    onGridOptionChanged(e: any) {
-
-            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
-              setTimeout(() => {
-                if (this.dataGrid && this.dataGrid.instance) {
-                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
-                }
-              });
-            }
-                    
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+        }
+      });
     }
+  }
 }
 
 @NgModule({
