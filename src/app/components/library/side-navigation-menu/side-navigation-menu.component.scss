@@ -20,6 +20,17 @@
     padding-bottom: var(--footer-height);
 
     ::ng-deep .dx-treeview {
+      // ## Search bar customization
+      .dx-treeview-search,
+      .dx-treeview-search .dx-texteditor,
+      .dx-treeview-search .dx-texteditor-container,
+      .dx-treeview-search .dx-texteditor-input,
+      .dx-texteditor,
+      .dx-texteditor-container {
+        border: 1px solid #CBD5E1;
+        border-radius: 20px !important;
+      }
+
       // ## Icon width customization
       .dx-treeview-item {
       padding-left: 5px;

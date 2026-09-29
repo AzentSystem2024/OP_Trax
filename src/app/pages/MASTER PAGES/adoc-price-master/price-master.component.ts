@@ -12,6 +12,7 @@ import {
   DxSelectBoxModule,
   DxCheckBoxModule,
   DxLoadPanelModule,
+  DxTextBoxModule,
 } from 'devextreme-angular';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
@@ -31,6 +32,9 @@ export class AdocPriceMasterComponent implements AfterViewInit {
 
   @ViewChild('historyGrid', { static: false })
   historyGrid!: DxDataGridComponent;
+
+  @ViewChild('popupGrid', { static: false })
+  popupGrid!: DxDataGridComponent;
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
 
@@ -61,6 +65,8 @@ export class AdocPriceMasterComponent implements AfterViewInit {
   historyPopupVisible: boolean = false;
   isEditingEnabled: boolean = false;
   editButtonOptions: any;
+
+  globalEffectFromDate: Date | null = null;
 
   constructor(
     private masterService: MasterReportService,
@@ -95,6 +101,28 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       onClick: this.toggleEditMode,
       elementAttr: { class: 'edit-button' },
     };
+  }
+
+  onAddClick = () => {
+    this.globalEffectFromDate = new Date();
+    if (this.popupGrid && this.popupGrid.instance) {
+      this.popupGrid.instance.cancelEditData();
+      
+      // Also manually clear any modifications to the underlying array that might have been committed
+      if (Array.isArray(this.cptPriceData)) {
+        this.cptPriceData.forEach((row: any) => {
+          row.IsSelected = false;
+          const orig = this.originalCptPriceData?.find(x => x.SerialNumber === row.SerialNumber);
+          if (orig) {
+            row.NewPrice = orig.NewPrice;
+            row.NewPaedAdjuster = orig.NewPaedAdjuster;
+            row.NewSeniorAdjuster = orig.NewSeniorAdjuster;
+            row.NewFollowUpAdjuster = orig.NewFollowUpAdjuster;
+          }
+        });
+      }
+    }
+    this.isAddPopupVisible = true;
   }
 
   ngAfterViewInit() {
@@ -187,6 +215,10 @@ export class AdocPriceMasterComponent implements AfterViewInit {
                     NewSeniorAdjuster:
                       item.NewSeniorAdjuster > 0
                         ? item.NewSeniorAdjuster
+                        : null,
+                    NewFollowUpAdjuster:
+                      item.NewFollowUpAdjuster > 0
+                        ? item.NewFollowUpAdjuster
                         : null,
                   }),
                 );
@@ -288,6 +320,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       originalRow.NewPrice !== e.data.NewPrice ||
       originalRow.NewPaedAdjuster !== e.data.NewPaedAdjuster ||
       originalRow.NewSeniorAdjuster !== e.data.NewSeniorAdjuster ||
+      originalRow.NewFollowUpAdjuster !== e.data.NewFollowUpAdjuster ||
       origDate !== newDate;
 
     e.data.IsModified = isModified;
@@ -327,7 +360,12 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     this.fetch_ADOC_Price_List();
   }
 
-  savePriceMaster() {
+  async savePriceMaster() {
+    if (this.popupGrid && this.popupGrid.instance) {
+      await this.popupGrid.instance.saveEditData();
+    }
+
+    let hasValidationError = false;
     const modifiedRows = this.cptPriceData.filter((row: any) => {
       const original = this.originalCptPriceData.find(
         (x) => x.SerialNumber === row.SerialNumber,
@@ -337,16 +375,70 @@ export class AdocPriceMasterComponent implements AfterViewInit {
         return false;
       }
 
-      return (
+      const isModified = (
         original.NewPrice !== row.NewPrice ||
         original.NewPaedAdjuster !== row.NewPaedAdjuster ||
         original.NewSeniorAdjuster !== row.NewSeniorAdjuster ||
+        original.NewFollowUpAdjuster !== row.NewFollowUpAdjuster ||
         this.getDate(original.NewEffectFrom) !== this.getDate(row.NewEffectFrom)
       );
+
+      if (isModified) {
+        const p = row.NewPrice;
+        const pa = row.NewPaedAdjuster;
+        const sa = row.NewSeniorAdjuster;
+        const f = row.NewFollowUpAdjuster;
+        
+        const hasSomeValue = (p !== null && p !== undefined && p !== '') || 
+                             (pa !== null && pa !== undefined && pa !== '') || 
+                             (sa !== null && sa !== undefined && sa !== '') || 
+                             (f !== null && f !== undefined && f !== '');
+                             
+        const hasAllValues = (p !== null && p !== undefined && p !== '') && 
+                             (pa !== null && pa !== undefined && pa !== '') && 
+                             (sa !== null && sa !== undefined && sa !== '') && 
+                             (f !== null && f !== undefined && f !== '');
+
+        if (hasSomeValue && !hasAllValues) {
+          hasValidationError = true;
+        }
+      }
+
+      return isModified;
     });
+
+    if (hasValidationError) {
+      this.notificationService.showNotification('Fill The rest Of The Field To Be Editted Or Add The Active Data', 'error');
+      return;
+    }
 
     if (modifiedRows.length === 0) {
       this.notificationService.showNotification('No changes found', 'warning');
+      return;
+    }
+
+    if (!this.globalEffectFromDate) {
+      this.notificationService.showNotification('Please select an Effect From date', 'error');
+      return;
+    }
+
+    let dateError = false;
+    for (const row of modifiedRows) {
+      const activeEffectFrom = row.EffectFrom;
+      if (activeEffectFrom) {
+        const activeDate = new Date(activeEffectFrom);
+        activeDate.setHours(0, 0, 0, 0);
+        const newDate = new Date(this.globalEffectFromDate);
+        newDate.setHours(0, 0, 0, 0);
+        if (newDate <= activeDate) {
+          dateError = true;
+          break;
+        }
+      }
+    }
+
+    if (dateError) {
+      this.notificationService.showNotification('Effect From date must be strictly greater than current active dates', 'error');
       return;
     }
 
@@ -356,7 +448,8 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       Price: x.NewPrice,
       PaedAdjuster: x.NewPaedAdjuster,
       SeniorAdjuster: x.NewSeniorAdjuster,
-      EffectFrom: this.formatDate(x.NewEffectFrom),
+      FollowUpAdjuster: x.NewFollowUpAdjuster,
+      EffectFrom: this.formatDate(this.globalEffectFromDate),
       EffectTo: null,
     }));
 
@@ -387,7 +480,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
   }
 
   formatDate(dateString: any) {
-    const date = new Date(dateString);
+    const date = dateString ? new Date(dateString) : new Date();
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
     const day = String(date.getDate()).padStart(2, '0');
@@ -414,19 +507,45 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     this.IsGlobalPrice = data.cptPriceGlobal;
   }
 
-    isFilterApplied: boolean = false;
+  isFilterApplied: boolean = false;
+  isPopupFilterRowVisible: boolean = false;
 
-    onGridOptionChanged(e: any) {
+  togglePopupFilterRow = () => {
+    this.isPopupFilterRowVisible = !this.isPopupFilterRowVisible;
+  };
 
-            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
-              setTimeout(() => {
-                if (this.cptPriceGrid && this.cptPriceGrid.instance) {
-                  this.isFilterApplied = !!this.cptPriceGrid.instance.getCombinedFilter();
-                }
-              });
-            }
-                    
+  onPopupSearch = (e: any) => {
+    if (this.popupGrid && this.popupGrid.instance) {
+      this.popupGrid.instance.searchByText(e.value);
     }
+  };
+
+  onCheckboxChanged = (e: any, cell: any) => {
+    cell.setValue(e.value);
+    if (e.value === true) {
+      cell.component.cellValue(cell.rowIndex, 'NewPrice', cell.data.Price);
+      cell.component.cellValue(cell.rowIndex, 'NewPaedAdjuster', cell.data.PaedAdjuster);
+      cell.component.cellValue(cell.rowIndex, 'NewSeniorAdjuster', cell.data.SeniorAdjuster);
+      cell.component.cellValue(cell.rowIndex, 'NewFollowUpAdjuster', cell.data.FollowUpAdjuster);
+    } else {
+      cell.component.cellValue(cell.rowIndex, 'NewPrice', null);
+      cell.component.cellValue(cell.rowIndex, 'NewPaedAdjuster', null);
+      cell.component.cellValue(cell.rowIndex, 'NewSeniorAdjuster', null);
+      cell.component.cellValue(cell.rowIndex, 'NewFollowUpAdjuster', null);
+    }
+  };
+
+  onGridOptionChanged(e: any) {
+
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.cptPriceGrid && this.cptPriceGrid.instance) {
+          this.isFilterApplied = !!this.cptPriceGrid.instance.getCombinedFilter();
+        }
+      });
+    }
+
+  }
 }
 
 @NgModule({
@@ -441,7 +560,8 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     DxDateBoxModule,
     DxCheckBoxModule,
     DxLoadPanelModule,
+    DxTextBoxModule,
   ],
   declarations: [AdocPriceMasterComponent],
 })
-export class AdocPriceMasterModule {}
+export class AdocPriceMasterModule { }

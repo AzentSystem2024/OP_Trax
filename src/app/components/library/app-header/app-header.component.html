@@ -1,29 +1,16 @@
 <header>
   <dx-toolbar class="header-toolbar">
-    <dxi-item
-      *ngIf="menuToggleEnabled"
-      location="before"
-      widget="dxButton"
-      cssClass="menu-button"
-      [options]="{
+    <dxi-item *ngIf="menuToggleEnabled" location="before" widget="dxButton" cssClass="menu-button" [options]="{
         icon: 'menu',
         stylingMode: 'text',
         onClick: toggleMenu,
-      }"
-    >
+      }">
     </dxi-item>
 
     <dxi-item location="before" cssClass="header-logo">
       <div *dxTemplate class="d-flex align-items-end">
-        <img
-          src="../../../../assets/OPtrax Logo.png"
-          alt="{{ title }}"
-          height="50"
-          class="me-1"
-        />
-        <span class="fw-bold versionText small" style="margin-bottom: -2px"
-          >V {{ customerInfo.version }}</span
-        >
+        <img src="../../../../assets/Logo.svg" alt="{{ title }}" height="42" class="me-1" style="margin-bottom: 5px" />
+        <span class="fw-bold versionText small" style="margin-bottom: 0px">V {{ customerInfo.version }}</span>
       </div>
     </dxi-item>
 
@@ -39,29 +26,15 @@
 
     <dxi-item location="after" locateInMenu="auto" menuItemTemplate="menuItem">
       <div *dxTemplate="let data of 'item'">
-        <user-panel
-          [user]="user"
-          [menuItems]="userMenuItems"
-          menuMode="context"
-          id="userPanel"
-        ></user-panel>
+        <user-panel [user]="user" [menuItems]="userMenuItems" menuMode="context" id="userPanel"></user-panel>
         <!-- Tooltip to display loginName -->
-        <dx-tooltip
-          target="#userPanel"
-          [visible]="true"
-          showEvent="mouseenter"
-          hideEvent="mouseleave"
-        >
+        <dx-tooltip target="#userPanel" [visible]="true" showEvent="mouseenter" hideEvent="mouseleave">
           <span>{{ user?.name }}</span>
         </dx-tooltip>
       </div>
     </dxi-item>
     <div *dxTemplate="let data of 'menuItem'">
-      <user-panel
-        [user]="user"
-        [menuItems]="userMenuItems"
-        menuMode="list"
-      ></user-panel>
+      <user-panel [user]="user" [menuItems]="userMenuItems" menuMode="list"></user-panel>
     </div>
   </dx-toolbar>
 </header>
