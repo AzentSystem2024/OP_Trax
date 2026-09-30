@@ -42,12 +42,14 @@ export class IcdMasterComponent implements OnInit {
   showNavButtons = true;
   
   isFilterRowVisible = false;
+  specialityDatasource: any = [];
   
   isAddPopupVisible = false;
   newIcdData: any = {
     ICDCode: '',
     ICDName: '',
     ICDDescription: '',
+    SpecialtyID: null,
     IsInactive: false
   };
 
@@ -86,7 +88,7 @@ export class IcdMasterComponent implements OnInit {
       hint: 'Add new entry',
       disabled: !this.menuPrevilage?.CanAdd,
       onClick: () => {
-        this.newIcdData = { ICDCode: '', ICDName: '', ICDDescription: '', IsInactive: false };
+        this.newIcdData = { ICDCode: '', ICDName: '', ICDDescription: '', SpecialtyID: null, IsInactive: false };
         this.isAddPopupVisible = true;
       },
       elementAttr: { class: 'add-button' },
@@ -94,6 +96,9 @@ export class IcdMasterComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.masterService.Get_GropDown('SPECIALITY').subscribe((response: any) => {
+      this.specialityDatasource = response;
+    });
   }
 
   onExporting(e: any) {
@@ -128,9 +133,10 @@ export class IcdMasterComponent implements OnInit {
     let ICDName = combinedData.ICDName;
     let ICDDescription = combinedData.ICDDescription;
     let IsInactive = combinedData.IsInactive;
+    let SpecialtyID = combinedData.SpecialtyID;
 
     this.masterService
-      .update_IcdMaster_data(id, ICDCode, ICDName, ICDDescription, IsInactive)
+      .update_IcdMaster_data(id, ICDCode, ICDName, ICDDescription, IsInactive, SpecialtyID)
       .subscribe((data: any) => {
         if (data) {
           if (this.dataGrid && this.dataGrid.instance) {
@@ -166,9 +172,9 @@ export class IcdMasterComponent implements OnInit {
   saveNewIcd(formInstance: any) {
     const validation = formInstance.validate();
     if (validation.isValid) {
-      const { ICDCode, ICDName, ICDDescription } = this.newIcdData;
+      const { ICDCode, ICDName, ICDDescription, SpecialtyID } = this.newIcdData;
       this.masterService
-        .Insert_IcdMaster_Data(ICDCode, ICDName, ICDDescription)
+        .Insert_IcdMaster_Data(ICDCode, ICDName, ICDDescription, SpecialtyID)
         .subscribe((response: any) => {
           if (response) {
             if (this.dataGrid && this.dataGrid.instance) {

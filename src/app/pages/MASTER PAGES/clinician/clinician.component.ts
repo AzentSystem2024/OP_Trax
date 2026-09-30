@@ -229,7 +229,7 @@ export class ClinicianComponent implements OnInit {
       ProfessionID,
       CategoryID,
       Gender,
-      DepartmentID,
+      PrivilegeSpecialtyID,
     } = this.clinicianComponent.getnewClinicianData() || {};
 
     this.masterService
@@ -242,7 +242,7 @@ export class ClinicianComponent implements OnInit {
         ProfessionID,
         CategoryID,
         Gender,
-        DepartmentID,
+        PrivilegeSpecialtyID,
       )
       .subscribe((response: any) => {
         if (response) {
@@ -274,7 +274,7 @@ export class ClinicianComponent implements OnInit {
       ProfessionID,
       CategoryID,
       Gender,
-      DepartmentID,
+      PrivilegeSpecialtyID,
     } = this.clinicianEditComponent.getnewClinicianData() || {};
 
     this.masterService
@@ -288,7 +288,7 @@ export class ClinicianComponent implements OnInit {
         ProfessionID,
         CategoryID,
         Gender,
-        DepartmentID,
+        PrivilegeSpecialtyID,
       )
       .subscribe((response: any) => {
         if (response) {
@@ -381,4 +381,4 @@ export class ClinicianComponent implements OnInit {
   exports: [],
   declarations: [ClinicianComponent],
 })
-export class ClinicianListModule {}
+export class ClinicianListModule { }

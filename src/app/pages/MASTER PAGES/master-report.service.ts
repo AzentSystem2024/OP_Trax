@@ -19,7 +19,7 @@ export class MasterReportService {
   constructor(
     private http: HttpClient,
     private config: ConfigService,
-  ) {}
+  ) { }
 
   private get BASE_URL(): string {
     return this.config.apiBaseUrl;
@@ -424,11 +424,11 @@ export class MasterReportService {
         ADOCApplicationID !== 0
           ? []
           : (CPTADOCMappings || []).filter(
-              (x: any) =>
-                x.SpecialityID != null &&
-                x.ADOCClassID != null &&
-                x.ADOCCategoryID != null,
-            ),
+            (x: any) =>
+              x.SpecialityID != null &&
+              x.ADOCClassID != null &&
+              x.ADOCCategoryID != null,
+          ),
     };
 
     return this.http.post(url, reqBody);
@@ -469,11 +469,11 @@ export class MasterReportService {
         ADOCApplicationID !== 0
           ? []
           : (CPTADOCMappings || []).filter(
-              (x: any) =>
-                x.SpecialityID != null &&
-                x.ADOCClassID != null &&
-                x.ADOCCategoryID != null,
-            ),
+            (x: any) =>
+              x.SpecialityID != null &&
+              x.ADOCClassID != null &&
+              x.ADOCCategoryID != null,
+          ),
     };
 
     return this.http.post(url, reqBody);
@@ -667,7 +667,7 @@ export class MasterReportService {
     ProfessionID: any,
     CategoryID: any,
     Gender: any,
-    DepartmentID: any,
+    PrivilegeSpecialtyID: any,
   ) {
     const url = `${this.BASE_URL}clinician/insert`;
     const reqBody = {
@@ -679,7 +679,7 @@ export class MasterReportService {
       ProfessionID: ProfessionID,
       CategoryID: CategoryID,
       Gender: Gender,
-      DepartmentID: DepartmentID,
+      PrivilegeSpecialtyID: PrivilegeSpecialtyID,
     };
 
     return this.http.post(url, reqBody);
@@ -696,7 +696,7 @@ export class MasterReportService {
     ProfessionID: any,
     CategoryID: any,
     Gender: any,
-    DepartmentID: any,
+    PrivilegeSpecialtyID: any,
   ) {
     const url = `${this.BASE_URL}clinician/update`;
     const reqBody = {
@@ -709,7 +709,7 @@ export class MasterReportService {
       ProfessionID: ProfessionID,
       CategoryID: CategoryID,
       Gender: Gender,
-      DepartmentID: DepartmentID,
+      PrivilegeSpecialtyID: PrivilegeSpecialtyID,
     };
 
     return this.http.post(url, reqBody);
@@ -1441,12 +1441,13 @@ export class MasterReportService {
   }
 
   //======Add Icd Master data========
-  Insert_IcdMaster_Data(ICDCode: any, ICDName: any, ICDDescription: any) {
+  Insert_IcdMaster_Data(ICDCode: any, ICDName: any, ICDDescription: any, SpecialtyID: any) {
     const url = `${this.BASE_URL}icdmaster/save`;
     const reqBody = {
       ICDCode: ICDCode,
       ICDName: ICDName,
       ICDDescription: ICDDescription,
+      SpecialtyID: SpecialtyID,
       UserID: 0,
     };
 
@@ -1460,6 +1461,7 @@ export class MasterReportService {
     ICDName: any,
     ICDDescription: any,
     IsInactive: any,
+    SpecialtyID: any
   ) {
     const url = `${this.BASE_URL}icdmaster/update`;
     const reqBody = {
@@ -1467,6 +1469,7 @@ export class MasterReportService {
       ICDCode: ICDCode,
       ICDName: ICDName,
       ICDDescription: ICDDescription,
+      SpecialtyID: SpecialtyID,
       IsInactive: IsInactive,
     };
 

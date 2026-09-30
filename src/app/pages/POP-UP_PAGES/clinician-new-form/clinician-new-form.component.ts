@@ -39,7 +39,7 @@ export class ClinicianNewFormComponent {
     ProfessionID: '',
     CategoryID: '',
     Gender: '',
-    DepartmentID: '',
+    PrivilegeSpecialtyID: '',
   };
 
   newClinician = this.newClinicianData;
@@ -114,7 +114,7 @@ export class ClinicianNewFormComponent {
     const clinicianLicense = e.value;
     console.log(clinicianLicense, 'clinician license');
     const exists = this.cliniciansList.some(
-      (clinician:any) => clinician.ClinicianLicense === clinicianLicense
+      (clinician: any) => clinician.ClinicianLicense === clinicianLicense
     );
     console.log(exists, 'exists');
 
@@ -174,4 +174,4 @@ export class ClinicianNewFormComponent {
   declarations: [ClinicianNewFormComponent],
   exports: [ClinicianNewFormComponent],
 })
-export class ClinicianNewFormModule {}
+export class ClinicianNewFormModule { }

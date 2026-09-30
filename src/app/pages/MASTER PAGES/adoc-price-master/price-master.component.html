@@ -162,34 +162,45 @@
     <div *dxTemplate="let data of 'content'">
       <div style="display: flex; flex-direction: column; height: 100%;">
         <div style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-          <dx-text-box placeholder="Filter ADOC Class..." mode="search" [width]="240" (onValueChanged)="onPopupSearch($event)"></dx-text-box>
-          
+          <dx-text-box placeholder="Filter ADOC Class..." mode="search" [width]="240"
+            (onValueChanged)="onPopupSearch($event)"></dx-text-box>
+
           <div style="display: flex; align-items: center; gap: 10px;">
             <label style="font-weight: 500; margin: 0;">Effect From:</label>
-            <dx-date-box [(value)]="globalEffectFromDate" type="date" displayFormat="dd-MM-yyyy" [width]="160" placeholder="Select Date..."></dx-date-box>
+            <dx-date-box [(value)]="globalEffectFromDate" type="date" displayFormat="dd-MM-yyyy" [width]="160"
+              placeholder="Select Date..."></dx-date-box>
           </div>
         </div>
-        <dx-data-grid #popupGrid [dataSource]="cptPriceData" [showBorders]="true" style="flex: 1; min-height: 0; max-height: 60vh;" [editing]="{ mode: 'cell', allowUpdating: true }" [allowColumnResizing]="true">
+        <dx-data-grid #popupGrid [dataSource]="cptPriceData" [showBorders]="true"
+          style="flex: 1; min-height: 0; max-height: 60vh;" [editing]="{ mode: 'cell', allowUpdating: true }"
+          [allowColumnResizing]="true">
           <dxo-header-filter [visible]="true"></dxo-header-filter>
           <dxo-keyboard-navigation enterKeyAction="moveFocus" enterKeyDirection="column"></dxo-keyboard-navigation>
-          
-          <dxi-column dataField="IsSelected" caption="" dataType="boolean" [width]="50" cellTemplate="chkTemplate" editCellTemplate="chkTemplate" alignment="center" [allowSorting]="false" [allowFiltering]="false" [allowHeaderFiltering]="false">
+
+          <dxi-column dataField="IsSelected" caption="" dataType="boolean" [width]="50" cellTemplate="chkTemplate"
+            editCellTemplate="chkTemplate" alignment="center" [allowSorting]="false" [allowFiltering]="false"
+            [allowHeaderFiltering]="false">
           </dxi-column>
 
           <dxi-column dataField="ADOCClassName" caption="ADOC Class" [allowEditing]="false"></dxi-column>
-          
+
           <dxi-column dataField="NewPrice" caption="Base Price" dataType="number" format="#,##0.00" alignment="left">
           </dxi-column>
-          <dxi-column dataField="NewPaedAdjuster" caption="Pediatric Adjuster" dataType="number" format="#,##0.00" alignment="left">
+          <dxi-column dataField="NewPaedAdjuster" caption="Pediatric Adjuster" dataType="number" format="#,##0.00"
+            alignment="left">
           </dxi-column>
-          <dxi-column dataField="NewSeniorAdjuster" caption="Senior Adjuster" dataType="number" format="#,##0.00" alignment="left">
+          <dxi-column dataField="NewSeniorAdjuster" caption="Senior Adjuster" dataType="number" format="#,##0.00"
+            alignment="left">
           </dxi-column>
-          <dxi-column dataField="NewFollowUpAdjuster" caption="8-14 follow-up adjuster" dataType="number" format="#,##0.00" alignment="left">
+          <dxi-column dataField="NewFollowUpAdjuster" caption="8-14 follow-up adjuster" dataType="number"
+            format="#,##0.00" alignment="left">
           </dxi-column>
 
 
-          <div *dxTemplate="let cell of 'chkTemplate'" style="display: flex; justify-content: center; align-items: center; height: 100%;">
-            <dx-check-box [value]="cell.data.IsSelected === true" (onValueChanged)="onCheckboxChanged($event, cell)"></dx-check-box>
+          <div *dxTemplate="let cell of 'chkTemplate'"
+            style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <dx-check-box [value]="cell.data.IsSelected === true"
+              (onValueChanged)="onCheckboxChanged($event, cell)"></dx-check-box>
           </div>
 
           <dxo-paging [pageSize]="10"></dxo-paging>

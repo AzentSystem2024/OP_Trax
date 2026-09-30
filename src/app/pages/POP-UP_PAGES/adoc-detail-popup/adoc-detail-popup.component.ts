@@ -287,6 +287,10 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
                 value: priceData.SeniorAdjuster ?? 0,
               },
               {
+                field: '8-14 Follow-up Adjuster',
+                value: priceData.FollowupAdjuster ?? 0,
+              },
+              {
                 field: 'Region Adjuster',
                 value: priceData.RegionAdjuster ?? 0,
               },
@@ -295,6 +299,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
                 field: 'Facility Multiplier',
                 value: priceData.FacilityMultiplier ?? 0,
               },
+              
               { field: 'ADOC Price', value: priceData.ADOCPrice ?? 0 },
             ];
           } else {

@@ -44,7 +44,7 @@ export class ClinicianEditFormComponent implements OnChanges {
     ProfessionID: '',
     CategoryID: '',
     Gender: '',
-    DepartmentID: '',
+    PrivilegeSpecialtyID: '',
   };
 
   newClinician = this.newClinicianData;
@@ -61,7 +61,7 @@ export class ClinicianEditFormComponent implements OnChanges {
   dropdownsLoaded: boolean = false;
   isLoading: boolean = false;
 
-  constructor(private masterService: MasterReportService) {}
+  constructor(private masterService: MasterReportService) { }
 
   async ngOnInit() {
     await this.loadInitialData();
@@ -245,4 +245,4 @@ export class ClinicianEditFormComponent implements OnChanges {
   declarations: [ClinicianEditFormComponent],
   exports: [ClinicianEditFormComponent],
 })
-export class ClinicianEditFormModule {}
+export class ClinicianEditFormModule { }
