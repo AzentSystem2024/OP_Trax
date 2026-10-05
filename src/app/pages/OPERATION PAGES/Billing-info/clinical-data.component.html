@@ -27,7 +27,7 @@
             >
               <div *dxTemplate="let data of 'content'">
                 <dx-data-grid
-    (onOptionChanged)="onGridOptionChanged($event)"
+                  (onOptionChanged)="onGridOptionChanged($event)"
                   #facilityGrid
                   [dataSource]="facilityListDataSource"
                   keyExpr="FacilityLicense"
@@ -209,7 +209,7 @@
     </div>
 
     <dx-data-grid
-    (onOptionChanged)="onGridOptionChanged($event)"
+      (onOptionChanged)="onGridOptionChanged($event)"
       [height]="isContentVisible ? '70vh' : '82vh'"
       class="grid theme-dependent"
       [noDataText]="!isContentVisible ? 'No Data Available' : ' '"
@@ -257,7 +257,9 @@
       <dxo-sorting mode="multiple"></dxo-sorting>
       <dxo-header-filter [visible]="isFilterRowVisible"></dxo-header-filter>
       <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
-      <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
+      <dxo-filter-panel
+        [visible]="isFilterRowVisible || isFilterApplied"
+      ></dxo-filter-panel>
       <dxo-search-panel
         [visible]="true"
         placeholder=" Search"
@@ -448,15 +450,32 @@
       </dxo-summary>
     </dx-data-grid>
 
-    <dx-load-panel
-      #processLoadPanel
+    <dx-popup
+      class="formPopupClass"
       [position]="{ of: '.grid' }"
-      [visible]="isMultiProcessing"
-      [showIndicator]="true"
-      [showPane]="true"
-      [shading]="true"
-      [message]="processProgressMessage"
-    ></dx-load-panel>
+      [(visible)]="isMultiProcessing"
+      [showTitle]="false"
+      [dragEnabled]="false"
+      [closeOnOutsideClick]="false"
+      [showCloseButton]="false"
+      [width]="300"
+      [height]="'auto'"
+    >
+      <div *dxTemplate="let data of 'content'">
+        <div
+          class="d-flex flex-column align-items-center justify-content-center p-3"
+        >
+          <dx-load-indicator [visible]="true"></dx-load-indicator>
+          <div class="mt-3 fs-5">{{ processProgressMessage }}</div>
+          <dx-button
+            text="Cancel"
+            type="danger"
+            class="mt-4 w-50"
+            (onClick)="cancelMultiProcessing()"
+          ></dx-button>
+        </div>
+      </div>
+    </dx-popup>
   </div>
   <!-- ============== import file popup ================= -->
   <dx-popup

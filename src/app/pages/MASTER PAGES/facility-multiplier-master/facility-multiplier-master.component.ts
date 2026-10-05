@@ -66,12 +66,14 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
 
   PriceHistoryData: any = [];
   historyPopupVisible: boolean = false;
+  isFilterApplied: boolean = false;
 
   constructor(
     private masterService: MasterReportService,
     private service: ReportService,
     private route: ActivatedRoute,
-    private dataService: DataService, private notificationService: NotificationService
+    private dataService: DataService,
+    private notificationService: NotificationService,
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -164,7 +166,10 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       },
       error: (error: any) => {
         this.hideLoading();
-        this.notificationService.showNotification('Failed to load facility list', 'error');
+        this.notificationService.showNotification(
+          'Failed to load facility list',
+          'error',
+        );
       },
     });
   }
@@ -211,13 +216,19 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
 
                   resolve(data);
                 } else {
-                  this.notificationService.showNotification('Failed to load Facility Multipliers', 'error');
+                  this.notificationService.showNotification(
+                    'Failed to load Facility Multipliers',
+                    'error',
+                  );
                   reject('Failed to load Facility Multipliers');
                 }
               },
               error: (error) => {
                 this.hideLoading();
-                this.notificationService.showNotification('An error occurred while fetching Facility Multipliers', 'error');
+                this.notificationService.showNotification(
+                  'An error occurred while fetching Facility Multipliers',
+                  'error',
+                );
 
                 reject(error);
               },
@@ -239,13 +250,19 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
             this.historyPopupVisible = true;
             this.hideLoading();
           } else {
-            this.notificationService.showNotification('Failed to load History', 'error');
+            this.notificationService.showNotification(
+              'Failed to load History',
+              'error',
+            );
             this.hideLoading();
           }
         },
         error: (error: any) => {
           this.hideLoading();
-          this.notificationService.showNotification('An error occurred while fetching History', 'error');
+          this.notificationService.showNotification(
+            'An error occurred while fetching History',
+            'error',
+          );
         },
       });
   }
@@ -381,15 +398,24 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       next: (response: any) => {
         this.hideLoading();
         if (response.flag === '1' || response.flag === 'true') {
-          this.notificationService.showNotification('Multiplier Master Saved Successfully', 'success');
+          this.notificationService.showNotification(
+            'Multiplier Master Saved Successfully',
+            'success',
+          );
           this.fetch_ADOC_Price_List();
         } else {
-          this.notificationService.showNotification('Failed to save Multiplier Master', 'error');
+          this.notificationService.showNotification(
+            'Failed to save Multiplier Master',
+            'error',
+          );
         }
       },
       error: (error: any) => {
         this.hideLoading();
-        this.notificationService.showNotification('An error occurred while saving Multiplier Master', 'error');
+        this.notificationService.showNotification(
+          'An error occurred while saving Multiplier Master',
+          'error',
+        );
       },
     });
   }
@@ -430,19 +456,16 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     this.IsGlobalPrice = data.cptPriceGlobal || false;
   }
 
-    isFilterApplied: boolean = false;
-
-    onGridOptionChanged(e: any) {
-
-            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
-              setTimeout(() => {
-                if (this.cptPriceGrid && this.cptPriceGrid.instance) {
-                  this.isFilterApplied = !!this.cptPriceGrid.instance.getCombinedFilter();
-                }
-              });
-            }
-                    
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.cptPriceGrid && this.cptPriceGrid.instance) {
+          this.isFilterApplied =
+            !!this.cptPriceGrid.instance.getCombinedFilter();
+        }
+      });
     }
+  }
 }
 
 @NgModule({

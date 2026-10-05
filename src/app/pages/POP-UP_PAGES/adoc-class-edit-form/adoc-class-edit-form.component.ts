@@ -26,7 +26,7 @@ export class AdocClassEditFormComponent implements OnChanges {
   @Input() formData: any = null;
   @Input() adocCategoryList: any[] = [];
   
-  @Output() onSaved = new EventEmitter<any>();
+  @Output() saved = new EventEmitter<any>();
 
   @ViewChild('editForm', { static: false }) editForm!: DxFormComponent;
 
@@ -67,7 +67,7 @@ export class AdocClassEditFormComponent implements OnChanges {
       .subscribe((data: any) => {
         if (data) {
           this.notificationService.showNotification(`data updated Successfully`, 'success');
-          this.onSaved.emit();
+          this.saved.emit();
           this.visible = false;
           this.visibleChange.emit(false);
         } else {

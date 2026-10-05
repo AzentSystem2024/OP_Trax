@@ -16,39 +16,43 @@
       >
         <dxi-item [colSpan]="3">
           <dx-drop-down-box
-            #facilityDropDown
+            label="Facility"
             labelMode="floating"
             labelLocation="left"
-            label="Facility value"
             [(value)]="Facility_Value"
             valueExpr="FacilityLicense"
-            displayExpr="FacilityName"
+            [displayExpr]="displayFacility"
             [showClearButton]="true"
             [dataSource]="Facility_DataSource"
+            [dropDownOptions]="{ width: 'auto' }"
           >
             <div *dxTemplate="let data of 'content'">
               <dx-data-grid
+                #facilityGrid
                 [dataSource]="Facility_DataSource"
+                keyExpr="FacilityLicense"
                 [columns]="[
-                  { dataField: 'FacilityLicense', caption: 'License' },
-                  { dataField: 'FacilityName', caption: 'Name', width: 'auto' },
+                  {
+                    dataField: 'FacilityLicense',
+                    caption: 'License',
+                    width: 150,
+                  },
+                  { dataField: 'FacilityName', caption: 'Name', width: 200 },
                   {
                     dataField: 'FacilityRegion',
                     caption: 'Region',
                     width: 'auto',
                   },
                 ]"
-                keyExpr="FacilityLicense"
                 [selection]="{ mode: 'multiple' }"
                 [hoverStateEnabled]="true"
                 [paging]="{ enabled: true, pageSize: 10 }"
                 [filterRow]="{ visible: true }"
                 [headerFilter]="{ visible: true }"
                 [scrolling]="{ mode: 'virtual' }"
-                [height]="Facility_DataSource?.length < 5 ? 'auto' : '250px'"
+                [height]="'auto'"
                 [(selectedRowKeys)]="Facility_Value"
-              >
-              </dx-data-grid>
+              ></dx-data-grid>
             </div>
           </dx-drop-down-box>
         </dxi-item>
@@ -408,7 +412,7 @@
             hint: 'Hide/Show Summary',
           }"
         ></dxi-item>
-        <dxi-item *ngIf="userRoleId != 2" location="after" locateInMenu="auto">
+        <dxi-item *ngIf="userRoleId !==2" location="after" locateInMenu="auto">
           <div class="separator"></div>
         </dxi-item>
         <dxi-item

@@ -146,10 +146,8 @@ export class XmlUploadComponent implements OnInit {
   uploadSubscription?: Subscription;
   cancelUploadFn?: (reason?: any) => void;
 
-  progressStatus = (ratio: number, value: number) => {
-    return `Progress: ${Math.round(ratio * 100)}%`;
-  };
   menuPrevilage: any;
+  isFilterApplied: boolean = false;
 
   constructor(
     private service: ReportService,
@@ -274,6 +272,10 @@ export class XmlUploadComponent implements OnInit {
     }
   }
 
+  progressStatus = (ratio: number, value: number) => {
+    return `Progress: ${Math.round(ratio * 100)}%`;
+  };
+
   async loadFacilityData(): Promise<void> {
     try {
       const res: any = await firstValueFrom(
@@ -371,7 +373,10 @@ export class XmlUploadComponent implements OnInit {
       this.cancelLoad = undefined;
     }
     this.isLookupLoading = false;
-    this.notificationService.showNotification('Data loading cancelled', 'warning');
+    this.notificationService.showNotification(
+      'Data loading cancelled',
+      'warning',
+    );
   }
 
   onSelectionChanged(e: any) {
@@ -629,7 +634,10 @@ export class XmlUploadComponent implements OnInit {
       this.newFilterSubscription = undefined;
     }
     this.isNewLookupLoading = false;
-    this.notificationService.showNotification('Data loading cancelled', 'warning');
+    this.notificationService.showNotification(
+      'Data loading cancelled',
+      'warning',
+    );
   }
 
   onCreateBatchClick() {
@@ -884,17 +892,13 @@ export class XmlUploadComponent implements OnInit {
     }
   }
 
-    isFilterApplied: boolean = false;
-
-    onGridOptionChanged(e: any) {
-
-            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
-              setTimeout(() => {
-                if (this.dataGrid && this.dataGrid.instance) {
-                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
-                }
-              });
-            }
-                    
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+        }
+      });
     }
+  }
 }

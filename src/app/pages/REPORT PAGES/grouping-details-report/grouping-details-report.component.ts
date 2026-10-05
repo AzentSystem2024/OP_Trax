@@ -311,7 +311,7 @@ export class GroupingDetailsReportComponent implements OnInit {
   //============Get search parameters dropdown values=======
   get_searchParameters_Dropdown_Values() {
     this.loadingVisible = true;
-    this.masterService.Get_Facility_List_Data().subscribe({
+    this.dataService.Get_User_Facility_List_Data().subscribe({
       next: (response: any) => {
         if (response.flag == '1') {
           this.Facility_DataSource = response.data;
@@ -691,6 +691,11 @@ export class GroupingDetailsReportComponent implements OnInit {
     const fileName = 'ADOC Grouping Details';
     this.service.exportDataGrid(event, fileName);
   }
+
+  displayFacility = (item: any) => {
+    if (!item) return '';
+    return `${item.FacilityLicense} - ${item.FacilityName}`;
+  };
 
   // ============== Popup functionalities ==================
   onViewClick = (e: any) => {

@@ -13,6 +13,7 @@ import {
   DxPopupModule,
   DxSelectBoxModule,
   DxTextBoxModule,
+  DxLoadIndicatorModule,
 } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { CommonModule } from '@angular/common';
@@ -117,17 +118,19 @@ export class ClinicalDataComponent implements OnInit {
   isMultiProcessing: boolean = false;
   processProgressMessage: string = '0/0 completed';
   menuPrevilage: any;
+  isFilterApplied: boolean = false;
 
+  isCancelMultiProcessing: boolean = false;
+  multiProcessSubscription?: any;
+  
   constructor(
     private service: ReportService,
-    private router: Router,
     private dataService: DataService,
     private operationService: OperationReportService,
     private datePipe: DatePipe,
     private masterService: MasterReportService,
     private notificationService: NotificationService,
     private inactivityService: InactivityService,
-    private reportengine: ReportEngineService,
     private activatedRoute: ActivatedRoute,
   ) {
     this.activatedRoute.url.subscribe((segments) => {
@@ -304,7 +307,10 @@ export class ClinicalDataComponent implements OnInit {
       this.cancelLoad = undefined;
     }
     this.isLookupLoading = false;
-    this.notificationService.showNotification('Data loading cancelled', 'warning');
+    this.notificationService.showNotification(
+      'Data loading cancelled',
+      'warning',
+    );
   }
 
   // ========== process button hide and show depends row selection ========
@@ -318,6 +324,20 @@ export class ClinicalDataComponent implements OnInit {
       processButton.options.disabled = !selected;
       this.dataGrid.instance.option('toolbar.items', items);
     }
+  }
+
+  cancelMultiProcessing() {
+    this.isCancelMultiProcessing = true;
+    if (this.multiProcessSubscription) {
+      this.multiProcessSubscription.unsubscribe();
+      this.multiProcessSubscription = undefined;
+    }
+    this.isMultiProcessing = false;
+    this.inactivityService.setApiInProgress(false);
+    this.notificationService.showNotification(
+      'Process cancelled by user',
+      'warning',
+    );
   }
 
   // ============ Process selected row data ===========
@@ -341,35 +361,53 @@ export class ClinicalDataComponent implements OnInit {
     let completed = 0;
 
     this.isMultiProcessing = true;
+    this.isCancelMultiProcessing = false;
     this.processProgressMessage = `0/${total} completed`;
 
     this.inactivityService.setApiInProgress(true);
 
     for (const row of uniqueClaimUIDs) {
+      if (this.isCancelMultiProcessing) {
+        break;
+      }
       const payload = { ClaimUID: row.ClaimUID || 0 };
 
       try {
-        const res: any = await firstValueFrom(
-          this.operationService.getClinicalDataInPopup(payload),
-        );
+        const res: any = await new Promise((resolve, reject) => {
+          this.multiProcessSubscription = this.operationService
+            .getClinicalDataInPopup(payload)
+            .subscribe({
+              next: (response: any) => resolve(response),
+              error: (err: any) => reject(err),
+            });
+        });
         // We only process the API, no need to show popup or change status manually
       } catch (err) {
+        if (this.isCancelMultiProcessing) {
+          break; // API call was cancelled
+        }
         console.error(`Error processing ClaimUID ${row.ClaimUID}:`, err);
+      }
+
+      if (this.isCancelMultiProcessing) {
+        break;
       }
 
       completed++;
       this.processProgressMessage = `${completed}/${total} completed`;
     }
 
-    this.isMultiProcessing = false;
-    this.inactivityService.setApiInProgress(false);
+    if (!this.isCancelMultiProcessing) {
+      this.isMultiProcessing = false;
+      this.inactivityService.setApiInProgress(false);
 
-    this.notificationService.showNotification(
-      'Processing completed successfully.',
-      'success',
-    );
-    this.dataGrid.instance.clearSelection();
-    this.onApplyFilter(); // Refresh grid
+      this.notificationService.showNotification(
+        'Processing completed successfully.',
+        'success',
+      );
+      this.dataGrid.instance.clearSelection();
+      this.onApplyFilter(); // Refresh grid
+    }
   }
 
   // ======= cpt code and ordering clinician edit function ============
@@ -426,11 +464,17 @@ export class ClinicalDataComponent implements OnInit {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          this.notificationService.showNotification('Cpt Master Updated Successfully', 'success');
+          this.notificationService.showNotification(
+            'Cpt Master Updated Successfully',
+            'success',
+          );
 
           this.resetCptForm();
         } else {
-          this.notificationService.showNotification('Your Data Not Updated', 'error');
+          this.notificationService.showNotification(
+            'Your Data Not Updated',
+            'error',
+          );
         }
       });
   };
@@ -550,19 +594,15 @@ export class ClinicalDataComponent implements OnInit {
     }
   }
 
-    isFilterApplied: boolean = false;
-
-    onGridOptionChanged(e: any) {
-
-            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
-              setTimeout(() => {
-                if (this.dataGrid && this.dataGrid.instance) {
-                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
-                }
-              });
-            }
-                    
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+        }
+      });
     }
+  }
 }
 
 @NgModule({
@@ -583,6 +623,7 @@ export class ClinicalDataComponent implements OnInit {
     DxDropDownBoxModule,
     CptMasterEditFormModule,
     DxLoadPanelModule,
+    DxLoadIndicatorModule,
     DxoSummaryModule,
     DxFormModule,
   ],

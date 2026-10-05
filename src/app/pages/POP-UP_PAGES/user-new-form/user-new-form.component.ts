@@ -151,7 +151,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
 
   constructor(
     private service: MasterReportService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
   getNewUserData = () => ({ ...this.newUserData });
 
@@ -179,7 +179,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   onDateFormatChange(event: any): void {
     // Directly set the value from the event
     const selectedFormat = this.dateFormat.find(
-      (format) => format.DESCRIPTION === event.value
+      (format) => format.DESCRIPTION === event.value,
     )?.DESCRIPTION;
     if (selectedFormat) {
       this.newUserData.Date_Format = event.value; // Ensure the correct value is set
@@ -191,7 +191,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
 
   onTimeFormatChange(event: any) {
     const selectedTimeFormat = this.timeFormat.find(
-      (format) => format.DESCRIPTION === event.value
+      (format) => format.DESCRIPTION === event.value,
     )?.DESCRIPTION;
     if (selectedTimeFormat) {
       this.newUserData.Time_Format = event.value;
@@ -207,7 +207,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
     if (selectedValue) {
       // Check if the selected value is from the dropdown or entered by the user
       const existingItem = this.currencySymbol.find(
-        (item) => item.DESCRIPTION === selectedValue
+        (item) => item.DESCRIPTION === selectedValue,
       );
 
       if (!existingItem) {
@@ -236,7 +236,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
     // If the value is not part of the dropdown options, treat it as a custom value
     if (enteredValue) {
       const existingItem = this.currencySymbol.find(
-        (item) => item.DESCRIPTION === enteredValue
+        (item) => item.DESCRIPTION === enteredValue,
       );
 
       if (!existingItem) {
@@ -277,7 +277,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
       case 'hh:mm:ss a':
         return `${String(hour12).padStart(
           2,
-          '0'
+          '0',
         )}:${minutes}:${seconds} ${ampm}`; // Example for 'hh:mm:ss a'
 
       default:
@@ -347,7 +347,6 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
       .replace(/[^a-zA-Z\s]/g, '') // Remove all characters except alphabets and spaces
       .replace(/\s{2,}/g, ' ') // Replace multiple spaces with a single space
       .replace(/^\s+/g, ''); // Remove spaces at the beginning of the string
-      
 
     target.value = sanitizedValue;
     this.newUserData.UserName = sanitizedValue; // Update the UserName value
@@ -372,7 +371,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
 
     // Check if the email already exists in the user list
     const exists = this.userList.some(
-      (user) => user.Email.toLowerCase() === email.toLowerCase()
+      (user) => user.Email.toLowerCase() === email.toLowerCase(),
     );
 
     // Return true if it does NOT exist, false if it DOES exist
@@ -550,7 +549,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   setDefaultCountryCode() {
     const defaultCountryCode = '+971'; // Default country code
     const defaultCountry = this.countryCodes.find(
-      (code) => code.data.dial_code === defaultCountryCode
+      (code) => code.data.dial_code === defaultCountryCode,
     );
 
     if (defaultCountry) {
@@ -623,32 +622,32 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
     if (this.securityPolicyData.Numbers) {
       characters.push(numbers);
       requiredCharacters.push(
-        numbers.charAt(Math.floor(Math.random() * numbers.length))
+        numbers.charAt(Math.floor(Math.random() * numbers.length)),
       );
     }
     if (this.securityPolicyData.UppercaseCharacters) {
       characters.push(upperCase);
       requiredCharacters.push(
-        upperCase.charAt(Math.floor(Math.random() * upperCase.length))
+        upperCase.charAt(Math.floor(Math.random() * upperCase.length)),
       );
     }
     if (this.securityPolicyData.LowercaseCharacters) {
       characters.push(lowerCase);
       requiredCharacters.push(
-        lowerCase.charAt(Math.floor(Math.random() * lowerCase.length))
+        lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)),
       );
     }
     if (this.securityPolicyData.SpecialCharacters) {
       characters.push(specialChars);
       requiredCharacters.push(
-        specialChars.charAt(Math.floor(Math.random() * specialChars.length))
+        specialChars.charAt(Math.floor(Math.random() * specialChars.length)),
       );
     }
 
     // Ensure there are character sets to choose from
     if (characters.length === 0) {
       throw new Error(
-        'No character sets selected based on the security policy.'
+        'No character sets selected based on the security policy.',
       );
     }
 
@@ -680,7 +679,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   updateMobileNumber() {
     // Find the selected country code
     const selectedCountry = this.countryCodes.find(
-      (code) => code.data.dial_code === this.newUserData.countryCode
+      (code) => code.data.dial_code === this.newUserData.countryCode,
     );
 
     if (selectedCountry) {
@@ -700,7 +699,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   getOnlyMobileNumber(fullPhoneNumber: string): string {
     // Extract mobile number by removing the dial code part
     const selectedCountry = this.countryCodes.find((code) =>
-      fullPhoneNumber.startsWith(code.data.dial_code)
+      fullPhoneNumber.startsWith(code.data.dial_code),
     );
 
     if (selectedCountry) {
@@ -711,33 +710,35 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   }
 
   onMobileInputChange(event: any) {
-  const target = event.target as HTMLInputElement;
+    const target = event.target as HTMLInputElement;
 
-  // Keep the original cursor position
-  const cursorPosition = target.selectionStart || 0;
+    // Keep the original cursor position
+    const cursorPosition = target.selectionStart || 0;
 
-  // Remove invalid characters except digits
-  let newValue = target.value.replace(/[^\d]/g, '');
+    // Remove invalid characters except digits
+    let newValue = target.value.replace(/[^\d]/g, '');
 
-  // Keep dial code intact
-  const dialCode = this.newUserData.countryCode || '+1'; // fallback if countryCode missing
+    // Keep dial code intact
+    const dialCode = this.newUserData.countryCode || '+1'; // fallback if countryCode missing
 
-  // Remove dial code from typed value if user typed it
-  if (newValue.startsWith(dialCode.replace('+', ''))) {
-    newValue = newValue.slice(dialCode.length - 1);
-  }
-
-  // Update the model, but keep the cursor in place
-  this.newUserData.Mobile = `${dialCode} ${newValue}`;
-
-  // Restore cursor position (after dial code)
-  setTimeout(() => {
-    if (target.selectionStart !== null) {
-      target.selectionStart = target.selectionEnd = Math.max(cursorPosition, dialCode.length + 1);
+    // Remove dial code from typed value if user typed it
+    if (newValue.startsWith(dialCode.replace('+', ''))) {
+      newValue = newValue.slice(dialCode.length - 1);
     }
-  });
-}
 
+    // Update the model, but keep the cursor in place
+    this.newUserData.Mobile = `${dialCode} ${newValue}`;
+
+    // Restore cursor position (after dial code)
+    setTimeout(() => {
+      if (target.selectionStart !== null) {
+        target.selectionStart = target.selectionEnd = Math.max(
+          cursorPosition,
+          dialCode.length + 1,
+        );
+      }
+    });
+  }
 
   validateMobileNumber(mobileNumber: string): string {
     // Remove any non-digit characters
@@ -748,84 +749,83 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   }
 
   MobileNumberValidate = (e: any): boolean => {
-  const selectedCountry = this.countryCodes.find(
-    (code) => code.data.dial_code === this.newUserData.countryCode
-  );
+    const selectedCountry = this.countryCodes.find(
+      (code) => code.data.dial_code === this.newUserData.countryCode,
+    );
 
-  // If no country selected → invalid
-  if (!selectedCountry) {
-    e.rule.message = 'Select country code first';
-    return false;
-  }
+    // If no country selected → invalid
+    if (!selectedCountry) {
+      e.rule.message = 'Select country code first';
+      return false;
+    }
 
-  const dialCode = selectedCountry.data.dial_code || '';
-  const mobileValue = e.value ? e.value.toString().trim() : '';
+    const dialCode = selectedCountry.data.dial_code || '';
+    const mobileValue = e.value ? e.value.toString().trim() : '';
 
-  // Remove dial code and non-digit characters
-  const mobileNumber = mobileValue.replace(dialCode, '').replace(/\D/g, '');
+    // Remove dial code and non-digit characters
+    const mobileNumber = mobileValue.replace(dialCode, '').replace(/\D/g, '');
 
-  // Country-specific length rules
-  let minLength = 10; // default
-  let maxLength = 10; // default, assume same as min for strict length
+    // Country-specific length rules
+    let minLength = 10; // default
+    let maxLength = 10; // default, assume same as min for strict length
 
-  switch (dialCode) {
-    case '+971': // UAE
-      minLength = 9;
-      maxLength = 9;
-      break;
-    case '+91': // India
-      minLength = 10;
-      maxLength = 10;
-      break;
-    case '+1': // USA, Canada
-      minLength = 10;
-      maxLength = 10;
-      break;
-    case '+44': // UK
-      minLength = 10;
-      maxLength = 10;
-      break;
-    case '+61': // Australia
-      minLength = 9;
-      maxLength = 9;
-      break;
-    case '+81': // Japan
-      minLength = 10;
-      maxLength = 10;
-      break;
-    case '+49': // Germany
-      minLength = 10;
-      maxLength = 10;
-      break;
-    case '+33': // France
-      minLength = 9;
-      maxLength = 9;
-      break;
-    case '+86': // China
-      minLength = 11;
-      maxLength = 11;
-      break;
-    default:
-      minLength = 10;
-      maxLength = 15; // fallback max
-  }
+    switch (dialCode) {
+      case '+971': // UAE
+        minLength = 9;
+        maxLength = 9;
+        break;
+      case '+91': // India
+        minLength = 10;
+        maxLength = 10;
+        break;
+      case '+1': // USA, Canada
+        minLength = 10;
+        maxLength = 10;
+        break;
+      case '+44': // UK
+        minLength = 10;
+        maxLength = 10;
+        break;
+      case '+61': // Australia
+        minLength = 9;
+        maxLength = 9;
+        break;
+      case '+81': // Japan
+        minLength = 10;
+        maxLength = 10;
+        break;
+      case '+49': // Germany
+        minLength = 10;
+        maxLength = 10;
+        break;
+      case '+33': // France
+        minLength = 9;
+        maxLength = 9;
+        break;
+      case '+86': // China
+        minLength = 11;
+        maxLength = 11;
+        break;
+      default:
+        minLength = 10;
+        maxLength = 15; // fallback max
+    }
 
-  // Validation: min/max length, not starting with 0, not all zeros
-  const isValid =
-    mobileNumber.length >= minLength &&
-    mobileNumber.length <= maxLength &&
-    !/^0/.test(mobileNumber) &&
-    !/^0+$/.test(mobileNumber);
+    // Validation: min/max length, not starting with 0, not all zeros
+    const isValid =
+      mobileNumber.length >= minLength &&
+      mobileNumber.length <= maxLength &&
+      !/^0/.test(mobileNumber) &&
+      !/^0+$/.test(mobileNumber);
 
-  if (!isValid) {
-    e.rule.message = `Mobile number must be ${minLength}${
-      minLength !== maxLength ? '-' + maxLength : ''
-    } digits long`;
-  }
+    if (!isValid) {
+      e.rule.message = `Mobile number must be ${minLength}${
+        minLength !== maxLength ? '-' + maxLength : ''
+      } digits long`;
+    }
 
-  return isValid;
-};
-
+    return isValid;
+  };
 
   WhatsappValidate = (e: any): boolean => {
     const whatsappNumber = e.value;
@@ -863,7 +863,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
       if (!this.newUserData.Whatsapp && this.newUserData.Mobile) {
         console.log(
           'Populating WhatsApp with Mobile:',
-          this.newUserData.Mobile
+          this.newUserData.Mobile,
         );
         this.newUserData.Whatsapp = this.newUserData.Mobile;
       }
@@ -873,7 +873,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   copyToClipboard(): void {
     if (!navigator.clipboard) {
       console.warn(
-        'Clipboard API not available. Make sure you are running the application over HTTPS.'
+        'Clipboard API not available. Make sure you are running the application over HTTPS.',
       );
       // Optionally show a user-friendly message or fallback logic
       this.tooltipVisible = false;
