@@ -386,12 +386,6 @@
         [allowEditing]="false"
       ></dxi-column>
 
-      <!-- <dxi-column
-        dataField="Specialty"
-        caption="Specialty"
-        [allowEditing]="false"
-      ></dxi-column> -->
-
       <dxi-column
         dataField="Status"
         caption="Grouper Status"
@@ -510,7 +504,8 @@
     (save)="onClickUpdateNewCptType()"
     titleText="Edit CPT Master"
     [width]="'70%'"
-    height="auto"
+    [height]="'100vh'"
+    (clear)="resetCptForm()"
   >
     <app-cpt-master-edit-form
       *ngIf="isCptEditFormPopupOpened"

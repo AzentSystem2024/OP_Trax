@@ -333,6 +333,9 @@ export class ClinicalDataComponent implements OnInit, OnDestroy {
   }
 
   cancelMultiProcessing() {
+    if (!this.isMultiProcessing) {
+      return;
+    }
     this.isCancelMultiProcessing = true;
     if (this.multiProcessSubscription) {
       this.multiProcessSubscription.unsubscribe();
@@ -429,6 +432,19 @@ export class ClinicalDataComponent implements OnInit, OnDestroy {
     };
 
     if (dataField === 'CPTCode') {
+      const cptMasterPrivilege = this.dataService.getMenuPrevilages('cpt-master-page');
+      console.log("cpt master previlages ::>>", cptMasterPrivilege);
+
+      if (
+        !cptMasterPrivilege ||
+        (!cptMasterPrivilege.CanAdd &&
+          !cptMasterPrivilege.CanEdit &&
+          !cptMasterPrivilege.CanExport)
+      ) {
+        showError('You do not have privilege to open the details');
+        return;
+      }
+
       const code = e.data.CPTID;
       console.log('clicked row data', code);
       if (!code) {
@@ -486,6 +502,7 @@ export class ClinicalDataComponent implements OnInit, OnDestroy {
   };
 
   resetCptForm() {
+    this.isCptEditFormPopupOpened = false;
     this.CptEditFormComponent.clearForm();
   }
 

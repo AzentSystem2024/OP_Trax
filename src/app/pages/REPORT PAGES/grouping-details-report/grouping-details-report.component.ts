@@ -738,7 +738,7 @@ export class GroupingDetailsReportComponent implements OnInit {
           !cptMasterPrivilege.CanEdit &&
           !cptMasterPrivilege.CanExport)
       ) {
-        showError('You do not have privilege to access this feature');
+        showError('You do not have privilege to open the details');
         return;
       }
 
@@ -761,8 +761,14 @@ export class GroupingDetailsReportComponent implements OnInit {
 
   //======= Update data ==========
   onClickUpdateNewCptType = () => {
-    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings, IsADOCExcluded } =
-      this.CptEditFormComponent.getUpdateCptMasterData();
+    const {
+      ID,
+      CPTTypeID,
+      CPTCode,
+      CPTName,
+      CPTADOCMappings,
+      ADOCApplicationID,
+    } = this.CptEditFormComponent.getUpdateCptMasterData();
 
     this.masterService
       .update_CptMaster_data(
@@ -771,7 +777,7 @@ export class GroupingDetailsReportComponent implements OnInit {
         CPTCode,
         CPTName,
         CPTADOCMappings,
-        IsADOCExcluded,
+        ADOCApplicationID,
       )
       .subscribe((response: any) => {
         if (response) {
