@@ -339,19 +339,6 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
     return e.valid;
   };
 
-  onUserNameInput(event: Event): void {
-    const target = event.target as HTMLInputElement;
-
-    // Regular expression to allow only alphabets with a single space between words
-    let sanitizedValue = target.value
-      .replace(/[^a-zA-Z\s]/g, '') // Remove all characters except alphabets and spaces
-      .replace(/\s{2,}/g, ' ') // Replace multiple spaces with a single space
-      .replace(/^\s+/g, ''); // Remove spaces at the beginning of the string
-
-    target.value = sanitizedValue;
-    this.newUserData.UserName = sanitizedValue; // Update the UserName value
-  }
-
   // This function removes spaces from the email input and updates the Email property
   onEmailInput(event: Event): void {
     const target = event.target as HTMLInputElement;

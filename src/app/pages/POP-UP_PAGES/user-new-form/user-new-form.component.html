@@ -10,7 +10,7 @@
         type="default"
         (onClick)="toggleUserDetails()"
         [elementAttr]="{
-          style: 'background-color: transparent; border: none; color: #000;'
+          style: 'background-color: transparent; border: none; color: #000;',
         }"
         stylingMode="text"
       ></dx-button>
@@ -25,9 +25,9 @@
         <div class="form-column" style="flex: 2">
           <dx-text-box
             [(value)]="newUserData.UserName"
-            label="User Name *" [tabIndex]="1"
+            label="User Name *"
+            [tabIndex]="1"
             hint="User Name"
-            (input)="onUserNameInput($event)"
           >
             <dx-validator>
               <dxi-validation-rule
@@ -39,7 +39,8 @@
 
           <div style="position: relative; display: flex">
             <dx-text-box
-              label="Password" [tabIndex]="3"
+              label="Password"
+              [tabIndex]="3"
               [(value)]="newUserData.Password"
               [readOnly]="true"
               [(value)]="generatedPassword"
@@ -70,7 +71,7 @@
               [hideEvent]="'click'"
               [animation]="{
                 show: { type: 'fade', duration: 300 },
-                hide: { type: 'fade', duration: 300 }
+                hide: { type: 'fade', duration: 300 },
               }"
             >
               <div>Copied!</div>
@@ -97,7 +98,8 @@
           </div>
 
           <dx-select-box
-            label="Gender" [tabIndex]="5"
+            label="Gender"
+            [tabIndex]="5"
             [(value)]="newUserData.GenderID"
             [items]="gender"
             displayExpr="DESCRIPTION"
@@ -109,7 +111,8 @@
 
           <div style="display: flex">
             <dx-select-box
-              label="Mobile *" [tabIndex]="7"
+              label="Mobile *"
+              [tabIndex]="7"
               [searchEnabled]="true"
               [acceptCustomValue]="false"
               [(value)]="newUserData.countryCode"
@@ -140,7 +143,8 @@
             </dx-select-box>
 
             <dx-text-box
-              label="No. *" [tabIndex]="8"
+              label="No. *"
+              [tabIndex]="8"
               [(value)]="newUserData.Mobile"
               [width]="'100%'"
               style="margin-left: 10px"
@@ -165,7 +169,8 @@
 
         <div class="form-column" style="flex: 2">
           <dx-text-box
-            label="Login Name *" [tabIndex]="2"
+            label="Login Name *"
+            [tabIndex]="2"
             [(value)]="newUserData.LoginName"
             hint="Login Name"
             (input)="onLoginNameInput($event)"
@@ -194,7 +199,8 @@
           </dx-text-box>
 
           <dx-select-box
-            label="User Role *" [tabIndex]="4"
+            label="User Role *"
+            [tabIndex]="4"
             [(value)]="newUserData.UserRoleID"
             [items]="userRole"
             displayExpr="DESCRIPTION"
@@ -211,7 +217,8 @@
           </dx-select-box>
 
           <dx-date-box
-            label="Date of Birth" [tabIndex]="6"
+            label="Date of Birth"
+            [tabIndex]="6"
             type="date"
             [displayFormat]="'dd/MM/yyyy'"
             placeholder="Select Date of Birth"
@@ -221,7 +228,8 @@
           ></dx-date-box>
 
           <dx-text-box
-            label="Email *" [tabIndex]="9"
+            label="Email *"
+            [tabIndex]="9"
             [(value)]="newUserData.Email"
             hint="Email"
             (input)="onEmailInput($event)"
@@ -270,7 +278,11 @@
             />
 
             <!-- Conditionally show the button if no images are uploaded -->
-            <button *ngIf="images.length === 0" (click)="fileInput.click()" tabindex="10">
+            <button
+              *ngIf="images.length === 0"
+              (click)="fileInput.click()"
+              tabindex="10"
+            >
               Select a file
             </button>
 
@@ -285,7 +297,8 @@
           </div>
 
           <dx-text-box
-            label="Whatsapp No" [tabIndex]="11"
+            label="Whatsapp No"
+            [tabIndex]="11"
             [(value)]="newUserData.Whatsapp"
             (input)="validateWhatsapp($event)"
             hint="Whatsapp No"
