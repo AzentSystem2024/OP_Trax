@@ -1,4 +1,10 @@
-import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  NgModule,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { confirm } from 'devextreme/ui/dialog';
 import {
   DxButtonModule,
@@ -42,7 +48,7 @@ import { AdocDetailPopupModule } from '../../POP-UP_PAGES/adoc-detail-popup/adoc
   styleUrls: ['./clinical-data.component.scss'],
   providers: [ReportService, DataService, OperationReportService, DatePipe],
 })
-export class ClinicalDataComponent implements OnInit {
+export class ClinicalDataComponent implements OnInit, OnDestroy {
   @ViewChild(DxDataGridComponent, { static: true })
   dataGrid!: DxDataGridComponent;
 
@@ -122,7 +128,7 @@ export class ClinicalDataComponent implements OnInit {
 
   isCancelMultiProcessing: boolean = false;
   multiProcessSubscription?: any;
-  
+
   constructor(
     private service: ReportService,
     private dataService: DataService,
@@ -602,6 +608,10 @@ export class ClinicalDataComponent implements OnInit {
         }
       });
     }
+  }
+
+  ngOnDestroy() {
+    this.cancelMultiProcessing();
   }
 }
 
