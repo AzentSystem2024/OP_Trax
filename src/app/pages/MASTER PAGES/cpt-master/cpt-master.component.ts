@@ -45,7 +45,7 @@ export class CPTMasterComponent {
   showPageSizeSelector = true;
   showInfo = true;
   showNavButtons = true;
-  
+
   facilityGroupDatasource: any;
   isAddFormPopupOpened: boolean = false;
   isEditFormPopupOpened: boolean = false;
@@ -55,8 +55,8 @@ export class CPTMasterComponent {
     load: () =>
       new Promise((resolve, reject) => {
         this.masterService.get_CptMaster_List().subscribe({
-          next: (response: any) => resolve(response.data), 
-          error: (error) => reject(error.message), 
+          next: (response: any) => resolve(response.data),
+          error: (error) => reject(error.message),
         });
       }),
   });
@@ -67,13 +67,15 @@ export class CPTMasterComponent {
   currentPathName: string = '';
   initialized: boolean = false;
   menuPrevilage: any;
+  isFilterApplied: boolean = false;
 
   constructor(
     private service: ReportService,
     private masterService: MasterReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute, private notificationService: NotificationService
+    private route: ActivatedRoute,
+    private notificationService: NotificationService,
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -119,7 +121,7 @@ export class CPTMasterComponent {
         if (this.dataGrid && this.dataGrid.instance) {
           this.dataGrid.instance.endCustomLoading();
         }
-      }
+      },
     });
   }
 
@@ -130,13 +132,8 @@ export class CPTMasterComponent {
       return;
     }
 
-    const {
-      CPTTypeID,
-      CPTCode,
-      CPTName,
-      CPTADOCMappings,
-      ADOCApplicationID,
-    } = this.CptNewFormComponent.getNewCptMasterData();
+    const { CPTTypeID, CPTCode, CPTName, CPTADOCMappings, ADOCApplicationID } =
+      this.CptNewFormComponent.getNewCptMasterData();
 
     this.masterService
       .Insert_CptMaster_Data(
@@ -150,11 +147,17 @@ export class CPTMasterComponent {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          this.notificationService.showNotification('New Cpt Master Saved Successfully', 'success');
+          this.notificationService.showNotification(
+            'New Cpt Master Saved Successfully',
+            'success',
+          );
 
           this.CptNewFormComponent.clearForm();
         } else {
-          this.notificationService.showNotification('Your Data Not Saved', 'error');
+          this.notificationService.showNotification(
+            'Your Data Not Saved',
+            'error',
+          );
         }
       });
   };
@@ -192,11 +195,17 @@ export class CPTMasterComponent {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          this.notificationService.showNotification('Cpt Master Updated Successfully', 'success');
+          this.notificationService.showNotification(
+            'Cpt Master Updated Successfully',
+            'success',
+          );
 
           this.resetCptForm();
         } else {
-          this.notificationService.showNotification('Your Data Not Updated', 'error');
+          this.notificationService.showNotification(
+            'Your Data Not Updated',
+            'error',
+          );
         }
       });
   };
@@ -209,9 +218,15 @@ export class CPTMasterComponent {
       .Remove_CptMaster_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          this.notificationService.showNotification('Delete operation successful', 'success');
+          this.notificationService.showNotification(
+            'Delete operation successful',
+            'success',
+          );
         } catch (error) {
-          this.notificationService.showNotification('Delete operation failed', 'error');
+          this.notificationService.showNotification(
+            'Delete operation failed',
+            'error',
+          );
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
@@ -237,19 +252,15 @@ export class CPTMasterComponent {
     this.CptEditFormComponent.clearForm();
   }
 
-    isFilterApplied: boolean = false;
-
-    onGridOptionChanged(e: any) {
-
-            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
-              setTimeout(() => {
-                if (this.dataGrid && this.dataGrid.instance) {
-                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
-                }
-              });
-            }
-                    
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+        }
+      });
     }
+  }
 }
 @NgModule({
   imports: [
