@@ -730,6 +730,18 @@ export class GroupingDetailsReportComponent implements OnInit {
     };
 
     if (dataField === 'CPTCode') {
+      const cptMasterPrivilege = this.dataService.getMenuPrevilages('cpt-master-page');
+
+      if (
+        !cptMasterPrivilege ||
+        (!cptMasterPrivilege.CanAdd &&
+          !cptMasterPrivilege.CanEdit &&
+          !cptMasterPrivilege.CanExport)
+      ) {
+        showError('You do not have privilege to access this feature');
+        return;
+      }
+
       const code = e.data.CPTID;
       console.log('clicked row data', code);
       if (!code) {
