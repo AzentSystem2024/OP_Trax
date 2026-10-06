@@ -22,7 +22,7 @@ import {
   ThemeService,
 } from 'src/app/services';
 import { SharedServiceService } from 'src/app/services/shared-service.service';
-import { confirm } from 'devextreme/ui/dialog';
+import { confirm, alert as customAlert } from 'devextreme/ui/dialog';
 import { InactivityService } from 'src/app/services/inactivity.service';
 import {
   DxLoadPanelModule,
@@ -31,7 +31,6 @@ import {
   DxTextBoxModule,
 } from 'devextreme-angular';
 import { firstValueFrom } from 'rxjs';
-import { UserService } from 'src/app/services/user.service';
 import { MasterReportService } from 'src/app/pages/MASTER PAGES/master-report.service';
 
 @Component({
@@ -152,6 +151,18 @@ export class LoginFormComponent implements OnInit, OnDestroy {
       this.loginResponse = response;
 
       if (response.flag == 1) {
+        if (response.sessionTimeout && response.sessionTimeout > 0) {
+          const timeoutMinutes = response.sessionTimeout;
+          const expiryTime = Date.now() + timeoutMinutes * 60000;
+          sessionStorage.setItem('SessionTimeoutExpiry', expiryTime.toString());
+          this.showNotify(
+            `You have only ${timeoutMinutes} minutes to work in this session. After that, you will be logged out automatically.`,
+            'success',
+          );
+        } else {
+          sessionStorage.removeItem('SessionTimeoutExpiry');
+        }
+
         const userRoleId =
           response.data?.UserRoleID ??
           response.data?.userRoleID ??
@@ -528,7 +539,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
             logData?.UserRoleID ??
               logData?.userRoleID ??
               logData?.UserRoleId ??
-              logData?.userRoleId
+              logData?.userRoleId,
           );
           const targetUrl = userRoleId === 2 ? '/Home' : '/analytics-dashboard';
 
@@ -550,7 +561,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
             logData?.UserRoleID ??
               logData?.userRoleID ??
               logData?.UserRoleId ??
-              logData?.userRoleId
+              logData?.userRoleId,
           );
           const targetUrl = userRoleId === 2 ? '/Home' : '/analytics-dashboard';
 
@@ -569,7 +580,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
   }
 
   // ====== Notify helper ======
-  private showNotify(message: string, type: 'success' | 'error') {
+  private showNotify(message: string, type: 'success' | 'error' | 'warning') {
     this.notificationService.showNotification(message, type);
   }
 
