@@ -25,7 +25,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { OperationReportService } from 'src/app/pages/OPERATION PAGES/operation-report.service';
 import validationEngine from 'devextreme/ui/validation_engine';
-import { NotificationService } from "src/app/services/notification.service";
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-adoc-class-change-popup',
@@ -33,25 +33,25 @@ import { NotificationService } from "src/app/services/notification.service";
   styleUrls: ['./adoc-class-change-popup.component.scss'],
 })
 export class AdocClassChangePopupComponent implements OnChanges, OnInit {
-  @Input() visible: boolean = false;
-  @Output() visibleChange = new EventEmitter<boolean>();
+  @ViewChild('editForm', { static: false }) editForm!: DxFormComponent;
 
+  @Input() visible: boolean = false;
   @Input() formData: any = null;
   @Input() adocCategoryList: any[] = [];
   @Input() claimActivityUID: number = 0;
+
+  @Output() visibleChange = new EventEmitter<boolean>();
+  @Output() saved = new EventEmitter<any>();
   adocClassList: any[] = [];
-
-  @Output() onSaved = new EventEmitter<any>();
-
-  @ViewChild('editForm', { static: false }) editForm!: DxFormComponent;
 
   editData: any = {};
 
   constructor(
-    private masterService: MasterReportService, 
+    private masterService: MasterReportService,
     private dataService: DataService,
     private operationService: OperationReportService,
-    private authService: AuthService, private notificationService: NotificationService
+    private authService: AuthService,
+    private notificationService: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -74,7 +74,7 @@ export class AdocClassChangePopupComponent implements OnChanges, OnInit {
 
   onAdocClassChanged = (e: any) => {
     const adocClassID = e.value;
-    console.log("adocClassID",adocClassID);
+    console.log('adocClassID', adocClassID);
     if (adocClassID) {
       this.masterService.Select_adocClass_Row_Data(adocClassID).subscribe({
         next: (res: any) => {
@@ -83,30 +83,48 @@ export class AdocClassChangePopupComponent implements OnChanges, OnInit {
           } else if (res && res.data && !Array.isArray(res.data)) {
             this.editData = { ...res.data };
           } else {
-            this.notificationService.showNotification('ADOC Classification details not found.', 'error');
+            this.notificationService.showNotification(
+              'ADOC Classification details not found.',
+              'error',
+            );
           }
         },
         error: () => {
-          this.notificationService.showNotification('Failed to load ADOC Classification details.', 'error');
-        }
+          this.notificationService.showNotification(
+            'Failed to load ADOC Classification details.',
+            'error',
+          );
+        },
       });
     }
-  }
+  };
 
   onSave() {
     const result = validationEngine.validateGroup('adocClassChangeValidation');
     if (!result.isValid) {
-      this.notificationService.showNotification('Please fill all required fields', 'warning');
+      this.notificationService.showNotification(
+        'Please fill all required fields',
+        'warning',
+      );
       return;
     }
 
     if (!this.editData.ClassName?.trim() || !this.editData.GroupID) {
-      this.notificationService.showNotification('Please fill all required fields', 'warning');
+      this.notificationService.showNotification(
+        'Please fill all required fields',
+        'warning',
+      );
       return;
     }
 
-    const logData = this.authService?.getUserData() || JSON.parse(localStorage.getItem('logData') || '{}');
-    const userId = logData?.UserID || logData?.UserId || sessionStorage.getItem('UserID') || 0;
+    const logData =
+      this.authService?.getUserData() ||
+      JSON.parse(localStorage.getItem('logData') || '{}');
+    const userId =
+      logData?.UserID ||
+      logData?.UserId ||
+      sessionStorage.getItem('UserID') ||
+      0;
     const sessionId = logData?.SessionID || logData?.SessionId || 0;
 
     const payload = {
@@ -114,21 +132,25 @@ export class AdocClassChangePopupComponent implements OnChanges, OnInit {
       SessionID: Number(sessionId),
       ClaimActivityUID: this.claimActivityUID,
       NewADOCClassID: this.editData.ID,
-      OldADOCClassID: this.formData?.ID
+      OldADOCClassID: this.formData?.ID,
     };
 
-    this.operationService
-      .updateADOCClass(payload)
-      .subscribe((res: any) => {
-        if (res && res.flag === '1') {
-          this.notificationService.showNotification(res.message || `Data updated successfully`, 'success');
-          this.onSaved.emit();
-          this.visible = false;
-          this.visibleChange.emit(false);
-        } else {
-          this.notificationService.showNotification(res?.message || `Your Data Not Saved`, 'error');
-        }
-      });
+    this.operationService.updateADOCClass(payload).subscribe((res: any) => {
+      if (res && res.flag === '1') {
+        this.notificationService.showNotification(
+          res.message || `Data updated successfully`,
+          'success',
+        );
+        this.saved.emit();
+        this.visible = false;
+        this.visibleChange.emit(false);
+      } else {
+        this.notificationService.showNotification(
+          res?.message || `Your Data Not Saved`,
+          'error',
+        );
+      }
+    });
   }
 }
 

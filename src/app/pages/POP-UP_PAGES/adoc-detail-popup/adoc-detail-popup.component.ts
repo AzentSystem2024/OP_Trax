@@ -45,6 +45,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() dataLoaded = new EventEmitter<any>();
   @Output() cellClick = new EventEmitter<any>();
+  @Output() reRunSuccess = new EventEmitter<void>();
 
   popupGridData: any[] = [];
   isPopupProcessing: boolean = false;
@@ -175,6 +176,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       next: (res: any) => {
         if (res.flag === '1') {
           this.getClinicalDataPopupData();
+          this.reRunSuccess.emit();
           this.notificationService.showNotification(
             'Grouper re-run successfully',
             'success',

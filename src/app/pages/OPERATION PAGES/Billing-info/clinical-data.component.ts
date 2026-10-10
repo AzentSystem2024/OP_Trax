@@ -288,6 +288,16 @@ export class ClinicalDataComponent implements OnInit, OnDestroy {
                 this.cancelLoad = undefined;
                 const data = res?.flag === '1' ? (res.data ?? []) : [];
                 this.isContentVisible = data.length === 0;
+
+                if (this.isRowPopupVisible && this.selectedRowData?.ClaimUID) {
+                  const updatedRow = data.find(
+                    (r: any) => r.ClaimUID === this.selectedRowData.ClaimUID,
+                  );
+                  if (updatedRow) {
+                    this.selectedRowData = { ...updatedRow };
+                  }
+                }
+
                 resolve(data);
               },
               error: (err: any) => {
@@ -432,8 +442,9 @@ export class ClinicalDataComponent implements OnInit, OnDestroy {
     };
 
     if (dataField === 'CPTCode') {
-      const cptMasterPrivilege = this.dataService.getMenuPrevilages('cpt-master-page');
-      console.log("cpt master previlages ::>>", cptMasterPrivilege);
+      const cptMasterPrivilege =
+        this.dataService.getMenuPrevilages('cpt-master-page');
+      console.log('cpt master previlages ::>>', cptMasterPrivilege);
 
       if (
         !cptMasterPrivilege ||
