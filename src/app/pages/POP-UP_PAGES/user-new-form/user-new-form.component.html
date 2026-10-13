@@ -185,16 +185,6 @@
                 message="Login Name already exists"
                 [validationCallback]="checkLoginNameExists"
               ></dxi-validation-rule>
-              <dxi-validation-rule
-                type="stringLength"
-                min="5"
-                message="Login Name must be at least 5 characters long"
-              ></dxi-validation-rule>
-              <dxi-validation-rule
-                type="stringLength"
-                max="20"
-                message="Login Name cannot exceed 20 characters"
-              ></dxi-validation-rule>
             </dx-validator>
           </dx-text-box>
 

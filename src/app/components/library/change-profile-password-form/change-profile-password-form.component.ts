@@ -1,25 +1,36 @@
 import { CommonModule } from '@angular/common';
-import {Component, EventEmitter, Input, NgModule, Output, ViewChild} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  NgModule,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { DxFormModule } from 'devextreme-angular/ui/form';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
-import {FormPopupComponent, FormPopupModule} from 'src/app/components/utils/form-popup/form-popup.component';
+import {
+  FormPopupComponent,
+  FormPopupModule,
+} from 'src/app/components/utils/form-popup/form-popup.component';
 import {
   PasswordTextBoxComponent,
   PasswordTextBoxModule,
 } from 'src/app/components/library/password-text-box/password-text-box.component';
 
 import { ValidationRule } from 'devextreme-angular/common';
-import { NotificationService } from "src/app/services/notification.service";
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'change-profile-password-form',
   templateUrl: './change-profile-password-form.component.html',
-  styleUrls: ['./change-profile-password-form.component.scss']
+  styleUrls: ['./change-profile-password-form.component.scss'],
 })
 export class ChangeProfilePasswordFormComponent {
   @ViewChild(FormPopupComponent, { static: true }) formPopup;
 
-  @ViewChild('confirmField', { static: true }) confirmField: PasswordTextBoxComponent;
+  @ViewChild('confirmField', { static: true })
+  confirmField: PasswordTextBoxComponent;
 
   @Input() visible = false;
 
@@ -36,11 +47,14 @@ export class ChangeProfilePasswordFormComponent {
       comparisonTarget: () => this.formData.password,
     },
   ];
+  constructor(private notificationService: NotificationService) {}
 
   async onFieldChanged() {
     const formValues = Object.entries(this.formData);
 
-    this.isSaveDisabled =  await (formValues.length != 3 || !!formValues.find(([_, value]) => !value) || !this.formPopup.isValid());
+    this.isSaveDisabled = await (formValues.length != 3 ||
+      !!formValues.find(([_, value]) => !value) ||
+      !this.formPopup.isValid());
   }
 
   saveNewPassword(): void {
@@ -60,9 +74,6 @@ export class ChangeProfilePasswordFormComponent {
     this.visible = visible;
     this.visibleChange.emit(this.visible);
   }
-
-    constructor(private notificationService: NotificationService) {
-    }
 }
 
 @NgModule({
@@ -76,4 +87,4 @@ export class ChangeProfilePasswordFormComponent {
   declarations: [ChangeProfilePasswordFormComponent],
   exports: [ChangeProfilePasswordFormComponent],
 })
-export class ChangeProfilePasswordFormModule { }
+export class ChangeProfilePasswordFormModule {}
