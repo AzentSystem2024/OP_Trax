@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, NgModule, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, NgModule, OnInit, Output, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
   DxTabPanelModule,
   DxCheckBoxModule,
@@ -24,6 +25,8 @@ import { NotificationService } from "src/app/services/notification.service";
 })
 export class UserLevelNewFormComponent implements OnInit {
   @Input() editValue: any;
+  @Output() save = new EventEmitter<void>();
+  @Output() cancel = new EventEmitter<void>();
   @ViewChild('dataGrid', { static: false }) dataGrid: any;
   @ViewChild('userRoleValidator') userRoleValidator!: DxValidatorComponent;
 
@@ -41,16 +44,17 @@ export class UserLevelNewFormComponent implements OnInit {
   allSelectedRows: any[] = [];
 
   MenuDatasource: any;
-  UserLevelValue:any = null;
+  UserLevelValue: any = null;
   isErrorVisible = false;
   UserListdataSource: any;
   userRoles: any;
   CopiedUserLevelValue = '';
+  searchQuery: string = '';
 
   canVerifyCostingData: boolean = false;
   canApproveCostingData: boolean = false;
   canUploadCostingData: boolean = false;
-  canReprocessCostingData:boolean = false; 
+  canReprocessCostingData: boolean = false;
 
   // ======= constructor – injects the masterservice to call backend APIs ==============
   constructor(private masterservice: MasterReportService, private notificationService: NotificationService) {}
@@ -74,6 +78,195 @@ export class UserLevelNewFormComponent implements OnInit {
     });
   }
 
+  get currentTabName(): string {
+    return this.MenuDatasource?.[this.selectedTab]?.text || 'Home';
+  }
+
+  get filteredMenus(): any[] {
+    const menus = this.selectedTabData || [];
+    if (!this.searchQuery || !this.searchQuery.trim()) {
+      return menus;
+    }
+    const q = this.searchQuery.toLowerCase().trim();
+    return menus.filter(
+      (m: any) => m.MenuName && m.MenuName.toLowerCase().includes(q)
+    );
+  }
+
+  selectCategoryTab(index: number): void {
+    this.selectedTab = index;
+    this.selectedTabData = this.MenuDatasource?.[this.selectedTab]?.Menus || [];
+  }
+
+  getCategoryIcon(name: string): string {
+    if (!name) return 'bi bi-folder2-open';
+    const lower = name.toLowerCase();
+    if (lower.includes('home')) return 'bi bi-house';
+    if (lower.includes('system')) return 'bi bi-gear';
+    if (lower.includes('master')) return 'bi bi-database';
+    if (lower.includes('operation')) return 'bi bi-activity';
+    if (lower.includes('report')) return 'bi bi-file-earmark-text';
+    return 'bi bi-folder2-open';
+  }
+
+  isHomeTab(name: string): boolean {
+    return !!name && name.toLowerCase().includes('home');
+  }
+
+  isRowSelected(menu: any): boolean {
+    return (
+      this.selectedRows[this.selectedTab]?.some(
+        (r: any) => r.MenuId === menu.MenuId
+      ) || false
+    );
+  }
+
+  toggleRowSelection(menu: any): void {
+    if (!this.UserLevelValue) {
+      this.notificationService.showNotification(
+        'User Role is required before selecting rows',
+        'error'
+      );
+      if (this.userRoleValidator?.instance) {
+        this.userRoleValidator.instance.validate();
+      }
+      return;
+    }
+
+    if (!this.selectedRows[this.selectedTab]) {
+      this.selectedRows[this.selectedTab] = [];
+    }
+
+    const isSelected = this.isRowSelected(menu);
+    if (isSelected) {
+      this.selectedRows[this.selectedTab] = this.selectedRows[
+        this.selectedTab
+      ].filter((r: any) => r.MenuId !== menu.MenuId);
+      menu.Selected = false;
+    } else {
+      this.selectedRows[this.selectedTab].push(menu);
+      menu.Selected = true;
+    }
+    this.combineSelectedRows();
+  }
+
+  togglePermission(
+    menu: any,
+    permissionKey: 'canAdd' | 'canEdit' | 'canDelete' | 'canExport'
+  ): void {
+    if (!this.UserLevelValue) {
+      this.notificationService.showNotification(
+        'Please select or enter a User Role before updating permissions',
+        'warning'
+      );
+      if (this.userRoleValidator?.instance) {
+        this.userRoleValidator.instance.validate();
+      }
+      return;
+    }
+
+    menu[permissionKey] = !menu[permissionKey];
+
+    if (!this.selectedRows[this.selectedTab]) {
+      this.selectedRows[this.selectedTab] = [];
+    }
+
+    const isSelected = this.isRowSelected(menu);
+    const anyChecked =
+      menu.canAdd || menu.canEdit || menu.canDelete || menu.canExport;
+
+    if (anyChecked && !isSelected) {
+      this.selectedRows[this.selectedTab].push(menu);
+      menu.Selected = true;
+    }
+
+    this.combineSelectedRows();
+  }
+
+  selectAllPermissions(): void {
+    if (!this.UserLevelValue) {
+      this.notificationService.showNotification(
+        'User Role is required before selecting permissions',
+        'error'
+      );
+      if (this.userRoleValidator?.instance) {
+        this.userRoleValidator.instance.validate();
+      }
+      return;
+    }
+
+    const menus = this.filteredMenus;
+    if (!this.selectedRows[this.selectedTab]) {
+      this.selectedRows[this.selectedTab] = [];
+    }
+
+    menus.forEach((menu: any) => {
+      menu.canAdd = true;
+      menu.canEdit = true;
+      menu.canDelete = true;
+      menu.canExport = true;
+      menu.Selected = true;
+      if (!this.isRowSelected(menu)) {
+        this.selectedRows[this.selectedTab].push(menu);
+      }
+    });
+
+    this.combineSelectedRows();
+  }
+
+  deselectAllPermissions(): void {
+    const menus = this.filteredMenus;
+    if (!this.selectedRows[this.selectedTab]) {
+      this.selectedRows[this.selectedTab] = [];
+    }
+
+    menus.forEach((menu: any) => {
+      menu.canAdd = false;
+      menu.canEdit = false;
+      menu.canDelete = false;
+      menu.canExport = false;
+      menu.Selected = false;
+      this.selectedRows[this.selectedTab] = this.selectedRows[
+        this.selectedTab
+      ].filter((r: any) => r.MenuId !== menu.MenuId);
+    });
+
+    this.combineSelectedRows();
+  }
+
+  isCurrentTabAllSelected(): boolean {
+    if (!this.filteredMenus || this.filteredMenus.length === 0) return false;
+    return this.filteredMenus.every((m: any) => this.isRowSelected(m));
+  }
+
+  toggleSelectAllCurrentTab(): void {
+    if (this.isCurrentTabAllSelected()) {
+      this.deselectAllPermissions();
+    } else {
+      this.selectAllPermissions();
+    }
+  }
+
+  onSaveClick(): void {
+    if (!this.UserLevelValue || !this.UserLevelValue.toString().trim()) {
+      this.isErrorVisible = true;
+      this.notificationService.showNotification(
+        'User Role is required',
+        'error'
+      );
+      if (this.userRoleValidator?.instance) {
+        this.userRoleValidator.instance.validate();
+      }
+      return;
+    }
+    this.combineSelectedRows();
+    this.save.emit();
+  }
+
+  onCancelClick(): void {
+    this.cancel.emit();
+  }
+
   processEditValue(): void {
     console.log('edit value is ::', this.editValue);
     this.allSelectedRows = [];
@@ -82,11 +275,11 @@ export class UserLevelNewFormComponent implements OnInit {
     this.canUploadCostingData = this.editValue.canUploadCostingData;
     this.canVerifyCostingData = this.editValue.canVerifyCostingData;
     this.canReprocessCostingData = this.editValue.canReprocessCostingData;
-    this.MenuDatasource.forEach((tab:any, index:any) => {
+    this.MenuDatasource?.forEach((tab: any, index: any) => {
       const selectedRowKeys: any[] = [];
 
-      tab.Menus.forEach((menu: any) => {
-        const match = this.editValue.usermenulist.find(
+      tab.Menus?.forEach((menu: any) => {
+        const match = this.editValue.usermenulist?.find(
           (m: any) => m.MenuId === menu.MenuId
         );
 
@@ -110,28 +303,32 @@ export class UserLevelNewFormComponent implements OnInit {
     });
 
     this.selectedTab = 0;
-    this.selectedTabData = this.MenuDatasource[this.selectedTab].Menus;
-
-    setTimeout(() => {
-      const keys = this.selectedRows[this.selectedTab].map((m:any) => m.MenuId);
-      this.dataGrid?.instance?.selectRows(keys, true);
-    }, 0);
+    this.selectedTabData = this.MenuDatasource?.[this.selectedTab]?.Menus || [];
+    this.combineSelectedRows();
   }
 
   // ======= fetches all user level role list for copy user-level functionality =======
   fetch_all_UserLevel_list() {
-    this.masterservice.get_userLevel_List().subscribe((response: any) => {
-      this.UserListdataSource = response.data;
-      this.userRoles = this.UserListdataSource.map(
-        (user: any) => user.UserRoles
-      );
+    this.masterservice.get_userLevel_List().subscribe({
+      next: (response: any) => {
+        const list = response?.data || response?.Data || [];
+        this.UserListdataSource = list;
+        this.userRoles = Array.isArray(list)
+          ? list.map((user: any) => user.UserRoles).filter(Boolean)
+          : [];
+      },
+      error: (err: any) => {
+        console.error('Error fetching user roles list', err);
+        this.UserListdataSource = [];
+        this.userRoles = [];
+      },
     });
   }
 
   // ======= set default values false for all permission checkboxes =======
   initializeBooleanFields() {
     this.MenuDatasource?.forEach((tab: any) => {
-      tab.Menus.forEach((menu: any) => {
+      tab.Menus?.forEach((menu: any) => {
         menu.canAdd = false;
         menu.canEdit = false;
         menu.canDelete = false;
@@ -143,7 +340,6 @@ export class UserLevelNewFormComponent implements OnInit {
   // ======= clears and resets the form fields when userLevel is changed/initialized =======
   set_initial_Values() {
     this.selectedTab = 0;
-    // this.UserLevelValue = '';
     this.selectedTabData = [];
     this.CopiedUserLevelValue = '';
 
@@ -161,7 +357,7 @@ export class UserLevelNewFormComponent implements OnInit {
       ['canAdd', 'canEdit', 'canDelete', 'canExport'].includes(e.dataField)
     ) {
       const isSelected = this.selectedRows[this.selectedTab]?.some(
-        (row:any) => row === e.row.data
+        (row: any) => row === e.row.data
       );
 
       // If not selected, make the cell read-only
@@ -170,8 +366,13 @@ export class UserLevelNewFormComponent implements OnInit {
       }
     }
   }
+
   // ======= on change of UserLevel copy dropdown – loads selected role’s permissions =======
   onUserRoleCopySelectionChange(event: any): void {
+    if (!event || !event.value) {
+      return;
+    }
+
     if (!this.UserLevelValue) {
       this.isErrorVisible = true;
       this.notificationService.showNotification('User Role is required before copying user role', 'error');
@@ -181,13 +382,8 @@ export class UserLevelNewFormComponent implements OnInit {
       }
 
       // Clear selected copy user in UI
-      this.CopiedUserLevelValue = ''; // Add this line
+      this.CopiedUserLevelValue = '';
 
-      return;
-    }
-
-    if (!event.value) {
-      this.selectedRows = {};
       return;
     }
     const copiedUser = this.UserListdataSource?.find(
@@ -204,7 +400,7 @@ export class UserLevelNewFormComponent implements OnInit {
       this.MenuDatasource.forEach((tab: any, tabIndex: number) => {
         const matchedMenus: any[] = [];
 
-        tab.Menus.forEach((menu: any) => {
+        tab.Menus?.forEach((menu: any) => {
           const copiedMenu = userMenuList.find(
             (m: any) => m.MenuId === menu.MenuId
           );
@@ -231,7 +427,7 @@ export class UserLevelNewFormComponent implements OnInit {
         this.selectedRows[tabIndex] = matchedMenus;
       });
 
-      this.selectedTabData = this.MenuDatasource[this.selectedTab].Menus;
+      this.selectedTabData = this.MenuDatasource[this.selectedTab]?.Menus || [];
       this.combineSelectedRows();
     }
   }
@@ -239,7 +435,7 @@ export class UserLevelNewFormComponent implements OnInit {
   // ======= handles tab click event – change selected tab index and menus =======
   onTabClick(event: any): void {
     this.selectedTab = event.itemIndex;
-    this.selectedTabData = this.MenuDatasource[this.selectedTab].Menus;
+    this.selectedTabData = this.MenuDatasource[this.selectedTab]?.Menus || [];
   }
 
   // ========== check box value changed event ==========
@@ -247,7 +443,6 @@ export class UserLevelNewFormComponent implements OnInit {
     if (this.UserLevelValue) {
       this.combineSelectedRows();
     } else {
-      // Optional: show notify or validation if needed
       this.notificationService.showNotification('Please select a User Role before updating permissions', 'warning');
     }
   }
@@ -288,7 +483,7 @@ export class UserLevelNewFormComponent implements OnInit {
     Object.keys(this.selectedRows)
       .filter((key) => this.selectedRows[key]?.length)
       .forEach((key) => {
-        const menus = this.selectedRows[key].map((menu:any) => ({
+        const menus = this.selectedRows[key].map((menu: any) => ({
           MenuId: menu.MenuId,
           canAdd: menu.canAdd,
           canEdit: menu.canEdit,
@@ -305,7 +500,7 @@ export class UserLevelNewFormComponent implements OnInit {
           canVerifyCostingData: this.canVerifyCostingData,
           canApproveCostingData: this.canApproveCostingData,
           canUploadCostingData: this.canUploadCostingData,
-          canReprocessCostingData : this.canReprocessCostingData,
+          canReprocessCostingData: this.canReprocessCostingData,
           Menus: menus,
           ...(this.editValue ? { userLevelID: this.editValue.ID } : {}),
         };
@@ -322,11 +517,16 @@ export class UserLevelNewFormComponent implements OnInit {
   // ======= reset all form fields to initial stage =======
   resetFormValues() {
     this.UserLevelValue = null;
+    this.CopiedUserLevelValue = '';
     this.selectedTab = 0;
     this.selectedTabData = [];
     this.selectedRows = {};
     this.initializeBooleanFields();
     this.allSelectedRows = [];
+    this.searchQuery = '';
+    if (this.MenuDatasource && this.MenuDatasource.length > 0) {
+      this.selectedTabData = this.MenuDatasource[0].Menus || [];
+    }
   }
 
   // ======= returns new user level data of all selected menu permissions =======
@@ -336,6 +536,7 @@ export class UserLevelNewFormComponent implements OnInit {
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     DxTabPanelModule,
     DxCheckBoxModule,
     DxSelectBoxModule,

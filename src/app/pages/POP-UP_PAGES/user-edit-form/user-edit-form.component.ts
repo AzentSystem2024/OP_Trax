@@ -250,23 +250,12 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     // Update the target value and the Email property
     target.value = sanitizedValue;
     this.newUserData.Email = sanitizedValue;
-    this.checkEmailExists({ value: sanitizedValue });
   }
 
-  // This function checks if the email already exists in the user list
+  // Email duplicate check disabled to allow existing emails across users
   checkEmailExists = (e: any): boolean => {
-    const email = e.value;
-
-    // Check if the email already exists in the user list
-    const exists = this.userList.some(
-      (user) =>
-        user.Email.toLowerCase() === email.toLowerCase() &&
-        user.Email !== this.currentEmail
-    );
-
-    // Return true if it does NOT exist, false if it DOES exist
-    e.valid = !exists;
-    return e.valid;
+    e.valid = true;
+    return true;
   };
 
   // Function to handle selection changes

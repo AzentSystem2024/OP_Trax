@@ -1,30 +1,37 @@
-<div class="dx-theme-fluent dx-theme-fluent">
-  <div class="view-wrapper topDiv d-flex mb-2 mt-0">
-    <div class="headDiv d-flex align-items-center m-0 p-0">
-      <div class="inputBox ms-3">
+<div class="user-role-container">
+  <!-- Top Inputs Row -->
+  <div class="role-inputs-row">
+    <!-- Role Name Input -->
+    <div class="input-col">
+      <label class="field-label">ROLE NAME</label>
+      <div class="input-wrapper">
         <dx-text-box
           [(value)]="UserLevelValue"
-          label="Enter User Role"
-          labelMode="floating"
-          validationMessagePosition="right"
+          placeholder="Enter User Role (e.g. Clinical Admin)"
+          [stylingMode]="'outlined'"
+          class="role-text-box"
         >
           <dx-validator #userRoleValidator>
             <dxi-validation-rule
               type="required"
-              message="user level is required"
+              message="User Role is required"
             ></dxi-validation-rule>
           </dx-validator>
         </dx-text-box>
       </div>
+    </div>
 
-      <div class="inputBox ms-3" *ngIf="!editValue">
+    <!-- Copy Role Select -->
+    <div class="input-col">
+      <label class="field-label">COPY FROM EXISTING ROLE (OPTIONAL)</label>
+      <div class="input-wrapper">
         <dx-select-box
           [(value)]="CopiedUserLevelValue"
           [items]="userRoles"
-          label="Copy User Role"
-          labelMode="floating"
+          placeholder="Select Role to Copy..."
           [showClearButton]="true"
-          validationMessagePosition="right"
+          [stylingMode]="'outlined'"
+          class="role-select-box"
           (onValueChanged)="onUserRoleCopySelectionChange($event)"
         >
         </dx-select-box>
@@ -32,75 +39,185 @@
     </div>
   </div>
 
-  <div class="tabs-demo view-wrapper">
-    <div class="widget-container">
-      <div>
-        <dx-tabs
-          #withIconAndText
-          [width]="width"
-          [selectedIndex]="selectedTab"
-          [scrollByContent]="scrollByContent"
-          [showNavButtons]="showNavButtons"
-          [dataSource]="MenuDatasource"
-          [orientation]="orientations"
-          [stylingMode]="stylingMode"
-          [iconPosition]="iconPosition"
-          (onItemClick)="onTabClick($event)"
+  <!-- Category Pills / Tabs -->
+  <div class="category-tabs-container">
+    <div class="category-pills">
+      <button
+        type="button"
+        *ngFor="let tab of MenuDatasource; let i = index"
+        class="category-pill"
+        [class.active]="selectedTab === i"
+        (click)="selectCategoryTab(i)"
+      >
+        <svg
+          *ngIf="isHomeTab(tab.text); else otherIcon"
+          class="pill-icon home-custom-icon"
+          viewBox="0 0 24 24"
+          width="15"
+          height="15"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-        </dx-tabs>
+          <path d="M9 21H5a2 2 0 0 1-2-2V11c0-.7.3-1.4.9-1.9l6.8-5.5a2 2 0 0 1 2.6 0l6.8 5.5c.6.5.9 1.2.9 1.9v8a2 2 0 0 1-2 2h-4a1 1 0 0 1-1-1v-4a2 2 0 0 0-4 0v4a1 1 0 0 1-1 1z"/>
+        </svg>
+        <ng-template #otherIcon>
+          <i [class]="getCategoryIcon(tab.text)" class="pill-icon"></i>
+        </ng-template>
+        <span class="pill-title">{{ tab.text }}</span>
+        <span class="pill-count">({{ tab.Menus?.length || 0 }})</span>
+      </button>
+    </div>
+  </div>
 
-        <dx-data-grid
-          #dataGrid
-          *ngIf="selectedTabData"
-          class="grid theme-dependent"
-          noDataText=""
-          [height]="'58vh'"
-          [dataSource]="selectedTabData"
-          [allowColumnResizing]="true"
-          [allowColumnReordering]="true"
-          [rowAlternationEnabled]="true"
-          [hoverStateEnabled]="true"
-          rowAlternationInterval="2"
-          (onSelectionChanged)="onSelectionChanged($event)"
-          [selectedRowKeys]="selectedRows[selectedTab]"
-          (onEditorPreparing)="onEditorPreparing($event)"
+  <!-- Search & Bulk Action Bar -->
+  <div class="action-bar-row">
+    <div class="search-box">
+      <i class="bi bi-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        [(ngModel)]="searchQuery"
+        [placeholder]="'Search permission in  ' + currentTabName + '...'"
+      />
+    </div>
+
+    <div class="bulk-actions">
+      <button type="button" class="btn-bulk" (click)="selectAllPermissions()">
+        <i class="bi bi-check2 text-teal"></i>
+        <span>Select All</span>
+      </button>
+
+      <button type="button" class="btn-bulk" (click)="deselectAllPermissions()">
+        <i class="bi bi-x text-teal"></i>
+        <span>Deselect All</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Permissions Table -->
+  <div class="matrix-table-card">
+    <!-- Table Header -->
+    <div class="matrix-header-row">
+      <div class="col-menu">
+        <div
+          class="custom-checkbox"
+          [class.checked]="isCurrentTabAllSelected()"
+          (click)="toggleSelectAllCurrentTab()"
+          role="checkbox"
+          [attr.aria-checked]="isCurrentTabAllSelected()"
         >
-          <dxo-selection mode="multiple"></dxo-selection>
+          <i class="bi bi-check-lg check-icon" *ngIf="isCurrentTabAllSelected()"></i>
+        </div>
+        <span class="header-label">MODULE / MENU LIST</span>
+      </div>
 
-          <dxo-editing mode="cell" [allowUpdating]="true"> </dxo-editing>
+      <div class="col-perm">
+        <span class="header-label">ADD</span>
+      </div>
 
-          <dxi-column dataField="MenuName" caption="Menu List"></dxi-column>
+      <div class="col-perm">
+        <span class="header-label">MODIFY</span>
+      </div>
 
-          <dxi-column
-            dataField="canAdd"
-            caption="Add"
-            dataType="boolean"
-            [showEditorAlways]="true"
-          >
-          </dxi-column>
-          <dxi-column
-            dataField="canEdit"
-            caption="Modify"
-            dataType="boolean"
-            [showEditorAlways]="true"
-          >
-          </dxi-column>
-          <dxi-column
-            dataField="canDelete"
-            caption="Delete"
-            dataType="boolean"
-            [showEditorAlways]="true"
-          >
-          </dxi-column>
-          <dxi-column
-            dataField="canExport"
-            caption="Export"
-            dataType="boolean"
-            [showEditorAlways]="true"
-          >
-          </dxi-column>
-        </dx-data-grid>
+      <div class="col-perm">
+        <span class="header-label">DELETE</span>
+      </div>
+
+      <div class="col-perm">
+        <span class="header-label">EXPORT</span>
       </div>
     </div>
+
+    <!-- Table Body -->
+    <div class="matrix-body">
+      <div
+        *ngFor="let menu of filteredMenus"
+        class="matrix-data-row"
+        [class.row-selected]="isRowSelected(menu)"
+      >
+        <!-- Menu Name & Row Checkbox -->
+        <div class="col-menu">
+          <div
+            class="custom-checkbox"
+            [class.checked]="isRowSelected(menu)"
+            (click)="toggleRowSelection(menu)"
+            role="checkbox"
+            [attr.aria-checked]="isRowSelected(menu)"
+          >
+            <i class="bi bi-check-lg check-icon" *ngIf="isRowSelected(menu)"></i>
+          </div>
+          <span class="menu-name">{{ menu.MenuName }}</span>
+        </div>
+
+        <!-- ADD -->
+        <div class="col-perm">
+          <div
+            class="custom-checkbox"
+            [class.checked]="menu.canAdd"
+            (click)="togglePermission(menu, 'canAdd')"
+            role="checkbox"
+            [attr.aria-checked]="menu.canAdd"
+          >
+            <i class="bi bi-check-lg check-icon" *ngIf="menu.canAdd"></i>
+          </div>
+        </div>
+
+        <!-- MODIFY -->
+        <div class="col-perm">
+          <div
+            class="custom-checkbox"
+            [class.checked]="menu.canEdit"
+            (click)="togglePermission(menu, 'canEdit')"
+            role="checkbox"
+            [attr.aria-checked]="menu.canEdit"
+          >
+            <i class="bi bi-check-lg check-icon" *ngIf="menu.canEdit"></i>
+          </div>
+        </div>
+
+        <!-- DELETE -->
+        <div class="col-perm">
+          <div
+            class="custom-checkbox"
+            [class.checked]="menu.canDelete"
+            (click)="togglePermission(menu, 'canDelete')"
+            role="checkbox"
+            [attr.aria-checked]="menu.canDelete"
+          >
+            <i class="bi bi-check-lg check-icon" *ngIf="menu.canDelete"></i>
+          </div>
+        </div>
+
+        <!-- EXPORT -->
+        <div class="col-perm">
+          <div
+            class="custom-checkbox"
+            [class.checked]="menu.canExport"
+            (click)="togglePermission(menu, 'canExport')"
+            role="checkbox"
+            [attr.aria-checked]="menu.canExport"
+          >
+            <i class="bi bi-check-lg check-icon" *ngIf="menu.canExport"></i>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="filteredMenus?.length === 0" class="no-records-row">
+        <span>No permissions found</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="role-footer-actions">
+    <button type="button" class="btn-cancel" (click)="onCancelClick()">
+      Cancel
+    </button>
+    <button type="button" class="btn-save" (click)="onSaveClick()">
+      Save
+    </button>
   </div>
 </div>

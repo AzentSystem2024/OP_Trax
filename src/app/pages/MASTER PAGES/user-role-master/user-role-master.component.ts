@@ -10,6 +10,7 @@ import {
   DxButtonModule,
   DxDataGridModule,
   DxDataGridComponent,
+  DxPopupModule,
 } from 'devextreme-angular';
 import { DxTabsModule } from 'devextreme-angular/ui/tabs';
 import { DxTextBoxModule } from 'devextreme-angular/ui/text-box';
@@ -103,11 +104,16 @@ export class UserLevelMasterComponent {
   // ========= popup close ===============
   onPopupClose(): void {
     this.isAddFormVisible = false;
-    this.userlevelNewForm.resetFormValues();
+    if (this.userlevelNewForm) {
+      this.userlevelNewForm.resetFormValues();
+    }
   }
   // ============== reset edit form data ============
   onEditPopupClose() {
     this.iseditFormVisible = false;
+    if (this.userlevelNewForm) {
+      this.userlevelNewForm.resetFormValues();
+    }
   }
   //=================== Page refreshing==========================
   refresh = () => {
@@ -128,6 +134,7 @@ export class UserLevelMasterComponent {
           this.dataGrid.instance.refresh();
 
           this.notificationService.showNotification(`New User Level  saved Successfully`, 'success');
+          this.isAddFormVisible = false;
         } else {
           this.notificationService.showNotification(` Your Data Not Saved`, 'error');
         }
@@ -150,6 +157,7 @@ export class UserLevelMasterComponent {
           this.dataGrid.instance.refresh();
 
           this.notificationService.showNotification(`User Level updated Successfully`, 'success');
+          this.iseditFormVisible = false;
         } else {
           this.notificationService.showNotification(`Your Data Not Saved`, 'error');
         }
@@ -234,6 +242,7 @@ export class UserLevelMasterComponent {
     DxButtonModule,
     DxDataGridModule,
     DxTreeViewModule,
+    DxPopupModule,
     FormPopupModule,
     UserLevelNewFormModule,
   ],

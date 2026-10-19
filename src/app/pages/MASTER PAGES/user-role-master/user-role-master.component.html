@@ -103,31 +103,71 @@
   </dx-data-grid>
 
   <!-- =========== add new user level ============ -->
-  <form-popup
-    class="formPopupClass m-2"
+  <dx-popup
+    class="role-management-popup"
     [(visible)]="isAddFormVisible"
-    titleText="New User Role"
+    [width]="'960px'"
+    [maxWidth]="'95vw'"
     [height]="'auto'"
-    [width]="popup_width"
-    (save)="onClickSaveNewData()"
+    [maxHeight]="'95vh'"
+    [showTitle]="false"
+    [shading]="true"
+    [dragEnabled]="false"
     (onHiding)="onPopupClose()"
   >
-    <app-user-level-new-form *ngIf="isAddFormVisible"></app-user-level-new-form>
-  </form-popup>
+    <div *dxTemplate="let data of 'content'" class="role-modal-container">
+      <div class="role-modal-header">
+        <div class="role-modal-title-wrap">
+          <h3 class="role-modal-title">New User Role</h3>
+          <p class="role-modal-subtitle">Configure custom access levels and permissions matrix</p>
+        </div>
+        <button type="button" class="role-modal-close-btn" (click)="onPopupClose()" title="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="role-modal-divider"></div>
+      <div class="role-modal-body">
+        <app-user-level-new-form
+          *ngIf="isAddFormVisible"
+          (save)="onClickSaveNewData()"
+          (cancel)="onPopupClose()"
+        ></app-user-level-new-form>
+      </div>
+    </div>
+  </dx-popup>
 
   <!-- =========== edit user level ============ -->
-  <form-popup
-    class="formPopupClass m-2"
+  <dx-popup
+    class="role-management-popup"
     [(visible)]="iseditFormVisible"
-    titleText="Edit User Role"
+    [width]="'960px'"
+    [maxWidth]="'95vw'"
     [height]="'auto'"
-    [width]="popup_width"
-    (save)="onRowUpdating()"
+    [maxHeight]="'95vh'"
+    [showTitle]="false"
+    [shading]="true"
+    [dragEnabled]="false"
     (onHiding)="onEditPopupClose()"
   >
-    <app-user-level-new-form
-      *ngIf="iseditFormVisible"
-      [editValue]="clickedRowData"
-    ></app-user-level-new-form>
-  </form-popup>
+    <div *dxTemplate="let data of 'content'" class="role-modal-container">
+      <div class="role-modal-header">
+        <div class="role-modal-title-wrap">
+          <h3 class="role-modal-title">Edit User Role</h3>
+          <p class="role-modal-subtitle">Configure custom access levels and permissions matrix</p>
+        </div>
+        <button type="button" class="role-modal-close-btn" (click)="onEditPopupClose()" title="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="role-modal-divider"></div>
+      <div class="role-modal-body">
+        <app-user-level-new-form
+          *ngIf="iseditFormVisible"
+          [editValue]="clickedRowData"
+          (save)="onRowUpdating()"
+          (cancel)="onEditPopupClose()"
+        ></app-user-level-new-form>
+      </div>
+    </div>
+  </dx-popup>
 </div>
