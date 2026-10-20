@@ -311,7 +311,7 @@ export class GroupingDetailsReportComponent implements OnInit {
   //============Get search parameters dropdown values=======
   get_searchParameters_Dropdown_Values() {
     this.loadingVisible = true;
-    this.masterService.Get_Facility_List_Data().subscribe({
+    this.dataService.Get_User_Facility_List_Data().subscribe({
       next: (response: any) => {
         if (response.flag == '1') {
           this.Facility_DataSource = response.data;
@@ -692,6 +692,11 @@ export class GroupingDetailsReportComponent implements OnInit {
     this.service.exportDataGrid(event, fileName);
   }
 
+  displayFacility = (item: any) => {
+    if (!item) return '';
+    return `${item.FacilityLicense} - ${item.FacilityName}`;
+  };
+
   // ============== Popup functionalities ==================
   onViewClick = (e: any) => {
     this.selectedRowData = e.row.data;
@@ -725,6 +730,18 @@ export class GroupingDetailsReportComponent implements OnInit {
     };
 
     if (dataField === 'CPTCode') {
+      const cptMasterPrivilege = this.dataService.getMenuPrevilages('cpt-master-page');
+
+      if (
+        !cptMasterPrivilege ||
+        (!cptMasterPrivilege.CanAdd &&
+          !cptMasterPrivilege.CanEdit &&
+          !cptMasterPrivilege.CanExport)
+      ) {
+        showError('You do not have privilege to open the details');
+        return;
+      }
+
       const code = e.data.CPTID;
       console.log('clicked row data', code);
       if (!code) {
@@ -744,8 +761,14 @@ export class GroupingDetailsReportComponent implements OnInit {
 
   //======= Update data ==========
   onClickUpdateNewCptType = () => {
-    const { ID, CPTTypeID, CPTCode, CPTName, CPTADOCMappings, IsADOCExcluded } =
-      this.CptEditFormComponent.getUpdateCptMasterData();
+    const {
+      ID,
+      CPTTypeID,
+      CPTCode,
+      CPTName,
+      CPTADOCMappings,
+      ADOCApplicationID,
+    } = this.CptEditFormComponent.getUpdateCptMasterData();
 
     this.masterService
       .update_CptMaster_data(
@@ -754,7 +777,7 @@ export class GroupingDetailsReportComponent implements OnInit {
         CPTCode,
         CPTName,
         CPTADOCMappings,
-        IsADOCExcluded,
+        ADOCApplicationID,
       )
       .subscribe((response: any) => {
         if (response) {

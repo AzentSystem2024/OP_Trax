@@ -86,7 +86,7 @@
               </dx-button>
 
               <dx-drop-down-button
-                *ngIf="userRoleId != 2"
+                *ngIf="userRoleId !== 2"
                 icon="exportxlsx"
                 hint="Export"
                 stylingMode="contained"
@@ -335,5 +335,5 @@
   [formData]="selectedAdocClassData"
   [adocCategoryList]="ADOC_Category_List"
   [claimActivityUID]="selectedActivityUID"
-  (onSaved)="getClinicalDataPopupData()"
+  (saved)="getClinicalDataPopupData()"
 ></app-adoc-class-change-popup>

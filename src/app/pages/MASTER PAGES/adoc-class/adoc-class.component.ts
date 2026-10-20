@@ -82,12 +82,14 @@ export class ADOCClassComponent {
 
   showAdocClassEdit: boolean = false;
   selectedAdocClassData: any = null;
+  isFilterApplied: boolean = false;
 
   constructor(
     private service: ReportService,
     private masterService: MasterReportService,
     private route: ActivatedRoute,
-    private dataService: DataService, private notificationService: NotificationService
+    private dataService: DataService,
+    private notificationService: NotificationService,
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -159,14 +161,20 @@ export class ADOCClassComponent {
     const result = validationEngine.validateGroup('adocClassValidation');
 
     if (!result.isValid) {
-      this.notificationService.showNotification('Please fill all required fields', 'warning');
+      this.notificationService.showNotification(
+        'Please fill all required fields',
+        'warning',
+      );
       return;
     }
 
     // ===== Duplicate Check =====
 
     if (this.isDuplicateClassCode(this.newADOCClass.Code)) {
-      this.notificationService.showNotification('Class Code already exists', 'error');
+      this.notificationService.showNotification(
+        'Class Code already exists',
+        'error',
+      );
 
       return;
     }
@@ -180,7 +188,10 @@ export class ADOCClassComponent {
       )
       .subscribe({
         next: () => {
-          this.notificationService.showNotification('ADOC Classification Added Successfully', 'success');
+          this.notificationService.showNotification(
+            'ADOC Classification Added Successfully',
+            'success',
+          );
 
           this.isAddPopupVisible = false;
 
@@ -214,13 +225,19 @@ export class ADOCClassComponent {
           this.selectedAdocClassData = res.data;
           this.showAdocClassEdit = true;
         } else {
-          this.notificationService.showNotification('Failed to load ADOC Classification details.', 'error');
+          this.notificationService.showNotification(
+            'Failed to load ADOC Classification details.',
+            'error',
+          );
         }
       },
       error: () => {
         this.loadingVisible = false;
-        this.notificationService.showNotification('Failed to fetch ADOC Classification.', 'error');
-      }
+        this.notificationService.showNotification(
+          'Failed to fetch ADOC Classification.',
+          'error',
+        );
+      },
     });
   }
 
@@ -232,7 +249,10 @@ export class ADOCClassComponent {
     };
 
     if (!combinedData.ClassName?.trim() || !combinedData.GroupID) {
-      this.notificationService.showNotification('Please fill all required fields', 'warning');
+      this.notificationService.showNotification(
+        'Please fill all required fields',
+        'warning',
+      );
 
       event.cancel = true;
       return;
@@ -249,9 +269,15 @@ export class ADOCClassComponent {
         if (data) {
           this.dataGrid.instance.refresh();
 
-          this.notificationService.showNotification(`data updated Successfully`, 'success');
+          this.notificationService.showNotification(
+            `data updated Successfully`,
+            'success',
+          );
         } else {
-          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
+          this.notificationService.showNotification(
+            `Your Data Not Saved`,
+            'error',
+          );
         }
         event.component.cancelEditData(); // Close the popup
         this.dataGrid.instance.refresh();
@@ -268,9 +294,15 @@ export class ADOCClassComponent {
       .Remove_adocClass_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          this.notificationService.showNotification('Delete operation successful', 'success');
+          this.notificationService.showNotification(
+            'Delete operation successful',
+            'success',
+          );
         } catch (error) {
-          this.notificationService.showNotification('Delete operation failed', 'error');
+          this.notificationService.showNotification(
+            'Delete operation failed',
+            'error',
+          );
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
@@ -305,19 +337,15 @@ export class ADOCClassComponent {
     this.service.exportDataGrid(event, fileName);
   }
 
-    isFilterApplied: boolean = false;
-
-    onGridOptionChanged(e: any) {
-
-            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
-              setTimeout(() => {
-                if (this.dataGrid && this.dataGrid.instance) {
-                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
-                }
-              });
-            }
-                    
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+        }
+      });
     }
+  }
 }
 
 @NgModule({

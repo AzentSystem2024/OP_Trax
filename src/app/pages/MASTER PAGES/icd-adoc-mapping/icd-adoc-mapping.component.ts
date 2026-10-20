@@ -71,12 +71,14 @@ export class IcdAdocMappingComponent {
     ADOCClassID: null,
     EffectFrom: null as Date | null,
   };
+  isFilterApplied: boolean = false;
 
   constructor(
     private service: ReportService,
     private masterService: MasterReportService,
     private route: ActivatedRoute,
-    private dataService: DataService, private notificationService: NotificationService
+    private dataService: DataService,
+    private notificationService: NotificationService,
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -165,7 +167,10 @@ export class IcdAdocMappingComponent {
     const result = validationEngine.validateGroup('icdAdocMappingValidation');
 
     if (!result.isValid) {
-      this.notificationService.showNotification('Please fill all required fields', 'warning');
+      this.notificationService.showNotification(
+        'Please fill all required fields',
+        'warning',
+      );
       return;
     }
 
@@ -183,7 +188,10 @@ export class IcdAdocMappingComponent {
           res &&
           (res.flag === '1' || res.status === 'success' || res === '1')
         ) {
-          this.notificationService.showNotification('ICD ADOC Mapping Added Successfully', 'success');
+          this.notificationService.showNotification(
+            'ICD ADOC Mapping Added Successfully',
+            'success',
+          );
 
           this.isAddPopupVisible = false;
 
@@ -196,11 +204,17 @@ export class IcdAdocMappingComponent {
 
           this.dataGrid.instance.refresh();
         } else {
-          this.notificationService.showNotification(res?.message || 'Save Failed', 'error');
+          this.notificationService.showNotification(
+            res?.message || 'Save Failed',
+            'error',
+          );
         }
       },
       error: (err: any) => {
-        this.notificationService.showNotification(err?.message || 'Save Failed', 'error');
+        this.notificationService.showNotification(
+          err?.message || 'Save Failed',
+          'error',
+        );
       },
     });
   }
@@ -218,7 +232,10 @@ export class IcdAdocMappingComponent {
       !combinedData.ADOCClassID ||
       !combinedData.EffectFrom
     ) {
-      this.notificationService.showNotification('Please fill all required fields', 'warning');
+      this.notificationService.showNotification(
+        'Please fill all required fields',
+        'warning',
+      );
 
       event.cancel = true;
       return;
@@ -239,16 +256,25 @@ export class IcdAdocMappingComponent {
           res &&
           (res.flag === '1' || res.status === 'success' || res === '1')
         ) {
-          this.notificationService.showNotification('Data Updated Successfully', 'success');
+          this.notificationService.showNotification(
+            'Data Updated Successfully',
+            'success',
+          );
         } else {
-          this.notificationService.showNotification(res?.message || 'Your Data Not Saved', 'error');
+          this.notificationService.showNotification(
+            res?.message || 'Your Data Not Saved',
+            'error',
+          );
         }
 
         event.component.cancelEditData();
         this.dataGrid.instance.refresh();
       },
       error: (err: any) => {
-        this.notificationService.showNotification(err?.message || 'Update Failed', 'error');
+        this.notificationService.showNotification(
+          err?.message || 'Update Failed',
+          'error',
+        );
         event.component.cancelEditData();
       },
     });
@@ -271,15 +297,24 @@ export class IcdAdocMappingComponent {
               res === '1' ||
               res.data === 'Deleted Successfully')
           ) {
-            this.notificationService.showNotification('Delete operation successful', 'success');
+            this.notificationService.showNotification(
+              'Delete operation successful',
+              'success',
+            );
           } else {
-            this.notificationService.showNotification(res?.message || 'Delete operation failed', 'error');
+            this.notificationService.showNotification(
+              res?.message || 'Delete operation failed',
+              'error',
+            );
           }
           event.component.refresh();
           this.dataGrid.instance.refresh();
         },
         error: (err: any) => {
-          this.notificationService.showNotification(err?.message || 'Delete operation failed', 'error');
+          this.notificationService.showNotification(
+            err?.message || 'Delete operation failed',
+            'error',
+          );
           event.component.refresh();
         },
       });
@@ -291,19 +326,15 @@ export class IcdAdocMappingComponent {
     this.service.exportDataGrid(event, fileGroupName);
   }
 
-    isFilterApplied: boolean = false;
-
-    onGridOptionChanged(e: any) {
-
-            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
-              setTimeout(() => {
-                if (this.dataGrid && this.dataGrid.instance) {
-                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
-                }
-              });
-            }
-                    
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+        }
+      });
     }
+  }
 }
 
 @NgModule({

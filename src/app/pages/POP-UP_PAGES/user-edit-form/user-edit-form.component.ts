@@ -54,7 +54,7 @@ import {
   ResetPasswordComponent,
   ResetPasswordModule,
 } from '../reset-password/reset-password.component';
-import { NotificationService } from "src/app/services/notification.service";
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-user-edit-form',
@@ -175,7 +175,8 @@ export class UserEditFormComponent implements OnInit, OnChanges {
 
   constructor(
     private service: MasterReportService,
-    private cdr: ChangeDetectorRef, private notificationService: NotificationService
+    private cdr: ChangeDetectorRef,
+    private notificationService: NotificationService,
   ) {}
 
   onTabClick(event: any) {
@@ -225,7 +226,8 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     // Check if the login name exists in the user list, excluding the current one
     const exists = this.userList.some(
       (user) =>
-        user.LoginName === loginName && user.LoginName !== this.currentLoginName
+        user.LoginName === loginName &&
+        user.LoginName !== this.currentLoginName,
     );
 
     // Return true if it does NOT exist, false if it DOES exist
@@ -272,11 +274,11 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     this.facilityList = [
       // Selected facilities first
       ...this.facilityList.filter((facility) =>
-        this.selectedRows.includes(facility.ID)
+        this.selectedRows.includes(facility.ID),
       ),
       // Non-selected facilities after
       ...this.facilityList.filter(
-        (facility) => !this.selectedRows.includes(facility.ID)
+        (facility) => !this.selectedRows.includes(facility.ID),
       ),
     ];
 
@@ -294,6 +296,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
   toggleOptions(): void {
     this.showOptions = !this.showOptions;
   }
+
   togglePasswordVisibility(): void {
     this.isPasswordVisible = !this.isPasswordVisible; // Toggle the visibility flag
   }
@@ -395,34 +398,19 @@ export class UserEditFormComponent implements OnInit, OnChanges {
   extractCountryCode(mobileNumber: string): string | null {
     // Extract the dial code from the mobile number
     const dialCode = this.countryCodes.find((code) =>
-      mobileNumber.startsWith(code.data.dial_code)
+      mobileNumber.startsWith(code.data.dial_code),
     );
     return dialCode ? dialCode.data.dial_code : null;
   }
-
-  // getOnlyMobileNumber(fullPhoneNumber: string): string {
-  //   // Extract mobile number by removing the dial code part
-  //   const selectedCountry = this.countryCodes.find((code) =>
-  //     fullPhoneNumber.startsWith(code.data.dial_code)
-  //   );
-
-  //   if (selectedCountry) {
-  //     return fullPhoneNumber.replace(selectedCountry.data.dial_code, '').trim();
-  //   }
-
-  //   return fullPhoneNumber; // Return as is if no match found
-  // }
 
   onDecimalPointsChanged(event: any): void {
     this.newUserData.Decimal_Points = event.value; // Ensure the value is updated in newUserData
     console.log('Updated Decimal_Points:', this.newUserData.Decimal_Points);
   }
 
-
-  
   updateMobileNumber() {
     const selectedCountry = this.countryCodes.find(
-      (code) => code.data.dial_code === this.newUserData.countryCode
+      (code) => code.data.dial_code === this.newUserData.countryCode,
     );
 
     if (selectedCountry) {
@@ -443,7 +431,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
 
   getOnlyMobileNumber(fullPhoneNumber: string): string {
     const selectedCountry = this.countryCodes.find((code) =>
-      fullPhoneNumber.startsWith(code.data.dial_code)
+      fullPhoneNumber.startsWith(code.data.dial_code),
     );
 
     if (selectedCountry) {
@@ -458,7 +446,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     let newValue = event.value || '';
 
     const selectedCountry = this.countryCodes.find(
-      (code) => code.data.dial_code === this.newUserData.countryCode
+      (code) => code.data.dial_code === this.newUserData.countryCode,
     );
 
     if (selectedCountry) {
@@ -497,84 +485,83 @@ export class UserEditFormComponent implements OnInit, OnChanges {
   }
 
   MobileNumberValidate = (e: any): boolean => {
-  const selectedCountry = this.countryCodes.find(
-    (code) => code.data.dial_code === this.newUserData.countryCode
-  );
+    const selectedCountry = this.countryCodes.find(
+      (code) => code.data.dial_code === this.newUserData.countryCode,
+    );
 
-  // If no country selected → invalid
-  if (!selectedCountry) {
-    e.rule.message = 'Select country code first';
-    return false;
-  }
+    // If no country selected → invalid
+    if (!selectedCountry) {
+      e.rule.message = 'Select country code first';
+      return false;
+    }
 
-  const dialCode = selectedCountry.data.dial_code || '';
-  const mobileValue = e.value ? e.value.toString().trim() : '';
+    const dialCode = selectedCountry.data.dial_code || '';
+    const mobileValue = e.value ? e.value.toString().trim() : '';
 
-  // Remove dial code and non-digit characters
-  const mobileNumber = mobileValue.replace(dialCode, '').replace(/\D/g, '');
+    // Remove dial code and non-digit characters
+    const mobileNumber = mobileValue.replace(dialCode, '').replace(/\D/g, '');
 
-  // Country-specific length rules
-  let minLength = 10; // default
-  let maxLength = 10; // default, assume same as min for strict length
+    // Country-specific length rules
+    let minLength = 10; // default
+    let maxLength = 10; // default, assume same as min for strict length
 
-  switch (dialCode) {
-    case '+971': // UAE
-      minLength = 9;
-      maxLength = 9;
-      break;
-    case '+91': // India
-      minLength = 10;
-      maxLength = 10;
-      break;
-    case '+1': // USA, Canada
-      minLength = 10;
-      maxLength = 10;
-      break;
-    case '+44': // UK
-      minLength = 10;
-      maxLength = 10;
-      break;
-    case '+61': // Australia
-      minLength = 9;
-      maxLength = 9;
-      break;
-    case '+81': // Japan
-      minLength = 10;
-      maxLength = 10;
-      break;
-    case '+49': // Germany
-      minLength = 10;
-      maxLength = 10;
-      break;
-    case '+33': // France
-      minLength = 9;
-      maxLength = 9;
-      break;
-    case '+86': // China
-      minLength = 11;
-      maxLength = 11;
-      break;
-    default:
-      minLength = 10;
-      maxLength = 15; // fallback max
-  }
+    switch (dialCode) {
+      case '+971': // UAE
+        minLength = 9;
+        maxLength = 9;
+        break;
+      case '+91': // India
+        minLength = 10;
+        maxLength = 10;
+        break;
+      case '+1': // USA, Canada
+        minLength = 10;
+        maxLength = 10;
+        break;
+      case '+44': // UK
+        minLength = 10;
+        maxLength = 10;
+        break;
+      case '+61': // Australia
+        minLength = 9;
+        maxLength = 9;
+        break;
+      case '+81': // Japan
+        minLength = 10;
+        maxLength = 10;
+        break;
+      case '+49': // Germany
+        minLength = 10;
+        maxLength = 10;
+        break;
+      case '+33': // France
+        minLength = 9;
+        maxLength = 9;
+        break;
+      case '+86': // China
+        minLength = 11;
+        maxLength = 11;
+        break;
+      default:
+        minLength = 10;
+        maxLength = 15; // fallback max
+    }
 
-  // Validation: min/max length, not starting with 0, not all zeros
-  const isValid =
-    mobileNumber.length >= minLength &&
-    mobileNumber.length <= maxLength &&
-    !/^0/.test(mobileNumber) &&
-    !/^0+$/.test(mobileNumber);
+    // Validation: min/max length, not starting with 0, not all zeros
+    const isValid =
+      mobileNumber.length >= minLength &&
+      mobileNumber.length <= maxLength &&
+      !/^0/.test(mobileNumber) &&
+      !/^0+$/.test(mobileNumber);
 
-  if (!isValid) {
-    e.rule.message = `Mobile number must be ${minLength}${
-      minLength !== maxLength ? '-' + maxLength : ''
-    } digits long`;
-  }
+    if (!isValid) {
+      e.rule.message = `Mobile number must be ${minLength}${
+        minLength !== maxLength ? '-' + maxLength : ''
+      } digits long`;
+    }
 
-  return isValid;
-};
-
+    return isValid;
+  };
 
   WhatsappValidate = (e: any): boolean => {
     const whatsappNumber = e.value;
@@ -612,22 +599,17 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       if (!this.newUserData.Whatsapp && this.newUserData.Mobile) {
         console.log(
           'Populating WhatsApp with Mobile:',
-          this.newUserData.Mobile
+          this.newUserData.Mobile,
         );
         this.newUserData.Whatsapp = this.newUserData.Mobile;
       }
     }, 0);
   }
 
-  // onDateFormatChange(event: any) {
-  //   this.newUserData.Date_Format = event.value;
-  //   console.log('Dropdown value changed:', event.value);
-  // }
-
   onDateFormatChange(event: any): void {
     // Directly set the value from the event
     const selectedFormat = this.dateFormat?.find(
-      (format) => format.DESCRIPTION === event.value
+      (format) => format.DESCRIPTION === event.value,
     )?.DESCRIPTION;
     if (selectedFormat) {
       this.newUserData.Date_Format = event.value; // Ensure the correct value is set
@@ -639,7 +621,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
 
   onTimeFormatChange(event: any) {
     const selectedTimeFormat = this.timeFormat?.find(
-      (format) => format.DESCRIPTION === event.value
+      (format) => format.DESCRIPTION === event.value,
     )?.DESCRIPTION;
     if (selectedTimeFormat) {
       this.newUserData.Time_Format = event.value;
@@ -649,18 +631,13 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     }
   }
 
-  // onCurrencySymbolChange(event:any){
-  //   this.newUserData.Currency_Symbol = event.value;
-  //   console.log('Dropdown Currency value changed:', event.value);
-  // }
-
   onCurrencySymbolChange(event: any) {
     const selectedValue = event.value;
     console.log(selectedValue, 'SELECTED');
     if (selectedValue) {
       // Check if the selected value is from the dropdown or entered by the user
       const existingItem = this.currencySymbol.find(
-        (item) => item.DESCRIPTION === selectedValue
+        (item) => item.DESCRIPTION === selectedValue,
       );
 
       if (!existingItem) {
@@ -674,6 +651,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       }
     }
   }
+
   onCurrencySymbolInput(event: any) {
     const typedValue = event.target.value;
     console.log('Typed value in input field:', typedValue);
@@ -689,7 +667,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     // If the value is not part of the dropdown options, treat it as a custom value
     if (enteredValue) {
       const existingItem = this.currencySymbol.find(
-        (item) => item.DESCRIPTION === enteredValue
+        (item) => item.DESCRIPTION === enteredValue,
       );
 
       if (!existingItem) {
@@ -745,7 +723,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       case 'hh:mm:ss a':
         return `${String(hour12).padStart(
           2,
-          '0'
+          '0',
         )}:${minutes}:${seconds} ${ampm}`; // Example for 'hh:mm:ss a'
 
       default:
@@ -799,6 +777,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       }
     });
   }
+
   getUserSecurityPolicyData() {
     this.service.getUserSecurityPolicityData().subscribe((res: any) => {
       this.securityPolicyData = res.data[0];
@@ -806,19 +785,37 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       // this.generatedPassword = this.generateRandomPassword();
     });
   }
+
   getFacilityData() {
     this.service.Get_All_Facility_List_Data().subscribe((res: any) => {
       this.facilityList = res.data;
       console.log('facility data', this.facilityList);
+
+      if (
+        this.facilityList &&
+        this.selectedRows &&
+        this.selectedRows.length > 0
+      ) {
+        this.facilityList = [
+          ...this.facilityList.filter((facility: any) =>
+            this.selectedRows.includes(facility.ID),
+          ),
+          ...this.facilityList.filter(
+            (facility: any) => !this.selectedRows.includes(facility.ID),
+          ),
+        ];
+      }
     });
   }
 
   resetPassword() {
     this.resetConfirmationVisible = true;
   }
+
   cancelReset() {
     this.resetConfirmationVisible = false;
   }
+
   confirmReset() {
     this.resetFormVisible = true;
     this.resetConfirmationVisible = false;
@@ -839,19 +836,28 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     console.log(this.newUserData, 'edit form data');
     console.log(
       'Decimal_Points before saving:',
-      this.newUserData.Decimal_Points
+      this.newUserData.Decimal_Points,
     );
     console.log(this.userData.user_facility, 'userfacility');
     this.service.update_User_Data(this.newUserData).subscribe((res: any) => {
       try {
         if (res.message === 'Success') {
-          this.notificationService.showNotification('data updated successfully', 'success');
+          this.notificationService.showNotification(
+            'data updated successfully',
+            'success',
+          );
           this.close();
         } else {
-          this.notificationService.showNotification('An unexpected error occurred', 'error');
+          this.notificationService.showNotification(
+            'An unexpected error occurred',
+            'error',
+          );
         }
       } catch (error) {
-        this.notificationService.showNotification('update operation failed', 'error');
+        this.notificationService.showNotification(
+          'update operation failed',
+          'error',
+        );
       }
     });
   }
@@ -884,7 +890,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       }
 
       const selectedFormat = this.dateFormat?.find(
-        (format) => format.DESCRIPTION === this.formdata.Date_Format
+        (format) => format.DESCRIPTION === this.formdata.Date_Format,
       )?.DESCRIPTION;
       if (selectedFormat) {
         this.newUserData.Date_Format = this.formdata.Date_Format; // Ensure the correct value is set
@@ -893,7 +899,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
         this.exampleDateFormat = '';
       }
       const selectedTimeFormat = this.timeFormat?.find(
-        (format) => format.DESCRIPTION === this.formdata.Time_Format
+        (format) => format.DESCRIPTION === this.formdata.Time_Format,
       )?.DESCRIPTION;
       if (selectedTimeFormat) {
         this.newUserData.Time_Format = this.formdata.Time_Format;
@@ -904,46 +910,45 @@ export class UserEditFormComponent implements OnInit, OnChanges {
 
       // Extract country code from mobile number
       const extractedCountryCode = this.extractCountryCode(
-        this.newUserData.Mobile
+        this.newUserData.Mobile,
       );
       if (extractedCountryCode) {
         this.newUserData.countryCode = extractedCountryCode;
       }
 
-      this.selectedRows = (this.facilityList || [])
-        .filter((column) =>
-          this.newUserData.user_facility.some(
-            (facility) => facility.FacilityID === column.ID
-          )
-        )
-        .map((column) => column.ID);
+      if (this.newUserData && this.newUserData.user_facility) {
+        this.selectedRows = this.newUserData.user_facility.map(
+          (facility: any) => facility.FacilityID,
+        );
+      } else {
+        this.selectedRows = [];
+      }
 
       console.log(this.selectedRows, 'selected rows');
 
       // Reorder facilityList based on selectedRows
-      if(this.facilityList) this.facilityList = [
-        // Selected facilities first
-        ...this.facilityList.filter((facility) =>
-          this.selectedRows.includes(facility.ID)
-        ),
-        // Non-selected facilities after
-        ...this.facilityList.filter(
-          (facility) => !this.selectedRows.includes(facility.ID)
-        ),
-      ];
+      if (this.facilityList)
+        this.facilityList = [
+          // Selected facilities first
+          ...this.facilityList.filter((facility) =>
+            this.selectedRows.includes(facility.ID),
+          ),
+          // Non-selected facilities after
+          ...this.facilityList.filter(
+            (facility) => !this.selectedRows.includes(facility.ID),
+          ),
+        ];
     }
 
     this.cdr.detectChanges();
   }
 
-
   get isAdminReadonly(): boolean {
-  return (
-    this.newUserData?.UserName?.toLowerCase() === 'admin' &&
-    this.newUserData?.UserRoleID ==1
-  );
-}
-
+    return (
+      this.newUserData?.UserName?.toLowerCase() === 'admin' &&
+      this.newUserData?.UserRoleID == 1
+    );
+  }
 }
 
 @NgModule({

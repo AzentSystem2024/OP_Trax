@@ -67,12 +67,15 @@ export class AdocPriceMasterComponent implements AfterViewInit {
   editButtonOptions: any;
 
   globalEffectFromDate: Date | null = null;
-
+  isFilterApplied: boolean = false;
+  isPopupFilterRowVisible: boolean = false;
+  
   constructor(
     private masterService: MasterReportService,
     private service: ReportService,
     private route: ActivatedRoute,
-    private dataService: DataService, private notificationService: NotificationService
+    private dataService: DataService,
+    private notificationService: NotificationService,
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -107,12 +110,14 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     this.globalEffectFromDate = new Date();
     if (this.popupGrid && this.popupGrid.instance) {
       this.popupGrid.instance.cancelEditData();
-      
+
       // Also manually clear any modifications to the underlying array that might have been committed
       if (Array.isArray(this.cptPriceData)) {
         this.cptPriceData.forEach((row: any) => {
           row.IsSelected = false;
-          const orig = this.originalCptPriceData?.find(x => x.SerialNumber === row.SerialNumber);
+          const orig = this.originalCptPriceData?.find(
+            (x) => x.SerialNumber === row.SerialNumber,
+          );
           if (orig) {
             row.NewPrice = orig.NewPrice;
             row.NewPaedAdjuster = orig.NewPaedAdjuster;
@@ -123,7 +128,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       }
     }
     this.isAddPopupVisible = true;
-  }
+  };
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -191,7 +196,10 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       },
       error: (error: any) => {
         this.hideLoading();
-        this.notificationService.showNotification('Failed to load facility list', 'error');
+        this.notificationService.showNotification(
+          'Failed to load facility list',
+          'error',
+        );
       },
     });
   }
@@ -229,13 +237,19 @@ export class AdocPriceMasterComponent implements AfterViewInit {
 
                 resolve(data);
               } else {
-                this.notificationService.showNotification('Failed to load CPT Price List', 'error');
+                this.notificationService.showNotification(
+                  'Failed to load CPT Price List',
+                  'error',
+                );
                 reject('Failed to load CPT Price List');
               }
             },
             error: (error) => {
               this.hideLoading();
-              this.notificationService.showNotification('An error occurred while fetching CPT Price List', 'error');
+              this.notificationService.showNotification(
+                'An error occurred while fetching CPT Price List',
+                'error',
+              );
 
               reject(error);
             },
@@ -255,13 +269,19 @@ export class AdocPriceMasterComponent implements AfterViewInit {
           this.historyPopupVisible = true;
           this.hideLoading();
         } else {
-          this.notificationService.showNotification('Failed to load Price History', 'error');
+          this.notificationService.showNotification(
+            'Failed to load Price History',
+            'error',
+          );
           this.hideLoading();
         }
       },
       error: (error: any) => {
         this.hideLoading();
-        this.notificationService.showNotification('An error occurred while fetching Price History', 'error');
+        this.notificationService.showNotification(
+          'An error occurred while fetching Price History',
+          'error',
+        );
       },
     });
   }
@@ -375,29 +395,39 @@ export class AdocPriceMasterComponent implements AfterViewInit {
         return false;
       }
 
-      const isModified = (
+      const isModified =
         original.NewPrice !== row.NewPrice ||
         original.NewPaedAdjuster !== row.NewPaedAdjuster ||
         original.NewSeniorAdjuster !== row.NewSeniorAdjuster ||
         original.NewFollowUpAdjuster !== row.NewFollowUpAdjuster ||
-        this.getDate(original.NewEffectFrom) !== this.getDate(row.NewEffectFrom)
-      );
+        this.getDate(original.NewEffectFrom) !==
+          this.getDate(row.NewEffectFrom);
 
       if (isModified) {
         const p = row.NewPrice;
         const pa = row.NewPaedAdjuster;
         const sa = row.NewSeniorAdjuster;
         const f = row.NewFollowUpAdjuster;
-        
-        const hasSomeValue = (p !== null && p !== undefined && p !== '') || 
-                             (pa !== null && pa !== undefined && pa !== '') || 
-                             (sa !== null && sa !== undefined && sa !== '') || 
-                             (f !== null && f !== undefined && f !== '');
-                             
-        const hasAllValues = (p !== null && p !== undefined && p !== '') && 
-                             (pa !== null && pa !== undefined && pa !== '') && 
-                             (sa !== null && sa !== undefined && sa !== '') && 
-                             (f !== null && f !== undefined && f !== '');
+
+        const hasSomeValue =
+          (p !== null && p !== undefined && p !== '') ||
+          (pa !== null && pa !== undefined && pa !== '') ||
+          (sa !== null && sa !== undefined && sa !== '') ||
+          (f !== null && f !== undefined && f !== '');
+
+        const hasAllValues =
+          p !== null &&
+          p !== undefined &&
+          p !== '' &&
+          pa !== null &&
+          pa !== undefined &&
+          pa !== '' &&
+          sa !== null &&
+          sa !== undefined &&
+          sa !== '' &&
+          f !== null &&
+          f !== undefined &&
+          f !== '';
 
         if (hasSomeValue && !hasAllValues) {
           hasValidationError = true;
@@ -408,7 +438,10 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     });
 
     if (hasValidationError) {
-      this.notificationService.showNotification('Fill The rest Of The Field To Be Editted Or Add The Active Data', 'error');
+      this.notificationService.showNotification(
+        'Fill The rest Of The Field To Be Editted Or Add The Active Data',
+        'error',
+      );
       return;
     }
 
@@ -418,7 +451,10 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     }
 
     if (!this.globalEffectFromDate) {
-      this.notificationService.showNotification('Please select an Effect From date', 'error');
+      this.notificationService.showNotification(
+        'Please select an Effect From date',
+        'error',
+      );
       return;
     }
 
@@ -438,7 +474,10 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     }
 
     if (dateError) {
-      this.notificationService.showNotification('Effect From date must be strictly greater than current active dates', 'error');
+      this.notificationService.showNotification(
+        'Effect From date must be strictly greater than current active dates',
+        'error',
+      );
       return;
     }
 
@@ -458,15 +497,24 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       next: (response: any) => {
         this.hideLoading();
         if (response.flag === '1') {
-          this.notificationService.showNotification('Price Master Saved Successfully', 'success');
+          this.notificationService.showNotification(
+            'Price Master Saved Successfully',
+            'success',
+          );
           this.fetch_ADOC_Price_List();
         } else {
-          this.notificationService.showNotification('Failed to save Price Master', 'error');
+          this.notificationService.showNotification(
+            'Failed to save Price Master',
+            'error',
+          );
         }
       },
       error: (error: any) => {
         this.hideLoading();
-        this.notificationService.showNotification('An error occurred while saving Price Master', 'error');
+        this.notificationService.showNotification(
+          'An error occurred while saving Price Master',
+          'error',
+        );
       },
     });
   }
@@ -507,9 +555,6 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     this.IsGlobalPrice = data.cptPriceGlobal;
   }
 
-  isFilterApplied: boolean = false;
-  isPopupFilterRowVisible: boolean = false;
-
   togglePopupFilterRow = () => {
     this.isPopupFilterRowVisible = !this.isPopupFilterRowVisible;
   };
@@ -524,9 +569,21 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     cell.setValue(e.value);
     if (e.value === true) {
       cell.component.cellValue(cell.rowIndex, 'NewPrice', cell.data.Price);
-      cell.component.cellValue(cell.rowIndex, 'NewPaedAdjuster', cell.data.PaedAdjuster);
-      cell.component.cellValue(cell.rowIndex, 'NewSeniorAdjuster', cell.data.SeniorAdjuster);
-      cell.component.cellValue(cell.rowIndex, 'NewFollowUpAdjuster', cell.data.FollowUpAdjuster);
+      cell.component.cellValue(
+        cell.rowIndex,
+        'NewPaedAdjuster',
+        cell.data.PaedAdjuster,
+      );
+      cell.component.cellValue(
+        cell.rowIndex,
+        'NewSeniorAdjuster',
+        cell.data.SeniorAdjuster,
+      );
+      cell.component.cellValue(
+        cell.rowIndex,
+        'NewFollowUpAdjuster',
+        cell.data.FollowUpAdjuster,
+      );
     } else {
       cell.component.cellValue(cell.rowIndex, 'NewPrice', null);
       cell.component.cellValue(cell.rowIndex, 'NewPaedAdjuster', null);
@@ -536,15 +593,14 @@ export class AdocPriceMasterComponent implements AfterViewInit {
   };
 
   onGridOptionChanged(e: any) {
-
     if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
       setTimeout(() => {
         if (this.cptPriceGrid && this.cptPriceGrid.instance) {
-          this.isFilterApplied = !!this.cptPriceGrid.instance.getCombinedFilter();
+          this.isFilterApplied =
+            !!this.cptPriceGrid.instance.getCombinedFilter();
         }
       });
     }
-
   }
 }
 
@@ -564,4 +620,4 @@ export class AdocPriceMasterComponent implements AfterViewInit {
   ],
   declarations: [AdocPriceMasterComponent],
 })
-export class AdocPriceMasterModule { }
+export class AdocPriceMasterModule {}

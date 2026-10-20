@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component, NgModule, ViewChild
-} from '@angular/core';
+import { Component, NgModule, ViewChild } from '@angular/core';
 import {
   DxTabPanelModule,
   DxCheckBoxModule,
@@ -64,17 +62,24 @@ export class UserLevelMasterComponent {
       }),
   });
 
-  addButtonOptions :any
+  addButtonOptions: any;
 
   isFilterRowVisible: boolean = false;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  menuPrevilage: {
+    CanAdd: boolean;
+    CanEdit: boolean;
+    CanDelete: boolean;
+    CanExport: boolean;
+  };
+  isFilterApplied: boolean = false;
 
   constructor(
     private service: ReportService,
     private masterService: MasterReportService,
     private router: Router,
     private dataService: DataService,
-    private route: ActivatedRoute, private notificationService: NotificationService
+    private route: ActivatedRoute,
+    private notificationService: NotificationService,
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -133,10 +138,15 @@ export class UserLevelMasterComponent {
         if (response) {
           this.dataGrid.instance.refresh();
 
-          this.notificationService.showNotification(`New User Level  saved Successfully`, 'success');
-          this.isAddFormVisible = false;
+          this.notificationService.showNotification(
+            `New User Level  saved Successfully`,
+            'success',
+          );
         } else {
-          this.notificationService.showNotification(` Your Data Not Saved`, 'error');
+          this.notificationService.showNotification(
+            ` Your Data Not Saved`,
+            'error',
+          );
         }
       });
   }
@@ -156,10 +166,15 @@ export class UserLevelMasterComponent {
         if (data) {
           this.dataGrid.instance.refresh();
 
-          this.notificationService.showNotification(`User Level updated Successfully`, 'success');
-          this.iseditFormVisible = false;
+          this.notificationService.showNotification(
+            `User Level updated Successfully`,
+            'success',
+          );
         } else {
-          this.notificationService.showNotification(`Your Data Not Saved`, 'error');
+          this.notificationService.showNotification(
+            `Your Data Not Saved`,
+            'error',
+          );
         }
         this.dataGrid.instance.refresh();
       });
@@ -173,9 +188,15 @@ export class UserLevelMasterComponent {
       .Remove_userLevel_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          this.notificationService.showNotification('Delete operation successful', 'success');
+          this.notificationService.showNotification(
+            'Delete operation successful',
+            'success',
+          );
         } catch (error) {
-          this.notificationService.showNotification('Delete operation failed', 'error');
+          this.notificationService.showNotification(
+            'Delete operation failed',
+            'error',
+          );
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
@@ -216,19 +237,15 @@ export class UserLevelMasterComponent {
     return `${day} ${month} ${year}, ${hour12}:${minutes} ${ampm}`;
   }
 
-    isFilterApplied: boolean = false;
-
-    onGridOptionChanged(e: any) {
-
-            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
-              setTimeout(() => {
-                if (this.dataGrid && this.dataGrid.instance) {
-                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
-                }
-              });
-            }
-                    
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+        }
+      });
     }
+  }
 }
 @NgModule({
   imports: [

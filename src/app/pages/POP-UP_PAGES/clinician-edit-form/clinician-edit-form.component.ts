@@ -4,6 +4,7 @@ import {
   Input,
   NgModule,
   OnChanges,
+  OnInit,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -26,7 +27,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './clinician-edit-form.component.html',
   styleUrls: ['./clinician-edit-form.component.scss'],
 })
-export class ClinicianEditFormComponent implements OnChanges {
+export class ClinicianEditFormComponent implements OnInit, OnChanges {
   @Input() formData: any;
 
   @ViewChild('clinicianLicenseValidator')

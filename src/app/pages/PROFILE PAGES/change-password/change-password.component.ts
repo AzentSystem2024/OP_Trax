@@ -180,10 +180,7 @@ export class ChangePasswordComponent implements OnInit {
 
   getSecurityPolicyData() {
     this.service.getUserSecurityPolicityData().subscribe((res: any) => {
-      this.securityPolicyData = res.data[0];
-      console.log(res, 'secpolicy');
-      console.log('hhh');
-      console.log('user security policy data', this.securityPolicyData);
+      this.securityPolicyData = res?.data?.[0];
     });
   }
   
@@ -238,29 +235,31 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   checkNumbers(): boolean {
-    return this.securityPolicyData.Numbers ? /\d/.test(this.newPassword) : true;
+    return this.securityPolicyData?.Numbers ? /\d/.test(this.newPassword) : true;
   }
 
   checkUppercase(): boolean {
-    return this.securityPolicyData.UppercaseCharacters
+    return this.securityPolicyData?.UppercaseCharacters
       ? /[A-Z]/.test(this.newPassword)
       : true;
   }
 
   checkLowercase(): boolean {
-    return this.securityPolicyData.LowercaseCharacters
+    return this.securityPolicyData?.LowercaseCharacters
       ? /[a-z]/.test(this.newPassword)
       : true;
   }
 
   checkSpecialCharacters(): boolean {
-    return this.securityPolicyData.SpecialCharacters
+    return this.securityPolicyData?.SpecialCharacters
       ? /[!@#$%^&*(),.?":{}|<>]/.test(this.newPassword)
       : true;
   }
 
   checkMinimumLength(): boolean {
-    return this.newPassword.length >= this.securityPolicyData.MinimumLength;
+    return this.securityPolicyData?.MinimumLength
+      ? this.newPassword.length >= this.securityPolicyData.MinimumLength
+      : true;
   }
 }
 

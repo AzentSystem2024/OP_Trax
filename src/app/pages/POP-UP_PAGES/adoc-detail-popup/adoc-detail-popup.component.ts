@@ -45,6 +45,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() dataLoaded = new EventEmitter<any>();
   @Output() cellClick = new EventEmitter<any>();
+  @Output() reRunSuccess = new EventEmitter<void>();
 
   popupGridData: any[] = [];
   isPopupProcessing: boolean = false;
@@ -68,7 +69,8 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
     private operationService: OperationReportService,
     private masterService: MasterReportService,
     private dataService: DataService,
-    private authService: AuthService, private notificationService: NotificationService
+    private authService: AuthService,
+    private notificationService: NotificationService,
   ) {
     this.initUserRole();
   }
@@ -137,7 +139,10 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       error: (err: any) => {
         this.popupGrid?.instance.endCustomLoading();
         console.error(err);
-        this.notificationService.showNotification('Error loading popup data', 'error');
+        this.notificationService.showNotification(
+          'Error loading popup data',
+          'error',
+        );
       },
     });
   }
@@ -171,13 +176,20 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       next: (res: any) => {
         if (res.flag === '1') {
           this.getClinicalDataPopupData();
-          this.notificationService.showNotification('Grouper re-run successfully', 'success');
+          this.reRunSuccess.emit();
+          this.notificationService.showNotification(
+            'Grouper re-run successfully',
+            'success',
+          );
         }
         this.isReRunProcessing = false;
       },
       error: (err: any) => {
         console.error(err);
-        this.notificationService.showNotification('Error re-running grouper', 'error');
+        this.notificationService.showNotification(
+          'Error re-running grouper',
+          'error',
+        );
         this.isReRunProcessing = false;
       },
     });
@@ -194,8 +206,13 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
 
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(text).then(
-        () => this.notificationService.showNotification('Copied to clipboard', 'success'),
-        () => this.notificationService.showNotification('Failed to copy', 'error'),
+        () =>
+          this.notificationService.showNotification(
+            'Copied to clipboard',
+            'success',
+          ),
+        () =>
+          this.notificationService.showNotification('Failed to copy', 'error'),
       );
     } else {
       // Fallback for insecure contexts (e.g. HTTP over local IP) or older browsers
@@ -210,7 +227,10 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       try {
         const successful = document.execCommand('copy');
         if (successful) {
-          this.notificationService.showNotification('Copied to clipboard', 'success');
+          this.notificationService.showNotification(
+            'Copied to clipboard',
+            'success',
+          );
         } else {
           this.notificationService.showNotification('Failed to copy', 'error');
         }
@@ -299,7 +319,7 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
                 field: 'Facility Multiplier',
                 value: priceData.FacilityMultiplier ?? 0,
               },
-              
+
               { field: 'ADOC Price', value: priceData.ADOCPrice ?? 0 },
             ];
           } else {
@@ -308,8 +328,20 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
         });
       }
     } else if (e.column.dataField === 'ADOCClass') {
-      if (this.menuPrevilage && !this.menuPrevilage.CanEdit) {
-        this.notificationService.showNotification('You do not have permission to edit this record.', 'warning');
+      const adocClassPrivilege =
+        this.dataService.getMenuPrevilages('adoc-class');
+      console.log('adoc clas previlages ::>>', adocClassPrivilege);
+
+      if (
+        !adocClassPrivilege ||
+        (!adocClassPrivilege.CanAdd &&
+          !adocClassPrivilege.CanEdit &&
+          !adocClassPrivilege.CanExport)
+      ) {
+        this.notificationService.showNotification(
+          'You do not have privilege to open the details',
+          'error',
+        );
         return;
       }
 
@@ -317,12 +349,18 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
       const notInBatch = Number(this.rowData?.XMLBatchID || 0) === 0;
 
       if (!isProcessed) {
-        this.notificationService.showNotification('Cannot modify ADOC Class: Claim is not yet processed.', 'warning');
+        this.notificationService.showNotification(
+          'Cannot modify ADOC Class: Claim is not yet processed.',
+          'warning',
+        );
         return;
       }
 
       if (!notInBatch) {
-        this.notificationService.showNotification('Cannot modify ADOC Class: Claim is already added to an XML Batch.', 'warning');
+        this.notificationService.showNotification(
+          'Cannot modify ADOC Class: Claim is already added to an XML Batch.',
+          'warning',
+        );
         return;
       }
 
@@ -340,12 +378,18 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
               this.selectedAdocClassData = res.data;
               this.showAdocClassEdit = true;
             } else {
-              this.notificationService.showNotification('ADOC Classification details not found.', 'error');
+              this.notificationService.showNotification(
+                'ADOC Classification details not found.',
+                'error',
+              );
             }
           },
           error: () => {
             this.isPopupProcessing = false;
-            this.notificationService.showNotification('Failed to load ADOC Classification details.', 'error');
+            this.notificationService.showNotification(
+              'Failed to load ADOC Classification details.',
+              'error',
+            );
           },
         });
       }

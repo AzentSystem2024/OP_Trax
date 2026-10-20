@@ -36,7 +36,8 @@ export class NotificationService {
 
     // Initialize and show toast
     const toast = new bootstrap.Toast(toastEl, {
-      autohide: false,
+      autohide: type === 'success',
+      delay: 3000
     });
 
     toast.show();

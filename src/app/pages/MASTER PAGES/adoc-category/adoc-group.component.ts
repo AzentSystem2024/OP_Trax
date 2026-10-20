@@ -33,8 +33,8 @@ export class ADOCGroupComponent {
   @ViewChild(DxDataGridComponent, { static: true })
   dataGrid!: DxDataGridComponent;
 
-   @ViewChild('addForm', { static: false })
-    addForm!: DxFormComponent;
+  @ViewChild('addForm', { static: false })
+  addForm!: DxFormComponent;
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
   displayMode: any = 'full';
@@ -70,12 +70,14 @@ export class ADOCGroupComponent {
     Chargeable: '',
     Status: false,
   };
+  isFilterApplied: boolean = false;
 
   constructor(
     private service: ReportService,
     private masterService: MasterReportService,
     private route: ActivatedRoute,
-    private dataService: DataService, private notificationService: NotificationService
+    private dataService: DataService,
+    private notificationService: NotificationService,
   ) {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
@@ -107,7 +109,7 @@ export class ADOCGroupComponent {
     this.isAddPopupVisible = true;
   }
 
-   onPopupHiding() {
+  onPopupHiding() {
     this.newADOCGroup = {
       GroupCode: '',
       GroupName: '',
@@ -118,33 +120,33 @@ export class ADOCGroupComponent {
     this.addForm?.instance.reset();
   }
 
-
   isDuplicateGroupCode(code: string, currentId: number = 0): boolean {
+    const gridData = this.dataGrid.instance.getDataSource().items();
 
-  const gridData = this.dataGrid.instance.getDataSource().items();
-
-  return gridData.some((item: any) =>
-    item.GroupCode?.trim().toLowerCase() === code.trim().toLowerCase() &&
-    item.ID !== currentId
-  );
-}
+    return gridData.some(
+      (item: any) =>
+        item.GroupCode?.trim().toLowerCase() === code.trim().toLowerCase() &&
+        item.ID !== currentId,
+    );
+  }
 
   // =========== Save data  =========
   saveADOCGroup() {
     const result = validationEngine.validateGroup('adocGroupValidation');
 
     if (!result.isValid) {
-      this.notificationService.showNotification('Please fill all required fields', 'warning');
+      this.notificationService.showNotification(
+        'Please fill all required fields',
+        'warning',
+      );
       return;
     }
 
-
     if (this.isDuplicateGroupCode(this.newADOCGroup.GroupCode)) {
+      this.notificationService.showNotification('Code already exists', 'error');
 
-    this.notificationService.showNotification('Code already exists', 'error');
-
-    return;
-  }
+      return;
+    }
 
     this.masterService
       .Insert_adocGroup_Data(
@@ -155,7 +157,10 @@ export class ADOCGroupComponent {
       )
       .subscribe({
         next: () => {
-          this.notificationService.showNotification('ADOC Group Added Successfully', 'success');
+          this.notificationService.showNotification(
+            'ADOC Group Added Successfully',
+            'success',
+          );
 
           this.isAddPopupVisible = false;
 
@@ -188,7 +193,10 @@ export class ADOCGroupComponent {
       combinedData.IsChargeable === undefined ||
       combinedData.IsChargeable === ''
     ) {
-      this.notificationService.showNotification('Please fill all required fields', 'warning');
+      this.notificationService.showNotification(
+        'Please fill all required fields',
+        'warning',
+      );
 
       event.cancel = true;
       return;
@@ -204,9 +212,15 @@ export class ADOCGroupComponent {
       .update_adocGroup_data(id, GroupCode, GroupName, Chargeable, IsInactive)
       .subscribe((res: any) => {
         if (res.flag === '1') {
-          this.notificationService.showNotification('Data Updated Successfully', 'success');
+          this.notificationService.showNotification(
+            'Data Updated Successfully',
+            'success',
+          );
         } else {
-          this.notificationService.showNotification('Your Data Not Saved', 'error');
+          this.notificationService.showNotification(
+            'Your Data Not Saved',
+            'error',
+          );
         }
 
         event.component.cancelEditData();
@@ -224,9 +238,15 @@ export class ADOCGroupComponent {
       .Remove_adocGroupList_Row_Data(SelectedRow.ID)
       .subscribe(() => {
         try {
-          this.notificationService.showNotification('Delete operation successful', 'success');
+          this.notificationService.showNotification(
+            'Delete operation successful',
+            'success',
+          );
         } catch (error) {
-          this.notificationService.showNotification('Delete operation failed', 'error');
+          this.notificationService.showNotification(
+            'Delete operation failed',
+            'error',
+          );
         }
         event.component.refresh();
         this.dataGrid.instance.refresh();
@@ -239,19 +259,15 @@ export class ADOCGroupComponent {
     this.service.exportDataGrid(event, fileGroupName);
   }
 
-    isFilterApplied: boolean = false;
-
-    onGridOptionChanged(e: any) {
-
-            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
-              setTimeout(() => {
-                if (this.dataGrid && this.dataGrid.instance) {
-                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
-                }
-              });
-            }
-                    
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+        }
+      });
     }
+  }
 }
 
 @NgModule({
