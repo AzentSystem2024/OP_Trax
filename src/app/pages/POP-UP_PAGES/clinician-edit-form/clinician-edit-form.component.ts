@@ -62,7 +62,7 @@ export class ClinicianEditFormComponent implements OnInit, OnChanges {
   dropdownsLoaded: boolean = false;
   isLoading: boolean = false;
 
-  constructor(private masterService: MasterReportService) { }
+  constructor(private masterService: MasterReportService) {}
 
   async ngOnInit() {
     await this.loadInitialData();
@@ -143,7 +143,8 @@ export class ClinicianEditFormComponent implements OnInit, OnChanges {
     this.newClinician.ClinicianName = '';
     this.newClinician.ClinicianShortName = '';
     this.newClinician.SpecialityID = '';
-    ((this.newClinician.MajorID = ''), (this.newClinician.ProfessionID = ''));
+    this.newClinician.MajorID = '';
+    this.newClinician.ProfessionID = '';
     this.newClinician.CategoryID = '';
     this.newClinician.Gender = '';
   }
@@ -246,4 +247,4 @@ export class ClinicianEditFormComponent implements OnInit, OnChanges {
   declarations: [ClinicianEditFormComponent],
   exports: [ClinicianEditFormComponent],
 })
-export class ClinicianEditFormModule { }
+export class ClinicianEditFormModule {}

@@ -73,7 +73,8 @@ export class ClinicianNewFormComponent {
     this.newClinician.ClinicianName = '';
     this.newClinician.ClinicianShortName = '';
     this.newClinician.SpecialityID = '';
-    (this.newClinician.MajorID = ''), (this.newClinician.ProfessionID = '');
+    this.newClinician.MajorID = '', 
+    this.newClinician.ProfessionID = '';
     this.newClinician.CategoryID = '';
     this.newClinician.Gender = '';
   }
@@ -114,7 +115,7 @@ export class ClinicianNewFormComponent {
     const clinicianLicense = e.value;
     console.log(clinicianLicense, 'clinician license');
     const exists = this.cliniciansList.some(
-      (clinician: any) => clinician.ClinicianLicense === clinicianLicense
+      (clinician: any) => clinician.ClinicianLicense === clinicianLicense,
     );
     console.log(exists, 'exists');
 
@@ -174,4 +175,4 @@ export class ClinicianNewFormComponent {
   declarations: [ClinicianNewFormComponent],
   exports: [ClinicianNewFormComponent],
 })
-export class ClinicianNewFormModule { }
+export class ClinicianNewFormModule {}

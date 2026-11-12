@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
 import {
   DxButtonModule,
   DxDataGridComponent,
@@ -24,7 +18,7 @@ import { DataService } from 'src/app/services';
 import { ClinicianNewFormModule } from '../../POP-UP_PAGES/clinician-new-form/clinician-new-form.component';
 import { ClinicianNewFormComponent } from '../../POP-UP_PAGES/clinician-new-form/clinician-new-form.component';
 import DataSource from 'devextreme/data/data_source';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PopupStateService } from 'src/app/popupStateService.service';
 import {
   ClinicianEditFormComponent,
@@ -48,7 +42,7 @@ export class ClinicianComponent implements OnInit {
 
   isAddClinicianPopupOpened: any = false;
   isEditClinicianPopupOpened: any = false;
-  // dataSource: any;
+
   // Variables for Pagination
   readonly allowedPageSizes: any = [5, 10, 'all'];
   displayMode: any = 'full';
@@ -178,8 +172,6 @@ export class ClinicianComponent implements OnInit {
 
   ngOnInit(): void {
     this.get_DropDown_Data();
-    // this.isAddClinicianPopupOpened =
-    //   this.popupStateService.getPopupState('clinicianPopup');
   }
 
   show_new__Form() {
@@ -381,4 +373,4 @@ export class ClinicianComponent implements OnInit {
   exports: [],
   declarations: [ClinicianComponent],
 })
-export class ClinicianListModule { }
+export class ClinicianListModule {}

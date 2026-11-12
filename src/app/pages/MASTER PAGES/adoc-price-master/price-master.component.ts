@@ -48,11 +48,16 @@ export class AdocPriceMasterComponent implements AfterViewInit {
 
   facilityList: any[] = [];
 
+  versionList: any[] = [];
+  selectedVersion: string = '';
+  versionValueExpr: any | undefined = 'DESCRIPTION';
+
+  isSelectAll: boolean = false;
+
   menuPrevilage: any;
 
   selectedFacilityID: any;
 
-  saveButtonOptions: any;
   facilitySelectOptions: any;
 
   cptPriceData: any = [];
@@ -63,13 +68,11 @@ export class AdocPriceMasterComponent implements AfterViewInit {
 
   PriceHistoryData: any = [];
   historyPopupVisible: boolean = false;
-  isEditingEnabled: boolean = false;
-  editButtonOptions: any;
 
-  globalEffectFromDate: Date | null = null;
+  globalEffectFromDate: any | null = null;
   isFilterApplied: boolean = false;
   isPopupFilterRowVisible: boolean = false;
-  
+
   constructor(
     private masterService: MasterReportService,
     private service: ReportService,
@@ -81,33 +84,11 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       const fullUrl = segments.map((s) => s.path).join('/');
       this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
     });
-
-    this.saveButtonOptions = {
-      class: 'ms-2',
-      text: 'Save',
-      type: 'default',
-      stylingMode: 'contained',
-      hint: 'Add new entry',
-      disabled: !this.menuPrevilage.CanAdd,
-      onClick: () => this.savePriceMaster(),
-      elementAttr: { class: 'add-button' },
-    };
-
-    this.editButtonOptions = {
-      class: 'ms-2',
-      text: '',
-      icon: 'edit',
-      type: 'default',
-      stylingMode: 'default',
-      hint: 'Toggle Edit Mode',
-      disabled: !this.menuPrevilage.CanAdd,
-      onClick: this.toggleEditMode,
-      elementAttr: { class: 'edit-button' },
-    };
   }
 
   onAddClick = () => {
     this.globalEffectFromDate = new Date();
+    this.isSelectAll = false;
     if (this.popupGrid && this.popupGrid.instance) {
       this.popupGrid.instance.cancelEditData();
 
@@ -123,31 +104,107 @@ export class AdocPriceMasterComponent implements AfterViewInit {
             row.NewPaedAdjuster = orig.NewPaedAdjuster;
             row.NewSeniorAdjuster = orig.NewSeniorAdjuster;
             row.NewFollowUpAdjuster = orig.NewFollowUpAdjuster;
+            row.NewNewPatientAdjuster = orig.NewNewPatientAdjuster;
+            row.NewTeleMedicineAdjuster = orig.NewTeleMedicineAdjuster;
           }
         });
       }
     }
     this.isAddPopupVisible = true;
+    setTimeout(() => {
+      this.popupGrid?.instance?.updateDimensions();
+    }, 150);
+  };
+
+  displayVersionExpr = (item: any): string => {
+    if (!item) return '';
+    if (typeof item === 'string') return item;
+    return (
+      item.DESCRIPTION ||
+      item.Description ||
+      item.Name ||
+      item.Version ||
+      item.version ||
+      item.ID ||
+      ''
+    );
   };
 
   ngAfterViewInit() {
     setTimeout(() => {
       this.get_local_storage_data();
-      this.fetch_ADOC_Price_List();
+      this.get_ADOC_VERSION_Dropdown();
     });
   }
 
-  toggleEditMode = () => {
-    this.isEditingEnabled = !this.isEditingEnabled;
-    this.editButtonOptions = {
-      ...this.editButtonOptions,
-      icon: this.isEditingEnabled ? 'close' : 'edit',
-    };
+  get_ADOC_VERSION_Dropdown(): void {
+    this.showLoading('Loading ADOC Versions...');
+    this.masterService.Get_GropDown('ADOC_VERSION').subscribe({
+      next: (response: any) => {
+        this.versionList = Array.isArray(response)
+          ? response
+          : response?.data || [];
+        if (this.versionList.length > 0) {
+          const latestItem =
+            [...this.versionList].sort((a: any, b: any) => {
+              const idA = a?.ID !== undefined ? Number(a.ID) : 0;
+              const idB = b?.ID !== undefined ? Number(b.ID) : 0;
+              if (idA !== idB) return idB - idA;
+              const descA = parseFloat(a?.DESCRIPTION || '0');
+              const descB = parseFloat(b?.DESCRIPTION || '0');
+              return descB - descA;
+            })[0] || this.versionList[this.versionList.length - 1];
 
-    if (!this.isEditingEnabled) {
-      // this.refresh();
+          if (latestItem && typeof latestItem === 'object') {
+            this.versionValueExpr =
+              latestItem.DESCRIPTION !== undefined
+                ? 'DESCRIPTION'
+                : latestItem.ID !== undefined
+                  ? 'ID'
+                  : undefined;
+            const val =
+              latestItem.DESCRIPTION !== undefined
+                ? latestItem.DESCRIPTION
+                : latestItem.ID !== undefined
+                  ? latestItem.ID
+                  : '';
+            this.selectedVersion = String(val);
+          } else {
+            this.versionValueExpr = undefined;
+            this.selectedVersion = String(latestItem ?? '');
+          }
+        }
+        this.hideLoading();
+        this.fetch_ADOC_Price_List();
+      },
+      error: (error: any) => {
+        this.hideLoading();
+        this.notificationService.showNotification(
+          'Failed to load ADOC Version dropdown',
+          'error',
+        );
+        this.fetch_ADOC_Price_List();
+      },
+    });
+  }
+
+  onVersionChanged(event: any) {
+    if (event.event) {
+      this.selectedVersion =
+        event.value && typeof event.value === 'object'
+          ? String(
+              event.value.DESCRIPTION ||
+                event.value.Description ||
+                event.value.Name ||
+                event.value.ID ||
+                '',
+            )
+          : event.value != null
+            ? String(event.value)
+            : '';
+      this.fetch_ADOC_Price_List();
     }
-  };
+  }
 
   showLoading(message: string) {
     if (this.cptPriceGrid && this.cptPriceGrid.instance) {
@@ -204,53 +261,136 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     });
   }
 
+  parseRealValue(val: any): number | null {
+    if (val === null || val === undefined || val === '') {
+      return null;
+    }
+    if (typeof val === 'object') {
+      if (val.parsedValue !== undefined && val.parsedValue !== null) {
+        const p = Number(val.parsedValue);
+        return isNaN(p) ? null : p;
+      }
+      if (val.source !== undefined && val.source !== null) {
+        const s = Number(val.source);
+        return isNaN(s) ? null : s;
+      }
+    }
+    const n = Number(val);
+    return isNaN(n) ? null : n;
+  }
+
   fetch_ADOC_Price_List() {
     this.cptPriceData = new DataSource({
       load: () =>
         new Promise((resolve, reject) => {
           this.showLoading('Fetching ADOC Price List...');
-          this.masterService.get_ADOC_Price_List().subscribe({
+          const versionParam =
+            this.selectedVersion && typeof this.selectedVersion === 'object'
+              ? String(
+                  (this.selectedVersion as any).DESCRIPTION ||
+                    (this.selectedVersion as any).Description ||
+                    (this.selectedVersion as any).Name ||
+                    (this.selectedVersion as any).ID ||
+                    '',
+                )
+              : this.selectedVersion != null
+                ? String(this.selectedVersion)
+                : '';
+          this.masterService.get_ADOC_Price_List(versionParam).subscribe({
             next: (response: any) => {
               this.hideLoading();
-              if (response.flag === '1') {
-                const data = (response.data || []).map(
-                  (item: any, index: number) => ({
+              let rawData =
+                response?.data !== undefined ? response.data : response;
+              if (typeof rawData === 'string') {
+                try {
+                  rawData = JSON.parse(rawData);
+                } catch (e) {}
+              }
+              let list: any[] = [];
+              if (Array.isArray(rawData)) {
+                list = rawData;
+              } else if (rawData && typeof rawData === 'object') {
+                list = Object.values(rawData);
+              }
+
+              if (
+                response?.flag === '1' ||
+                list.length > 0 ||
+                (response && !response.error)
+              ) {
+                const data = list.map((item: any, index: number) => {
+                  const price = this.parseRealValue(item.Price);
+                  const paed = this.parseRealValue(item.PaedAdjuster);
+                  const senior = this.parseRealValue(item.SeniorAdjuster);
+                  const followUp = this.parseRealValue(item.FollowUpAdjuster);
+                  const newPatient = this.parseRealValue(item.NewPatientAdjuster);
+                  const teleMed = this.parseRealValue(item.TeleMedicineAdjuster);
+
+                  const newPrice = this.parseRealValue(item.NewPrice);
+                  const newPaed = this.parseRealValue(item.NewPaedAdjuster);
+                  const newSenior = this.parseRealValue(item.NewSeniorAdjuster);
+                  const newFollowUp = this.parseRealValue(item.NewFollowUpAdjuster);
+                  const newNewPatient = this.parseRealValue(
+                    item.NewNewPatientAdjuster ?? item.NewPatientAdjusterNew,
+                  );
+                  const newTeleMed = this.parseRealValue(
+                    item.NewTeleMedicineAdjuster ?? item.TeleMedicineAdjusterNew,
+                  );
+
+                  const version =
+                    item.ADOCVersion !== null && item.ADOCVersion !== undefined
+                      ? item.ADOCVersion
+                      : this.selectedVersion;
+
+                  return {
                     ...item,
                     SerialNumber: index + 1,
-                    NewPrice: item.NewPrice > 0 ? item.NewPrice : null,
+                    ID: item.ID || item.PriceID || 0,
+                    ADOCClassID: item.ADOCClassID,
+                    ADOCClassName: item.ADOCClassName,
+                    ADOCVersion: version,
+                    Price: price,
+                    PaedAdjuster: paed,
+                    SeniorAdjuster: senior,
+                    FollowUpAdjuster: followUp,
+                    NewPatientAdjuster: newPatient,
+                    TeleMedicineAdjuster: teleMed,
+                    NewPrice:
+                      newPrice !== null && newPrice > 0 ? newPrice : null,
                     NewPaedAdjuster:
-                      item.NewPaedAdjuster > 0 ? item.NewPaedAdjuster : null,
+                      newPaed !== null && newPaed > 0 ? newPaed : null,
                     NewSeniorAdjuster:
-                      item.NewSeniorAdjuster > 0
-                        ? item.NewSeniorAdjuster
-                        : null,
+                      newSenior !== null && newSenior > 0 ? newSenior : null,
                     NewFollowUpAdjuster:
-                      item.NewFollowUpAdjuster > 0
-                        ? item.NewFollowUpAdjuster
+                      newFollowUp !== null && newFollowUp > 0
+                        ? newFollowUp
                         : null,
-                  }),
-                );
+                    NewNewPatientAdjuster:
+                      newNewPatient !== null && newNewPatient > 0
+                        ? newNewPatient
+                        : null,
+                    NewTeleMedicineAdjuster:
+                      newTeleMed !== null && newTeleMed > 0 ? newTeleMed : null,
+                  };
+                });
 
                 this.cptPriceData = data;
-
                 this.originalCptPriceData = JSON.parse(JSON.stringify(data));
-
                 resolve(data);
               } else {
                 this.notificationService.showNotification(
-                  'Failed to load CPT Price List',
+                  'Failed to load ADOC Price List',
                   'error',
                 );
-                reject('Failed to load CPT Price List');
+                reject('Failed to load ADOC Price List');
               }
             },
             error: (error) => {
               this.hideLoading();
               this.notificationService.showNotification(
-                'An error occurred while fetching CPT Price List',
+                'An error occurred while fetching ADOC Price List',
                 'error',
               );
-
               reject(error);
             },
           });
@@ -341,6 +481,8 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       originalRow.NewPaedAdjuster !== e.data.NewPaedAdjuster ||
       originalRow.NewSeniorAdjuster !== e.data.NewSeniorAdjuster ||
       originalRow.NewFollowUpAdjuster !== e.data.NewFollowUpAdjuster ||
+      originalRow.NewNewPatientAdjuster !== e.data.NewNewPatientAdjuster ||
+      originalRow.NewTeleMedicineAdjuster !== e.data.NewTeleMedicineAdjuster ||
       origDate !== newDate;
 
     e.data.IsModified = isModified;
@@ -385,7 +527,6 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       await this.popupGrid.instance.saveEditData();
     }
 
-    let hasValidationError = false;
     const modifiedRows = this.cptPriceData.filter((row: any) => {
       const original = this.originalCptPriceData.find(
         (x) => x.SerialNumber === row.SerialNumber,
@@ -400,50 +541,14 @@ export class AdocPriceMasterComponent implements AfterViewInit {
         original.NewPaedAdjuster !== row.NewPaedAdjuster ||
         original.NewSeniorAdjuster !== row.NewSeniorAdjuster ||
         original.NewFollowUpAdjuster !== row.NewFollowUpAdjuster ||
+        original.NewNewPatientAdjuster !== row.NewNewPatientAdjuster ||
+        original.NewTeleMedicineAdjuster !== row.NewTeleMedicineAdjuster ||
+        row.IsSelected === true ||
         this.getDate(original.NewEffectFrom) !==
           this.getDate(row.NewEffectFrom);
 
-      if (isModified) {
-        const p = row.NewPrice;
-        const pa = row.NewPaedAdjuster;
-        const sa = row.NewSeniorAdjuster;
-        const f = row.NewFollowUpAdjuster;
-
-        const hasSomeValue =
-          (p !== null && p !== undefined && p !== '') ||
-          (pa !== null && pa !== undefined && pa !== '') ||
-          (sa !== null && sa !== undefined && sa !== '') ||
-          (f !== null && f !== undefined && f !== '');
-
-        const hasAllValues =
-          p !== null &&
-          p !== undefined &&
-          p !== '' &&
-          pa !== null &&
-          pa !== undefined &&
-          pa !== '' &&
-          sa !== null &&
-          sa !== undefined &&
-          sa !== '' &&
-          f !== null &&
-          f !== undefined &&
-          f !== '';
-
-        if (hasSomeValue && !hasAllValues) {
-          hasValidationError = true;
-        }
-      }
-
       return isModified;
     });
-
-    if (hasValidationError) {
-      this.notificationService.showNotification(
-        'Fill The rest Of The Field To Be Editted Or Add The Active Data',
-        'error',
-      );
-      return;
-    }
 
     if (modifiedRows.length === 0) {
       this.notificationService.showNotification('No changes found', 'warning');
@@ -481,16 +586,38 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       return;
     }
 
-    const payload = modifiedRows.map((x: any) => ({
-      FacilityID: this.selectedFacilityID ? this.selectedFacilityID : null,
-      ADOCClassID: x.ADOCClassID,
-      Price: x.NewPrice,
-      PaedAdjuster: x.NewPaedAdjuster,
-      SeniorAdjuster: x.NewSeniorAdjuster,
-      FollowUpAdjuster: x.NewFollowUpAdjuster,
-      EffectFrom: this.formatDate(this.globalEffectFromDate),
-      EffectTo: null,
-    }));
+    const getVal = (newVal: any, activeVal: any): number => {
+      if (newVal !== null && newVal !== undefined && newVal !== '') {
+        const n = Number(newVal);
+        return isNaN(n) ? 0 : n;
+      }
+      if (activeVal !== null && activeVal !== undefined && activeVal !== '') {
+        const n = Number(activeVal);
+        return isNaN(n) ? 0 : n;
+      }
+      return 0;
+    };
+
+    const payload = modifiedRows.map((x: any) => {
+      const versionVal = x.ADOCVersion ?? this.selectedVersion ?? 0;
+      const adocVersion =
+        !isNaN(Number(versionVal)) && versionVal !== ''
+          ? Number(versionVal)
+          : versionVal;
+
+      return {
+        ID: x.ID ? Number(x.ID) : 0,
+        ADOCClassID: Number(x.ADOCClassID) || 0,
+        Price: getVal(x.NewPrice, x.Price),
+        PaedAdjuster: getVal(x.NewPaedAdjuster, x.PaedAdjuster),
+        SeniorAdjuster: getVal(x.NewSeniorAdjuster, x.SeniorAdjuster),
+        FollowUpAdjuster: getVal(x.NewFollowUpAdjuster, x.FollowUpAdjuster),
+        NewPatientAdjuster: getVal(x.NewNewPatientAdjuster, x.NewPatientAdjuster),
+        TeleMedicineAdjuster: getVal(x.NewTeleMedicineAdjuster, x.TeleMedicineAdjuster),
+        ADOCVersion: adocVersion,
+        EffectTo: x.EffectTo ? new Date(x.EffectTo).toISOString() : null,
+      };
+    });
 
     this.showLoading('Saving ADOC Class Price Master...');
     this.masterService.Insert_PriceMaster_Data(payload).subscribe({
@@ -559,38 +686,83 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     this.isPopupFilterRowVisible = !this.isPopupFilterRowVisible;
   };
 
-  onPopupSearch = (e: any) => {
-    if (this.popupGrid && this.popupGrid.instance) {
-      this.popupGrid.instance.searchByText(e.value);
+  onSelectAllChanged(e: any) {
+    if (!e.event) return;
+    const isChecked = !!e.value;
+    this.isSelectAll = isChecked;
+
+    if (!Array.isArray(this.cptPriceData)) return;
+
+    this.cptPriceData.forEach((row: any) => {
+      row.IsSelected = isChecked;
+      if (isChecked) {
+        row.NewPrice = row.Price ?? 0;
+        row.NewPaedAdjuster = row.PaedAdjuster ?? 0;
+        row.NewSeniorAdjuster = row.SeniorAdjuster ?? 0;
+        row.NewFollowUpAdjuster = row.FollowUpAdjuster ?? 0;
+        row.NewNewPatientAdjuster = row.NewPatientAdjuster ?? 0;
+        row.NewTeleMedicineAdjuster = row.TeleMedicineAdjuster ?? 0;
+      } else {
+        row.NewPrice = null;
+        row.NewPaedAdjuster = null;
+        row.NewSeniorAdjuster = null;
+        row.NewFollowUpAdjuster = null;
+        row.NewNewPatientAdjuster = null;
+        row.NewTeleMedicineAdjuster = null;
+      }
+    });
+
+    if (this.popupGrid?.instance) {
+      this.popupGrid.instance.refresh();
     }
-  };
+  }
 
   onCheckboxChanged = (e: any, cell: any) => {
-    cell.setValue(e.value);
-    if (e.value === true) {
-      cell.component.cellValue(cell.rowIndex, 'NewPrice', cell.data.Price);
+    const isChecked = !!e.value;
+    cell.data.IsSelected = isChecked;
+
+    const price = isChecked ? (cell.data.Price ?? 0) : null;
+    const paed = isChecked ? (cell.data.PaedAdjuster ?? 0) : null;
+    const senior = isChecked ? (cell.data.SeniorAdjuster ?? 0) : null;
+    const followUp = isChecked ? (cell.data.FollowUpAdjuster ?? 0) : null;
+    const newPatient = isChecked ? (cell.data.NewPatientAdjuster ?? 0) : null;
+    const teleMed = isChecked ? (cell.data.TeleMedicineAdjuster ?? 0) : null;
+
+    cell.data.NewPrice = price;
+    cell.data.NewPaedAdjuster = paed;
+    cell.data.NewSeniorAdjuster = senior;
+    cell.data.NewFollowUpAdjuster = followUp;
+    cell.data.NewNewPatientAdjuster = newPatient;
+    cell.data.NewTeleMedicineAdjuster = teleMed;
+
+    if (cell.component && cell.rowIndex !== undefined && cell.rowIndex >= 0) {
+      cell.component.cellValue(cell.rowIndex, 'NewPrice', price);
+      cell.component.cellValue(cell.rowIndex, 'NewPaedAdjuster', paed);
+      cell.component.cellValue(cell.rowIndex, 'NewSeniorAdjuster', senior);
+      cell.component.cellValue(cell.rowIndex, 'NewFollowUpAdjuster', followUp);
       cell.component.cellValue(
         cell.rowIndex,
-        'NewPaedAdjuster',
-        cell.data.PaedAdjuster,
+        'NewNewPatientAdjuster',
+        newPatient,
       );
       cell.component.cellValue(
         cell.rowIndex,
-        'NewSeniorAdjuster',
-        cell.data.SeniorAdjuster,
+        'NewTeleMedicineAdjuster',
+        teleMed,
       );
-      cell.component.cellValue(
-        cell.rowIndex,
-        'NewFollowUpAdjuster',
-        cell.data.FollowUpAdjuster,
-      );
-    } else {
-      cell.component.cellValue(cell.rowIndex, 'NewPrice', null);
-      cell.component.cellValue(cell.rowIndex, 'NewPaedAdjuster', null);
-      cell.component.cellValue(cell.rowIndex, 'NewSeniorAdjuster', null);
-      cell.component.cellValue(cell.rowIndex, 'NewFollowUpAdjuster', null);
     }
+    this.updateSelectAllState();
   };
+
+  updateSelectAllState() {
+    if (!Array.isArray(this.cptPriceData) || this.cptPriceData.length === 0) {
+      this.isSelectAll = false;
+      return;
+    }
+    this.isSelectAll = this.cptPriceData.every(
+      (x: any) => x.IsSelected === true,
+    );
+  }
 
   onGridOptionChanged(e: any) {
     if (e.fullName && e.fullName.toLowerCase().includes('filter')) {

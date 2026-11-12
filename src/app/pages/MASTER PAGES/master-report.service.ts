@@ -19,7 +19,7 @@ export class MasterReportService {
   constructor(
     private http: HttpClient,
     private config: ConfigService,
-  ) { }
+  ) {}
 
   private get BASE_URL(): string {
     return this.config.apiBaseUrl;
@@ -30,7 +30,7 @@ export class MasterReportService {
     return gender;
   }
 
-  //======Facility Drop down data=====================
+  //====== Drop down data =======
   Get_GropDown(dropDownField: any) {
     const Url = `${this.BASE_URL}dropdown`;
     const reqBody = { name: dropDownField };
@@ -424,11 +424,11 @@ export class MasterReportService {
         ADOCApplicationID !== 0
           ? []
           : (CPTADOCMappings || []).filter(
-            (x: any) =>
-              x.SpecialityID != null &&
-              x.ADOCClassID != null &&
-              x.ADOCCategoryID != null,
-          ),
+              (x: any) =>
+                x.SpecialityID != null &&
+                x.ADOCClassID != null &&
+                x.ADOCCategoryID != null,
+            ),
     };
 
     return this.http.post(url, reqBody);
@@ -469,11 +469,11 @@ export class MasterReportService {
         ADOCApplicationID !== 0
           ? []
           : (CPTADOCMappings || []).filter(
-            (x: any) =>
-              x.SpecialityID != null &&
-              x.ADOCClassID != null &&
-              x.ADOCCategoryID != null,
-          ),
+              (x: any) =>
+                x.SpecialityID != null &&
+                x.ADOCClassID != null &&
+                x.ADOCCategoryID != null,
+            ),
     };
 
     return this.http.post(url, reqBody);
@@ -1294,9 +1294,11 @@ export class MasterReportService {
   }
 
   // ===== Get CPT-Price List =====
-  get_ADOC_Price_List() {
+  get_ADOC_Price_List(version?: any) {
     const url = `${this.BASE_URL}ADOCPrice/cptlist`;
-    return this.http.post(url, {});
+    const payload: any = { ADOCVersion: version };
+
+    return this.http.post(url, payload);
   }
 
   // ===== Add Price Master =====
@@ -1441,7 +1443,12 @@ export class MasterReportService {
   }
 
   //======Add Icd Master data========
-  Insert_IcdMaster_Data(ICDCode: any, ICDName: any, ICDDescription: any, SpecialtyID: any) {
+  Insert_IcdMaster_Data(
+    ICDCode: any,
+    ICDName: any,
+    ICDDescription: any,
+    SpecialtyID: any,
+  ) {
     const url = `${this.BASE_URL}icdmaster/save`;
     const reqBody = {
       ICDCode: ICDCode,
@@ -1461,7 +1468,7 @@ export class MasterReportService {
     ICDName: any,
     ICDDescription: any,
     IsInactive: any,
-    SpecialtyID: any
+    SpecialtyID: any,
   ) {
     const url = `${this.BASE_URL}icdmaster/update`;
     const reqBody = {
