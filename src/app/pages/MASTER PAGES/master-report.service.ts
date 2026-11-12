@@ -1510,9 +1510,12 @@ export class MasterReportService {
   }
 
   // ===== ICD-ADOC Mapping =====
-  get_icdAdocMapping_List() {
+  get_icdAdocMapping_List(version?: any) {
     const Url = `${this.BASE_URL}ICDADOCMapping/list`;
-    const reqBody = { list: [] };
+    const reqBody: any = { list: [] };
+    if (version !== undefined && version !== null && version !== '') {
+      reqBody.ADOCVersion = version;
+    }
     return this.http.post(Url, reqBody);
   }
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, ViewChild } from '@angular/core';
+import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   DxDataGridModule,
@@ -29,7 +29,7 @@ import validationEngine from 'devextreme/ui/validation_engine';
   styleUrls: ['./icd-adoc-mapping.component.scss'],
   providers: [ReportService, DataService],
 })
-export class IcdAdocMappingComponent {
+export class IcdAdocMappingComponent implements OnInit {
   @ViewChild(DxDataGridComponent, { static: true })
   dataGrid!: DxDataGridComponent;
 
@@ -48,12 +48,42 @@ export class IcdAdocMappingComponent {
   specialityList: any[] = [];
   adocClassList: any[] = [];
 
+  versionList: any[] = [];
+  selectedVersion: string = '';
+  versionValueExpr: any | undefined = undefined;
+
+  displayVersionExpr = (item: any) => {
+    if (!item) return '';
+    if (typeof item === 'string') return item;
+    return (
+      item.DESCRIPTION ||
+      item.Description ||
+      item.Name ||
+      item.Version ||
+      item.version ||
+      item.ID ||
+      ''
+    );
+  };
+
+  customizeSpecialtyText = (cellInfo: any) => {
+    if (cellInfo.value === 0 || cellInfo.value === '0') {
+      return 'N/A';
+    }
+    return cellInfo.valueText || (cellInfo.value ?? '');
+  };
+
   dataSource = new DataSource<any>({
     load: () =>
       new Promise((resolve, reject) => {
-        this.masterService.get_icdAdocMapping_List().subscribe({
+        if (!this.selectedVersion) {
+          resolve([]);
+          return;
+        }
+        const versionParam = String(this.selectedVersion);
+        this.masterService.get_icdAdocMapping_List(versionParam).subscribe({
           next: (response: any) =>
-            resolve(response.datas || response.data || response),
+            resolve(response.datas || response.data || response || []),
           error: (error: any) => reject(error.message),
         });
       }),
@@ -87,7 +117,8 @@ export class IcdAdocMappingComponent {
     });
 
     this.dataService.Get_GropDown('SPECIALITY').subscribe((res: any) => {
-      this.specialityList = res;
+      const list = Array.isArray(res) ? res : res?.data || [];
+      this.specialityList = [{ ID: 0, DESCRIPTION: 'N/A' }, ...list];
     });
 
     this.dataService.Get_GropDown('ADOC_CLASS').subscribe((res: any) => {
@@ -116,6 +147,82 @@ export class IcdAdocMappingComponent {
       onClick: this.toggleEditMode,
       elementAttr: { class: 'edit-button' },
     };
+  }
+
+  ngOnInit() {
+    this.get_ADOC_VERSION_Dropdown();
+  }
+
+  get_ADOC_VERSION_Dropdown(): void {
+    this.dataService.Get_GropDown('ADOC_VERSION').subscribe({
+      next: (response: any) => {
+        this.versionList = Array.isArray(response)
+          ? response
+          : response?.data || [];
+        if (this.versionList.length > 0) {
+          const latestItem =
+            [...this.versionList].sort((a: any, b: any) => {
+              const idA = a?.ID !== undefined ? Number(a.ID) : 0;
+              const idB = b?.ID !== undefined ? Number(b.ID) : 0;
+              if (idA !== idB) return idB - idA;
+              const descA = parseFloat(a?.DESCRIPTION || '0');
+              const descB = parseFloat(b?.DESCRIPTION || '0');
+              return descB - descA;
+            })[0] || this.versionList[this.versionList.length - 1];
+
+          if (latestItem && typeof latestItem === 'object') {
+            this.versionValueExpr =
+              latestItem.DESCRIPTION !== undefined
+                ? 'DESCRIPTION'
+                : latestItem.ID !== undefined
+                  ? 'ID'
+                  : undefined;
+            const val =
+              latestItem.DESCRIPTION !== undefined
+                ? latestItem.DESCRIPTION
+                : latestItem.ID !== undefined
+                  ? latestItem.ID
+                  : '';
+            this.selectedVersion = String(val);
+          } else {
+            this.versionValueExpr = undefined;
+            this.selectedVersion = String(latestItem ?? '');
+          }
+        }
+        if (this.dataSource) {
+          this.dataSource.reload();
+        }
+      },
+      error: (error: any) => {
+        this.notificationService.showNotification(
+          'Failed to load ADOC Version dropdown',
+          'error',
+        );
+        if (this.dataSource) {
+          this.dataSource.reload();
+        }
+      },
+    });
+  }
+
+  onVersionChanged(event: any) {
+    if (event.event) {
+      this.selectedVersion =
+        event.value && typeof event.value === 'object'
+          ? String(
+              event.value.DESCRIPTION ||
+                event.value.Description ||
+                event.value.Name ||
+                event.value.ID ||
+                '',
+            )
+          : event.value != null
+            ? String(event.value)
+            : '';
+      if (this.dataSource) {
+        this.dataSource.reload();
+      }
+    }
   }
 
   toggleEditMode = () => {
@@ -180,6 +287,7 @@ export class IcdAdocMappingComponent {
       ADOCClassID: this.newIcdAdocMapping.ADOCClassID,
       EffectFrom: this.formatDate(this.newIcdAdocMapping.EffectFrom),
       UserID: sessionStorage.getItem('UserID'),
+      ADOCVersion: this.selectedVersion || undefined,
     };
 
     this.masterService.insert_icdAdocMapping_Data(payload).subscribe({
@@ -248,6 +356,7 @@ export class IcdAdocMappingComponent {
       ADOCClassID: combinedData.ADOCClassID,
       EffectFrom: this.formatDate(combinedData.EffectFrom),
       UserID: sessionStorage.getItem('UserID'),
+      ADOCVersion: combinedData.ADOCVersion || this.selectedVersion || undefined,
     };
 
     this.masterService.update_icdAdocMapping_data(payload).subscribe({

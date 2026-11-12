@@ -1,6 +1,5 @@
 <div class="view-wrapper list-page">
   <dx-data-grid
-    (onOptionChanged)="onGridOptionChanged($event)"
     class="grid theme-dependent"
     noDataText="No Data Available"
     height="82vh"
@@ -13,6 +12,7 @@
     (onExporting)="onExporting($event)"
     (onRowRemoving)="onRowRemoving($event)"
     (onRowUpdating)="onRowUpdating($event)"
+    (onOptionChanged)="onGridOptionChanged($event)"
   >
     <dxo-editing
       mode="popup"
@@ -113,6 +113,14 @@
       <dxi-item location="before">
         <div class="grid-header">ICD - ADOC Mapping</div>
       </dxi-item>
+
+      <!-- ADOC Version Dropdown -->
+      <dxi-item
+        location="after"
+        locateInMenu="never"
+        template="versionSelectTemplate"
+      ></dxi-item>
+
       <dxi-item
         location="after"
         locateInMenu="auto"
@@ -146,11 +154,11 @@
         cssClass="custom-export-button"
       ></dxi-item>
 
-      <dxi-item
+      <!-- <dxi-item
         location="after"
         widget="dxButton"
         [options]="editButtonOptions"
-      ></dxi-item>
+      ></dxi-item> -->
 
       <dxi-item
         *ngIf="isEditingEnabled"
@@ -160,7 +168,16 @@
       ></dxi-item>
     </dxo-toolbar>
 
-    <dxi-column dataField="SpecialtyID" caption="Specialty">
+    <dxi-column
+      dataField="ADOCBaseClass"
+      caption="ADOC Base Class"
+    ></dxi-column>
+
+    <dxi-column
+      dataField="SpecialtyID"
+      caption="Specialty"
+      [customizeText]="customizeSpecialtyText"
+    >
       <dxo-lookup
         [dataSource]="specialityList"
         valueExpr="ID"
@@ -182,7 +199,25 @@
       format="dd-MMM-yyyy"
     ></dxi-column>
 
-    <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
+    <dxi-column dataField="ADOCVersion" [visible]="false"></dxi-column>
+
+    <div *dxTemplate="let data of 'versionSelectTemplate'">
+      <dx-select-box
+        [dataSource]="versionList"
+        [displayExpr]="displayVersionExpr"
+        [valueExpr]="versionValueExpr"
+        [(value)]="selectedVersion"
+        label="Select Version"
+        [labelMode]="'floating'"
+        [searchEnabled]="true"
+        width="200"
+        (onValueChanged)="onVersionChanged($event)"
+      ></dx-select-box>
+    </div>
+
+    <dxo-filter-panel
+      [visible]="isFilterRowVisible || isFilterApplied"
+    ></dxo-filter-panel>
   </dx-data-grid>
 
   <!-- ========= new form popup ========= -->
