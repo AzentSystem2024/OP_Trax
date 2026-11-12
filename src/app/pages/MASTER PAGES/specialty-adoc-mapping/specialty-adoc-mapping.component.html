@@ -1,0 +1,182 @@
+<div class="view-wrapper list-page">
+  <dx-data-grid
+    #specialtyAdocGrid
+    class="grid theme-dependent"
+    [dataSource]="specialtyAdocData"
+    [showBorders]="true"
+    [showColumnLines]="true"
+    [showRowLines]="true"
+    [allowColumnResizing]="true"
+    [columnResizingMode]="'widget'"
+    [allowColumnReordering]="true"
+    [rowAlternationEnabled]="true"
+    rowAlternationInterval="2"
+    height="82vh"
+    (onOptionChanged)="onGridOptionChanged($event)"
+  >
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-pager
+      [visible]="true"
+      [allowedPageSizes]="allowedPageSizes"
+      [displayMode]="displayMode"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [showInfo]="showInfo"
+      [showNavigationButtons]="showNavButtons"
+    >
+    </dxo-pager>
+
+    <dxo-load-panel [enabled]="true"></dxo-load-panel>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-sorting mode="multiple"></dxo-sorting>
+
+    <dxo-header-filter [visible]="isFilterRowVisible">
+      <dxo-search [enabled]="true"></dxo-search>
+    </dxo-header-filter>
+
+    <dxo-filter-row [visible]="isFilterRowVisible"></dxo-filter-row>
+
+    <!-- Toolbar -->
+    <dxo-toolbar>
+      <!-- Header -->
+      <dxi-item location="before">
+        <div class="grid-header">Specialty-ADOC Mapping</div>
+      </dxi-item>
+
+      <!-- ADOC Version Dropdown -->
+      <dxi-item
+        location="after"
+        locateInMenu="never"
+        template="versionSelectTemplate"
+      ></dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          icon: isFilterRowVisible ? 'filter' : 'filter',
+          hint: isFilterRowVisible ? 'Hide Filter Row' : 'Show Filter Row',
+          onClick: toggleFilterRow,
+          stylingMode: 'text',
+          elementAttr: { class: 'commonButtons' },
+        }"
+      ></dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
+        [options]="{
+          text: 'Refresh',
+          icon: 'refresh',
+          hint: 'refresh',
+          onClick: refresh,
+          stylingMode: 'text',
+        }"
+      ></dxi-item>
+    </dxo-toolbar>
+
+    <!-- Columns -->
+    <dxi-column
+      dataField="Major"
+      caption="Major"
+    ></dxi-column>
+
+    <dxi-column
+      dataField="Specialty"
+      caption="Specialty"
+    ></dxi-column>
+
+    <dxi-column
+      dataField="Category"
+      caption="Category"
+    ></dxi-column>
+
+    <dxi-column
+      dataField="ADOCClass"
+      caption="ADOC Class"
+    ></dxi-column>
+
+    <dxi-column
+      dataField="Physician"
+      caption="Physician"
+      dataType="boolean"
+      alignment="center"
+      [width]="120"
+      cellTemplate="physicianTemplate"
+    ></dxi-column>
+
+    <dxi-column
+      dataField="MultiClassApplicable"
+      caption="Multi-class applicable"
+      dataType="boolean"
+      alignment="center"
+      [width]="180"
+      cellTemplate="multiClassTemplate"
+    ></dxi-column>
+
+    <div *dxTemplate="let data of 'versionSelectTemplate'">
+      <dx-select-box
+        [dataSource]="versionList"
+        [displayExpr]="displayVersionExpr"
+        [valueExpr]="versionValueExpr"
+        [(value)]="selectedVersion"
+        label="Select Version"
+        [labelMode]="'floating'"
+        [searchEnabled]="true"
+        width="200"
+        (onValueChanged)="onVersionChanged($event)"
+      ></dx-select-box>
+    </div>
+
+    <div
+      *dxTemplate="let cell of 'physicianTemplate'"
+      class="checkbox-cell"
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+      "
+    >
+      <dx-check-box
+        [value]="cell.value"
+        [readOnly]="true"
+        [iconSize]="18"
+        [height]="20"
+        [width]="20"
+      ></dx-check-box>
+    </div>
+
+    <div
+      *dxTemplate="let cell of 'multiClassTemplate'"
+      class="checkbox-cell"
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+      "
+    >
+      <dx-check-box
+        [value]="cell.value"
+        [readOnly]="true"
+        [iconSize]="18"
+        [height]="20"
+        [width]="20"
+      ></dx-check-box>
+    </div>
+
+    <!-- Hidden columns -->
+    <dxi-column dataField="ID" [visible]="false"></dxi-column>
+    <dxi-column dataField="ADOCVersion" [visible]="false"></dxi-column>
+    <dxi-column dataField="MajorID" [visible]="false"></dxi-column>
+    <dxi-column dataField="SpecialtyID" [visible]="false"></dxi-column>
+    <dxi-column dataField="CategoryID" [visible]="false"></dxi-column>
+    <dxi-column dataField="ADOCClassID" [visible]="false"></dxi-column>
+  </dx-data-grid>
+</div>

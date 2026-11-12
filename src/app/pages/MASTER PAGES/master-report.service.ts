@@ -1301,10 +1301,31 @@ export class MasterReportService {
     return this.http.post(url, payload);
   }
 
+  // ===== Get Speciality ADOC Mapping List =====
+  get_Speciality_ADOC_Mapping_List(version?: any) {
+    const url = `${this.BASE_URL}SpecialityADOCMapping/GetSpecialityADOCMapping`;
+    const payload: any = { ADOCVersion: version };
+
+    return this.http.post(url, payload);
+  }
+
   // ===== Add Price Master =====
   Insert_PriceMaster_Data(payload: any) {
     const url = `${this.BASE_URL}ADOCPrice/save`;
-    const reqBody = payload;
+    const formatToIso = (val: any) => {
+      if (!val) return new Date().toISOString();
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+    };
+
+    const reqBody = Array.isArray(payload)
+      ? payload.map((item: any) => ({
+          ...item,
+          EffectFrom: formatToIso(item.EffectFrom),
+          EffectTo: formatToIso(item.EffectTo || item.EffectFrom),
+        }))
+      : payload;
+
     return this.http.post(url, reqBody);
   }
 

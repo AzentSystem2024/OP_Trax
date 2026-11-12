@@ -598,12 +598,26 @@ export class AdocPriceMasterComponent implements AfterViewInit {
       return 0;
     };
 
+    const getIsoDate = (val: any): string => {
+      if (!val) return new Date().toISOString();
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+    };
+
     const payload = modifiedRows.map((x: any) => {
       const versionVal = x.ADOCVersion ?? this.selectedVersion ?? 0;
       const adocVersion =
         !isNaN(Number(versionVal)) && versionVal !== ''
           ? Number(versionVal)
           : versionVal;
+
+      const effectFromDate =
+        x.NewEffectFrom || this.globalEffectFromDate || x.EffectFrom;
+      const effectFromIso = getIsoDate(effectFromDate);
+
+      const effectToDate =
+        x.NewEffectTo || x.EffectTo || effectFromDate;
+      const effectToIso = getIsoDate(effectToDate);
 
       return {
         ID: x.ID ? Number(x.ID) : 0,
@@ -615,7 +629,8 @@ export class AdocPriceMasterComponent implements AfterViewInit {
         NewPatientAdjuster: getVal(x.NewNewPatientAdjuster, x.NewPatientAdjuster),
         TeleMedicineAdjuster: getVal(x.NewTeleMedicineAdjuster, x.TeleMedicineAdjuster),
         ADOCVersion: adocVersion,
-        EffectTo: x.EffectTo ? new Date(x.EffectTo).toISOString() : null,
+        EffectFrom: effectFromIso,
+        EffectTo: effectToIso,
       };
     });
 
