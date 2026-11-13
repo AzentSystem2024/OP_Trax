@@ -395,6 +395,7 @@ export class MasterReportService {
     CPTName: any,
     CPTADOCMappings: any,
     ADOCApplicationID?: any,
+    ServiceCategoryID?: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/insert`;
 
@@ -403,7 +404,7 @@ export class MasterReportService {
       CPTCode,
       CPTName,
       ADOCApplication: ADOCApplicationID ?? null,
-
+      ServiceCategoryID: ServiceCategoryID ?? null,
       // Default values
       Description: '',
       CPTGroup: '',
@@ -442,6 +443,7 @@ export class MasterReportService {
     CPTName: any,
     CPTADOCMappings: any,
     ADOCApplicationID?: any,
+    ServiceCategoryID?: any,
   ) {
     const url = `${this.BASE_URL}cptmaster/update`;
 
@@ -451,6 +453,7 @@ export class MasterReportService {
       CPTCode,
       CPTName,
       ADOCApplication: ADOCApplicationID ?? null,
+      ServiceCategoryID: ServiceCategoryID ?? null,
       // Default values
       Description: '',
       CPTGroup: '',

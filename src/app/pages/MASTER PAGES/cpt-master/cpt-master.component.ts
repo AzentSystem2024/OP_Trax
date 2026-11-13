@@ -82,6 +82,7 @@ export class CPTMasterComponent {
       console.log(fullUrl);
       this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
     });
+
     this.addButtonOptions = {
       text: 'New',
       icon: 'bi bi-plus-circle',
@@ -132,8 +133,14 @@ export class CPTMasterComponent {
       return;
     }
 
-    const { CPTTypeID, CPTCode, CPTName, CPTADOCMappings, ADOCApplicationID } =
-      this.CptNewFormComponent.getNewCptMasterData();
+    const {
+      CPTTypeID,
+      CPTCode,
+      CPTName,
+      CPTADOCMappings,
+      ADOCApplicationID,
+      ServiceCategoryID,
+    } = this.CptNewFormComponent.getNewCptMasterData();
 
     this.masterService
       .Insert_CptMaster_Data(
@@ -142,6 +149,7 @@ export class CPTMasterComponent {
         CPTName,
         CPTADOCMappings,
         ADOCApplicationID,
+        ServiceCategoryID,
       )
       .subscribe((response: any) => {
         if (response) {
@@ -171,6 +179,7 @@ export class CPTMasterComponent {
       CPTName,
       CPTADOCMappings,
       ADOCApplicationID,
+      ServiceCategoryID,
     } = this.CptEditFormComponent.getUpdateCptMasterData();
 
     console.log(
@@ -180,6 +189,7 @@ export class CPTMasterComponent {
       CPTName,
       CPTADOCMappings,
       ADOCApplicationID,
+      ServiceCategoryID,
     );
 
     this.masterService
@@ -190,6 +200,7 @@ export class CPTMasterComponent {
         CPTName,
         CPTADOCMappings,
         ADOCApplicationID,
+        ServiceCategoryID,
       )
       .subscribe((response: any) => {
         if (response) {

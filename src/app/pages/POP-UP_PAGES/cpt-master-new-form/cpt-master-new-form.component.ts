@@ -35,6 +35,7 @@ export class CptMasterNewFormComponent implements OnInit {
     CPTCode: '',
     CPTTypeID: '',
     CPTName: '',
+    ServiceCategoryID: null,
     CPTADOCMappings: [],
     ADOCApplicationID: 0,
   };
@@ -46,6 +47,7 @@ export class CptMasterNewFormComponent implements OnInit {
   allADOCClassDataSource: any;
 
   ADOCApplicationDataSource: any[] = [];
+  serviceCategoryDataSource: any[] = [];
 
   constructor(
     private masterService: MasterReportService,
@@ -77,6 +79,7 @@ export class CptMasterNewFormComponent implements OnInit {
         this.get_ADOC_CLASS_Dropdown(),
         this.get_ADOC_GROUP_Dropdown(),
         this.get_ADOC_Application_Dropdown(),
+        this.getServiceCategoryDropdown(),
       ]);
 
       this.dropdownsLoaded = true;
@@ -135,6 +138,14 @@ export class CptMasterNewFormComponent implements OnInit {
     );
 
     this.ADOCApplicationDataSource = response || [];
+  }
+
+  async getServiceCategoryDropdown(): Promise<void> {
+    const response: any = await firstValueFrom(
+      this.masterService.Get_GropDown('SERVICE_CATEGORY'),
+    );
+
+    this.serviceCategoryDataSource = response || [];
   }
 
   onADOCGroupChanged(e: any) {
@@ -347,6 +358,7 @@ export class CptMasterNewFormComponent implements OnInit {
       CPTCode: '',
       CPTName: '',
       CPTTypeID: null,
+      ServiceCategoryID: null,
       CPTADOCMappings: [],
       ADOCApplicationID: 0,
     };

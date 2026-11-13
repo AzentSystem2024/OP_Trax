@@ -19,7 +19,6 @@ import {
   DxNumberBoxModule,
   DxRadioGroupModule,
   DxSelectBoxModule,
-
   DxTextAreaModule,
   DxTextBoxModule,
   DxValidatorModule,
@@ -45,6 +44,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     CPTCode: '',
     CPTTypeID: '',
     CPTName: '',
+    ServiceCategoryID: null,
     CPTADOCMappings: [],
     ADOCApplicationID: 0,
   };
@@ -54,7 +54,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   ADOCgroupDataSource: any[] = [];
   allADOCClassDataSource: any;
   ADOCApplicationDataSource: any[] = [];
-
+  serviceCategoryDataSource: any[] = [];
 
   dropdownsLoaded = false;
 
@@ -66,18 +66,18 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
   getUpdateCptMasterData = () => ({
     ...this.newCptMasterData,
     CPTADOCMappings: (this.newCptMasterData.CPTADOCMappings || [])
-          .filter(
-            (x: any) =>
-              x.SpecialityID != null &&
-              x.ADOCClassID != null &&
-              x.ADOCCategoryID != null,
-          )
-          .map((x: any) => {
-            const { __KEY__, ...rest } = x;
-            return {
-              ...rest
-            };
-          }),
+      .filter(
+        (x: any) =>
+          x.SpecialityID != null &&
+          x.ADOCClassID != null &&
+          x.ADOCCategoryID != null,
+      )
+      .map((x: any) => {
+        const { __KEY__, ...rest } = x;
+        return {
+          ...rest,
+        };
+      }),
   });
 
   async ngOnInit() {
@@ -88,6 +88,7 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         this.get_ADOC_GROUP_Dropdown(),
         this.getSpecialityDropdown(),
         this.get_ADOC_Application_Dropdown(),
+        this.getServiceCategoryDropdown(),
       ]);
 
       this.dropdownsLoaded = true;
@@ -112,7 +113,11 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
 
     this.newCptMasterData = {
       ...this.formData,
-      ADOCApplicationID: this.formData.ADOCApplicationID ?? this.formData.ADOCApplication ?? 0,
+      ServiceCategoryID:
+        this.formData.ServiceCategoryID ??
+        null,
+      ADOCApplicationID:
+        this.formData.ADOCApplicationID ?? this.formData.ADOCApplication ?? 0,
       CPTADOCMappings: [...(this.formData.CPTADOC || [])],
     };
 
@@ -124,25 +129,12 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         (row.ICDCode == null || row.ICDCode === ''),
     );
 
-    // if (!hasEmptyRow) {
-    //   this.newCptMasterData.CPTADOCMappings.push({
-    //     SpecialityID: null,
-    //     ICDCode: null,
-    //     ADOCClassID: null,
-    //     ADOCCategoryID: null,
-    //     ADOCApplicationID: 0,
-    //   });
-    // }
-
     this.newCptMasterData.CPTADOCMappings = [
       ...this.newCptMasterData.CPTADOCMappings,
     ];
   }
 
-  onAdocApplicationChanged(e: any) {
-  }
-
-
+  onAdocApplicationChanged(e: any) {}
 
   async getSpecialityDropdown(): Promise<void> {
     const response: any = await firstValueFrom(
@@ -189,22 +181,15 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     this.ADOCApplicationDataSource = response || [];
   }
 
+  async getServiceCategoryDropdown(): Promise<void> {
+    const response: any = await firstValueFrom(
+      this.masterService.Get_GropDown('SERVICE_CATEGORY'),
+    );
+
+    this.serviceCategoryDataSource = response || [];
+  }
+
   onEditorPreparingADOC(e: any) {
-    // Prevent duplicate Specialty selection
-    // if (e.parentType === 'dataRow' && e.dataField === 'SpecialityID') {
-    //   const currentRow = e.row?.data;
-
-    //   e.editorOptions.dataSource = this.specialityDataSource.filter(
-    //     (speciality: any) => {
-    //       return !this.newCptMasterData.CPTADOCMappings.some(
-    //         (row: any) =>
-    //           row !== currentRow && row.SpecialityID === speciality.ID,
-    //       );
-    //     },
-    //   );
-    // }
-
-    // ADOC Class
     if (e.parentType === 'dataRow' && e.dataField === 'ADOCClassID') {
       const originalHandler = e.editorOptions.onValueChanged;
 
@@ -305,8 +290,6 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
         }, 50);
       };
     }
-
-
   }
 
   onInitNewRowADOC(e: any) {
@@ -331,13 +314,12 @@ export class CptMasterEditFormComponent implements OnChanges, OnInit {
     }
   }
 
-
-
   clearForm() {
     this.newCptMasterData = {
       CPTCode: '',
       CPTName: '',
       CPTTypeID: null,
+      ServiceCategoryID: null,
       CPTADOCMappings: [],
       ADOCApplicationID: null,
     };
