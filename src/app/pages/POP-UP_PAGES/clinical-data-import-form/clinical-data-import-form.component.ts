@@ -36,7 +36,7 @@ import { OperationReportService } from '../../OPERATION PAGES/operation-report.s
 import { ReportService } from 'src/app/services/Report-data.service';
 import { firstValueFrom } from 'rxjs';
 import { InactivityService } from 'src/app/services/inactivity.service';
-import { NotificationService } from "src/app/services/notification.service";
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-clinical-data-import-form',
@@ -108,7 +108,8 @@ export class ClinicalDataImportFormComponent {
     private service: MasterReportService,
     private operationservice: OperationReportService,
     private reportservice: ReportService,
-    private inactivityService: InactivityService, private notificationService: NotificationService
+    private inactivityService: InactivityService,
+    private notificationService: NotificationService,
   ) {
     this.userID = sessionStorage.getItem('UserID');
     this.getUserFacilityData();
@@ -148,10 +149,10 @@ export class ClinicalDataImportFormComponent {
       return !isNaN(val.getTime());
     }
     const str = String(val).trim();
-    
+
     // Custom regex for standard formats
     const match = str.match(
-      /^(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})(?:\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:AM|PM|am|pm))?))?$/
+      /^(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})(?:\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:AM|PM|am|pm))?))?$/,
     );
     if (match) {
       let year: number, month: number, day: number;
@@ -166,7 +167,7 @@ export class ClinicalDataImportFormComponent {
       } else {
         year = p3;
         if (year < 100) {
-          year += (year >= 50 ? 1900 : 2000); // Support 2-digit years
+          year += year >= 50 ? 1900 : 2000; // Support 2-digit years
         }
         day = p1;
         month = p2;
@@ -177,9 +178,12 @@ export class ClinicalDataImportFormComponent {
       }
 
       if (
-        month >= 1 && month <= 12 &&
-        day >= 1 && day <= 31 &&
-        year >= 1900 && year <= 2100
+        month >= 1 &&
+        month <= 12 &&
+        day >= 1 &&
+        day <= 31 &&
+        year >= 1900 &&
+        year <= 2100
       ) {
         const dateObj = new Date(year, month - 1, day);
         if (
@@ -440,8 +444,11 @@ export class ClinicalDataImportFormComponent {
         try {
           await processXmlFile(file);
         } catch (err: any) {
-          this.notificationService.showNotification(err?.message ||
-                            'Network error occurred during import. Process stopped.', 'error');
+          this.notificationService.showNotification(
+            err?.message ||
+              'Network error occurred during import. Process stopped.',
+            'error',
+          );
           this.isResponsePopupOpened = false;
           break;
         }
@@ -454,13 +461,19 @@ export class ClinicalDataImportFormComponent {
         !fileName.endsWith('.xls') &&
         !fileName.endsWith('.csv')
       ) {
-        this.notificationService.showNotification(`Invalid file type: ${file.name}. Supported types: XML, XLS, XLSX, CSV`, 'error');
+        this.notificationService.showNotification(
+          `Invalid file type: ${file.name}. Supported types: XML, XLS, XLSX, CSV`,
+          'error',
+        );
         continue;
       }
 
       // File Size Validation (50MB limit)
       if (file.size > 50 * 1024 * 1024) {
-        this.notificationService.showNotification(`File size exceeds 50MB limit: ${file.name}`, 'error');
+        this.notificationService.showNotification(
+          `File size exceeds 50MB limit: ${file.name}`,
+          'error',
+        );
         continue;
       }
       try {
@@ -516,13 +529,19 @@ export class ClinicalDataImportFormComponent {
         });
         // Empty File Validation
         if (!rows || rows.length === 0) {
-          this.notificationService.showNotification('Selected file contains no data.', 'warning');
+          this.notificationService.showNotification(
+            'Selected file contains no data.',
+            'warning',
+          );
           continue;
         }
 
         // Row Count Validation
         if (rows.length > 50000) {
-          this.notificationService.showNotification('Selected file contains more than 50,000 rows.', 'error');
+          this.notificationService.showNotification(
+            'Selected file contains more than 50,000 rows.',
+            'error',
+          );
           continue;
         }
         // Trim headers (keys) and cell values
@@ -547,7 +566,10 @@ export class ClinicalDataImportFormComponent {
           (col: any) => !actualColumns.includes(col),
         );
         if (missingColumns.length > 0) {
-          this.notificationService.showNotification('Missing Columns: ' + missingColumns.join(', '), 'error');
+          this.notificationService.showNotification(
+            'Missing Columns: ' + missingColumns.join(', '),
+            'error',
+          );
           continue;
         }
         // Date Formatting
@@ -579,15 +601,24 @@ export class ClinicalDataImportFormComponent {
         );
         this.updateFilteredDataSource();
         if (!this.combinedDataSource || this.combinedDataSource.length === 0) {
-          this.notificationService.showNotification('No valid records found.', 'warning');
+          this.notificationService.showNotification(
+            'No valid records found.',
+            'warning',
+          );
           continue;
         }
         console.log('Imported Data:', this.combinedDataSource);
-        this.notificationService.showNotification(`${this.combinedDataSource.length.toLocaleString()} records loaded successfully.`, 'success');
+        this.notificationService.showNotification(
+          `${this.combinedDataSource.length.toLocaleString()} records loaded successfully.`,
+          'success',
+        );
         this.isExcelpopupOpened = true;
       } catch (error: any) {
         console.error('Import Error:', error);
-        this.notificationService.showNotification(error?.message || 'Failed to import file.', 'error');
+        this.notificationService.showNotification(
+          error?.message || 'Failed to import file.',
+          'error',
+        );
       }
     }
     this.isExcelLoading = false;
@@ -638,9 +669,9 @@ export class ClinicalDataImportFormComponent {
         const str = String(val).trim();
         // String date: check if it matches a date format with optional time
         const match = str.match(
-          /^(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})(?:\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:AM|PM|am|pm))?))?$/
+          /^(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})(?:\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:AM|PM|am|pm))?))?$/,
         );
-        
+
         if (match) {
           let year: number, month: number, day: number;
           const p1 = parseInt(match[1], 10);
@@ -654,7 +685,7 @@ export class ClinicalDataImportFormComponent {
           } else {
             year = p3;
             if (year < 100) {
-              year += (year >= 50 ? 1900 : 2000); // Support 2-digit years
+              year += year >= 50 ? 1900 : 2000; // Support 2-digit years
             }
             day = p1;
             month = p2;
@@ -675,38 +706,42 @@ export class ClinicalDataImportFormComponent {
               const formattedMonth = String(month).padStart(2, '0');
               const timePart = match[4] ? ` ${match[4]}` : '';
               const separator = str.includes('-') ? '-' : '/';
-              
-              newRow[field] = `${formattedDay}${separator}${formattedMonth}${separator}${year}${timePart}`;
+
+              newRow[field] =
+                `${formattedDay}${separator}${formattedMonth}${separator}${year}${timePart}`;
               return;
             }
           }
         }
-        
+
         // Fallback: JS Date formatting
         const fbDate = new Date(str);
         if (!isNaN(fbDate.getTime())) {
           const year = fbDate.getFullYear();
           const month = fbDate.getMonth() + 1;
           const day = fbDate.getDate();
-          
+
           const formattedDay = String(day).padStart(2, '0');
           const formattedMonth = String(month).padStart(2, '0');
-          
+
           let timePart = '';
           if (str.includes(':')) {
-            const matchTime = str.match(/(\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:AM|PM|am|pm))?)/);
+            const matchTime = str.match(
+              /(\d{1,2}:\d{2}(?::\d{2})?(?:\s*(?:AM|PM|am|pm))?)/,
+            );
             if (matchTime) {
-                timePart = ` ${matchTime[1]}`;
+              timePart = ` ${matchTime[1]}`;
             } else {
-                const hours = String(fbDate.getHours()).padStart(2, '0');
-                const mins = String(fbDate.getMinutes()).padStart(2, '0');
-                const secs = String(fbDate.getSeconds()).padStart(2, '0');
-                timePart = ` ${hours}:${mins}:${secs}`;
+              const hours = String(fbDate.getHours()).padStart(2, '0');
+              const mins = String(fbDate.getMinutes()).padStart(2, '0');
+              const secs = String(fbDate.getSeconds()).padStart(2, '0');
+              timePart = ` ${hours}:${mins}:${secs}`;
             }
           }
-          
+
           const separator = str.includes('-') ? '-' : '/';
-          newRow[field] = `${formattedDay}${separator}${formattedMonth}${separator}${year}${timePart}`;
+          newRow[field] =
+            `${formattedDay}${separator}${formattedMonth}${separator}${year}${timePart}`;
           return;
         }
 
@@ -852,7 +887,10 @@ export class ClinicalDataImportFormComponent {
   // ============ excel data saving click ========
   onSaveClick() {
     if (!this.combinedDataSource?.length) {
-      this.notificationService.showNotification('Please import your file', 'error');
+      this.notificationService.showNotification(
+        'Please import your file',
+        'error',
+      );
       return;
     }
     this.isValidationTriggered = true;
@@ -953,7 +991,10 @@ export class ClinicalDataImportFormComponent {
     this.importGrid?.instance?.repaint();
 
     if (this.hasError) {
-      this.notificationService.showNotification('Please fix the validation errors before saving.', 'error');
+      this.notificationService.showNotification(
+        'Please fix the validation errors before saving.',
+        'error',
+      );
       return;
     }
     this.isSaving = true;
@@ -1011,7 +1052,10 @@ export class ClinicalDataImportFormComponent {
             if (flag === '1') {
               sendChunk(index + 1);
             } else {
-              this.notificationService.showNotification(res?.MESSAGE || res?.message || 'Import failed.', 'error');
+              this.notificationService.showNotification(
+                res?.MESSAGE || res?.message || 'Import failed.',
+                'error',
+              );
               this.isSaving = false;
               this.isLoading = false;
               this.inactivityService.setApiInProgress(false);
@@ -1083,11 +1127,15 @@ export class ClinicalDataImportFormComponent {
 
             if (this.isApplygrouper && claimUids.length > 0) {
               await this.processGrouperClaims(claimUids);
-              this.notificationService.showNotification('Data imported and grouper applied successfully.', 'success');
+              this.notificationService.showNotification(
+                'Data imported and grouper applied successfully.',
+                'success',
+              );
             } else {
-              this.notificationService.showNotification(res?.MESSAGE ||
-                                    res?.message ||
-                                    'Data imported successfully.', 'success');
+              this.notificationService.showNotification(
+                res?.MESSAGE || res?.message || 'Data imported successfully.',
+                'success',
+              );
             }
             this.isLoading = false;
             this.isSaving = false;
@@ -1095,7 +1143,10 @@ export class ClinicalDataImportFormComponent {
             this.resetValidationState();
             this.close();
           } else {
-            this.notificationService.showNotification(res?.MESSAGE || res?.message || 'Import failed.', 'error');
+            this.notificationService.showNotification(
+              res?.MESSAGE || res?.message || 'Import failed.',
+              'error',
+            );
             this.isLoading = false;
             this.isSaving = false;
           }
@@ -1113,11 +1164,20 @@ export class ClinicalDataImportFormComponent {
   // ============ common function for notification handler ========
   handleError(error: any) {
     if (error.status === 0) {
-      this.notificationService.showNotification('Network error: Please check your internet connection.', 'error');
+      this.notificationService.showNotification(
+        'Network error: Please check your internet connection.',
+        'error',
+      );
     } else if (error.status === 500) {
-      this.notificationService.showNotification('Server error: Unable to process request. Try later.', 'error');
+      this.notificationService.showNotification(
+        'Server error: Unable to process request. Try later.',
+        'error',
+      );
     } else {
-      this.notificationService.showNotification('Failed to import data. Please try again.', 'error');
+      this.notificationService.showNotification(
+        'Failed to import data. Please try again.',
+        'error',
+      );
     }
     console.error('Error during data import:', error);
     this.isSaving = false;
@@ -1161,7 +1221,10 @@ export class ClinicalDataImportFormComponent {
   onXmlPopupHiding(e: any) {
     if (this.isExcelLoading) {
       e.cancel = true;
-      this.notificationService.showNotification('Please wait until the file upload process is complete.', 'warning');
+      this.notificationService.showNotification(
+        'Please wait until the file upload process is complete.',
+        'warning',
+      );
     }
   }
 
@@ -1181,7 +1244,10 @@ export class ClinicalDataImportFormComponent {
   onExcelPopupHiding(e: any) {
     if (this.isLoading || this.isSaving) {
       e.cancel = true;
-      this.notificationService.showNotification('Please wait until the process is complete.', 'warning');
+      this.notificationService.showNotification(
+        'Please wait until the process is complete.',
+        'warning',
+      );
     }
   }
 

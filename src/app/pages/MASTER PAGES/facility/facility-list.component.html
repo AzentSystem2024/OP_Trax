@@ -139,7 +139,7 @@
         >
         </dxi-item>
 
-        <dxi-item
+        <!-- <dxi-item
           dataField="KPI"
           editorType="dxNumberBox"
           [label]="{ visible: false }"
@@ -151,7 +151,7 @@
             showSpinButtons: false,
           }"
         >
-        </dxi-item>
+        </dxi-item> -->
 
         <dxi-item
           colCount="1"
@@ -222,7 +222,8 @@
       ></dxi-item>
 
       <dxi-item
-        *ngIf="menuPrevilage?.CanExport" name="exportButton"
+        *ngIf="menuPrevilage?.CanExport"
+        name="exportButton"
         location="after"
         cssClass="custom-export-button"
       ></dxi-item>
@@ -241,7 +242,7 @@
       [visible]="false"
     ></dxi-column>
     <dxi-column dataField="FacilityShortName" caption="Short Name"></dxi-column>
-    <dxi-column dataField="KPI" caption="KPI"></dxi-column>
+    <!-- <dxi-column dataField="KPI" caption="KPI"></dxi-column> -->
 
     <dxi-column dataField="RegionID" caption="Region">
       <dxo-lookup
@@ -290,6 +291,8 @@
       [allowEditing]="false"
     ></dxi-column>
 
-    <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
+    <dxo-filter-panel
+      [visible]="isFilterRowVisible || isFilterApplied"
+    ></dxo-filter-panel>
   </dx-data-grid>
 </div>
