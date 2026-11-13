@@ -117,11 +117,11 @@
         }"
       ></dxi-item>
 
-      <dxi-item
+      <!-- <dxi-item
         location="after"
         widget="dxButton"
         [options]="editButtonOptions"
-      ></dxi-item>
+      ></dxi-item> -->
 
       <dxi-item
         [visible]="isEditingEnabled"
@@ -143,159 +143,59 @@
 
     <dxi-column
       dataField="ReceiverName"
-      caption="Receiver Name"
+      caption="Receiver"
       [allowEditing]="false"
       alignment="center"
-      [width]="180"
+      [width]="200"
     >
     </dxi-column>
-
-    <dxi-column caption="Active Values" alignment="center">
-      <dxi-column
-        dataField="P_Multiplier"
-        caption="P"
-        dataType="number"
-        format="#,##0.00"
-        [allowEditing]="false"
-        alignment="center"
-      >
-      </dxi-column>
-
-      <dxi-column
-        dataField="C_Multiplier"
-        caption="C"
-        dataType="number"
-        format="#,##0.00"
-        [allowEditing]="false"
-        alignment="center"
-      >
-      </dxi-column>
-
-      <dxi-column
-        dataField="S_Multiplier"
-        caption="S"
-        dataType="number"
-        format="#,##0.00"
-        [allowEditing]="false"
-        alignment="center"
-      >
-      </dxi-column>
-
-      <dxi-column
-        dataField="D_Multiplier"
-        caption="D"
-        dataType="number"
-        format="#,##0.00"
-        [allowEditing]="false"
-        alignment="center"
-      >
-      </dxi-column>
-
-      <dxi-column
-        dataField="EffectFrom"
-        caption="Effect From"
-        dataType="date"
-        format="dd-MM-yyyy"
-        [allowEditing]="false"
-        alignment="center"
-        [width]="120"
-      >
-      </dxi-column>
+    
+    <dxi-column
+      dataField="CPTCategoryID"
+      caption="Service Category"
+      [allowEditing]="false"
+      alignment="center"
+      [width]="200"
+    >
     </dxi-column>
 
     <dxi-column
-      caption="New Values"
+      dataField="NetworkID"
+      caption="Net Work"
+      [allowEditing]="false"
       alignment="center"
-      [visible]="isEditingEnabled"
+      [width]="200"
     >
-      <dxi-column
-        dataField="NewP_Multiplier"
-        caption="P"
-        dataType="number"
-        format="#,##0.00"
-        cssClass="new-price-column"
-        alignment="center"
-      >
-        <dxi-validation-rule
-          type="required"
-          message="New P_Multiplier is required"
-        ></dxi-validation-rule>
-      </dxi-column>
-
-      <dxi-column
-        dataField="NewC_Multiplier"
-        caption="C"
-        dataType="number"
-        format="#,##0.00"
-        cssClass="new-price-column"
-        alignment="center"
-      >
-        <dxi-validation-rule
-          type="required"
-          message="New C_Multiplier is required"
-        ></dxi-validation-rule>
-      </dxi-column>
-
-      <dxi-column
-        dataField="NewS_Multiplier"
-        caption="S"
-        dataType="number"
-        format="#,##0.00"
-        cssClass="new-price-column"
-        alignment="center"
-      >
-        <dxi-validation-rule
-          type="required"
-          message="New S_Multiplier is required"
-        ></dxi-validation-rule>
-      </dxi-column>
-
-      <dxi-column
-        dataField="NewD_Multiplier"
-        caption="D"
-        dataType="number"
-        format="#,##0.00"
-        cssClass="new-price-column"
-        alignment="center"
-      >
-        <dxi-validation-rule
-          type="required"
-          message="New D_Multiplier is required"
-        ></dxi-validation-rule>
-      </dxi-column>
-
-      <dxi-column
-        dataField="NewEffectFrom"
-        caption="Effect From"
-        dataType="date"
-        format="dd-MM-yyyy"
-        cssClass="new-price-column"
-        alignment="center"
-        [width]="120"
-      >
-        <dxi-validation-rule
-          type="required"
-          message="Effect From is required"
-        ></dxi-validation-rule>
-        <dxi-validation-rule
-          type="custom"
-          [validationCallback]="validateNewEffectFrom"
-          message="Effect From cannot be less than or equal to Active Effect From"
-        >
-        </dxi-validation-rule>
-      </dxi-column>
     </dxi-column>
 
-    <dxi-column type="buttons" [width]="60">
+    <dxi-column
+      dataField="CPT"
+      caption="CPT"
+      [allowEditing]="false"
+      alignment="center"
+    >
+    </dxi-column>
+
+    <dxi-column
+      dataField="Multiplier"
+      caption="Multiplier"
+      [allowEditing]="false"
+      alignment="center"
+    >
+    </dxi-column>
+
+    <!-- <dxi-column type="buttons" [width]="60">
       <dxi-button
         hint="View History Data"
         icon="errorcircle"
         [onClick]="onHistoryClick.bind(this)"
       >
       </dxi-button>
-    </dxi-column>
+    </dxi-column> -->
 
-    <dxo-filter-panel [visible]="isFilterRowVisible || isFilterApplied"></dxo-filter-panel>
+    <dxo-filter-panel
+      [visible]="isFilterRowVisible || isFilterApplied"
+    ></dxo-filter-panel>
   </dx-data-grid>
 
   <!-- =========== History Popup =========== -->
@@ -308,7 +208,7 @@
     (onShown)="onHistoryPopupShown()"
   >
     <dx-data-grid
-    (onOptionChanged)="onGridOptionChanged($event)"
+      (onOptionChanged)="onGridOptionChanged($event)"
       #historyGrid
       [dataSource]="PriceHistoryData"
       [showBorders]="true"
