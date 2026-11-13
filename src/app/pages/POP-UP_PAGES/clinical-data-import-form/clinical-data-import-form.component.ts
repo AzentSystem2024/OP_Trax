@@ -49,7 +49,7 @@ export class ClinicalDataImportFormComponent {
   @Input() menuPrevilage: any;
   @ViewChild('importGrid', { static: false }) importGrid!: DxDataGridComponent;
   validationGroup!: DxValidationGroupComponent;
-
+  
   selectedOption: string = 'Import Excel File';
   isApplygrouper: boolean = true;
   selectedXmlFile: any | null = null;
@@ -86,6 +86,8 @@ export class ClinicalDataImportFormComponent {
   importedFileName: any;
   cptCodeList: any;
   clinicianLicenseList: any;
+  encounterTypeList: any[] = [];
+  encounterTypeIDList: any[] = [];
 
   combinedDataSource: any[] = [];
   filteredDataSource: any[] = [];
@@ -114,15 +116,97 @@ export class ClinicalDataImportFormComponent {
     this.userID = sessionStorage.getItem('UserID');
     this.getUserFacilityData();
     this.loadColumnMetadata();
+    this.loadEncounterTypeList();
+    this.loadEncounterTypeIDList();
   }
 
   isInvalidEncounterType(val: any): boolean {
     if (val === null || val === undefined) return true;
     const str = String(val).trim();
     if (str === '' || str === '0') return true;
+
     const rawWithoutCommas = str.replace(/,/g, '');
-    const num = Number(rawWithoutCommas);
-    if (isNaN(num) || num <= 0 || !Number.isInteger(num)) return true;
+    const numVal = Number(rawWithoutCommas);
+    const isInt = !isNaN(numVal) && Number.isInteger(numVal) && numVal > 0;
+
+    // 1. If value is an integer, validate against ID in encounterTypeIDList or encounterTypeList
+    if (isInt) {
+      if (this.encounterTypeIDList && this.encounterTypeIDList.length > 0) {
+        const matchID = this.encounterTypeIDList.some((item: any) => {
+          if (!item) return false;
+          const id = item.ID !== undefined ? item.ID : item.id;
+          return id !== undefined && id !== null && Number(id) === numVal;
+        });
+        if (matchID) return false;
+      }
+
+      if (this.encounterTypeList && this.encounterTypeList.length > 0) {
+        const matchID = this.encounterTypeList.some((item: any) => {
+          if (!item) return false;
+          const id = item.ID !== undefined ? item.ID : item.id;
+          return id !== undefined && id !== null && Number(id) === numVal;
+        });
+        if (matchID) return false;
+      }
+
+      // If dropdowns are loaded and integer was not found in either ID list
+      if (
+        (this.encounterTypeIDList && this.encounterTypeIDList.length > 0) ||
+        (this.encounterTypeList && this.encounterTypeList.length > 0)
+      ) {
+        return true;
+      }
+    }
+
+    // 2. If string description, validate against DESCRIPTION in encounterTypeList or encounterTypeIDList
+    const lowerStr = str.toLowerCase();
+
+    if (this.encounterTypeList && this.encounterTypeList.length > 0) {
+      const matchDesc = this.encounterTypeList.some((item: any) => {
+        if (!item) return false;
+        const desc =
+          item.DESCRIPTION ||
+          item.Description ||
+          item.description ||
+          item.Name ||
+          item.name;
+        return (
+          desc !== undefined &&
+          desc !== null &&
+          String(desc).trim().toLowerCase() === lowerStr
+        );
+      });
+      if (matchDesc) return false;
+    }
+
+    if (this.encounterTypeIDList && this.encounterTypeIDList.length > 0) {
+      const matchDesc = this.encounterTypeIDList.some((item: any) => {
+        if (!item) return false;
+        const desc =
+          item.DESCRIPTION ||
+          item.Description ||
+          item.description ||
+          item.Name ||
+          item.name;
+        return (
+          desc !== undefined &&
+          desc !== null &&
+          String(desc).trim().toLowerCase() === lowerStr
+        );
+      });
+      if (matchDesc) return false;
+    }
+
+    // If dropdowns are loaded and neither matched
+    if (
+      (this.encounterTypeIDList && this.encounterTypeIDList.length > 0) ||
+      (this.encounterTypeList && this.encounterTypeList.length > 0)
+    ) {
+      return true;
+    }
+
+    // Fallback if dropdown list not loaded yet: accept non-empty string or positive integer
+    if (isInt) return false;
     return false;
   }
 
@@ -222,7 +306,7 @@ export class ClinicalDataImportFormComponent {
 
   mapColumnMetadata(apiColumns: any[]): any[] {
     return apiColumns.map((col: any) => {
-      const isEncounterType = col.dataField?.toLowerCase() === 'encountertype';
+      const isEncounterType = col.dataField?.toLowerCase() === 'encountertype' || col.dataField?.toLowerCase() === 'encountertypeid';
       const isMandatory = !!col.IsMandatory || isEncounterType;
       const rules: any[] = [];
       if (isMandatory) {
@@ -245,8 +329,7 @@ export class ClinicalDataImportFormComponent {
         IsNumeric:
           !!col.IsNumeric ||
           col.dataType === 'number' ||
-          col.dataType === 'decimal' ||
-          isEncounterType,
+          col.dataType === 'decimal',
         originalDataType: col.dataType,
         rawValidationRules: rawMax,
       };
@@ -260,9 +343,48 @@ export class ClinicalDataImportFormComponent {
         this.loadColumnMetadata(),
         this.loadcptCodeList(),
         this.loadclinicianLicenseList(),
+        this.loadEncounterTypeList(),
+        this.loadEncounterTypeIDList(),
       ]);
     } catch (error) {
       console.error('Error loading initial data:', error);
+    }
+  }
+
+  // ================== Encounter Type List ==================
+  async loadEncounterTypeList(): Promise<void> {
+    try {
+      const res: any = await firstValueFrom(
+        this.service.Get_GropDown('ENCOUNTER_TYPE'),
+      );
+      this.encounterTypeList = Array.isArray(res)
+        ? res
+        : Array.isArray(res?.data)
+          ? res.data
+          : [];
+    } catch (error) {
+      console.error('Error fetching encounter type list:', error);
+    }
+  }
+
+  // ================== Encounter Type ID List ==================
+  async loadEncounterTypeIDList(): Promise<void> {
+    try {
+      let res: any = await firstValueFrom(
+        this.service.Get_GropDown('EncounterTypeID'),
+      ).catch(() => null);
+      if (!res || (Array.isArray(res) && res.length === 0)) {
+        res = await firstValueFrom(
+          this.service.Get_GropDown('ENCOUNTER_TYPE_ID'),
+        ).catch(() => null);
+      }
+      this.encounterTypeIDList = Array.isArray(res)
+        ? res
+        : Array.isArray(res?.data)
+          ? res.data
+          : [];
+    } catch (error) {
+      console.error('Error fetching EncounterTypeID dropdown:', error);
     }
   }
 
@@ -536,31 +658,13 @@ export class ClinicalDataImportFormComponent {
           continue;
         }
 
-        // Row Count Validation
-        if (rows.length > 50000) {
-          this.notificationService.showNotification(
-            'Selected file contains more than 50,000 rows.',
-            'error',
-          );
-          continue;
-        }
-        // Trim headers (keys) and cell values
-        const cleanedRows = rows.map((row: any) => {
-          const cleanedRow: any = {};
-          for (const key of Object.keys(row)) {
-            const trimmedKey = typeof key === 'string' ? key.trim() : key;
-            const val = row[key];
-            cleanedRow[trimmedKey] = typeof val === 'string' ? val.trim() : val;
-          }
-          return cleanedRow;
-        });
-
-        // Header Validation
-        const expectedColumns = this.combinedColumnMeta.map((x: any) =>
-          typeof x.dataField === 'string' ? x.dataField.trim() : x.dataField,
+        // Header Validation from first row
+        const firstRow = rows[0] || {};
+        const actualColumns = Object.keys(firstRow).map((col: any) =>
+          typeof col === 'string' ? col.trim() : col,
         );
-        const actualColumns = Object.keys(cleanedRows[0] || {}).map(
-          (col: any) => (typeof col === 'string' ? col.trim() : col),
+        const expectedColumns = (this.combinedColumnMeta || []).map((x: any) =>
+          typeof x.dataField === 'string' ? x.dataField.trim() : x.dataField,
         );
         const missingColumns = expectedColumns.filter(
           (col: any) => !actualColumns.includes(col),
@@ -572,15 +676,15 @@ export class ClinicalDataImportFormComponent {
           );
           continue;
         }
-        // Date Formatting
+
+        // Date Formatting Fields
         const dateFields = (this.combinedColumnMeta || [])
           .filter(
             (col: any) =>
               col.dataType === 'date' || col.originalDataType === 'date',
           )
           .map((col: any) => col.dataField);
-        const formattedRows = this.formatDateFields(
-          cleanedRows,
+        const activeDateFields =
           dateFields.length > 0
             ? dateFields
             : [
@@ -592,13 +696,58 @@ export class ClinicalDataImportFormComponent {
                 'FirstRemittanceDate',
                 'LastRemittanceDate',
                 'InitialDateSettlement',
-              ],
-        );
-        // Validation
-        this.combinedDataSource = this.validateAndSort(
-          formattedRows,
-          this.combinedColumnMeta,
-        );
+              ];
+
+        // Process data in chunks to load large datasets smoothly
+        const CHUNK_SIZE = 25000;
+        const totalRows = rows.length;
+        const validRows: any[] = [];
+        const invalidRows: any[] = [];
+        this.errorColumnDataFields = [];
+
+        for (let i = 0; i < totalRows; i += CHUNK_SIZE) {
+          const slice = rows.slice(i, i + CHUNK_SIZE);
+
+          // Clean headers and cell values
+          const cleanedSlice = slice.map((row: any) => {
+            const cleanedRow: any = {};
+            for (const key of Object.keys(row)) {
+              const trimmedKey = typeof key === 'string' ? key.trim() : key;
+              const val = row[key];
+              cleanedRow[trimmedKey] =
+                typeof val === 'string' ? val.trim() : val;
+            }
+            return cleanedRow;
+          });
+
+          // Format dates
+          const formattedSlice = this.formatDateFields(
+            cleanedSlice,
+            activeDateFields,
+          );
+
+          // Validate and sort this chunk
+          const validatedChunk = this.validateAndSort(
+            formattedSlice,
+            this.combinedColumnMeta,
+          );
+
+          for (const row of validatedChunk) {
+            if (row.__hasError) {
+              invalidRows.push(row);
+            } else {
+              validRows.push(row);
+            }
+          }
+
+          // Yield to event loop so browser doesn't freeze
+          if (totalRows > CHUNK_SIZE) {
+            await new Promise((resolve) => setTimeout(resolve, 0));
+          }
+        }
+
+        // Invalid rows first, valid rows after
+        this.combinedDataSource = [...invalidRows, ...validRows];
         this.updateFilteredDataSource();
         if (!this.combinedDataSource || this.combinedDataSource.length === 0) {
           this.notificationService.showNotification(
@@ -771,11 +920,11 @@ export class ClinicalDataImportFormComponent {
           fieldHasError = true;
         }
 
-        // EncounterType validation (Mandatory, cannot be 0, negative, decimal, or string)
-        if (
-          !fieldHasError &&
-          col.dataField?.toLowerCase() === 'encountertype'
-        ) {
+        // EncounterType validation (Checks against dropdown ID or DESCRIPTION)
+        const isEncounterCol =
+          col.dataField?.toLowerCase() === 'encountertype' ||
+          col.dataField?.toLowerCase() === 'encountertypeid';
+        if (!fieldHasError && isEncounterCol) {
           if (this.isInvalidEncounterType(val)) {
             fieldHasError = true;
           }
@@ -785,11 +934,10 @@ export class ClinicalDataImportFormComponent {
         const isDecimalCol =
           col.originalDataType === 'decimal' || col.dataType === 'decimal';
         const isIntegerCol =
-          (col.dataType === 'number' ||
-            col.originalDataType === 'number' ||
-            col.dataField?.toLowerCase() === 'encountertype') &&
+          (col.dataType === 'number' || col.originalDataType === 'number') &&
           !isDecimalCol;
-        const isNumericCol = col.IsNumeric || isDecimalCol || isIntegerCol;
+        const isNumericCol =
+          !isEncounterCol && (col.IsNumeric || isDecimalCol || isIntegerCol);
 
         if (
           !fieldHasError &&
@@ -910,8 +1058,11 @@ export class ClinicalDataImportFormComponent {
           break;
         }
 
-        // EncounterType validation (Mandatory, cannot be 0 or non-integer)
-        if (col.dataField?.toLowerCase() === 'encountertype') {
+        // EncounterType validation (Checks against dropdown ID or DESCRIPTION)
+        const isEncounterCol =
+          col.dataField?.toLowerCase() === 'encountertype' ||
+          col.dataField?.toLowerCase() === 'encountertypeid';
+        if (isEncounterCol) {
           if (this.isInvalidEncounterType(val)) {
             this.hasError = true;
             break;
@@ -922,11 +1073,10 @@ export class ClinicalDataImportFormComponent {
         const isDecimalCol =
           col.originalDataType === 'decimal' || col.dataType === 'decimal';
         const isIntegerCol =
-          (col.dataType === 'number' ||
-            col.originalDataType === 'number' ||
-            col.dataField?.toLowerCase() === 'encountertype') &&
+          (col.dataType === 'number' || col.originalDataType === 'number') &&
           !isDecimalCol;
-        const isNumericCol = col.IsNumeric || isDecimalCol || isIntegerCol;
+        const isNumericCol =
+          !isEncounterCol && (col.IsNumeric || isDecimalCol || isIntegerCol);
 
         if (
           isNumericCol &&
@@ -1321,11 +1471,14 @@ export class ClinicalDataImportFormComponent {
       errorMessage = `Error: ${column.caption || column.dataField} is required`;
     }
 
-    // EncounterType validation (Mandatory, cannot be 0 or non-integer)
-    if (!cellHasError && column.dataField?.toLowerCase() === 'encountertype') {
+    // EncounterType validation (Checks against dropdown ID or DESCRIPTION)
+    const isEncounterCol =
+      column.dataField?.toLowerCase() === 'encountertype' ||
+      column.dataField?.toLowerCase() === 'encountertypeid';
+    if (!cellHasError && isEncounterCol) {
       if (this.isInvalidEncounterType(value)) {
         cellHasError = true;
-        errorMessage = 'Error: Encounter Type must be a whole number';
+        errorMessage = 'Error: Invalid Encounter Type';
       }
     }
 
@@ -1333,11 +1486,10 @@ export class ClinicalDataImportFormComponent {
     const isDecimalCol =
       column.originalDataType === 'decimal' || column.dataType === 'decimal';
     const isIntegerCol =
-      (column.dataType === 'number' ||
-        column.originalDataType === 'number' ||
-        column.dataField?.toLowerCase() === 'encountertype') &&
+      (column.dataType === 'number' || column.originalDataType === 'number') &&
       !isDecimalCol;
-    const isNumericCol = column.IsNumeric || isDecimalCol || isIntegerCol;
+    const isNumericCol =
+      !isEncounterCol && (column.IsNumeric || isDecimalCol || isIntegerCol);
 
     if (
       !cellHasError &&
