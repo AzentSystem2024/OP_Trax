@@ -160,6 +160,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
     console.log(event);
     this.selectedIndex = event.itemIndex;
   }
+
   ngAfterViewChecked() {
     this.cdr.detectChanges(); // Triggers change detection
   }
@@ -167,15 +168,19 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   onDateOfBirthChange(event: any) {
     this.newUserData.DateofBirth = event.value; // Update the model with the selected date
   }
+
   onLoginExpiryDateChange(event: any) {
     this.newUserData.LoginExpiryDate = event.value; // Update the model with the selected date
   }
+
   onLockDateFromChange(event: any) {
     this.newUserData.LockDateFrom = event.value; // Update the model with the selected date
   }
+
   onLockDateToChange(event: any) {
     this.newUserData.LockDateTo = event.value; // Update the model with the selected date
   }
+
   onDateFormatChange(event: any): void {
     // Directly set the value from the event
     const selectedFormat = this.dateFormat.find(
@@ -221,6 +226,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
       }
     }
   }
+  
   onCurrencySymbolInput(event: any) {
     const typedValue = event.target.value;
     console.log('Typed value in input field:', typedValue);
@@ -455,6 +461,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
       }
     };
   }
+
   removeImage() {
     this.isImageUploaded = false;
     this.images = []; // Clear the image
@@ -563,6 +570,14 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
       }
     });
   }
+
+  getFacilityData() {
+    this.service.Get_All_Facility_List_Data().subscribe((res: any) => {
+      this.facilityList = res.data;
+      console.log('facility data', this.facilityList);
+    });
+  }
+
   getUserSecurityPolicyData() {
     this.service.getUserSecurityPolicityData().subscribe({
       next: (res: any) => {
@@ -578,13 +593,6 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
         this.securityPolicyData = null;
         this.generatedPassword = this.generateRandomPassword();
       },
-    });
-  }
-
-  getFacilityData() {
-    this.service.Get_All_Facility_List_Data().subscribe((res: any) => {
-      this.facilityList = res.data;
-      console.log('facility data', this.facilityList);
     });
   }
 

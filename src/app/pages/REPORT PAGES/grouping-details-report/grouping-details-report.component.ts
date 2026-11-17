@@ -89,7 +89,7 @@ export class GroupingDetailsReportComponent implements OnInit {
     { text: 'Claim Wise', value: false },
     { text: 'Activity Wise', value: true }
   ];
-  selectedReportType: boolean = false;
+  selectedReportType: boolean = true;
   selectedRowIndex: any;
 
   private filterSubscription?: Subscription;
