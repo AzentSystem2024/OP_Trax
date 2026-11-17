@@ -232,8 +232,12 @@
         <span
           class="cpt-link"
           title="'Click for ADOC Class Details'"
-          [style.color]="cell.data.IsADOCClassModified ? '#e74c3c' : 'var(--dx-color-primary)'"
-          style="cursor: pointer;"
+          [style.color]="
+            cell.data.IsADOCClassModified
+              ? '#e74c3c'
+              : 'var(--dx-color-primary)'
+          "
+          style="cursor: pointer"
         >
           {{ cell.value }}
         </span>
@@ -320,9 +324,9 @@
     [columnFixing]="{ enabled: false }"
     (onCellPrepared)="onDetailedCellPrepared($event)"
   >
-    <dxi-column dataField="field" caption="Description"></dxi-column>
+    <dxi-column dataField="Description" caption="Description"></dxi-column>
     <dxi-column
-      dataField="value"
+      dataField="Amount"
       caption="Price (AED)"
       dataType="number"
       format="#,##0.00"

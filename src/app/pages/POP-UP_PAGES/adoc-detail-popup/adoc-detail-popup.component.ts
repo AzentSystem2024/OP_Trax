@@ -289,48 +289,38 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
 
     if (e.column.dataField === 'BillPrice') {
       if (e.data.Billable === true) {
-        this.showDetails = true;
         const payload = {
           ClaimActivityUID: e.data.ActivityUID,
         };
-        this.operationService.get_price(payload).subscribe((res: any) => {
-          if (res && res.flag === '1' && res.data && res.data.length > 0) {
-            const priceData = res.data[0];
-            this.dataGrid_DataSource = [
-              { field: 'Base Price', value: priceData.BasePrice ?? 0 },
-              {
-                field: 'Pediatric Adjuster',
-                value: priceData.PediatricAdjuster ?? 0,
-              },
-              {
-                field: 'Senior Adjuster',
-                value: priceData.SeniorAdjuster ?? 0,
-              },
-              {
-                field: '8-14 Follow-up Adjuster',
-                value: priceData.FollowupAdjuster ?? 0,
-              },
-              {
-                field: 'Region Adjuster',
-                value: priceData.RegionAdjuster ?? 0,
-              },
-              { field: 'CoE Adjuster', value: priceData.CoEAdjuster ?? 0 },
-              {
-                field: 'Facility Multiplier',
-                value: priceData.FacilityMultiplier ?? 0,
-              },
-
-              { field: 'ADOC Price', value: priceData.ADOCPrice ?? 0 },
-            ];
-          } else {
+        this.operationService.get_price(payload).subscribe({
+          next: (res: any) => {
+            if (res && String(res.flag) === '1' && Array.isArray(res.data)) {
+              this.dataGrid_DataSource = res.data;
+              this.showDetails = true;
+            } else {
+              this.showDetails = false;
+              this.dataGrid_DataSource = [];
+              this.notificationService.showNotification(
+                res?.message || 'Failed to load Price details.',
+                'error',
+              );
+            }
+          },
+          error: (err: any) => {
+            this.showDetails = false;
             this.dataGrid_DataSource = [];
-          }
+            this.notificationService.showNotification(
+              err?.error?.message ||
+                err?.message ||
+                'Failed to load Price details.',
+              'error',
+            );
+          },
         });
       }
     } else if (e.column.dataField === 'ADOCClass') {
       const adocClassPrivilege =
         this.dataService.getMenuPrevilages('adoc-class');
-      console.log('adoc clas previlages ::>>', adocClassPrivilege);
 
       if (
         !adocClassPrivilege ||
@@ -397,7 +387,10 @@ export class AdocDetailPopupComponent implements OnInit, OnChanges {
   }
 
   onDetailedCellPrepared(e: any) {
-    if (e.rowType === 'data' && e.data.field === 'ADOC Price') {
+    if (
+      e.rowType === 'data' &&
+      (e.data?.ID === 100 || e.data?.Description === 'ADOC Billable')
+    ) {
       e.cellElement.style.fontWeight = 'bold';
     }
   }
