@@ -164,6 +164,31 @@ export class ReportService {
       }).then(() => {
         doc.save(`${fileName}.pdf`);
       });
+    } else if (e.format === 'csv') {
+      e.cancel = true;
+      const workbook = new Workbook();
+      const worksheet = workbook.addWorksheet(fileName);
+      exportDataGridToXLSX({
+        component: e.component,
+        worksheet,
+        keepColumnWidths: false,
+        autoFilterEnabled: true,
+        customizeCell: ({ gridCell, excelCell }) => {
+          // Skip summary rows in CSV
+          if (
+            gridCell.rowType === 'groupFooter' ||
+            gridCell.rowType === 'totalFooter'
+          )
+            return;
+        },
+      }).then(() => {
+        workbook.csv.writeBuffer().then((buffer) => {
+          saveAs(
+            new Blob([buffer], { type: 'text/csv;charset=utf-8;' }),
+            `${fileName}.csv`
+          );
+        });
+      });
     } else {
       e.cancel = true;
       const workbook = new Workbook();

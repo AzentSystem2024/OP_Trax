@@ -345,7 +345,11 @@
         [applyFilter]="applyFilter"
       ></dxo-filter-row>
 
-      <dxo-export [enabled]="menuPrevilage?.CanExport" [formats]="['xlsx']">
+      <dxo-export
+        [enabled]="menuPrevilage?.CanExport"
+        [formats]="['xlsx', 'csv']"
+        [texts]="{ exportAll: 'Export to {0}' }"
+      >
       </dxo-export>
 
       <dxo-toolbar>
