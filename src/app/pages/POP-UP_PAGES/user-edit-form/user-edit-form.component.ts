@@ -63,9 +63,9 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class UserEditFormComponent implements OnInit, OnChanges {
   @ViewChild('validationGroup', { static: true })
-  validationGroup: DxValidationGroupComponent;
-  @ViewChild(UserEditFormComponent) editform: UserEditFormComponent;
-  @ViewChild(UserComponent) list: UserComponent;
+  validationGroup!: DxValidationGroupComponent;
+  @ViewChild(UserEditFormComponent) editform!: UserEditFormComponent;
+  @ViewChild(UserComponent) list!: UserComponent;
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
 
   @Input() formdata: any;
@@ -122,7 +122,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
   showNavButtons: boolean = true;
   isPasswordVisible = false;
   securityPolicyData: any;
-  facilityList;
+  facilityList:any;
   countryCodes: any[] = [];
   isImageUploaded = false; // Variable to track image upload status
 
@@ -225,7 +225,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
 
     // Check if the login name exists in the user list, excluding the current one
     const exists = this.userList.some(
-      (user) =>
+      (user:any) =>
         user.LoginName === loginName &&
         user.LoginName !== this.currentLoginName,
     );
@@ -273,12 +273,12 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     // Reorder facilityList based on selectedRows
     this.facilityList = [
       // Selected facilities first
-      ...this.facilityList.filter((facility) =>
+      ...this.facilityList.filter((facility:any) =>
         this.selectedRows.includes(facility.ID),
       ),
       // Non-selected facilities after
       ...this.facilityList.filter(
-        (facility) => !this.selectedRows.includes(facility.ID),
+        (facility:any) => !this.selectedRows.includes(facility.ID),
       ),
     ];
 
@@ -609,7 +609,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
   onDateFormatChange(event: any): void {
     // Directly set the value from the event
     const selectedFormat = this.dateFormat?.find(
-      (format) => format.DESCRIPTION === event.value,
+      (format:any) => format.DESCRIPTION === event.value,
     )?.DESCRIPTION;
     if (selectedFormat) {
       this.newUserData.Date_Format = event.value; // Ensure the correct value is set
@@ -621,7 +621,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
 
   onTimeFormatChange(event: any) {
     const selectedTimeFormat = this.timeFormat?.find(
-      (format) => format.DESCRIPTION === event.value,
+      (format:any) => format.DESCRIPTION === event.value,
     )?.DESCRIPTION;
     if (selectedTimeFormat) {
       this.newUserData.Time_Format = event.value;
@@ -637,7 +637,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     if (selectedValue) {
       // Check if the selected value is from the dropdown or entered by the user
       const existingItem = this.currencySymbol.find(
-        (item) => item.DESCRIPTION === selectedValue,
+        (item:any) => item.DESCRIPTION === selectedValue,
       );
 
       if (!existingItem) {
@@ -667,7 +667,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
     // If the value is not part of the dropdown options, treat it as a custom value
     if (enteredValue) {
       const existingItem = this.currencySymbol.find(
-        (item) => item.DESCRIPTION === enteredValue,
+        (item:any) => item.DESCRIPTION === enteredValue,
       );
 
       if (!existingItem) {
@@ -890,7 +890,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       }
 
       const selectedFormat = this.dateFormat?.find(
-        (format) => format.DESCRIPTION === this.formdata.Date_Format,
+        (format:any) => format.DESCRIPTION === this.formdata.Date_Format,
       )?.DESCRIPTION;
       if (selectedFormat) {
         this.newUserData.Date_Format = this.formdata.Date_Format; // Ensure the correct value is set
@@ -899,7 +899,7 @@ export class UserEditFormComponent implements OnInit, OnChanges {
         this.exampleDateFormat = '';
       }
       const selectedTimeFormat = this.timeFormat?.find(
-        (format) => format.DESCRIPTION === this.formdata.Time_Format,
+        (format:any) => format.DESCRIPTION === this.formdata.Time_Format,
       )?.DESCRIPTION;
       if (selectedTimeFormat) {
         this.newUserData.Time_Format = this.formdata.Time_Format;
@@ -930,12 +930,12 @@ export class UserEditFormComponent implements OnInit, OnChanges {
       if (this.facilityList)
         this.facilityList = [
           // Selected facilities first
-          ...this.facilityList.filter((facility) =>
+          ...this.facilityList.filter((facility:any) =>
             this.selectedRows.includes(facility.ID),
           ),
           // Non-selected facilities after
           ...this.facilityList.filter(
-            (facility) => !this.selectedRows.includes(facility.ID),
+            (facility:any) => !this.selectedRows.includes(facility.ID),
           ),
         ];
     }

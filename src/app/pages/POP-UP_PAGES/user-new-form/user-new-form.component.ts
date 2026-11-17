@@ -57,7 +57,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   @ViewChild('fileUploader', { static: false })
   fileUploader!: DxFileUploaderComponent; // Update the type here
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
-  @ViewChild('currencySelectBox') currencySelectBox: ElementRef;
+  @ViewChild('currencySelectBox') currencySelectBox!: ElementRef;
   userData: any = {
     UserName: '',
     Password: '',
@@ -85,7 +85,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   };
   newUserData = this.userData;
   selectedRows: any[] = [];
-  userForm: FormGroup;
+  userForm!: FormGroup;
   images: string[] = [];
   stylingMode: any = 'primary';
   iconPosition: any = 'left';
@@ -94,7 +94,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   showNavButtons: boolean = true;
   isPasswordVisible = false;
   securityPolicyData: any;
-  facilityList;
+  facilityList: any;
   countryCodes: any[] = [];
 
   isDropZoneActive = false;
@@ -137,10 +137,10 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
 
   //dateformat options
 
-  selectedDropdownOption: string;
+  selectedDropdownOption: any;
   //thousandseparator
-  thousandSeparatorValue: number;
-  decimal: number;
+  thousandSeparatorValue: any;
+  decimal: any;
 
   public isDropdownOpen: boolean = false;
   dateFormat: any;
@@ -179,7 +179,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   onDateFormatChange(event: any): void {
     // Directly set the value from the event
     const selectedFormat = this.dateFormat.find(
-      (format) => format.DESCRIPTION === event.value,
+      (format: any) => format.DESCRIPTION === event.value,
     )?.DESCRIPTION;
     if (selectedFormat) {
       this.newUserData.Date_Format = event.value; // Ensure the correct value is set
@@ -191,7 +191,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
 
   onTimeFormatChange(event: any) {
     const selectedTimeFormat = this.timeFormat.find(
-      (format) => format.DESCRIPTION === event.value,
+      (format: any) => format.DESCRIPTION === event.value,
     )?.DESCRIPTION;
     if (selectedTimeFormat) {
       this.newUserData.Time_Format = event.value;
@@ -207,7 +207,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
     if (selectedValue) {
       // Check if the selected value is from the dropdown or entered by the user
       const existingItem = this.currencySymbol.find(
-        (item) => item.DESCRIPTION === selectedValue,
+        (item: any) => item.DESCRIPTION === selectedValue,
       );
 
       if (!existingItem) {
@@ -236,7 +236,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
     // If the value is not part of the dropdown options, treat it as a custom value
     if (enteredValue) {
       const existingItem = this.currencySymbol.find(
-        (item) => item.DESCRIPTION === enteredValue,
+        (item: any) => item.DESCRIPTION === enteredValue,
       );
 
       if (!existingItem) {
@@ -332,7 +332,9 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
 
   checkLoginNameExists = (e: any): boolean => {
     const loginName = e.value;
-    const exists = this.userList.some((user) => user.LoginName === loginName);
+    const exists = this.userList.some(
+      (user: any) => user.LoginName === loginName,
+    );
 
     // Return true if it does NOT exist, false if it DOES exist
     e.valid = !exists;
@@ -510,6 +512,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
+    this.generatedPassword = this.generateRandomPassword();
     this.getDropDownData('GENDER_DATA');
     this.getDropDownData('USER_ROLE');
     this.getDropDownData('DATE_FORMAT');
@@ -561,10 +564,20 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
     });
   }
   getUserSecurityPolicyData() {
-    this.service.getUserSecurityPolicityData().subscribe((res: any) => {
-      this.securityPolicyData = res.data[0];
-      console.log('user security policy data', this.securityPolicyData);
-      this.generatedPassword = this.generateRandomPassword();
+    this.service.getUserSecurityPolicityData().subscribe({
+      next: (res: any) => {
+        this.securityPolicyData =
+          res && Array.isArray(res.data) && res.data.length > 0
+            ? res.data[0]
+            : null;
+        console.log('user security policy data', this.securityPolicyData);
+        this.generatedPassword = this.generateRandomPassword();
+      },
+      error: (err: any) => {
+        console.error('Error fetching user security policy data:', err);
+        this.securityPolicyData = null;
+        this.generatedPassword = this.generateRandomPassword();
+      },
     });
   }
 
@@ -576,12 +589,19 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
   }
 
   generateRandomPassword(): string {
-    // Fetch the minimum length from security policy; default to 8 if not provided
-    const minLength = Math.max(this.securityPolicyData.MinimumLength || 8, 8); // Ensure a minimum length of at least 8
+    const hasPolicy = !!(
+      this.securityPolicyData &&
+      typeof this.securityPolicyData === 'object' &&
+      Object.keys(this.securityPolicyData).length > 0
+    );
 
+    // Fetch the minimum length from security policy; default to 8 if not provided or if no policy data
+    const minLength = Math.max(
+      (hasPolicy && this.securityPolicyData?.MinimumLength) || 8,
+      8,
+    ); // Ensure a minimum length of at least 8
     // Set a maximum length (e.g., 12) or based on your requirement
     const maxLength = 12;
-
     // Calculate random length between minLength and maxLength
     const length =
       Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
@@ -591,41 +611,57 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
     const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const numbers = '0123456789';
 
+    // If the security policy has no data, use all conditions as true
+    const useNumbers = hasPolicy ? !!this.securityPolicyData?.Numbers : true;
+    const useUppercase = hasPolicy
+      ? !!this.securityPolicyData?.UppercaseCharacters
+      : true;
+    const useLowercase = hasPolicy
+      ? !!this.securityPolicyData?.LowercaseCharacters
+      : true;
+    const useSpecial = hasPolicy
+      ? !!this.securityPolicyData?.SpecialCharacters
+      : true;
+
     // Initialize password and characters array
     let password = '';
-    const characters = [];
-    const requiredCharacters = [];
+    const characters: string[] = [];
+    const requiredCharacters: string[] = [];
 
     // Include character sets and ensure at least one character from each selected set
-    if (this.securityPolicyData.Numbers) {
+    if (useNumbers) {
       characters.push(numbers);
       requiredCharacters.push(
         numbers.charAt(Math.floor(Math.random() * numbers.length)),
       );
     }
-    if (this.securityPolicyData.UppercaseCharacters) {
+    if (useUppercase) {
       characters.push(upperCase);
       requiredCharacters.push(
         upperCase.charAt(Math.floor(Math.random() * upperCase.length)),
       );
     }
-    if (this.securityPolicyData.LowercaseCharacters) {
+    if (useLowercase) {
       characters.push(lowerCase);
       requiredCharacters.push(
         lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)),
       );
     }
-    if (this.securityPolicyData.SpecialCharacters) {
+    if (useSpecial) {
       characters.push(specialChars);
       requiredCharacters.push(
         specialChars.charAt(Math.floor(Math.random() * specialChars.length)),
       );
     }
 
-    // Ensure there are character sets to choose from
+    // Ensure there are character sets to choose from (fallback to all if none selected)
     if (characters.length === 0) {
-      throw new Error(
-        'No character sets selected based on the security policy.',
+      characters.push(numbers, upperCase, lowerCase, specialChars);
+      requiredCharacters.push(
+        numbers.charAt(Math.floor(Math.random() * numbers.length)),
+        upperCase.charAt(Math.floor(Math.random() * upperCase.length)),
+        lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)),
+        specialChars.charAt(Math.floor(Math.random() * specialChars.length)),
       );
     }
 
@@ -633,7 +669,7 @@ export class UserNewFormComponent implements OnInit, AfterViewChecked {
     requiredCharacters.forEach((char) => (password += char));
 
     // Calculate remaining length to fill
-    const remainingLength = length - requiredCharacters.length;
+    const remainingLength = Math.max(length - requiredCharacters.length, 0);
 
     // Fill the rest of the password with random characters from the selected sets
     for (let i = 0; i < remainingLength; i++) {
