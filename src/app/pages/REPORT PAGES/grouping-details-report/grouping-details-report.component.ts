@@ -68,13 +68,13 @@ import { Subscription } from 'rxjs';
 })
 export class GroupingDetailsReportComponent implements OnInit {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   @ViewChild('filterPopupdataGrid', { static: false })
   filterPopupdataGrid!: any;
 
   @ViewChild(DxTreeViewComponent, { static: false })
-  treeView: DxTreeViewComponent;
+  treeView!: DxTreeViewComponent;
 
   @ViewChild(CptMasterEditFormComponent, { static: false })
   CptEditFormComponent!: CptMasterEditFormComponent;
@@ -109,7 +109,7 @@ export class GroupingDetailsReportComponent implements OnInit {
   From_Date_Value: any;
   To_Date_Value: any;
   selectedmonth: any;
-  selectedYear: number | null;
+  selectedYear: any | null;
   cptCodes: string = '';
   receiverListDataSource: any;
   selectedReceiverID: any = '';
@@ -147,7 +147,7 @@ export class GroupingDetailsReportComponent implements OnInit {
   loadingVisible: boolean = false;
   isGridLoading: boolean = false;
   columnFixed: boolean = true;
-  initialized: boolean;
+  initialized!: boolean;
   userRoleId: any;
   userRoleID: any;
   exportDropdownOptions: any;
@@ -461,18 +461,18 @@ export class GroupingDetailsReportComponent implements OnInit {
     }
   };
 
-  generateSummaryColumns(reportColumns) {
+  generateSummaryColumns(reportColumns:any) {
     const decimalColumns = reportColumns.filter(
-      (col) => col.Type && col.Type.toLowerCase() === 'decimal' && col.Summary,
+      (col:any) => col.Type && col.Type.toLowerCase() === 'decimal' && col.Summary,
     );
 
     const intColumns = reportColumns.filter(
-      (col) => col.Type && col.Type.toLowerCase() === 'int32' && col.Summary,
+      (col:any) => col.Type && col.Type.toLowerCase() === 'int32' && col.Summary,
     );
 
     // Find the claim number / encounter column in report columns
     const claimColumn = reportColumns.find(
-      (col) =>
+      (col:any) =>
         col.Name &&
         /^(claim|invoice)/i.test(col.Name.replace(/[\s_-]/g, '')),
     );
@@ -501,19 +501,19 @@ export class GroupingDetailsReportComponent implements OnInit {
     return {
       totalItems: [
         distinctClaimSummaryTotal,
-        ...decimalColumns.map((col) =>
+        ...decimalColumns.map((col:any) =>
           this.createSummaryItem(col, false, 'sum', 'decimal'),
         ),
-        ...intColumns.map((col) =>
+        ...intColumns.map((col:any) =>
           this.createSummaryItem(col, false, 'sum', 'count'),
         ),
       ],
       groupItems: [
         distinctClaimSummaryGroup,
-        ...decimalColumns.map((col) =>
+        ...decimalColumns.map((col:any) =>
           this.createSummaryItem(col, true, 'sum', 'decimal'),
         ),
-        ...intColumns.map((col) =>
+        ...intColumns.map((col:any) =>
           this.createSummaryItem(col, true, 'sum', 'count'),
         ),
       ],
@@ -521,7 +521,7 @@ export class GroupingDetailsReportComponent implements OnInit {
     };
   }
 
-  createSummaryItem(col, isGroupItem = false, summaryType = 'sum', formatType) {
+  createSummaryItem(col:any, isGroupItem = false, summaryType = 'sum', formatType:any) {
     return {
       column: col.Name,
       summaryType: summaryType,
@@ -539,15 +539,15 @@ export class GroupingDetailsReportComponent implements OnInit {
     };
   }
 
-  generateColumnsConfig(reportColumns, userLocale) {
-    return reportColumns.map((column) => {
+  generateColumnsConfig(reportColumns:any, userLocale:any) {
+    return reportColumns.map((column:any) => {
       let columnFormat;
       const colType = column.Type ? column.Type.toLowerCase() : '';
 
       if (colType === 'datetime') {
         columnFormat = {
           type: 'date',
-          formatter: (date) =>
+          formatter: (date:any) =>
             new Intl.DateTimeFormat(userLocale, {
               year: 'numeric',
               month: 'short',
@@ -559,7 +559,7 @@ export class GroupingDetailsReportComponent implements OnInit {
         columnFormat = {
           type: 'fixedPoint',
           precision: 2,
-          formatter: (value) =>
+          formatter: (value:any) =>
             new Intl.NumberFormat(userLocale, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -570,7 +570,7 @@ export class GroupingDetailsReportComponent implements OnInit {
         columnFormat = {
           type: 'percent',
           precision: 2,
-          formatter: (value) =>
+          formatter: (value:any) =>
             new Intl.NumberFormat(userLocale, {
               style: 'percent',
               minimumFractionDigits: 2,

@@ -49,30 +49,8 @@
     <dxo-toolbar>
       <!-- Header -->
       <dxi-item location="before">
-        <div class="grid-header">Facility Multiplier Master</div>
+        <div class="grid-header">Facility Multiplier</div>
       </dxi-item>
-
-      <!-- Region Adjuster -->
-      <!-- <dxi-item location="after">
-        <dx-text-box
-          [(value)]="regionAdjuster"
-          [readOnly]="!isEditingEnabled"
-          label="Region Adjuster"
-          labelMode="floating"
-          width="150"
-        ></dx-text-box>
-      </dxi-item> -->
-
-      <!-- Quaternary Adjuster -->
-      <!-- <dxi-item location="after">
-        <dx-text-box
-          [(value)]="quaternaryAdjuster"
-          [readOnly]="!isEditingEnabled"
-          label="Quaternary adjuster (CoE)"
-          labelMode="floating"
-          width="180"
-        ></dx-text-box>
-      </dxi-item> -->
 
       <!-- Facility Dropdown -->
       <dxi-item [visible]="!IsGlobalPrice" location="after" width="200">
@@ -83,6 +61,7 @@
           displayExpr="FacilityName"
           valueExpr="FacilityLicense"
           [(value)]="selectedFacilityID"
+          [showClearButton]="true"
           [searchEnabled]="true"
           width="250"
           (onValueChanged)="onFacilityChanged($event)"
@@ -149,10 +128,10 @@
       [width]="200"
     >
     </dxi-column>
-    
+
     <dxi-column
-      dataField="CPTCategoryID"
-      caption="Service Category"
+      dataField="NetworkID"
+      caption="Net Work"
       [allowEditing]="false"
       alignment="center"
       [width]="200"
@@ -160,8 +139,8 @@
     </dxi-column>
 
     <dxi-column
-      dataField="NetworkID"
-      caption="Net Work"
+      dataField="CPTCategoryID"
+      caption="Service Category"
       [allowEditing]="false"
       alignment="center"
       [width]="200"

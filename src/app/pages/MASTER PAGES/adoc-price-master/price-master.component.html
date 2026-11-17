@@ -334,6 +334,9 @@
         <dx-data-grid
           #popupGrid
           [dataSource]="cptPriceData"
+          keyExpr="SerialNumber"
+          [(selectedRowKeys)]="selectedPopupRowKeys"
+          (onSelectionChanged)="onPopupSelectionChanged($event)"
           [showBorders]="true"
           [showColumnLines]="true"
           [showRowLines]="true"
@@ -343,6 +346,11 @@
           [allowColumnResizing]="true"
           [columnResizingMode]="'widget'"
         >
+          <dxo-selection
+            mode="multiple"
+            showCheckBoxesMode="always"
+            selectAllMode="allPages"
+          ></dxo-selection>
           <dxo-load-panel [enabled]="true"></dxo-load-panel>
           <dxo-scrolling mode="virtual" rowRenderingMode="virtual"></dxo-scrolling>
           <dxo-paging [pageSize]="50"></dxo-paging>
@@ -351,21 +359,6 @@
             enterKeyAction="moveFocus"
             enterKeyDirection="column"
           ></dxo-keyboard-navigation>
-
-          <dxi-column
-            dataField="IsSelected"
-            caption=""
-            dataType="boolean"
-            [width]="50"
-            [allowEditing]="false"
-            headerCellTemplate="headerChkTemplate"
-            cellTemplate="chkTemplate"
-            alignment="center"
-            [allowSorting]="false"
-            [allowFiltering]="false"
-            [allowHeaderFiltering]="false"
-          >
-          </dxi-column>
 
           <dxi-column
             dataField="ADOCClassName"
@@ -421,40 +414,6 @@
             alignment="left"
           >
           </dxi-column>
-
-          <div
-            *dxTemplate="let info of 'headerChkTemplate'"
-            style="
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100%;
-              width: 100%;
-            "
-            (click)="$event.stopPropagation()"
-          >
-            <dx-check-box
-              [value]="isSelectAll"
-              (onValueChanged)="onSelectAllChanged($event)"
-            ></dx-check-box>
-          </div>
-
-          <div
-            *dxTemplate="let cell of 'chkTemplate'"
-            style="
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100%;
-              width: 100%;
-            "
-            (click)="$event.stopPropagation()"
-          >
-            <dx-check-box
-              [value]="cell.data.IsSelected === true"
-              (onValueChanged)="onCheckboxChanged($event, cell)"
-            ></dx-check-box>
-          </div>
         </dx-data-grid>
 
         <div style="display: flex; justify-content: flex-end; margin-top: 15px">

@@ -53,6 +53,7 @@ export class AdocPriceMasterComponent implements AfterViewInit {
   versionValueExpr: any | undefined = 'DESCRIPTION';
 
   isSelectAll: boolean = false;
+  selectedPopupRowKeys: any[] = [];
 
   menuPrevilage: any;
 
@@ -89,8 +90,10 @@ export class AdocPriceMasterComponent implements AfterViewInit {
   onAddClick = () => {
     this.globalEffectFromDate = new Date();
     this.isSelectAll = false;
+    this.selectedPopupRowKeys = [];
     if (this.popupGrid && this.popupGrid.instance) {
       this.popupGrid.instance.cancelEditData();
+      this.popupGrid.instance.clearSelection();
 
       // Also manually clear any modifications to the underlying array that might have been committed
       if (Array.isArray(this.cptPriceData)) {
@@ -701,82 +704,48 @@ export class AdocPriceMasterComponent implements AfterViewInit {
     this.isPopupFilterRowVisible = !this.isPopupFilterRowVisible;
   };
 
-  onSelectAllChanged(e: any) {
-    if (!e.event) return;
-    const isChecked = !!e.value;
-    this.isSelectAll = isChecked;
-
+  onPopupSelectionChanged(e: any) {
     if (!Array.isArray(this.cptPriceData)) return;
 
-    this.cptPriceData.forEach((row: any) => {
-      row.IsSelected = isChecked;
-      if (isChecked) {
-        row.NewPrice = row.Price ?? 0;
-        row.NewPaedAdjuster = row.PaedAdjuster ?? 0;
-        row.NewSeniorAdjuster = row.SeniorAdjuster ?? 0;
-        row.NewFollowUpAdjuster = row.FollowUpAdjuster ?? 0;
-        row.NewNewPatientAdjuster = row.NewPatientAdjuster ?? 0;
-        row.NewTeleMedicineAdjuster = row.TeleMedicineAdjuster ?? 0;
-      } else {
-        row.NewPrice = null;
-        row.NewPaedAdjuster = null;
-        row.NewSeniorAdjuster = null;
-        row.NewFollowUpAdjuster = null;
-        row.NewNewPatientAdjuster = null;
-        row.NewTeleMedicineAdjuster = null;
-      }
-    });
-
-    if (this.popupGrid?.instance) {
-      this.popupGrid.instance.refresh();
+    if (e.currentSelectedRowKeys?.length > 0) {
+      const selectedKeys = new Set(e.currentSelectedRowKeys);
+      this.cptPriceData.forEach((row: any) => {
+        if (selectedKeys.has(row.SerialNumber)) {
+          row.IsSelected = true;
+          row.NewPrice = row.Price ?? 0;
+          row.NewPaedAdjuster = row.PaedAdjuster ?? 0;
+          row.NewSeniorAdjuster = row.SeniorAdjuster ?? 0;
+          row.NewFollowUpAdjuster = row.FollowUpAdjuster ?? 0;
+          row.NewNewPatientAdjuster = row.NewPatientAdjuster ?? 0;
+          row.NewTeleMedicineAdjuster = row.TeleMedicineAdjuster ?? 0;
+        }
+      });
     }
-  }
 
-  onCheckboxChanged = (e: any, cell: any) => {
-    const isChecked = !!e.value;
-    cell.data.IsSelected = isChecked;
-
-    const price = isChecked ? (cell.data.Price ?? 0) : null;
-    const paed = isChecked ? (cell.data.PaedAdjuster ?? 0) : null;
-    const senior = isChecked ? (cell.data.SeniorAdjuster ?? 0) : null;
-    const followUp = isChecked ? (cell.data.FollowUpAdjuster ?? 0) : null;
-    const newPatient = isChecked ? (cell.data.NewPatientAdjuster ?? 0) : null;
-    const teleMed = isChecked ? (cell.data.TeleMedicineAdjuster ?? 0) : null;
-
-    cell.data.NewPrice = price;
-    cell.data.NewPaedAdjuster = paed;
-    cell.data.NewSeniorAdjuster = senior;
-    cell.data.NewFollowUpAdjuster = followUp;
-    cell.data.NewNewPatientAdjuster = newPatient;
-    cell.data.NewTeleMedicineAdjuster = teleMed;
-
-    if (cell.component && cell.rowIndex !== undefined && cell.rowIndex >= 0) {
-      cell.component.cellValue(cell.rowIndex, 'NewPrice', price);
-      cell.component.cellValue(cell.rowIndex, 'NewPaedAdjuster', paed);
-      cell.component.cellValue(cell.rowIndex, 'NewSeniorAdjuster', senior);
-      cell.component.cellValue(cell.rowIndex, 'NewFollowUpAdjuster', followUp);
-      cell.component.cellValue(
-        cell.rowIndex,
-        'NewNewPatientAdjuster',
-        newPatient,
-      );
-      cell.component.cellValue(
-        cell.rowIndex,
-        'NewTeleMedicineAdjuster',
-        teleMed,
-      );
+    if (e.currentDeselectedRowKeys?.length > 0) {
+      const deselectedKeys = new Set(e.currentDeselectedRowKeys);
+      this.cptPriceData.forEach((row: any) => {
+        if (deselectedKeys.has(row.SerialNumber)) {
+          row.IsSelected = false;
+          row.NewPrice = null;
+          row.NewPaedAdjuster = null;
+          row.NewSeniorAdjuster = null;
+          row.NewFollowUpAdjuster = null;
+          row.NewNewPatientAdjuster = null;
+          row.NewTeleMedicineAdjuster = null;
+        }
+      });
     }
-    this.updateSelectAllState();
-  };
 
-  updateSelectAllState() {
-    if (!Array.isArray(this.cptPriceData) || this.cptPriceData.length === 0) {
-      this.isSelectAll = false;
-      return;
+    this.isSelectAll =
+      this.cptPriceData.length > 0 &&
+      this.cptPriceData.every((x: any) => x.IsSelected === true);
+
+    const visibleRows = e.component?.getVisibleRows();
+    if (visibleRows && visibleRows.length > 0) {
+      const indices = visibleRows.map((_: any, idx: number) => idx);
+      e.component.repaintRows(indices);
     }
-    this.isSelectAll = this.cptPriceData.every(
-      (x: any) => x.IsSelected === true,
-    );
   }
 
   onGridOptionChanged(e: any) {
