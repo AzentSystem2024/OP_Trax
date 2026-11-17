@@ -1,13 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
 import { exportDataGrid as exportDataGridToPdf } from 'devextreme/pdf_exporter';
 import { exportDataGrid as exportDataGridToXLSX } from 'devextreme/excel_exporter';
 import { jsPDF } from 'jspdf';
 import { Workbook } from 'exceljs';
-import { saveAs } from 'file-saver-es';
-
-
+import { saveAs } from 'file-saver';
 import { Router } from '@angular/router';
 import { ConfigService } from './config.service';
 
@@ -155,8 +152,8 @@ export class ReportService {
         customizeCell: ({ gridCell }) => {
           // Skip group/footer summary rows
           if (
-            gridCell.rowType === 'groupFooter' ||
-            gridCell.rowType === 'totalFooter'
+            gridCell?.rowType === 'groupFooter' ||
+            gridCell?.rowType === 'totalFooter'
           ) {
             return false;
           }
@@ -176,8 +173,8 @@ export class ReportService {
         customizeCell: ({ gridCell, excelCell }) => {
           // Skip summary rows in CSV
           if (
-            gridCell.rowType === 'groupFooter' ||
-            gridCell.rowType === 'totalFooter'
+            gridCell?.rowType === 'groupFooter' ||
+            gridCell?.rowType === 'totalFooter'
           )
             return;
         },
@@ -201,8 +198,8 @@ export class ReportService {
         customizeCell: ({ gridCell, excelCell }) => {
           // Skip summary rows in Excel
           if (
-            gridCell.rowType === 'groupFooter' ||
-            gridCell.rowType === 'totalFooter'
+            gridCell?.rowType === 'groupFooter' ||
+            gridCell?.rowType === 'totalFooter'
           )
             return;
         },
