@@ -248,10 +248,12 @@
         [showNavigationButtons]="showNavButtons"
       >
       </dxo-pager>
+
       <dxo-selection
         mode="multiple"
         showCheckBoxesMode="always"
       ></dxo-selection>
+
       <dxo-load-panel [showPane]="false"></dxo-load-panel>
       <dxo-scrolling mode="virtual"></dxo-scrolling>
       <dxo-sorting mode="multiple"></dxo-sorting>
@@ -260,21 +262,25 @@
       <dxo-filter-panel
         [visible]="isFilterRowVisible || isFilterApplied"
       ></dxo-filter-panel>
+
       <dxo-search-panel
         [visible]="true"
         placeholder=" Search"
       ></dxo-search-panel>
+
       <dxo-grouping
         [autoExpandAll]="false"
         [contextMenuEnabled]="true"
         [expandMode]="'rowClick'"
       ></dxo-grouping>
+
       <dxo-export
         [enabled]="menuPrevilage?.CanExport"
         [allowExportSelectedData]="false"
         [formats]="['xlsx']"
       >
       </dxo-export>
+
       <dxo-toolbar>
         <dxi-item location="before">
           <div class="grid-header">Billing Info</div>
@@ -352,11 +358,13 @@
         caption="Transaction Date"
         [allowEditing]="false"
       ></dxi-column>
+
       <dxi-column
         dataField="EncounterEndDate"
         caption="Encounter End Date"
         [allowEditing]="false"
       ></dxi-column>
+
       <dxi-column
         dataField="EncounterType"
         caption="Encounter Type"
@@ -374,6 +382,7 @@
         caption="Receiver"
         [allowEditing]="false"
       ></dxi-column>
+
       <dxi-column
         dataField="PatientID"
         caption="Patient Name"
@@ -385,7 +394,11 @@
         caption="Age (Year)"
         [allowEditing]="false"
       ></dxi-column>
-
+      <dxi-column
+        dataField="NetAmount"
+        caption="Net Amount"
+        [allowEditing]="false"
+      ></dxi-column>
       <dxi-column
         dataField="Status"
         caption="Grouper Status"
@@ -393,6 +406,19 @@
         cellTemplate="statusTemplate"
         alignment="center"
       ></dxi-column>
+
+       <dxi-column
+        dataField="ADOCBillableAmt"
+        caption="ADOC Billable Amt"
+        [allowEditing]="false"
+      ></dxi-column>
+
+      <dxi-column
+        dataField="ExclusionAmt"
+        caption="Exclusion Amt"
+        [allowEditing]="false"
+      ></dxi-column>
+
       <div *dxTemplate="let data of 'statusTemplate'">
         <div class="flag-container">
           <!-- Pending -->

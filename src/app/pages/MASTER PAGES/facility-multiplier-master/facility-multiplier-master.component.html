@@ -1,6 +1,5 @@
 <div class="view-wrapper list-page">
   <dx-data-grid
-    (onOptionChanged)="onGridOptionChanged($event)"
     #cptPriceGrid
     class="grid theme-dependent"
     [dataSource]="cptPriceData"
@@ -21,6 +20,7 @@
     (onEditorPreparing)="onEditorPreparing($event)"
     (onRowUpdated)="onRowUpdated($event)"
     (onRowPrepared)="onRowPrepared($event)"
+    (onOptionChanged)="onGridOptionChanged($event)"
   >
     <dxo-paging [pageSize]="10"></dxo-paging>
     <dxo-pager
@@ -130,20 +130,11 @@
     </dxi-column>
 
     <dxi-column
-      dataField="NetworkID"
-      caption="Net Work"
-      [allowEditing]="false"
-      alignment="center"
-      [width]="200"
-    >
-    </dxi-column>
-
-    <dxi-column
       dataField="CPTCategoryID"
       caption="Service Category"
       [allowEditing]="false"
       alignment="center"
-      [width]="200"
+      [width]="250"
     >
     </dxi-column>
 
