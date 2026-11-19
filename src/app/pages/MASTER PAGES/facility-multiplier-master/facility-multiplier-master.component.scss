@@ -36,11 +36,41 @@
       }
 
       .dx-datagrid-content .dx-row {
-        cursor: pointer;
+        cursor: default;
       }
       .dx-datagrid .dx-row {
-        cursor: pointer;
+        cursor: default;
         height: 10px;
+      }
+    }
+
+    &.is-editing {
+      ::ng-deep {
+        .dx-datagrid-rowsview .dx-data-row td {
+          cursor: pointer;
+        }
+      }
+    }
+
+    &:not(.is-editing) {
+      ::ng-deep {
+        .dx-datagrid-rowsview .dx-data-row,
+        .dx-datagrid-rowsview .dx-data-row td,
+        .dx-datagrid-rowsview .dx-data-row > td {
+          cursor: default !important;
+          user-select: text;
+        }
+
+        .dx-datagrid-rowsview .dx-data-row.dx-state-hover,
+        .dx-datagrid-rowsview .dx-data-row.dx-state-hover > td {
+          background-color: transparent !important;
+        }
+
+        .dx-datagrid-rowsview .dx-focused,
+        .dx-datagrid-rowsview .dx-cell-focus-disabled {
+          outline: none !important;
+          box-shadow: none !important;
+        }
       }
     }
 
@@ -91,6 +121,69 @@
 
   .dx-icon {
     color: var(--toolbar-icon-color) !important;
+  }
+}
+
+::ng-deep .cancel-edit-btn.dx-button {
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+  border-color: #dc3545 !important;
+  border-radius: 4px !important;
+
+  .dx-icon {
+    color: #ffffff !important;
+  }
+
+  .dx-button-text {
+    color: #ffffff !important;
+    font-weight: 500;
+  }
+
+  &:hover {
+    background-color: #bd2130 !important;
+    border-color: #b21f2d !important;
+  }
+}
+
+::ng-deep .add-row-button.dx-button {
+  background-color: #17a2b8 !important;
+  color: #ffffff !important;
+  border-color: #17a2b8 !important;
+  border-radius: 8px !important;
+
+  .dx-icon {
+    color: #ffffff !important;
+  }
+
+  .dx-button-text {
+    color: #ffffff !important;
+    font-weight: 500;
+  }
+
+  &:hover {
+    background-color: #138496 !important;
+    border-color: #117a8b !important;
+  }
+}
+
+::ng-deep .add-button.dx-button {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+  border-color: #007bff !important;
+  border-radius: 4px !important;
+
+  .dx-icon {
+    color: #ffffff !important;
+  }
+
+  .dx-button-text {
+    color: #ffffff !important;
+    font-weight: 500;
+  }
+
+  &:hover {
+    background-color: #0069d9 !important;
+    border-color: #0062cc !important;
   }
 }
 

@@ -2,6 +2,7 @@
   <dx-data-grid
     #cptPriceGrid
     class="grid theme-dependent"
+    [class.is-editing]="isEditingEnabled"
     [dataSource]="cptPriceData"
     [showBorders]="true"
     [showColumnLines]="true"
@@ -10,17 +11,22 @@
     [allowColumnReordering]="true"
     [rowAlternationEnabled]="true"
     rowAlternationInterval="2"
+    [hoverStateEnabled]="isEditingEnabled"
     [editing]="{
       mode: 'cell',
-      allowUpdating: true,
-      startEditAction: 'dblClick',
+      allowUpdating: isEditingEnabled,
+      allowAdding: isEditingEnabled,
+      allowDeleting: isEditingEnabled,
+      startEditAction: isEditingEnabled ? 'click' : 'dblClick',
+      newRowPosition: 'first',
     }"
     height="82vh"
-    [allowColumnResizing]="true"
     (onEditorPreparing)="onEditorPreparing($event)"
+    (onCellClick)="onCellClick($event)"
     (onRowUpdated)="onRowUpdated($event)"
     (onRowPrepared)="onRowPrepared($event)"
     (onOptionChanged)="onGridOptionChanged($event)"
+    (onInitNewRow)="onInitNewRow($event)"
   >
     <dxo-paging [pageSize]="10"></dxo-paging>
     <dxo-pager
@@ -53,20 +59,11 @@
       </dxi-item>
 
       <!-- Facility Dropdown -->
-      <dxi-item [visible]="!IsGlobalPrice" location="after" width="200">
-        <dx-select-box
-          label="Facility"
-          labelMode="floating"
-          [dataSource]="facilityList"
-          displayExpr="FacilityName"
-          valueExpr="FacilityLicense"
-          [(value)]="selectedFacilityID"
-          [showClearButton]="true"
-          [searchEnabled]="true"
-          width="250"
-          (onValueChanged)="onFacilityChanged($event)"
-        ></dx-select-box>
-      </dxi-item>
+      <dxi-item
+        location="after"
+        locateInMenu="never"
+        template="facilitySelectTemplate"
+      ></dxi-item>
 
       <dxi-item
         location="after"
@@ -96,11 +93,20 @@
         }"
       ></dxi-item>
 
-      <!-- <dxi-item
+      <dxi-item
         location="after"
+        locateInMenu="auto"
+        showText="inMenu"
         widget="dxButton"
         [options]="editButtonOptions"
-      ></dxi-item> -->
+      ></dxi-item>
+
+      <dxi-item
+        [visible]="isEditingEnabled"
+        location="after"
+        widget="dxButton"
+        [options]="addRowButtonOptions"
+      ></dxi-item>
 
       <dxi-item
         [visible]="isEditingEnabled"
@@ -109,6 +115,21 @@
         [options]="saveButtonOptions"
       ></dxi-item>
     </dxo-toolbar>
+
+    <div *dxTemplate="let data of 'facilitySelectTemplate'">
+      <dx-select-box
+        label="Facility"
+        labelMode="floating"
+        [dataSource]="facilityList"
+        displayExpr="FacilityName"
+        valueExpr="FacilityLicense"
+        [(value)]="selectedFacilityID"
+        [showClearButton]="true"
+        [searchEnabled]="true"
+        width="250"
+        (onValueChanged)="onFacilityChanged($event)"
+      ></dx-select-box>
+    </div>
 
     <!-- Grid Columns Here -->
     <dxi-column
@@ -121,37 +142,73 @@
     </dxi-column>
 
     <dxi-column
-      dataField="ReceiverName"
+      dataField="ReceiverID"
       caption="Receiver"
-      [allowEditing]="false"
+      [allowEditing]="isEditingEnabled"
       alignment="center"
       [width]="200"
+      [calculateDisplayValue]="calculateReceiverDisplay"
+      [lookup]="{
+        dataSource: receiverDataSource,
+        valueExpr: 'ID',
+        displayExpr: 'DESCRIPTION',
+      }"
     >
     </dxi-column>
 
     <dxi-column
-      dataField="CPTCategoryID"
+      dataField="ServiceCategoryID"
       caption="Service Category"
-      [allowEditing]="false"
+      [allowEditing]="isEditingEnabled"
       alignment="center"
       [width]="250"
+      [calculateDisplayValue]="calculateServiceCategoryDisplay"
+      [lookup]="{
+        dataSource: serviceCategoryDataSource,
+        valueExpr: 'ID',
+        displayExpr: 'DESCRIPTION',
+      }"
     >
     </dxi-column>
 
     <dxi-column
       dataField="CPT"
       caption="CPT"
-      [allowEditing]="false"
+      [allowEditing]="isEditingEnabled"
       alignment="center"
     >
+      <dxi-validation-rule
+        type="stringLength"
+        [max]="50"
+        message="CPT must not exceed 50 characters"
+      ></dxi-validation-rule>
     </dxi-column>
 
     <dxi-column
       dataField="Multiplier"
       caption="Multiplier"
-      [allowEditing]="false"
+      dataType="number"
+      format="#,##0.00"
+      [allowEditing]="isEditingEnabled"
       alignment="center"
     >
+      <dxi-validation-rule
+        type="required"
+        message="Multiplier is required"
+      ></dxi-validation-rule>
+      <dxi-validation-rule
+        type="numeric"
+        message="Multiplier must be a number"
+      ></dxi-validation-rule>
+    </dxi-column>
+
+    <dxi-column
+      type="buttons"
+      [visible]="isEditingEnabled"
+      [width]="60"
+      alignment="center"
+    >
+      <dxi-button name="delete"></dxi-button>
     </dxi-column>
 
     <!-- <dxi-column type="buttons" [width]="60">
@@ -167,9 +224,10 @@
       [visible]="isFilterRowVisible || isFilterApplied"
     ></dxo-filter-panel>
   </dx-data-grid>
+</div>
 
-  <!-- =========== History Popup =========== -->
-  <dx-popup
+<!-- =========== History Popup =========== -->
+<!-- <dx-popup
     [(visible)]="historyPopupVisible"
     [width]="'60%'"
     [height]="'auto'"
@@ -227,5 +285,4 @@
         format="dd-MM-yyyy"
       ></dxi-column>
     </dx-data-grid>
-  </dx-popup>
-</div>
+  </dx-popup> -->
