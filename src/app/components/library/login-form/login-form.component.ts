@@ -127,7 +127,7 @@ export class LoginFormComponent implements OnInit, OnDestroy {
       }
 
       // ===== EXISTING LOGIN LOGIC (UNCHANGED) =====
-      await this.attemptLogin(username, password, false);
+      await this.attemptLogin(username, password, true);
     } catch (err: any) {
       this.showNotify(
         'Server is not reachable. Please contact administrator.',

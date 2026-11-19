@@ -450,7 +450,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     this.service.exportDataGrid(event, 'Facility-Multiplier-Master');
   }
 
-  //======================Logcal storage Data ======================
+  //====== Logcal storage Data =====
   get_local_storage_data() {
     const data = JSON.parse(localStorage.getItem('logData') || '{}');
     this.IsGlobalPrice = data.cptPriceGlobal || false;
