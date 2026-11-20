@@ -282,10 +282,10 @@
         </div>
 
         <div class="right-actions">
-          <span *ngIf="hasImportErrors" class="error-badge">
+          <!-- <span *ngIf="hasImportErrors" class="error-badge">
             <i class="dx-icon-warning"></i> Some cells contain invalid data.
             Hover over red cells to view details.
-          </span>
+          </span> -->
           <dx-button
             text="Save"
             icon="save"
@@ -307,17 +307,18 @@
 
       <dx-data-grid
         #importDataGrid
-        [dataSource]="importedGridData"
+        [dataSource]="displayedImportGridData"
         [showBorders]="true"
         [rowAlternationEnabled]="true"
-        height="calc(85vh - 160px)"
+        height="calc(85vh - 215px)"
         (onCellPrepared)="onImportCellPrepared($event)"
         (onCellClick)="onImportCellClick($event)"
+        
       >
         <dxo-paging [pageSize]="15"></dxo-paging>
         <dxo-pager
           [visible]="true"
-          [allowedPageSizes]="[10, 15, 25,'all']"
+          [allowedPageSizes]="[10, 15, 25,]"
           [showPageSizeSelector]="true"
           [showInfo]="true"
         ></dxo-pager>
@@ -354,7 +355,34 @@
           format="#,##0.00"
           alignment="center"
         ></dxi-column>
+
+        <dxi-column type="buttons" [width]="70" alignment="center">
+          <dxi-button name="delete"></dxi-button>
+        </dxi-column>
       </dx-data-grid>
+
+      <!-- Bottom Footer Bar: Show invalid rows only checkbox & summary stats -->
+      <div class="import-footer-bar">
+        <div class="footer-left">
+          <dx-check-box
+            [(value)]="showOnlyInvalidRows"
+            text="Show invalid rows only"
+            (onValueChanged)="onShowOnlyInvalidRowsChanged($event)"
+          ></dx-check-box>
+          <span class="filter-count-badge" *ngIf="showOnlyInvalidRows">
+            Showing {{ displayedImportGridData.length }} of {{ importedGridData.length }} rows
+          </span>
+        </div>
+        <div class="footer-right">
+          <span class="total-count-label">
+            Total Rows: <strong>{{ importedGridData.length }}</strong> &nbsp;|&nbsp;
+            Invalid Rows:
+            <strong [style.color]="totalInvalidRowsCount > 0 ? '#dc3545' : '#28a745'">
+              {{ totalInvalidRowsCount }}
+            </strong>
+          </span>
+        </div>
+      </div>
 
       <!-- Tooltip styled like DevExtreme required validator message -->
       <dx-tooltip

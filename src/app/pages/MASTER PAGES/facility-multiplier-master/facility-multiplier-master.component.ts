@@ -117,8 +117,25 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
   // Import Popup properties
   importPopupVisible: boolean = false;
   importedGridData: ImportedMultiplierRow[] = [];
+  displayedImportGridData: ImportedMultiplierRow[] = [];
   importedFileName: string = '';
   hasImportErrors: boolean = false;
+  showOnlyInvalidRows: boolean = false;
+  totalInvalidRowsCount: number = 0;
+  columnErrors: any = {
+    Facility: false,
+    Receiver: false,
+    ServiceCategory: false,
+    CPT: false,
+    Multiplier: false,
+  };
+  columnErrorCounts: any = {
+    Facility: 0,
+    Receiver: 0,
+    ServiceCategory: 0,
+    CPT: 0,
+    Multiplier: 0,
+  };
   clickedCellElement: any = null;
   clickedCellErrorMessage: string = '';
   cellTooltipVisible: boolean = false;
@@ -1030,8 +1047,12 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
   openImportPopup = () => {
     this.importPopupVisible = true;
     this.importedGridData = [];
+    this.displayedImportGridData = [];
     this.importedFileName = '';
     this.hasImportErrors = false;
+    this.showOnlyInvalidRows = false;
+    this.totalInvalidRowsCount = 0;
+    this.calculateColumnErrors();
     this.cellTooltipVisible = false;
     this.clickedCellElement = null;
     this.clickedCellErrorMessage = '';
@@ -1044,8 +1065,12 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
 
   onImportPopupHiding = () => {
     this.importedGridData = [];
+    this.displayedImportGridData = [];
     this.importedFileName = '';
     this.hasImportErrors = false;
+    this.showOnlyInvalidRows = false;
+    this.totalInvalidRowsCount = 0;
+    this.calculateColumnErrors();
     this.cellTooltipVisible = false;
     this.clickedCellElement = null;
     this.clickedCellErrorMessage = '';
@@ -1102,7 +1127,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
           return;
         }
 
-        this.processImportedData(rawJson);
+        this.processImportedDataInChunks(rawJson);
       } catch (err) {
         console.error('Error processing Excel file:', err);
         this.notificationService.showNotification(
@@ -1119,105 +1144,191 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     reader.readAsArrayBuffer(file);
   };
 
-  processImportedData = (rawJson: any[]) => {
-    const processed: ImportedMultiplierRow[] = [];
+  processImportedDataInChunks = (rawJson: any[]) => {
+    this.showLoading('Preparing lookup cache...');
 
-    const getVal = (row: any, ...keys: string[]) => {
-      const rowKeys = Object.keys(row);
-      for (const k of keys) {
-        const normK = k.toLowerCase().replace(/[\s_-]/g, '');
-        const matchedKey = rowKeys.find(
-          (rk) => rk.toLowerCase().replace(/[\s_-]/g, '') === normK,
-        );
-        if (matchedKey && row[matchedKey] !== undefined) {
-          return String(row[matchedKey]).trim();
-        }
+    // 1. Pre-build O(1) Fast Lookup Maps for high-performance matching across lakhs of rows
+    const facilityMap = new Map<string, any>();
+    for (const f of this.facilityList) {
+      if (f.FacilityLicense) {
+        facilityMap.set(String(f.FacilityLicense).trim().toLowerCase(), f);
       }
-      return '';
+      if (f.FacilityID) {
+        facilityMap.set(String(f.FacilityID).trim().toLowerCase(), f);
+      }
+      if (f.FacilityName) {
+        facilityMap.set(String(f.FacilityName).trim().toLowerCase(), f);
+      }
+    }
+
+    const receiverMap = new Map<string, any>();
+    for (const r of this.receiverDataSource) {
+      if (r.ID != null) {
+        receiverMap.set(String(r.ID).trim(), r);
+      }
+      if (r.DESCRIPTION) {
+        receiverMap.set(String(r.DESCRIPTION).trim().toLowerCase(), r);
+      }
+    }
+
+    const categoryMap = new Map<string, any>();
+    for (const c of this.serviceCategoryDataSource) {
+      if (c.ID != null) {
+        categoryMap.set(String(c.ID).trim(), c);
+      }
+      if (c.DESCRIPTION) {
+        categoryMap.set(String(c.DESCRIPTION).trim().toLowerCase(), c);
+      }
+    }
+
+    // 2. Pre-resolve header keys once from first row to avoid regex on every cell
+    const firstRow = rawJson[0] || {};
+    const rowKeys = Object.keys(firstRow);
+
+    const resolveKey = (...candidates: string[]) => {
+      for (const cand of candidates) {
+        const normCand = cand.toLowerCase().replace(/[\s_-]/g, '');
+        const matched = rowKeys.find(
+          (rk) => rk.toLowerCase().replace(/[\s_-]/g, '') === normCand,
+        );
+        if (matched) return matched;
+      }
+      return null;
     };
 
-    rawJson.forEach((row: any, idx: number) => {
-      const facRaw = getVal(
-        row,
+    const facKey =
+      resolveKey(
         'Facility',
         'FacilityID',
         'FacilityLicense',
         'FacilityName',
-      );
-      const recRaw = getVal(row, 'Receiver', 'ReceiverID', 'ReceiverName');
-      const catRaw = getVal(
-        row,
+      ) || 'Facility';
+    const recKey =
+      resolveKey('Receiver', 'ReceiverID', 'ReceiverName') || 'Receiver';
+    const catKey =
+      resolveKey(
         'Service Category',
         'ServiceCategory',
         'ServiceCategoryID',
         'ServiceCode',
         'Category',
-      );
-      const cptRaw = getVal(row, 'CPT', 'CPTCode', 'CPT Code');
-      const multRaw = getVal(row, 'Multiplier', 'MultiplierValue');
+      ) || 'Service Category';
+    const cptKey = resolveKey('CPT', 'CPTCode', 'CPT Code') || 'CPT';
+    const multKey =
+      resolveKey('Multiplier', 'MultiplierValue') || 'Multiplier';
 
-      // Skip completely blank rows
-      if (!facRaw && !recRaw && !catRaw && !cptRaw && !multRaw) {
-        return;
+    const totalRows = rawJson.length;
+    const chunkSize = 5000; // Process 5,000 rows per chunk
+    let currentIndex = 0;
+    const allProcessed: ImportedMultiplierRow[] = [];
+
+    const processNextChunk = () => {
+      const nextIndex = Math.min(currentIndex + chunkSize, totalRows);
+
+      for (let i = currentIndex; i < nextIndex; i++) {
+        const row = rawJson[i];
+        const facRaw = String(
+          row[facKey] !== undefined ? row[facKey] : '',
+        ).trim();
+        const recRaw = String(
+          row[recKey] !== undefined ? row[recKey] : '',
+        ).trim();
+        const catRaw = String(
+          row[catKey] !== undefined ? row[catKey] : '',
+        ).trim();
+        const cptRaw = String(
+          row[cptKey] !== undefined ? row[cptKey] : '',
+        ).trim();
+        const multRaw = String(
+          row[multKey] !== undefined ? row[multKey] : '',
+        ).trim();
+
+        // Skip completely blank rows
+        if (!facRaw && !recRaw && !catRaw && !cptRaw && !multRaw) {
+          continue;
+        }
+
+        const item: ImportedMultiplierRow = {
+          SerialNumber: allProcessed.length + 1,
+          Facility: facRaw,
+          FacilityID: '',
+          isValidFacility: false,
+          facilityError: '',
+
+          Receiver: recRaw,
+          ReceiverID: 0,
+          isValidReceiver: false,
+          receiverError: '',
+
+          ServiceCategory: catRaw,
+          ServiceCategoryID: 0,
+          isValidCategory: false,
+          serviceCategoryError: '',
+
+          CPT: cptRaw,
+          isValidCpt: false,
+          cptError: '',
+
+          Multiplier: multRaw ? Number(multRaw) : null,
+          isValidMultiplier: false,
+          multiplierError: '',
+
+          hasError: false,
+        };
+
+        this.validateSingleImportRow(
+          item,
+          facilityMap,
+          receiverMap,
+          categoryMap,
+        );
+        allProcessed.push(item);
       }
 
-      const item: ImportedMultiplierRow = {
-        SerialNumber: idx + 1,
-        Facility: facRaw,
-        FacilityID: '',
-        isValidFacility: false,
-        facilityError: '',
-
-        Receiver: recRaw,
-        ReceiverID: 0,
-        isValidReceiver: false,
-        receiverError: '',
-
-        ServiceCategory: catRaw,
-        ServiceCategoryID: 0,
-        isValidCategory: false,
-        serviceCategoryError: '',
-
-        CPT: cptRaw,
-        isValidCpt: false,
-        cptError: '',
-
-        Multiplier: multRaw ? Number(multRaw) : null,
-        isValidMultiplier: false,
-        multiplierError: '',
-
-        hasError: false,
-      };
-
-      this.validateImportRow(item);
-      processed.push(item);
-    });
-
-    if (processed.length === 0) {
-      this.notificationService.showNotification(
-        'No valid rows found in the file',
-        'warning',
+      currentIndex = nextIndex;
+      const percent = Math.round((currentIndex / totalRows) * 100);
+      this.showLoading(
+        `Loading Rows: ${currentIndex.toLocaleString()} / ${totalRows.toLocaleString()} (${percent}%)...`,
       );
-      return;
-    }
 
-    this.importedGridData = processed;
-    this.hasImportErrors = this.importedGridData.some((r) => r.hasError);
+      if (currentIndex < totalRows) {
+        // Yield to browser event loop so UI does not freeze
+        setTimeout(processNextChunk, 0);
+      } else {
+        // All chunks finished
+        this.importedGridData = allProcessed;
+        this.calculateColumnErrors();
+        this.updateDisplayedImportData();
+        this.hideLoading();
 
-    if (this.hasImportErrors) {
-      this.notificationService.showNotification(
-        'Some rows contain invalid data. Red cells indicate errors; hover over them to view details.',
-        'warning',
-      );
-    } else {
-      this.notificationService.showNotification(
-        `Successfully loaded ${processed.length} rows with all valid data!`,
-        'success',
-      );
-    }
+        if (this.hasImportErrors) {
+          this.notificationService.showNotification(
+            `Loaded ${allProcessed.length.toLocaleString()} rows. Some rows contain invalid data. Red headers and cells indicate errors.`,
+            'warning',
+          );
+        } else {
+          this.notificationService.showNotification(
+            `Successfully loaded ${allProcessed.length.toLocaleString()} rows with all valid data!`,
+            'success',
+          );
+        }
+
+        if (this.importDataGrid && this.importDataGrid.instance) {
+          this.importDataGrid.instance.refresh();
+        }
+      }
+    };
+
+    // Kick off first chunk
+    setTimeout(processNextChunk, 0);
   };
 
-  validateImportRow = (item: ImportedMultiplierRow) => {
+  validateSingleImportRow = (
+    item: ImportedMultiplierRow,
+    facilityMap?: Map<string, any>,
+    receiverMap?: Map<string, any>,
+    categoryMap?: Map<string, any>,
+  ) => {
     // 1. Facility validation
     const facVal = String(item.Facility || '').trim();
     if (!facVal) {
@@ -1225,19 +1336,18 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       item.facilityError = 'Facility is required';
       item.FacilityID = '';
     } else {
-      const facMatch = this.facilityList.find((f: any) => {
-        const lic = String(f.FacilityLicense || '')
-          .trim()
-          .toLowerCase();
-        const id = String(f.FacilityID || '')
-          .trim()
-          .toLowerCase();
-        const name = String(f.FacilityName || '')
-          .trim()
-          .toLowerCase();
-        const target = facVal.toLowerCase();
-        return lic === target || id === target || name === target;
-      });
+      let facMatch: any;
+      if (facilityMap) {
+        facMatch = facilityMap.get(facVal.toLowerCase());
+      } else {
+        facMatch = this.facilityList.find((f: any) => {
+          const lic = String(f.FacilityLicense || '').trim().toLowerCase();
+          const id = String(f.FacilityID || '').trim().toLowerCase();
+          const name = String(f.FacilityName || '').trim().toLowerCase();
+          const target = facVal.toLowerCase();
+          return lic === target || id === target || name === target;
+        });
+      }
 
       if (facMatch) {
         item.isValidFacility = true;
@@ -1257,14 +1367,18 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       item.receiverError = '';
       item.ReceiverID = 0;
     } else {
-      const recMatch = this.receiverDataSource.find((r: any) => {
-        const id = String(r.ID ?? '').trim();
-        const desc = String(r.DESCRIPTION ?? '')
-          .trim()
-          .toLowerCase();
-        const target = recVal.toLowerCase();
-        return id === target || desc === target;
-      });
+      let recMatch: any;
+      if (receiverMap) {
+        recMatch =
+          receiverMap.get(recVal) || receiverMap.get(recVal.toLowerCase());
+      } else {
+        recMatch = this.receiverDataSource.find((r: any) => {
+          const id = String(r.ID ?? '').trim();
+          const desc = String(r.DESCRIPTION ?? '').trim().toLowerCase();
+          const target = recVal.toLowerCase();
+          return id === target || desc === target;
+        });
+      }
 
       if (recMatch) {
         item.isValidReceiver = true;
@@ -1284,14 +1398,18 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       item.isValidCategory = true;
       item.serviceCategoryError = '';
     } else {
-      const catMatch = this.serviceCategoryDataSource.find((c: any) => {
-        const id = String(c.ID ?? '').trim();
-        const desc = String(c.DESCRIPTION ?? '')
-          .trim()
-          .toLowerCase();
-        const target = catVal.toLowerCase();
-        return id === target || desc === target;
-      });
+      let catMatch: any;
+      if (categoryMap) {
+        catMatch =
+          categoryMap.get(catVal) || categoryMap.get(catVal.toLowerCase());
+      } else {
+        catMatch = this.serviceCategoryDataSource.find((c: any) => {
+          const id = String(c.ID ?? '').trim();
+          const desc = String(c.DESCRIPTION ?? '').trim().toLowerCase();
+          const target = catVal.toLowerCase();
+          return id === target || desc === target;
+        });
+      }
 
       if (catMatch) {
         item.isValidCategory = true;
@@ -1353,6 +1471,71 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       !item.isValidMultiplier;
   };
 
+  calculateColumnErrors = () => {
+    this.columnErrors = {
+      Facility: false,
+      Receiver: false,
+      ServiceCategory: false,
+      CPT: false,
+      Multiplier: false,
+    };
+    this.columnErrorCounts = {
+      Facility: 0,
+      Receiver: 0,
+      ServiceCategory: 0,
+      CPT: 0,
+      Multiplier: 0,
+    };
+
+    let invalidCount = 0;
+    for (const r of this.importedGridData) {
+      if (r.hasError) {
+        invalidCount++;
+      }
+      if (!r.isValidFacility) {
+        this.columnErrors.Facility = true;
+        this.columnErrorCounts.Facility++;
+      }
+      if (!r.isValidReceiver) {
+        this.columnErrors.Receiver = true;
+        this.columnErrorCounts.Receiver++;
+      }
+      if (!r.isValidCategory) {
+        this.columnErrors.ServiceCategory = true;
+        this.columnErrorCounts.ServiceCategory++;
+      }
+      if (!r.isValidCpt) {
+        this.columnErrors.CPT = true;
+        this.columnErrorCounts.CPT++;
+      }
+      if (!r.isValidMultiplier) {
+        this.columnErrors.Multiplier = true;
+        this.columnErrorCounts.Multiplier++;
+      }
+    }
+
+    this.totalInvalidRowsCount = invalidCount;
+    this.hasImportErrors = invalidCount > 0;
+  };
+
+  updateDisplayedImportData = () => {
+    if (this.showOnlyInvalidRows) {
+      this.displayedImportGridData = this.importedGridData.filter(
+        (r) => r.hasError,
+      );
+    } else {
+      this.displayedImportGridData = this.importedGridData;
+    }
+  };
+
+  onShowOnlyInvalidRowsChanged = (e: any) => {
+    this.showOnlyInvalidRows = !!e.value;
+    this.updateDisplayedImportData();
+    if (this.importDataGrid && this.importDataGrid.instance) {
+      this.importDataGrid.instance.refresh();
+    }
+  };
+
   getCellErrorMessage = (
     row: ImportedMultiplierRow,
     dataField: string,
@@ -1376,13 +1559,29 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     if (dataField === 'Multiplier' && !row.isValidMultiplier) {
       return (
         row.multiplierError ||
-        'Multiplier is required and must be greater than 0'
+        'Multiplier is required and must be a number greater than 0'
       );
     }
     return '';
   };
 
   onImportCellPrepared = (e: any) => {
+    // Header styling when column contains invalid values
+    if (e.rowType === 'header') {
+      const field = e.column?.dataField;
+      if (field && this.columnErrors[field]) {
+        e.cellElement.classList.add('header-has-error');
+        e.cellElement.setAttribute(
+          'title',
+          `This column contains ${this.columnErrorCounts[field]} invalid value(s). Click or filter to view.`,
+        );
+      } else {
+        e.cellElement.classList.remove('header-has-error');
+        e.cellElement.removeAttribute('title');
+      }
+      return;
+    }
+
     if (e.rowType === 'data') {
       const row = e.data;
       if (!row) return;
@@ -1420,10 +1619,13 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     this.cellTooltipVisible = false;
   };
 
+ 
+
   saveImportedData = async () => {
     // Re-check all rows
-    this.importedGridData.forEach((row) => this.validateImportRow(row));
-    this.hasImportErrors = this.importedGridData.some((r) => r.hasError);
+    this.importedGridData.forEach((row) => this.validateSingleImportRow(row));
+    this.calculateColumnErrors();
+    this.updateDisplayedImportData();
 
     if (this.hasImportErrors) {
       this.notificationService.showNotification(
@@ -1505,6 +1707,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
           );
           this.importPopupVisible = false;
           this.importedGridData = [];
+          this.displayedImportGridData = [];
           this.fetch_Facility_multiplier_list();
         } else {
           this.notificationService.showNotification(
