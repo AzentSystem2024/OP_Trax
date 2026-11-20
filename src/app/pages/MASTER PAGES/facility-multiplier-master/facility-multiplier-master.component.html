@@ -18,7 +18,7 @@
       allowAdding: isEditingEnabled,
       allowDeleting: isEditingEnabled,
       startEditAction: isEditingEnabled ? 'click' : 'dblClick',
-      newRowPosition: 'first',
+      newRowPosition: 'last',
     }"
     height="82vh"
     (onEditorPreparing)="onEditorPreparing($event)"
@@ -169,6 +169,12 @@
         displayExpr: 'DESCRIPTION',
       }"
     >
+      <dxi-validation-rule
+        type="custom"
+        [validationCallback]="validateServiceCategoryOrCpt"
+        message="Either Service Category or CPT is required when Multiplier is greater than 0"
+        [reevaluate]="true"
+      ></dxi-validation-rule>
     </dxi-column>
 
     <dxi-column
@@ -181,6 +187,12 @@
         type="stringLength"
         [max]="50"
         message="CPT must not exceed 50 characters"
+      ></dxi-validation-rule>
+      <dxi-validation-rule
+        type="custom"
+        [validationCallback]="validateServiceCategoryOrCpt"
+        message="Either Service Category or CPT is required when Multiplier is greater than 0"
+        [reevaluate]="true"
       ></dxi-validation-rule>
     </dxi-column>
 
