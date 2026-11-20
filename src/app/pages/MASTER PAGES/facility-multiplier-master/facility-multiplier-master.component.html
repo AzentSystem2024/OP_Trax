@@ -98,6 +98,14 @@
         locateInMenu="auto"
         showText="inMenu"
         widget="dxButton"
+        [options]="importButtonOptions"
+      ></dxi-item>
+
+      <dxi-item
+        location="after"
+        locateInMenu="auto"
+        showText="inMenu"
+        widget="dxButton"
         [options]="editButtonOptions"
       ></dxi-item>
 
@@ -232,4 +240,138 @@
       [visible]="isFilterRowVisible || isFilterApplied"
     ></dxo-filter-panel>
   </dx-data-grid>
+
+  <!-- =========== Import Multipliers Popup =========== -->
+  <dx-popup
+    [(visible)]="importPopupVisible"
+    [width]="'88%'"
+    [height]="'85vh'"
+    title="Import Facility Multipliers"
+    [showCloseButton]="true"
+    (onHiding)="onImportPopupHiding()"
+  >
+    <div class="import-popup-container">
+      <div class="import-actions-bar">
+        <div class="left-actions">
+          <dx-button
+            text="Download Template"
+            icon="download"
+            stylingMode="contained"
+            type="default"
+            hint="Download Excel template with required columns"
+            (onClick)="downloadImportTemplate()"
+          ></dx-button>
+          <dx-button
+            text="Import Excel File"
+            icon="import"
+            stylingMode="contained"
+            type="default"
+            hint="Select Excel file (.xlsx, .xls, .csv) to import"
+            (onClick)="triggerFileInput()"
+          ></dx-button>
+          <input
+            #importFileInput
+            type="file"
+            accept=".xlsx, .xls, .csv"
+            style="display: none"
+            (change)="onImportFileSelected($event)"
+          />
+          <span *ngIf="importedFileName" class="file-name-label">
+            <strong>File:</strong> {{ importedFileName }}
+          </span>
+        </div>
+
+        <div class="right-actions">
+          <span *ngIf="hasImportErrors" class="error-badge">
+            <i class="dx-icon-warning"></i> Some cells contain invalid data.
+            Hover over red cells to view details.
+          </span>
+          <dx-button
+            text="Save"
+            icon="save"
+            stylingMode="contained"
+            type="success"
+            [disabled]="hasImportErrors || importedGridData.length === 0"
+            hint="Save valid imported multiplier data"
+            (onClick)="saveImportedData()"
+          ></dx-button>
+          <dx-button
+            text="Close"
+            icon="close"
+            stylingMode="outlined"
+            type="normal"
+            (onClick)="closeImportPopup()"
+          ></dx-button>
+        </div>
+      </div>
+
+      <dx-data-grid
+        #importDataGrid
+        [dataSource]="importedGridData"
+        [showBorders]="true"
+        [rowAlternationEnabled]="true"
+        height="calc(85vh - 160px)"
+        (onCellPrepared)="onImportCellPrepared($event)"
+        (onCellClick)="onImportCellClick($event)"
+      >
+        <dxo-paging [pageSize]="15"></dxo-paging>
+        <dxo-pager
+          [visible]="true"
+          [allowedPageSizes]="[10, 15, 25,'all']"
+          [showPageSizeSelector]="true"
+          [showInfo]="true"
+        ></dxo-pager>
+        
+
+        <dxi-column
+          dataField="Facility"
+          caption="Facility"
+          alignment="center"
+        ></dxi-column>
+
+        <dxi-column
+          dataField="Receiver"
+          caption="Receiver"
+          alignment="center"
+        ></dxi-column>
+
+        <dxi-column
+          dataField="ServiceCategory"
+          caption="Service Category"
+          alignment="center"
+        ></dxi-column>
+
+        <dxi-column
+          dataField="CPT"
+          caption="CPT"
+          alignment="center"
+        ></dxi-column>
+
+        <dxi-column
+          dataField="Multiplier"
+          caption="Multiplier"
+          dataType="number"
+          format="#,##0.00"
+          alignment="center"
+        ></dxi-column>
+      </dx-data-grid>
+
+      <!-- Tooltip styled like DevExtreme required validator message -->
+      <dx-tooltip
+        [target]="clickedCellElement"
+        [(visible)]="cellTooltipVisible"
+        position="top"
+        [closeOnOutsideClick]="true"
+        wrapperAttr="{ class: 'import-error-tooltip' }"
+      >
+        <div
+          *dxTemplate="let data of 'content'"
+          class="dx-invalid-message-content"
+        >
+          <i class="dx-icon-warning error-icon"></i>
+          <span>{{ clickedCellErrorMessage }}</span>
+        </div>
+      </dx-tooltip>
+    </div>
+  </dx-popup>
 </div>

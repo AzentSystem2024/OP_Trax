@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  NgModule,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   DxButtonModule,
@@ -13,11 +19,42 @@ import {
   DxCheckBoxModule,
   DxLoadPanelModule,
   DxTextBoxModule,
+  DxTooltipModule,
 } from 'devextreme-angular';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../master-report.service';
+import * as XLSX from 'xlsx';
+import { forkJoin } from 'rxjs';
+
+export interface ImportedMultiplierRow {
+  SerialNumber?: number;
+  Facility: string;
+  FacilityID: string;
+  isValidFacility: boolean;
+  facilityError?: string;
+
+  Receiver: string;
+  ReceiverID: number;
+  isValidReceiver: boolean;
+  receiverError?: string;
+
+  ServiceCategory: string;
+  ServiceCategoryID: number;
+  isValidCategory: boolean;
+  serviceCategoryError?: string;
+
+  CPT: string;
+  isValidCpt: boolean;
+  cptError?: string;
+
+  Multiplier: any;
+  isValidMultiplier: boolean;
+  multiplierError?: string;
+
+  hasError: boolean;
+}
 
 @Component({
   selector: 'app-facility-multiplier-master',
@@ -31,6 +68,12 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
 
   @ViewChild('historyGrid', { static: false })
   historyGrid!: DxDataGridComponent;
+
+  @ViewChild('importDataGrid', { static: false })
+  importDataGrid!: DxDataGridComponent;
+
+  @ViewChild('importFileInput', { static: false })
+  importFileInput!: ElementRef;
 
   readonly allowedPageSizes: any = [5, 10, 'all'];
 
@@ -54,6 +97,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
   saveButtonOptions: any;
   editButtonOptions: any;
   addRowButtonOptions: any;
+  importButtonOptions: any;
   facilitySelectOptions: any;
 
   cptPriceData: any = [];
@@ -70,6 +114,15 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
   receiverDataSource: any[] = [];
   serviceCategoryDataSource: any[] = [];
 
+  // Import Popup properties
+  importPopupVisible: boolean = false;
+  importedGridData: ImportedMultiplierRow[] = [];
+  importedFileName: string = '';
+  hasImportErrors: boolean = false;
+  clickedCellElement: any = null;
+  clickedCellErrorMessage: string = '';
+  cellTooltipVisible: boolean = false;
+
   constructor(
     private masterService: MasterReportService,
     private service: ReportService,
@@ -85,7 +138,24 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
           ? !this.menuPrevilage.CanEdit && !this.menuPrevilage.CanAdd
           : false;
       }
+      if (this.importButtonOptions) {
+        this.importButtonOptions.disabled = this.menuPrevilage
+          ? !this.menuPrevilage.CanEdit && !this.menuPrevilage.CanAdd
+          : false;
+      }
     });
+
+    this.importButtonOptions = {
+      text: 'Import',
+      icon: 'import',
+      hint: 'Import Facility Multipliers from Excel',
+      stylingMode: 'text',
+      elementAttr: { class: 'commonButtons' },
+      disabled: this.menuPrevilage
+        ? !this.menuPrevilage.CanEdit && !this.menuPrevilage.CanAdd
+        : false,
+      onClick: () => this.openImportPopup(),
+    };
 
     this.saveButtonOptions = {
       class: 'ms-2',
@@ -955,6 +1025,505 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       });
     }
   }
+
+  // ====== Import Functionality ======
+  openImportPopup = () => {
+    this.importPopupVisible = true;
+    this.importedGridData = [];
+    this.importedFileName = '';
+    this.hasImportErrors = false;
+    this.cellTooltipVisible = false;
+    this.clickedCellElement = null;
+    this.clickedCellErrorMessage = '';
+  };
+
+  closeImportPopup = () => {
+    this.importPopupVisible = false;
+    this.cellTooltipVisible = false;
+  };
+
+  onImportPopupHiding = () => {
+    this.importedGridData = [];
+    this.importedFileName = '';
+    this.hasImportErrors = false;
+    this.cellTooltipVisible = false;
+    this.clickedCellElement = null;
+    this.clickedCellErrorMessage = '';
+    if (this.importFileInput?.nativeElement) {
+      this.importFileInput.nativeElement.value = '';
+    }
+  };
+
+  triggerFileInput = () => {
+    if (this.importFileInput?.nativeElement) {
+      this.importFileInput.nativeElement.click();
+    }
+  };
+
+  downloadImportTemplate = () => {
+    const headers = [
+      'Facility',
+      'Receiver',
+      'Service Category',
+      'CPT',
+      'Multiplier',
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet([headers]);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Facility Multiplier');
+    XLSX.writeFile(workbook, 'Facility_Multiplier_Template.xlsx');
+  };
+
+  onImportFileSelected = (event: any) => {
+    const file = event.target?.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    this.importedFileName = file.name;
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const rawJson: any[] = XLSX.utils.sheet_to_json(worksheet, {
+          defval: '',
+        });
+
+        if (!rawJson || rawJson.length === 0) {
+          this.notificationService.showNotification(
+            'The selected Excel file is empty or has no data rows',
+            'warning',
+          );
+          return;
+        }
+
+        this.processImportedData(rawJson);
+      } catch (err) {
+        console.error('Error processing Excel file:', err);
+        this.notificationService.showNotification(
+          'Failed to read Excel file. Please ensure it is a valid .xlsx or .xls file',
+          'error',
+        );
+      } finally {
+        if (this.importFileInput?.nativeElement) {
+          this.importFileInput.nativeElement.value = '';
+        }
+      }
+    };
+
+    reader.readAsArrayBuffer(file);
+  };
+
+  processImportedData = (rawJson: any[]) => {
+    const processed: ImportedMultiplierRow[] = [];
+
+    const getVal = (row: any, ...keys: string[]) => {
+      const rowKeys = Object.keys(row);
+      for (const k of keys) {
+        const normK = k.toLowerCase().replace(/[\s_-]/g, '');
+        const matchedKey = rowKeys.find(
+          (rk) => rk.toLowerCase().replace(/[\s_-]/g, '') === normK,
+        );
+        if (matchedKey && row[matchedKey] !== undefined) {
+          return String(row[matchedKey]).trim();
+        }
+      }
+      return '';
+    };
+
+    rawJson.forEach((row: any, idx: number) => {
+      const facRaw = getVal(
+        row,
+        'Facility',
+        'FacilityID',
+        'FacilityLicense',
+        'FacilityName',
+      );
+      const recRaw = getVal(row, 'Receiver', 'ReceiverID', 'ReceiverName');
+      const catRaw = getVal(
+        row,
+        'Service Category',
+        'ServiceCategory',
+        'ServiceCategoryID',
+        'ServiceCode',
+        'Category',
+      );
+      const cptRaw = getVal(row, 'CPT', 'CPTCode', 'CPT Code');
+      const multRaw = getVal(row, 'Multiplier', 'MultiplierValue');
+
+      // Skip completely blank rows
+      if (!facRaw && !recRaw && !catRaw && !cptRaw && !multRaw) {
+        return;
+      }
+
+      const item: ImportedMultiplierRow = {
+        SerialNumber: idx + 1,
+        Facility: facRaw,
+        FacilityID: '',
+        isValidFacility: false,
+        facilityError: '',
+
+        Receiver: recRaw,
+        ReceiverID: 0,
+        isValidReceiver: false,
+        receiverError: '',
+
+        ServiceCategory: catRaw,
+        ServiceCategoryID: 0,
+        isValidCategory: false,
+        serviceCategoryError: '',
+
+        CPT: cptRaw,
+        isValidCpt: false,
+        cptError: '',
+
+        Multiplier: multRaw ? Number(multRaw) : null,
+        isValidMultiplier: false,
+        multiplierError: '',
+
+        hasError: false,
+      };
+
+      this.validateImportRow(item);
+      processed.push(item);
+    });
+
+    if (processed.length === 0) {
+      this.notificationService.showNotification(
+        'No valid rows found in the file',
+        'warning',
+      );
+      return;
+    }
+
+    this.importedGridData = processed;
+    this.hasImportErrors = this.importedGridData.some((r) => r.hasError);
+
+    if (this.hasImportErrors) {
+      this.notificationService.showNotification(
+        'Some rows contain invalid data. Red cells indicate errors; hover over them to view details.',
+        'warning',
+      );
+    } else {
+      this.notificationService.showNotification(
+        `Successfully loaded ${processed.length} rows with all valid data!`,
+        'success',
+      );
+    }
+  };
+
+  validateImportRow = (item: ImportedMultiplierRow) => {
+    // 1. Facility validation
+    const facVal = String(item.Facility || '').trim();
+    if (!facVal) {
+      item.isValidFacility = false;
+      item.facilityError = 'Facility is required';
+      item.FacilityID = '';
+    } else {
+      const facMatch = this.facilityList.find((f: any) => {
+        const lic = String(f.FacilityLicense || '')
+          .trim()
+          .toLowerCase();
+        const id = String(f.FacilityID || '')
+          .trim()
+          .toLowerCase();
+        const name = String(f.FacilityName || '')
+          .trim()
+          .toLowerCase();
+        const target = facVal.toLowerCase();
+        return lic === target || id === target || name === target;
+      });
+
+      if (facMatch) {
+        item.isValidFacility = true;
+        item.facilityError = '';
+        item.FacilityID = facMatch.FacilityLicense;
+      } else {
+        item.isValidFacility = false;
+        item.facilityError = `Facility '${facVal}' is not available in the system`;
+        item.FacilityID = '';
+      }
+    }
+
+    // 2. Receiver validation (Optional: can be empty, 0, or matched)
+    const recVal = String(item.Receiver || '').trim();
+    if (!recVal || recVal === '0') {
+      item.isValidReceiver = true;
+      item.receiverError = '';
+      item.ReceiverID = 0;
+    } else {
+      const recMatch = this.receiverDataSource.find((r: any) => {
+        const id = String(r.ID ?? '').trim();
+        const desc = String(r.DESCRIPTION ?? '')
+          .trim()
+          .toLowerCase();
+        const target = recVal.toLowerCase();
+        return id === target || desc === target;
+      });
+
+      if (recMatch) {
+        item.isValidReceiver = true;
+        item.receiverError = '';
+        item.ReceiverID = Number(recMatch.ID);
+      } else {
+        item.isValidReceiver = false;
+        item.receiverError = `Receiver '${recVal}' is not available in the system`;
+        item.ReceiverID = 0;
+      }
+    }
+
+    // 3. Service Category validation (Optional if CPT is present)
+    const catVal = String(item.ServiceCategory || '').trim();
+    if (!catVal || catVal === '0') {
+      item.ServiceCategoryID = 0;
+      item.isValidCategory = true;
+      item.serviceCategoryError = '';
+    } else {
+      const catMatch = this.serviceCategoryDataSource.find((c: any) => {
+        const id = String(c.ID ?? '').trim();
+        const desc = String(c.DESCRIPTION ?? '')
+          .trim()
+          .toLowerCase();
+        const target = catVal.toLowerCase();
+        return id === target || desc === target;
+      });
+
+      if (catMatch) {
+        item.isValidCategory = true;
+        item.serviceCategoryError = '';
+        item.ServiceCategoryID = Number(catMatch.ID);
+      } else {
+        item.isValidCategory = false;
+        item.serviceCategoryError = `Service Category '${catVal}' is not available in the system`;
+        item.ServiceCategoryID = 0;
+      }
+    }
+
+    // 4. CPT validation & combined rule with Service Category
+    const cptVal = String(item.CPT || '').trim();
+    if (cptVal.length > 50) {
+      item.isValidCpt = false;
+      item.cptError = 'CPT must not exceed 50 characters';
+    } else {
+      item.isValidCpt = true;
+      item.cptError = '';
+    }
+
+    // Combined rule: If Multiplier > 0, either Service Category or CPT is mandatory!
+    const hasCategory = item.ServiceCategoryID > 0;
+    const hasCpt = !!cptVal;
+    if (!hasCategory && !hasCpt) {
+      item.isValidCategory = false;
+      item.serviceCategoryError =
+        'Either Service Category or CPT is required when Multiplier is greater than 0';
+      item.isValidCpt = false;
+      item.cptError =
+        'Either Service Category or CPT is required when Multiplier is greater than 0';
+    }
+
+    // 5. Multiplier validation
+    const multVal = Number(item.Multiplier);
+    if (
+      item.Multiplier === null ||
+      item.Multiplier === undefined ||
+      item.Multiplier === '' ||
+      isNaN(multVal) ||
+      multVal <= 0
+    ) {
+      item.isValidMultiplier = false;
+      item.multiplierError =
+        'Multiplier is required and must be a number greater than 0';
+    } else {
+      item.isValidMultiplier = true;
+      item.multiplierError = '';
+      item.Multiplier = multVal;
+    }
+
+    // Summary flag
+    item.hasError =
+      !item.isValidFacility ||
+      !item.isValidReceiver ||
+      !item.isValidCategory ||
+      !item.isValidCpt ||
+      !item.isValidMultiplier;
+  };
+
+  getCellErrorMessage = (
+    row: ImportedMultiplierRow,
+    dataField: string,
+  ): string => {
+    if (!row || !dataField) return '';
+    if (dataField === 'Facility' && !row.isValidFacility) {
+      return row.facilityError || 'Facility is not available in the system';
+    }
+    if (dataField === 'Receiver' && !row.isValidReceiver) {
+      return row.receiverError || 'Receiver is not available in the system';
+    }
+    if (dataField === 'ServiceCategory' && !row.isValidCategory) {
+      return (
+        row.serviceCategoryError ||
+        'Service Category is not available in the system'
+      );
+    }
+    if (dataField === 'CPT' && !row.isValidCpt) {
+      return row.cptError || 'CPT is invalid';
+    }
+    if (dataField === 'Multiplier' && !row.isValidMultiplier) {
+      return (
+        row.multiplierError ||
+        'Multiplier is required and must be greater than 0'
+      );
+    }
+    return '';
+  };
+
+  onImportCellPrepared = (e: any) => {
+    if (e.rowType === 'data') {
+      const row = e.data;
+      if (!row) return;
+
+      const errorMsg = this.getCellErrorMessage(row, e.column?.dataField);
+
+      if (errorMsg) {
+        e.cellElement.style.backgroundColor = '#ffebee';
+        e.cellElement.style.border = '2px solid #ef5350';
+        e.cellElement.style.color = '#c62828';
+        e.cellElement.style.fontWeight = '600';
+        e.cellElement.style.cursor = 'pointer';
+        e.cellElement.setAttribute('title', errorMsg);
+      } else {
+        e.cellElement.style.backgroundColor = '';
+        e.cellElement.style.border = '';
+        e.cellElement.style.color = '';
+        e.cellElement.style.fontWeight = '';
+        e.cellElement.style.cursor = '';
+        e.cellElement.removeAttribute('title');
+      }
+    }
+  };
+
+  onImportCellClick = (e: any) => {
+    if (e.rowType === 'data' && e.data && e.column?.dataField) {
+      const errorMsg = this.getCellErrorMessage(e.data, e.column.dataField);
+      if (errorMsg) {
+        this.clickedCellElement = e.cellElement;
+        this.clickedCellErrorMessage = errorMsg;
+        this.cellTooltipVisible = true;
+        return;
+      }
+    }
+    this.cellTooltipVisible = false;
+  };
+
+  saveImportedData = async () => {
+    // Re-check all rows
+    this.importedGridData.forEach((row) => this.validateImportRow(row));
+    this.hasImportErrors = this.importedGridData.some((r) => r.hasError);
+
+    if (this.hasImportErrors) {
+      this.notificationService.showNotification(
+        'Please correct all invalid/red cells before saving',
+        'warning',
+      );
+      return;
+    }
+
+    if (!this.importedGridData || this.importedGridData.length === 0) {
+      this.notificationService.showNotification(
+        'No data to save. Please upload an Excel file first',
+        'warning',
+      );
+      return;
+    }
+
+    // Check for duplicate entries
+    const seen = new Set<string>();
+    for (let i = 0; i < this.importedGridData.length; i++) {
+      const row = this.importedGridData[i];
+      const dupKey = `${row.FacilityID}_${row.ReceiverID}_${row.ServiceCategoryID}_${String(
+        row.CPT || '',
+      )
+        .trim()
+        .toUpperCase()}`;
+      if (seen.has(dupKey)) {
+        this.notificationService.showNotification(
+          `Row ${i + 1}: Duplicate entry found for the same Facility, Receiver, Service Category, and CPT`,
+          'warning',
+        );
+        return;
+      }
+      seen.add(dupKey);
+    }
+
+    // Group rows by FacilityID
+    const facilityMap = new Map<string, any[]>();
+    for (const row of this.importedGridData) {
+      const facId = String(row.FacilityID);
+      if (!facilityMap.has(facId)) {
+        facilityMap.set(facId, []);
+      }
+      facilityMap.get(facId)!.push({
+        ReceiverID: row.ReceiverID != null ? Number(row.ReceiverID) : 0,
+        ServiceCategoryID:
+          row.ServiceCategoryID != null ? Number(row.ServiceCategoryID) : 0,
+        CPT: String(row.CPT || '').trim(),
+        Multiplier: Number(row.Multiplier),
+      });
+    }
+
+    this.showLoading('Saving Imported Data...');
+
+    const requests = Array.from(facilityMap.entries()).map(([facId, data]) => {
+      return this.masterService.Insert_Facility_Multiplier_Data({
+        FacilityID: facId,
+        data: data,
+      });
+    });
+
+    forkJoin(requests).subscribe({
+      next: (responses: any[]) => {
+        this.hideLoading();
+        const allSuccessful = responses.every(
+          (res: any) =>
+            res &&
+            (res.flag === '1' ||
+              res.flag === 'true' ||
+              res.flag === true ||
+              res.message === 'Success' ||
+              res.status === 'success'),
+        );
+
+        if (allSuccessful) {
+          this.notificationService.showNotification(
+            `Successfully imported ${this.importedGridData.length} records!`,
+            'success',
+          );
+          this.importPopupVisible = false;
+          this.importedGridData = [];
+          this.fetch_Facility_multiplier_list();
+        } else {
+          this.notificationService.showNotification(
+            'Some records could not be saved. Please check the data and try again',
+            'warning',
+          );
+          this.fetch_Facility_multiplier_list();
+        }
+      },
+      error: (err: any) => {
+        this.hideLoading();
+        console.error('Error saving imported multipliers:', err);
+        this.notificationService.showNotification(
+          'An error occurred while saving the imported data',
+          'error',
+        );
+      },
+    });
+  };
 }
 
 @NgModule({
@@ -970,6 +1539,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     DxCheckBoxModule,
     DxLoadPanelModule,
     DxTextBoxModule,
+    DxTooltipModule,
   ],
   declarations: [FacilityMultiplierMasterComponent],
 })
