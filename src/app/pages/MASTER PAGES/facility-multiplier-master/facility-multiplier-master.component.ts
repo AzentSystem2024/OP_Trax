@@ -341,6 +341,8 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       });
   }
 
+  isAutoAddingRow: boolean = false;
+
   onEditorPreparing(e: any) {
     if (!this.isEditingEnabled) {
       e.cancel = true;
@@ -349,7 +351,180 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     if (e.parentType === 'dataRow' && e.dataField === 'NewEffectFrom') {
       delete e.editorOptions.min;
     }
+
+    const monitoredFields = [
+      'ReceiverID',
+      'ServiceCategoryID',
+      'CPT',
+      'Multiplier',
+    ];
+    if (e.parentType === 'dataRow' && monitoredFields.includes(e.dataField)) {
+      const field = e.dataField;
+
+      const origOnValueChanged = e.editorOptions.onValueChanged;
+      e.editorOptions.onValueChanged = (args: any) => {
+        if (origOnValueChanged) {
+          origOnValueChanged(args);
+        }
+        if (e.row?.data) {
+          e.row.data[field] = args.value;
+          e.row.data.IsModified = true;
+        }
+      };
+
+      const origOnKeyDown = e.editorOptions.onKeyDown;
+      e.editorOptions.onKeyDown = (args: any) => {
+        if (origOnKeyDown) {
+          origOnKeyDown(args);
+        }
+        if (args.event?.key === 'Enter') {
+          const val = args.component?.option('value');
+          this.handleRowEntryCompleted(e.row?.data, field, val);
+        }
+      };
+
+      const origOnEnterKey = e.editorOptions.onEnterKey;
+      e.editorOptions.onEnterKey = (args: any) => {
+        if (origOnEnterKey) {
+          origOnEnterKey(args);
+        }
+        const val = args.component?.option('value');
+        this.handleRowEntryCompleted(e.row?.data, field, val);
+      };
+
+      const origOnFocusOut = e.editorOptions.onFocusOut;
+      e.editorOptions.onFocusOut = (args: any) => {
+        if (origOnFocusOut) {
+          origOnFocusOut(args);
+        }
+        const val = args.component?.option('value');
+        this.handleRowEntryCompleted(e.row?.data, field, val);
+      };
+    }
   }
+
+  validateMultiplierPositive = (e: any) => {
+    if (e.value === null || e.value === undefined || e.value === '') {
+      return true; // handled by 'required' validation rule
+    }
+    const val = Number(e.value);
+    return !isNaN(val) && val > 0;
+  };
+
+  validateServiceCategoryOrCpt = (e: any) => {
+    const row = e.data || {};
+    const multiplier = Number(row.Multiplier);
+
+    if (isNaN(multiplier) || multiplier <= 0) {
+      return true;
+    }
+
+    if (
+      e.value != null &&
+      e.value !== '' &&
+      String(e.value).trim() !== '' &&
+      (!e.column ||
+        e.column.dataField !== 'ServiceCategoryID' ||
+        Number(e.value) > 0)
+    ) {
+      return true;
+    }
+
+    const hasCategory =
+      row.ServiceCategoryID != null &&
+      row.ServiceCategoryID !== '' &&
+      Number(row.ServiceCategoryID) > 0;
+    const hasCpt = !!String(row.CPT || '').trim();
+
+    return hasCategory || hasCpt;
+  };
+
+  validateMultiplierRequiresCategoryOrCpt = (e: any) => {
+    const mult = Number(e.value);
+    if (isNaN(mult) || mult <= 0) {
+      return true;
+    }
+
+    const row = e.data || {};
+    const hasCategory =
+      row.ServiceCategoryID != null &&
+      row.ServiceCategoryID !== '' &&
+      Number(row.ServiceCategoryID) > 0;
+    const hasCpt = !!String(row.CPT || '').trim();
+
+    return hasCategory || hasCpt;
+  };
+
+  handleRowEntryCompleted = async (
+    rowData: any,
+    field?: string,
+    fieldVal?: any,
+  ) => {
+    if (this.isAutoAddingRow || !this.isEditingEnabled) {
+      return;
+    }
+
+    if (rowData && field && fieldVal !== undefined) {
+      rowData[field] = fieldVal;
+    }
+
+    const mult = Number(rowData?.Multiplier);
+    const hasMultiplier = !isNaN(mult) && mult > 0;
+    const hasCategory =
+      rowData?.ServiceCategoryID != null &&
+      rowData?.ServiceCategoryID !== '' &&
+      Number(rowData?.ServiceCategoryID) > 0;
+    const hasCpt = !!String(rowData?.CPT || '').trim();
+
+    // Row is complete ONLY when Multiplier > 0 AND (ServiceCategoryID > 0 OR non-empty CPT)
+    if (!hasMultiplier || (!hasCategory && !hasCpt)) {
+      // Row not yet complete, user is still entering other fields.
+      // Do not add row or show premature warning toast.
+      return;
+    }
+
+    this.isAutoAddingRow = true;
+
+    try {
+      if (this.cptPriceGrid && this.cptPriceGrid.instance) {
+        await this.cptPriceGrid.instance.saveEditData();
+      }
+
+      // Check if top row is already an empty row
+      const gridItems =
+        this.cptPriceGrid?.instance?.getDataSource()?.items() || [];
+      const store: any = this.cptPriceGrid?.instance?.getDataSource()?.store();
+      const storeArray = (store as any)?._array || [];
+      const localData = Array.isArray(this.cptPriceData)
+        ? this.cptPriceData
+        : [];
+
+      const topItem = gridItems[0] || storeArray[0] || localData[0];
+      const topRowIsBlank =
+        topItem &&
+        (topItem.Multiplier == null ||
+          topItem.Multiplier === '' ||
+          Number(topItem.Multiplier) <= 0) &&
+        !String(topItem.CPT || '').trim() &&
+        (topItem.ServiceCategoryID == null ||
+          topItem.ServiceCategoryID === '' ||
+          Number(topItem.ServiceCategoryID) <= 0);
+
+      if (!topRowIsBlank) {
+        await this.addNewRow();
+      }
+    } catch (err) {
+      console.error('Error auto-adding row:', err);
+    } finally {
+      setTimeout(() => {
+        this.isAutoAddingRow = false;
+      }, 500);
+    }
+  };
+
+  handleMultiplierCompleted = (rowData: any, multiplierVal?: any) => {
+    return this.handleRowEntryCompleted(rowData, 'Multiplier', multiplierVal);
+  };
 
   onCellClick = (e: any) => {
     if (!this.isEditingEnabled && e.rowType === 'data') {
@@ -548,9 +723,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     const storeArray = (store as any)?._array || [];
     const gridItems =
       this.cptPriceGrid?.instance?.getDataSource()?.items() || [];
-    const localData = Array.isArray(this.cptPriceData)
-      ? this.cptPriceData
-      : [];
+    const localData = Array.isArray(this.cptPriceData) ? this.cptPriceData : [];
 
     const all = [...localData, ...storeArray, ...gridItems];
     all.forEach((item: any) => {
@@ -607,16 +780,22 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     }
 
     const validRows = items.filter((row: any) => {
-      const hasReceiver = row.ReceiverID != null && row.ReceiverID !== '';
       const hasCategory =
-        row.ServiceCategoryID != null && row.ServiceCategoryID !== '';
+        row.ServiceCategoryID != null &&
+        row.ServiceCategoryID !== '' &&
+        Number(row.ServiceCategoryID) > 0;
       const hasCpt = !!String(row.CPT || '').trim();
       const hasMultiplier =
         row.Multiplier !== null &&
         row.Multiplier !== undefined &&
         row.Multiplier !== '' &&
-        !isNaN(Number(row.Multiplier));
-      return hasReceiver || hasCategory || hasCpt || hasMultiplier;
+        !isNaN(Number(row.Multiplier)) &&
+        Number(row.Multiplier) > 0;
+      const hasReceiver =
+        row.ReceiverID != null &&
+        row.ReceiverID !== '' &&
+        Number(row.ReceiverID) > 0;
+      return hasCategory || hasCpt || hasMultiplier || hasReceiver;
     });
 
     if (!validRows || validRows.length === 0) {
@@ -632,6 +811,21 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     for (let i = 0; i < validRows.length; i++) {
       const row = validRows[i];
       const rowNum = i + 1;
+
+      const hasCategory =
+        row.ServiceCategoryID != null &&
+        row.ServiceCategoryID !== '' &&
+        Number(row.ServiceCategoryID) > 0;
+      const hasCpt = !!String(row.CPT || '').trim();
+
+      // Either Service Category or CPT is needed
+      if (!hasCategory && !hasCpt) {
+        this.notificationService.showNotification(
+          `Row ${rowNum}: Either Service Category or CPT is required`,
+          'warning',
+        );
+        return;
+      }
 
       if (
         row.Multiplier === null ||
