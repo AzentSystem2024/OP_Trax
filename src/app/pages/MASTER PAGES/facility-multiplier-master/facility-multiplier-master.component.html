@@ -245,7 +245,7 @@
   <dx-popup
     [(visible)]="importPopupVisible"
     [width]="'88%'"
-    [height]="'85vh'"
+    [height]="'auto'"
     title="Import Facility Multipliers"
     [showCloseButton]="true"
     (onHiding)="onImportPopupHiding()"
@@ -282,26 +282,24 @@
         </div>
 
         <div class="right-actions">
-          <!-- <span *ngIf="hasImportErrors" class="error-badge">
-            <i class="dx-icon-warning"></i> Some cells contain invalid data.
-            Hover over red cells to view details.
+          <dx-check-box
+            [(value)]="showOnlyInvalidRows"
+            text="Show invalid rows only"
+            (onValueChanged)="onShowOnlyInvalidRowsChanged($event)"
+          ></dx-check-box>
+          <!-- <span class="filter-count-badge" *ngIf="showOnlyInvalidRows">
+            Showing {{ displayedImportGridData.length }} of {{ importedGridData.length }} rows
           </span> -->
-          <dx-button
-            text="Save"
-            icon="save"
-            stylingMode="contained"
-            type="success"
-            [disabled]="hasImportErrors || importedGridData.length === 0"
-            hint="Save valid imported multiplier data"
-            (onClick)="saveImportedData()"
-          ></dx-button>
-          <dx-button
-            text="Close"
-            icon="close"
-            stylingMode="outlined"
-            type="normal"
-            (onClick)="closeImportPopup()"
-          ></dx-button>
+          <span class="total-count-label">
+            Total Rows:
+            <strong>{{ importedGridData.length }}</strong> &nbsp;|&nbsp; Invalid
+            Rows:
+            <strong
+              [style.color]="totalInvalidRowsCount > 0 ? '#dc3545' : '#28a745'"
+            >
+              {{ totalInvalidRowsCount }}
+            </strong>
+          </span>
         </div>
       </div>
 
@@ -310,19 +308,18 @@
         [dataSource]="displayedImportGridData"
         [showBorders]="true"
         [rowAlternationEnabled]="true"
-        height="calc(85vh - 215px)"
+        height="calc(95vh - 200px)"
         (onCellPrepared)="onImportCellPrepared($event)"
         (onCellClick)="onImportCellClick($event)"
-        
       >
+        <dxo-scrolling mode="virtual"></dxo-scrolling>
         <dxo-paging [pageSize]="15"></dxo-paging>
         <dxo-pager
-          [visible]="true"
-          [allowedPageSizes]="[10, 15, 25,]"
+          [visible]="false"
+          [allowedPageSizes]="[10, 15, 25]"
           [showPageSizeSelector]="true"
           [showInfo]="true"
         ></dxo-pager>
-        
 
         <dxi-column
           dataField="Facility"
@@ -361,26 +358,36 @@
         </dxi-column>
       </dx-data-grid>
 
-      <!-- Bottom Footer Bar: Show invalid rows only checkbox & summary stats -->
+      <!-- Bottom Footer Bar: Radio options & Save/Cancel buttons -->
       <div class="import-footer-bar">
         <div class="footer-left">
-          <dx-check-box
-            [(value)]="showOnlyInvalidRows"
-            text="Show invalid rows only"
-            (onValueChanged)="onShowOnlyInvalidRowsChanged($event)"
-          ></dx-check-box>
-          <span class="filter-count-badge" *ngIf="showOnlyInvalidRows">
-            Showing {{ displayedImportGridData.length }} of {{ importedGridData.length }} rows
-          </span>
+          <dx-radio-group
+            [dataSource]="importOptions"
+            displayExpr="text"
+            valueExpr="value"
+            [(value)]="selectedImportOption"
+            layout="horizontal"
+          >
+          </dx-radio-group>
         </div>
-        <div class="footer-right">
-          <span class="total-count-label">
-            Total Rows: <strong>{{ importedGridData.length }}</strong> &nbsp;|&nbsp;
-            Invalid Rows:
-            <strong [style.color]="totalInvalidRowsCount > 0 ? '#dc3545' : '#28a745'">
-              {{ totalInvalidRowsCount }}
-            </strong>
-          </span>
+        <div class="footer-right d-flex align-items-center gap-2">
+          <dx-button
+            text="Cancel"
+            icon="close"
+            stylingMode="outlined"
+            type="normal"
+            (onClick)="closeImportPopup()"
+          ></dx-button>
+
+          <dx-button
+            text="Save"
+            icon="save"
+            stylingMode="contained"
+            type="default"
+            [disabled]="hasImportErrors || importedGridData.length === 0"
+            hint="Save valid imported multiplier data"
+            (onClick)="saveImportedData()"
+          ></dx-button>
         </div>
       </div>
 

@@ -1455,6 +1455,11 @@ export class MasterReportService {
     return this.http.post(Url, payload);
   }
 
+  Import_Facility_Multiplier_Data(payload: any) {
+    const Url = `${this.BASE_URL}facilityMultiplier/import`;
+    return this.http.post(Url, payload);
+  }
+
   //==========================================ICD MASTER==========================================================
   //======Icd Master List===========
   Get_IcdMaster_Data() {

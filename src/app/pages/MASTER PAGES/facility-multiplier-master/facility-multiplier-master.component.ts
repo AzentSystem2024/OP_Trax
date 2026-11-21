@@ -20,6 +20,7 @@ import {
   DxLoadPanelModule,
   DxTextBoxModule,
   DxTooltipModule,
+  DxRadioGroupModule,
 } from 'devextreme-angular';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
@@ -139,6 +140,12 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
   clickedCellElement: any = null;
   clickedCellErrorMessage: string = '';
   cellTooltipVisible: boolean = false;
+  isAutoAddingRow: boolean = false;
+  importOptions = [
+    { text: 'Import only new records', value: true },
+    { text: 'Overwrite existing records', value: false },
+  ];
+  selectedImportOption: boolean = true;
 
   constructor(
     private masterService: MasterReportService,
@@ -164,10 +171,10 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
 
     this.importButtonOptions = {
       text: 'Import',
-      icon: 'import',
+      icon: 'bi bi-upload',
       hint: 'Import Facility Multipliers from Excel',
       stylingMode: 'text',
-      elementAttr: { class: 'commonButtons' },
+      elementAttr: { class: 'commonButtons import-btn' },
       disabled: this.menuPrevilage
         ? !this.menuPrevilage.CanEdit && !this.menuPrevilage.CanAdd
         : false,
@@ -427,8 +434,6 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
         },
       });
   }
-
-  isAutoAddingRow: boolean = false;
 
   onEditorPreparing(e: any) {
     if (!this.isEditingEnabled) {
@@ -1070,6 +1075,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     this.hasImportErrors = false;
     this.showOnlyInvalidRows = false;
     this.totalInvalidRowsCount = 0;
+    this.selectedImportOption = true;
     this.calculateColumnErrors();
     this.cellTooltipVisible = false;
     this.clickedCellElement = null;
@@ -1197,12 +1203,8 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     };
 
     const facKey =
-      resolveKey(
-        'Facility',
-        'FacilityID',
-        'FacilityLicense',
-        'FacilityName',
-      ) || 'Facility';
+      resolveKey('Facility', 'FacilityID', 'FacilityLicense', 'FacilityName') ||
+      'Facility';
     const recKey =
       resolveKey('Receiver', 'ReceiverID', 'ReceiverName') || 'Receiver';
     const catKey =
@@ -1214,8 +1216,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
         'Category',
       ) || 'Service Category';
     const cptKey = resolveKey('CPT', 'CPTCode', 'CPT Code') || 'CPT';
-    const multKey =
-      resolveKey('Multiplier', 'MultiplierValue') || 'Multiplier';
+    const multKey = resolveKey('Multiplier', 'MultiplierValue') || 'Multiplier';
 
     const totalRows = rawJson.length;
     const chunkSize = 5000; // Process 5,000 rows per chunk
@@ -1341,9 +1342,15 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
         facMatch = facilityMap.get(facVal.toLowerCase());
       } else {
         facMatch = this.facilityList.find((f: any) => {
-          const lic = String(f.FacilityLicense || '').trim().toLowerCase();
-          const id = String(f.FacilityID || '').trim().toLowerCase();
-          const name = String(f.FacilityName || '').trim().toLowerCase();
+          const lic = String(f.FacilityLicense || '')
+            .trim()
+            .toLowerCase();
+          const id = String(f.FacilityID || '')
+            .trim()
+            .toLowerCase();
+          const name = String(f.FacilityName || '')
+            .trim()
+            .toLowerCase();
           const target = facVal.toLowerCase();
           return lic === target || id === target || name === target;
         });
@@ -1374,7 +1381,9 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       } else {
         recMatch = this.receiverDataSource.find((r: any) => {
           const id = String(r.ID ?? '').trim();
-          const desc = String(r.DESCRIPTION ?? '').trim().toLowerCase();
+          const desc = String(r.DESCRIPTION ?? '')
+            .trim()
+            .toLowerCase();
           const target = recVal.toLowerCase();
           return id === target || desc === target;
         });
@@ -1405,7 +1414,9 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       } else {
         catMatch = this.serviceCategoryDataSource.find((c: any) => {
           const id = String(c.ID ?? '').trim();
-          const desc = String(c.DESCRIPTION ?? '').trim().toLowerCase();
+          const desc = String(c.DESCRIPTION ?? '')
+            .trim()
+            .toLowerCase();
           const target = catVal.toLowerCase();
           return id === target || desc === target;
         });
@@ -1619,7 +1630,14 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     this.cellTooltipVisible = false;
   };
 
- 
+  sendImportBatch(payload: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.masterService.Import_Facility_Multiplier_Data(payload).subscribe({
+        next: (res: any) => resolve(res),
+        error: (err: any) => reject(err),
+      });
+    });
+  }
 
   saveImportedData = async () => {
     // Re-check all rows
@@ -1643,89 +1661,173 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
       return;
     }
 
-    // Check for duplicate entries
-    const seen = new Set<string>();
-    for (let i = 0; i < this.importedGridData.length; i++) {
-      const row = this.importedGridData[i];
-      const dupKey = `${row.FacilityID}_${row.ReceiverID}_${row.ServiceCategoryID}_${String(
-        row.CPT || '',
-      )
-        .trim()
-        .toUpperCase()}`;
-      if (seen.has(dupKey)) {
+    // 1. Generate BatchNo using current date and time with seconds (e.g. BATCH_20261120_174502)
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const batchNo = `BATCH_${year}${month}${day}_${hours}${minutes}${seconds}`;
+
+    // 2. Determine ImportUserID
+    let importUserId = 1;
+    try {
+      const sessionUserId = sessionStorage.getItem('UserID');
+      if (sessionUserId && !isNaN(Number(sessionUserId))) {
+        importUserId = Number(sessionUserId);
+      } else {
+        const logData = JSON.parse(localStorage.getItem('logData') || '{}');
+        const uid = logData?.UserID ?? logData?.UserId ?? logData?.user_id;
+        if (uid && !isNaN(Number(uid))) {
+          importUserId = Number(uid);
+        }
+      }
+    } catch {
+      importUserId = 1;
+    }
+
+    // 3. Map rows to required payload data schema
+    const mappedData = this.importedGridData.map((row) => ({
+      FacilityID: String(row.FacilityID || row.Facility || '').trim(),
+      ReceiverID:
+        !row.Receiver || String(row.Receiver).trim() === '0'
+          ? ''
+          : String(row.Receiver).trim(),
+      ServiceCategory:
+        !row.ServiceCategory || String(row.ServiceCategory).trim() === '0'
+          ? ''
+          : String(row.ServiceCategory).trim(),
+      CPTCode: String(row.CPT || '').trim(),
+      Multiplier: Number(row.Multiplier) || 0,
+    }));
+
+    const totalRecords = mappedData.length;
+    const BATCH_SIZE = 15000;
+    const totalBatches = Math.ceil(totalRecords / BATCH_SIZE);
+
+    this.showLoading(
+      `Starting import of ${totalRecords.toLocaleString()} records (${totalBatches} batch${
+        totalBatches > 1 ? 'es' : ''
+      })...`,
+    );
+
+    try {
+      for (let b = 0; b < totalBatches; b++) {
+        const start = b * BATCH_SIZE;
+        const end = Math.min(start + BATCH_SIZE, totalRecords);
+        const chunk = mappedData.slice(start, end);
+
+        this.showLoading(
+          `Saving Batch ${b + 1} of ${totalBatches} (${end.toLocaleString()} / ${totalRecords.toLocaleString()} records)...`,
+        );
+
+        const payload = {
+          Action: 1,
+          FileName: this.importedFileName || 'Facility_Multiplier_Upload.xlsx',
+          BatchNo: batchNo, // Single save function full batch no same!
+          ImportUserID: importUserId,
+          NewRecordOnly: this.selectedImportOption,
+          data: chunk,
+        };
+
+        const response: any = await this.sendImportBatch(payload);
+
+        const isSuccess =
+          response &&
+          (response.flag === '1' ||
+            response.flag === 'true' ||
+            response.flag === true ||
+            response.Flag === 1 ||
+            response.Flag === '1' ||
+            response.status === 'success' ||
+            response.Status === 'Success' ||
+            response.status === true ||
+            response.status === 1 ||
+            response.message === 'Success' ||
+            response.Message === 'Success' ||
+            response.success === true ||
+            response.statusCode === 200 ||
+            response.StatusCode === 200);
+
+        if (!isSuccess) {
+          this.hideLoading();
+          const errDetail =
+            response?.message ||
+            response?.Message ||
+            response?.detail ||
+            'Server returned an error response';
+          this.notificationService.showNotification(
+            `Batch ${b + 1} failed: ${errDetail}`,
+            'error',
+          );
+          return;
+        }
+      }
+
+      // Finalize import: Call API again with Action 2 and no data payload
+      this.showLoading('Finalizing import process...');
+
+      const finalizePayload: any = {
+        Action: 2,
+        FileName: this.importedFileName || 'Facility_Multiplier_Upload.xlsx',
+        BatchNo: batchNo,
+        ImportUserID: importUserId,
+        NewRecordOnly: this.selectedImportOption,
+      };
+
+      const finalResponse: any = await this.sendImportBatch(finalizePayload);
+
+      const isFinalSuccess =
+        finalResponse &&
+        (finalResponse.flag === '1' ||
+          finalResponse.flag === 'true' ||
+          finalResponse.flag === true ||
+          finalResponse.Flag === 1 ||
+          finalResponse.Flag === '1' ||
+          finalResponse.status === 'success' ||
+          finalResponse.Status === 'Success' ||
+          finalResponse.status === true ||
+          finalResponse.status === 1 ||
+          finalResponse.message === 'Success' ||
+          finalResponse.Message === 'Success' ||
+          finalResponse.success === true ||
+          finalResponse.statusCode === 200 ||
+          finalResponse.StatusCode === 200);
+
+      if (!isFinalSuccess) {
+        this.hideLoading();
+        const errDetail =
+          finalResponse?.message ||
+          finalResponse?.Message ||
+          finalResponse?.detail ||
+          'Failed to finalize import';
         this.notificationService.showNotification(
-          `Row ${i + 1}: Duplicate entry found for the same Facility, Receiver, Service Category, and CPT`,
-          'warning',
+          `Finalize import failed: ${errDetail}`,
+          'error',
         );
         return;
       }
-      seen.add(dupKey);
+
+      this.hideLoading();
+      this.notificationService.showNotification(
+        `Successfully imported ${totalRecords.toLocaleString()} records across ${totalBatches} batch(es)! [Batch: ${batchNo}]`,
+        'success',
+      );
+      this.importPopupVisible = false;
+      this.importedGridData = [];
+      this.displayedImportGridData = [];
+      this.fetch_Facility_multiplier_list();
+    } catch (err: any) {
+      this.hideLoading();
+      console.error('Error during import batches:', err);
+      const msg =
+        err?.error?.message ||
+        err?.message ||
+        'An error occurred while saving imported data';
+      this.notificationService.showNotification(msg, 'error');
     }
-
-    // Group rows by FacilityID
-    const facilityMap = new Map<string, any[]>();
-    for (const row of this.importedGridData) {
-      const facId = String(row.FacilityID);
-      if (!facilityMap.has(facId)) {
-        facilityMap.set(facId, []);
-      }
-      facilityMap.get(facId)!.push({
-        ReceiverID: row.ReceiverID != null ? Number(row.ReceiverID) : 0,
-        ServiceCategoryID:
-          row.ServiceCategoryID != null ? Number(row.ServiceCategoryID) : 0,
-        CPT: String(row.CPT || '').trim(),
-        Multiplier: Number(row.Multiplier),
-      });
-    }
-
-    this.showLoading('Saving Imported Data...');
-
-    const requests = Array.from(facilityMap.entries()).map(([facId, data]) => {
-      return this.masterService.Insert_Facility_Multiplier_Data({
-        FacilityID: facId,
-        data: data,
-      });
-    });
-
-    forkJoin(requests).subscribe({
-      next: (responses: any[]) => {
-        this.hideLoading();
-        const allSuccessful = responses.every(
-          (res: any) =>
-            res &&
-            (res.flag === '1' ||
-              res.flag === 'true' ||
-              res.flag === true ||
-              res.message === 'Success' ||
-              res.status === 'success'),
-        );
-
-        if (allSuccessful) {
-          this.notificationService.showNotification(
-            `Successfully imported ${this.importedGridData.length} records!`,
-            'success',
-          );
-          this.importPopupVisible = false;
-          this.importedGridData = [];
-          this.displayedImportGridData = [];
-          this.fetch_Facility_multiplier_list();
-        } else {
-          this.notificationService.showNotification(
-            'Some records could not be saved. Please check the data and try again',
-            'warning',
-          );
-          this.fetch_Facility_multiplier_list();
-        }
-      },
-      error: (err: any) => {
-        this.hideLoading();
-        console.error('Error saving imported multipliers:', err);
-        this.notificationService.showNotification(
-          'An error occurred while saving the imported data',
-          'error',
-        );
-      },
-    });
   };
 }
 
@@ -1743,6 +1845,7 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
     DxLoadPanelModule,
     DxTextBoxModule,
     DxTooltipModule,
+    DxRadioGroupModule,
   ],
   declarations: [FacilityMultiplierMasterComponent],
 })
