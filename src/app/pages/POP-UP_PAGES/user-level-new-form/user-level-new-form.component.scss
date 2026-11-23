@@ -5,7 +5,7 @@
   flex-direction: column;
   width: 100%;
   font-family: inherit;
-  color: #1e293b;
+  color: var(--base-text-color, #1e293b);
 }
 
 // ----------------------------------------------------
@@ -26,7 +26,7 @@
 .field-label {
   font-size: 11px;
   font-weight: 700;
-  color: #334155;
+  color: var(--texteditor-label-color, #334155);
   letter-spacing: 0.5px;
   text-transform: uppercase;
   margin-bottom: 7px;
@@ -43,17 +43,17 @@
 
       &.dx-editor-outlined {
         border-radius: 8px;
-        border-color: #e2e8f0;
-        background-color: #f8fafc;
+        border-color: var(--border-color, #e2e8f0);
+        background-color: var(--card-bg, #f8fafc);
         transition: all 0.2s ease;
 
         &:hover {
-          border-color: #cbd5e1;
+          border-color: var(--border-color, #cbd5e1);
         }
 
         &.dx-state-focused {
           border-color: #009688;
-          background-color: #ffffff;
+          background-color: var(--card-bg, #ffffff);
           box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.12);
         }
       }
@@ -61,7 +61,7 @@
       .dx-texteditor-input {
         padding: 9px 14px;
         font-size: 13.5px;
-        color: #1e293b;
+        color: var(--base-text-color, #1e293b);
 
         &::placeholder {
           color: transparent !important;
@@ -70,11 +70,11 @@
       }
 
       .dx-placeholder {
-        color: #94a3b8;
+        color: var(--texteditor-label-color, #94a3b8);
         font-size: 13px;
 
         &::before {
-          color: #94a3b8;
+          color: var(--texteditor-label-color, #94a3b8);
         }
       }
     }
@@ -104,19 +104,20 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  border: none;
-  background-color: #e6f7f5;
-  color: #00897b;
+  border: 1px solid var(--border-color, rgba(0, 150, 136, 0.2));
+  background-color: var(--tab-bg-color, #e6f7f5);
+  color: var(--text-color, #00897b);
   transition: all 0.2s ease;
   user-select: none;
 
   &:hover {
-    background-color: #d6f2ee;
-    color: #00796b;
+    background-color: var(--tab-selected-bg-color, #d6f2ee);
+    color: var(--base-text-color, #00796b);
   }
 
   &.active {
     background-color: #009688;
+    border-color: #009688;
     color: #ffffff;
     box-shadow: 0 2px 6px rgba(0, 150, 136, 0.28);
 
@@ -170,7 +171,7 @@
   .search-icon {
     position: absolute;
     left: 12px;
-    color: #94a3b8;
+    color: var(--texteditor-label-color, #94a3b8);
     font-size: 14px;
     pointer-events: none;
   }
@@ -180,20 +181,20 @@
     height: 38px;
     padding: 6px 12px 6px 36px;
     border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color, #e2e8f0);
     font-size: 13px;
-    color: #1e293b;
-    background-color: #ffffff;
+    color: var(--base-text-color, #1e293b);
+    background-color: var(--card-bg, #ffffff);
     outline: none;
     transition: all 0.2s ease;
 
     &::placeholder {
-      color: #94a3b8;
+      color: var(--texteditor-label-color, #94a3b8);
       font-size: 13px;
     }
 
     &:hover {
-      border-color: #cbd5e1;
+      border-color: var(--border-color, #cbd5e1);
     }
 
     &:focus {
@@ -216,19 +217,19 @@
   padding: 0 16px;
   height: 38px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background-color: #ffffff;
+  border: 1px solid var(--border-color, #e2e8f0);
+  background-color: var(--card-bg, #ffffff);
   font-size: 13px;
   font-weight: 500;
-  color: #475569;
+  color: var(--base-text-color, #475569);
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
 
   &:hover {
-    background-color: #f8fafc;
-    border-color: #cbd5e1;
-    color: #1e293b;
+    background-color: var(--cell-header-bg, #f8fafc);
+    border-color: var(--border-color, #cbd5e1);
+    color: var(--base-text-color, #1e293b);
   }
 
   .text-teal {
@@ -242,19 +243,19 @@
 // 4. Permissions Matrix Table
 // ----------------------------------------------------
 .matrix-table-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 8px;
   overflow: hidden;
-  background-color: #ffffff;
+  background-color: var(--card-bg, #ffffff);
   margin-bottom: 22px;
 }
 
 .matrix-header-row {
   display: flex;
   align-items: center;
-  background-color: #f1f5f9;
+  background-color: var(--cell-header-bg, #f1f5f9);
   padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
   user-select: none;
 
   .col-menu {
@@ -275,14 +276,14 @@
   .header-label {
     font-size: 11px;
     font-weight: 700;
-    color: #475569;
+    color: var(--cell-header-color, var(--base-text-color, #475569));
     letter-spacing: 0.5px;
     text-transform: uppercase;
   }
 }
 
 .matrix-body {
-  max-height: 280px;
+  height: 350px;
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -290,15 +291,15 @@
   }
 
   &::-webkit-scrollbar-track {
-    background: #f8fafc;
+    background: var(--base-bg, #f8fafc);
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: var(--border-color, #cbd5e1);
     border-radius: 3px;
 
     &:hover {
-      background: #94a3b8;
+      background: var(--texteditor-label-color, #94a3b8);
     }
   }
 }
@@ -307,8 +308,8 @@
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  border-bottom: 1px solid #f1f5f9;
-  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+  background-color: transparent;
   transition: background-color 0.15s ease;
 
   &:last-child {
@@ -316,19 +317,19 @@
   }
 
   &:hover {
-    background-color: #f8fafc;
+    background-color: var(--cell-bg-color, #f8fafc);
   }
 
   &.row-selected {
-    background-color: #f0fdf9;
+    background-color: rgba(0, 150, 136, 0.08);
 
     &:hover {
-      background-color: #e6f7f4;
+      background-color: rgba(0, 150, 136, 0.14);
     }
 
     .menu-name {
       font-weight: 600;
-      color: #0f172a;
+      color: var(--base-text-color, #0f172a);
     }
   }
 
@@ -343,7 +344,7 @@
   .menu-name {
     font-size: 13.5px;
     font-weight: 500;
-    color: #1e293b;
+    color: var(--base-text-color, #1e293b);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -360,7 +361,7 @@
 .no-records-row {
   padding: 24px;
   text-align: center;
-  color: #94a3b8;
+  color: var(--texteditor-label-color, #94a3b8);
   font-size: 13px;
 }
 
@@ -371,8 +372,8 @@
   width: 18px;
   height: 18px;
   border-radius: 4px;
-  border: 1.5px solid #94a3b8;
-  background-color: #ffffff;
+  border: 1.5px solid var(--border-color, #94a3b8);
+  background-color: var(--card-bg, #ffffff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -387,7 +388,7 @@
 
   &.checked {
     border: 2px solid #00a884;
-    background-color: #ffffff;
+    background-color: var(--card-bg, #ffffff);
 
     .check-icon {
       color: #00a884;
@@ -416,9 +417,9 @@
 .btn-cancel {
   padding: 9px 24px;
   border-radius: 8px;
-  border: none;
-  background-color: #e2e8f0;
-  color: #475569;
+  border: 1px solid var(--border-color, #cbd5e1);
+  background-color: var(--cell-header-bg, #e2e8f0);
+  color: var(--base-text-color, #475569);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -426,8 +427,8 @@
   user-select: none;
 
   &:hover {
-    background-color: #cbd5e1;
-    color: #1e293b;
+    background-color: var(--tab-selected-bg-color, #cbd5e1);
+    color: var(--base-text-color, #1e293b);
   }
 
   &:active {

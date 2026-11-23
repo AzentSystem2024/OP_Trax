@@ -61,7 +61,9 @@
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <path d="M9 21H5a2 2 0 0 1-2-2V11c0-.7.3-1.4.9-1.9l6.8-5.5a2 2 0 0 1 2.6 0l6.8 5.5c.6.5.9 1.2.9 1.9v8a2 2 0 0 1-2 2h-4a1 1 0 0 1-1-1v-4a2 2 0 0 0-4 0v4a1 1 0 0 1-1 1z"/>
+          <path
+            d="M9 21H5a2 2 0 0 1-2-2V11c0-.7.3-1.4.9-1.9l6.8-5.5a2 2 0 0 1 2.6 0l6.8 5.5c.6.5.9 1.2.9 1.9v8a2 2 0 0 1-2 2h-4a1 1 0 0 1-1-1v-4a2 2 0 0 0-4 0v4a1 1 0 0 1-1 1z"
+          />
         </svg>
         <ng-template #otherIcon>
           <i [class]="getCategoryIcon(tab.text)" class="pill-icon"></i>
@@ -109,7 +111,10 @@
           role="checkbox"
           [attr.aria-checked]="isCurrentTabAllSelected()"
         >
-          <i class="bi bi-check-lg check-icon" *ngIf="isCurrentTabAllSelected()"></i>
+          <i
+            class="bi bi-check-lg check-icon"
+            *ngIf="isCurrentTabAllSelected()"
+          ></i>
         </div>
         <span class="header-label">MODULE / MENU LIST</span>
       </div>
@@ -147,7 +152,10 @@
             role="checkbox"
             [attr.aria-checked]="isRowSelected(menu)"
           >
-            <i class="bi bi-check-lg check-icon" *ngIf="isRowSelected(menu)"></i>
+            <i
+              class="bi bi-check-lg check-icon"
+              *ngIf="isRowSelected(menu)"
+            ></i>
           </div>
           <span class="menu-name">{{ menu.MenuName }}</span>
         </div>
@@ -216,8 +224,6 @@
     <button type="button" class="btn-cancel" (click)="onCancelClick()">
       Cancel
     </button>
-    <button type="button" class="btn-save" (click)="onSaveClick()">
-      Save
-    </button>
+    <button type="button" class="btn-save" (click)="onSaveClick()">Save</button>
   </div>
 </div>
