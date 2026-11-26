@@ -29,7 +29,7 @@ import {
 } from 'devextreme-angular/ui/html-editor';
 
 import { DxTabPanelModule } from 'devextreme-angular';
-import { SystemServicesService } from '../system-services.service';
+import { SystemServicesService } from '../../../../pages/SYSTEM PAGES/system-services.service';
 import { DxTextBoxTypes } from 'devextreme-angular/ui/text-box';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from 'src/app/services/notification.service';

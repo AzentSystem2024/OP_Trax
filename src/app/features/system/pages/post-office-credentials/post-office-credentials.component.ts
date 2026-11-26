@@ -1,4 +1,4 @@
-import { MasterReportService } from './../../MASTER PAGES/master-report.service';
+import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { CommonModule, formatDate } from '@angular/common';
 import {
   Component,
@@ -19,7 +19,7 @@ import {
   DxPopupModule,
   DxFormModule,
 } from 'devextreme-angular';
-import { SystemServicesService } from '../system-services.service';
+import { SystemServicesService } from '../../../../pages/SYSTEM PAGES/system-services.service';
 import { ReportService } from 'src/app/services/Report-data.service';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';

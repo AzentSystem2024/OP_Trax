@@ -14,7 +14,7 @@ import {
   DxTagBoxModule,
   DxTextBoxModule,
 } from 'devextreme-angular';
-import { MasterReportService } from '../../MASTER PAGES/master-report.service';
+import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { ReportService } from 'src/app/services/Report-data.service';
 import DataSource from 'devextreme/data/data_source';
 import { NotificationService } from 'src/app/services/notification.service';

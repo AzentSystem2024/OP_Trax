@@ -25,7 +25,7 @@ import { ClinicianComponent } from './features/masters/pages/clinician/clinician
 import { ClinicianMajorComponent } from './features/masters/pages/clinician-major/clinician-major.component';
 import { ClinicianProfessionComponent } from './features/masters/pages/clinician-profession/clinician-profession.component';
 import { ClinicianCategoryComponent } from './features/masters/pages/clinician-category/clinician-category.component';
-import { SecurityPolicyComponent } from './pages/SYSTEM PAGES/security-policy/security-policy.component';
+import { SecurityPolicyComponent } from './features/system/pages/security-policy/security-policy.component';
 import { UserLevelMasterComponent } from './features/masters/pages/user-role-master/user-role-master.component';
 import { UserComponent } from './features/masters/pages/user/user.component';
 import { ChangePasswordComponent } from './pages/PROFILE PAGES/change-password/change-password.component';
@@ -36,10 +36,10 @@ import { DepartmentListComponent } from './features/masters/pages/department/dep
 import { FacilityListComponent } from './features/masters/pages/facility/facility-list.component';
 import { AutoDownloadSettingsComponent } from './pages/ACTIVITY/download-settings/auto-download-settings.component';
 import { DownloadLogViewComponent } from './pages/LOGS/download-log-view/download-log-view.component';
-import { PostOfficeCredentialsComponent } from './pages/SYSTEM PAGES/post-office-credentials/post-office-credentials.component';
-import { LicenseInfoComponent } from './pages/SYSTEM PAGES/license-info/license-info.component';
-import { NotificationSettingsComponent } from './pages/SYSTEM PAGES/notificarion-settings/notificarion-settings.component';
-import { EmailLogDataComponent } from './pages/SYSTEM PAGES/Report-Email-Schedule/email-log-data.component';
+import { PostOfficeCredentialsComponent } from './features/system/pages/post-office-credentials/post-office-credentials.component';
+import { LicenseInfoComponent } from './features/system/pages/license-info/license-info.component';
+import { NotificationSettingsComponent } from './features/system/pages/notificarion-settings/notificarion-settings.component';
+import { EmailLogDataComponent } from './features/system/pages/Report-Email-Schedule/email-log-data.component';
 import { SubDepartmentListComponent } from './features/masters/pages/Sub-department/sub-department-list.component';
 import { AccountsListComponent } from './pages/ACCOUNTS/accounts-list/accounts-list.component';
 import { TwoStepVerificationComponent } from './components/library/two-step-verification/two-step-verification.component';

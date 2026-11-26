@@ -1,4 +1,4 @@
-@use "../../../../variables.scss" as *;
+@use "../../../../../variables.scss" as *;
 @use "sass:math";
 
 :host {
@@ -10,11 +10,10 @@
 
 .view-wrapper {
   position: relative;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  flex-direction: row;
+  height: 84vh;
+  margin: var(--content-padding);
+  padding: 0px;
+  border-radius: 7px;
 
   .grid {
     height: 45%;
@@ -37,7 +36,6 @@
 
       .dx-datagrid-content .dx-row {
         cursor: pointer;
-
       }
     }
 
@@ -49,8 +47,4 @@
   user-panel {
     display: inherit;
   }
-}
-
-.dx-datagrid {
-    height: 80vh;
 }

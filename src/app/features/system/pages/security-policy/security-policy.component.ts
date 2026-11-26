@@ -13,7 +13,7 @@ import {
   DxButtonModule,
 } from 'devextreme-angular';
 import { DxFormModule } from 'devextreme-angular';
-import { SystemServicesService } from '../system-services.service';
+import { SystemServicesService } from '../../../../pages/SYSTEM PAGES/system-services.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';

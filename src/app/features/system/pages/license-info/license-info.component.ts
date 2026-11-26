@@ -10,7 +10,7 @@ import {
   DxDataGridComponent,
 } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
-import { SystemServicesService } from '../system-services.service';
+import { SystemServicesService } from '../../../../pages/SYSTEM PAGES/system-services.service';
 import DataSource from 'devextreme/data/data_source';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
