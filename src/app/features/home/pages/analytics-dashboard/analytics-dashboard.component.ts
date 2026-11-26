@@ -17,7 +17,7 @@ import {
   DxToolbarModule,
 } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
-import { MasterReportService } from '../../MASTER PAGES/master-report.service';
+import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 @Component({

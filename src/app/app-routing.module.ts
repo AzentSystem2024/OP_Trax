@@ -12,7 +12,7 @@ import {
   SideNavOuterToolbarComponent,
   UnauthenticatedContentComponent,
 } from './layouts';
-import { AnalyticsDashboardComponent } from './pages/HOME/analytics-dashboard/analytics-dashboard.component';
+import { AnalyticsDashboardComponent } from './features/home/pages/analytics-dashboard/analytics-dashboard.component';
 import { HomeComponent } from './pages/HOME/home/home.component';
 import { AppSignInComponent } from './pages/sign-in-form/sign-in-form.component';
 import { AppSignUpComponent } from './pages/sign-up-form/sign-up-form.component';

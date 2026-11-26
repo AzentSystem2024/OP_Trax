@@ -15,7 +15,7 @@ import { AuthService, ScreenService, AppInfoService } from './services';
 import { UnauthenticatedContentModule } from './layouts/unauthenticated-content/unauthenticated-content';
 import { AppRoutingModule } from './app-routing.module';
 
-import { AnalyticsDashboardModule } from './pages/HOME/analytics-dashboard/analytics-dashboard.component';
+import { AnalyticsDashboardModule } from './features/home/pages/analytics-dashboard/analytics-dashboard.component';
 import { HomeModule } from './pages/HOME/home/home.component';
 import { ThemeService } from './services';
 import { DxFormModule } from 'devextreme-angular';
