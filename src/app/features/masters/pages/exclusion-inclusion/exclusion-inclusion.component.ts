@@ -1,0 +1,447 @@
+import { Component, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  DxDataGridModule,
+  DxButtonModule,
+  DxDataGridComponent,
+  DxFormComponent,
+  DxPopupModule,
+  DxFormModule,
+  DxSelectBoxModule,
+  DxTextBoxModule,
+  DxValidatorModule,
+  DxDateBoxModule,
+} from 'devextreme-angular';
+import DataSource from 'devextreme/data/data_source';
+import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
+import { DataService } from 'src/app/services';
+import { ActivatedRoute } from '@angular/router';
+import { NotificationService } from 'src/app/services/notification.service';
+
+@Component({
+  selector: 'app-exclusion-inclusion',
+  standalone: true,
+  imports: [
+    CommonModule,
+    DxDataGridModule,
+    DxButtonModule,
+    DxPopupModule,
+    DxFormModule,
+    DxSelectBoxModule,
+    DxTextBoxModule,
+    DxValidatorModule,
+    DxDateBoxModule,
+  ],
+  providers: [MasterReportService, DataService],
+  templateUrl: './exclusion-inclusion.component.html',
+  styleUrl: './exclusion-inclusion.component.scss',
+})
+export class ExclusionInclusionComponent {
+  @ViewChild(DxDataGridComponent, { static: false })
+  dataGrid!: DxDataGridComponent;
+  @ViewChild('addForm', { static: false }) addForm!: DxFormComponent;
+
+  allowedPageSizes: any = [10, 20, 50];
+  displayMode: any = 'full';
+  showPageSizeSelector = true;
+  showInfo = true;
+  showNavButtons = true;
+
+  isFilterRowVisible = false;
+  menuPrevilage: any;
+  addButtonOptions: any;
+  isDataAvailable: boolean = false;
+  cptCodeList: any[] = [];
+  specialityList: any[] = [];
+  clinicianList: any[] = [];
+  clinicianDataSource: any;
+  icdCodeList: any[] = [];
+  adocClassList: any[] = [];
+  adocRuleList: any[] = [];
+
+  isSpecialtyReadOnly = false;
+  isAdocClassReadOnly = false;
+  isFilterApplied: boolean = false;
+
+  isAddPopupVisible = false;
+  newRule: any = {
+    CPTCode: null,
+    Clinician: null,
+    Specialty: null,
+    ICDCode: null,
+    ADOCRule: null,
+    ADOCClass: null,
+    EffectFrom: null,
+  };
+
+  dataSource = new DataSource<any>({
+    load: () =>
+      new Promise((resolve, reject) => {
+        this.masterService.get_ExclusionInclusion_List().subscribe({
+          next: (response: any) => {
+            const dataWithSerialNo = (response.datas || []).map(
+              (item: any, index: number) => ({
+                ...item,
+                ClinicianID: item.ClinicianID === 0 ? null : item.ClinicianID,
+                SpecialtyID: item.SpecialtyID === 0 ? null : item.SpecialtyID,
+                ADOCClassID:
+                  item.ADOCClassID === null || item.ADOCClassID === undefined
+                    ? 0
+                    : item.ADOCClassID,
+                SlNo: index + 1,
+              }),
+            );
+            this.isDataAvailable = dataWithSerialNo.length > 0;
+            resolve(dataWithSerialNo);
+          },
+          error: (error: any) => reject(error.message),
+        });
+      }),
+  });
+
+  constructor(
+    private masterService: MasterReportService,
+    private dataService: DataService,
+    private route: ActivatedRoute,
+    private notificationService: NotificationService,
+  ) {
+    this.dataService.Get_GropDown('SPECIALITY').subscribe((res: any) => {
+      this.specialityList = res || [];
+    });
+    this.masterService.get_Clinian_Table_Data().subscribe((res: any) => {
+      this.clinicianList = res.data || res || [];
+      this.clinicianDataSource = new DataSource({
+        store: {
+          type: 'array',
+          data: this.clinicianList,
+          key: 'ID',
+        },
+        paginate: true,
+        pageSize: 50,
+      });
+    });
+
+    this.dataService.Get_GropDown('ADOC_APPLICATION').subscribe((res: any) => {
+      this.adocRuleList = res.data || res || [];
+    });
+
+    this.dataService
+      .Get_GropDown('ADOC_CLASS_EXCINCL')
+      .subscribe((res: any) => {
+        this.adocClassList = res;
+      });
+
+    this.route.url.subscribe((segments) => {
+      const fullUrl = segments.map((s) => s.path).join('/');
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) || {
+        CanEdit: true,
+        CanDelete: true,
+        CanAdd: true,
+      };
+    });
+
+    this.addButtonOptions = {
+      text: 'New',
+      icon: 'bi bi-plus-circle',
+      type: 'default',
+      stylingMode: 'contained',
+      hint: 'Add new entry',
+      disabled: !this.menuPrevilage.CanAdd,
+      onClick: () => {
+        this.showNewPopup();
+      },
+      elementAttr: { class: 'add-button' },
+    };
+  }
+
+  showNewPopup() {
+    this.newRule = {
+      CPTCode: null,
+      ClinicianID: null,
+      SpecialtyID: null,
+      ICDCode: null,
+      ADOCStatusID: null,
+      ADOCClassID: null,
+      EffectFrom: null,
+    };
+    this.isSpecialtyReadOnly = false;
+    this.isAdocClassReadOnly = false;
+    this.addForm?.instance?.reset();
+    this.isAddPopupVisible = true;
+  }
+
+  onPopupHiding() {
+    this.newRule = {
+      CPTCode: null,
+      ClinicianID: null,
+      SpecialtyID: null,
+      ICDCode: null,
+      ADOCStatusID: null,
+      ADOCClassID: null,
+      EffectFrom: null,
+    };
+    this.isSpecialtyReadOnly = false;
+    this.isAdocClassReadOnly = false;
+    this.addForm?.instance?.reset();
+  }
+
+  calculateAdocRuleDisplay = (rowData: any) => {
+    const id = Number(rowData?.ADOCStatusID);
+    if (id === 1) {
+      return 'Exclusion';
+    }
+    if (id === 2) {
+      return 'Inclusion';
+    }
+    const matchedRule = this.adocRuleList.find(
+      (r: any) => r.ID === rowData?.ADOCStatusID,
+    );
+    return matchedRule?.DESCRIPTION || rowData?.ADOCStatus || '';
+  };
+
+  onClinicianChangedInPopup = (e: any) => {
+    if (e.value) {
+      this.isSpecialtyReadOnly = true;
+      const clinician = this.clinicianList.find((c) => c.ID === e.value);
+      if (clinician && clinician.SpecialityID) {
+        this.newRule.SpecialtyID = clinician.SpecialityID;
+      } else {
+        this.newRule.SpecialtyID = null;
+      }
+    } else {
+      this.isSpecialtyReadOnly = false;
+    }
+  };
+
+  onAdocRuleChangedInPopup = (e: any) => {
+    const selectedRule = this.adocRuleList.find((r) => r.ID === e.value);
+    if (
+      selectedRule &&
+      selectedRule.DESCRIPTION &&
+      selectedRule.DESCRIPTION.toString().toLowerCase().includes('excluded')
+    ) {
+      this.isAdocClassReadOnly = true;
+      this.newRule.ADOCClassID = null;
+    } else {
+      this.isAdocClassReadOnly = false;
+    }
+  };
+
+  saveNewRule() {
+    if (!this.addForm.instance.validate().isValid) {
+      return;
+    }
+
+    let formattedDate = null;
+    if (this.newRule.EffectFrom) {
+      const d = new Date(this.newRule.EffectFrom);
+      formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    const payload = {
+      CPTCode: this.newRule.CPTCode || '',
+      ClinicianID: this.newRule.ClinicianID || 0,
+      SpecialtyID: this.newRule.SpecialtyID || 0,
+      ICDCode: this.newRule.ICDCode || '',
+      ADOCStatusID: this.newRule.ADOCStatusID || 0,
+      UserID: sessionStorage.getItem('UserID'),
+      ADOCClassID: this.newRule.ADOCClassID || 0,
+      EffectFrom: formattedDate,
+    };
+
+    this.masterService.Insert_ExclusionInclusion_Data(payload).subscribe({
+      next: (response: any) => {
+        if (response && response.flag === '1') {
+          this.dataGrid.instance.refresh();
+          this.notificationService.showNotification(
+            response.message || 'New data saved Successfully',
+            'success',
+          );
+          this.isAddPopupVisible = false;
+        } else {
+          this.notificationService.showNotification(
+            response?.message || 'Your Data Not Saved',
+            'error',
+          );
+        }
+      },
+      error: (err: any) => {
+        this.notificationService.showNotification(
+          err?.error?.message ||
+            err?.message ||
+            'An error occurred while saving data.',
+          'error',
+        );
+      },
+    });
+  }
+
+  //===================Row Data Update==========================
+  onEditorPreparing(e: any) {
+    if (e.parentType === 'dataRow') {
+      if (e.dataField === 'ClinicianID') {
+        this.isSpecialtyReadOnly = !!e.row.data.ClinicianID;
+        const standardHandler = e.editorOptions.onValueChanged;
+        e.editorOptions.onValueChanged = (args: any) => {
+          if (standardHandler) standardHandler(args);
+          this.isSpecialtyReadOnly = !!args.value;
+          const clinician = this.clinicianList.find((c) => c.ID === args.value);
+          if (clinician && clinician.SpecialityID) {
+            e.component.cellValue(
+              e.row.rowIndex,
+              'SpecialtyID',
+              clinician.SpecialityID,
+            );
+          } else {
+            e.component.cellValue(e.row.rowIndex, 'SpecialtyID', null);
+          }
+        };
+      }
+      if (e.dataField === 'SpecialtyID') {
+        if (e.row.data.ClinicianID) {
+          e.editorOptions.readOnly = true;
+        } else {
+          e.editorOptions.readOnly = false;
+        }
+      }
+      if (e.dataField === 'ADOCStatusID') {
+        const initialRule = this.adocRuleList.find(
+          (r) => r.ID === e.row.data.ADOCStatusID,
+        );
+        this.isAdocClassReadOnly = !!(
+          initialRule &&
+          initialRule.DESCRIPTION &&
+          initialRule.DESCRIPTION.toString().toLowerCase().includes('excluded')
+        );
+
+        const standardHandler = e.editorOptions.onValueChanged;
+        e.editorOptions.onValueChanged = (args: any) => {
+          if (standardHandler) standardHandler(args);
+          const selectedRule = this.adocRuleList.find(
+            (r) => r.ID === args.value,
+          );
+
+          this.isAdocClassReadOnly = !!(
+            selectedRule &&
+            selectedRule.DESCRIPTION &&
+            selectedRule.DESCRIPTION.toString()
+              .toLowerCase()
+              .includes('excluded')
+          );
+
+          if (this.isAdocClassReadOnly) {
+            e.component.cellValue(e.row.rowIndex, 'ADOCClassID', null);
+          }
+        };
+      }
+    }
+  }
+
+  onRowUpdating(event: any) {
+    event.cancel = true;
+    const updataDate = event.newData;
+    const oldData = event.oldData;
+
+    const combinedData = { ...oldData, ...updataDate };
+
+    let formattedDate = null;
+    if (combinedData.EffectFrom) {
+      const d = new Date(combinedData.EffectFrom);
+      formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    const payload = {
+      ID: combinedData.ID || null,
+      CPTCode: combinedData.CPTCode || '',
+      ClinicianID: combinedData.ClinicianID || 0,
+      SpecialtyID: combinedData.SpecialtyID || 0,
+      ICDCode: combinedData.ICDCode || '',
+      ADOCStatusID: combinedData.ADOCStatusID || 0,
+      UserID: sessionStorage.getItem('UserID'),
+      ADOCClassID: combinedData.ADOCClassID || 0,
+      EffectFrom: formattedDate,
+    };
+
+    this.masterService.update_ExclusionInclusion_data(payload).subscribe({
+      next: (data: any) => {
+        if (data && data.flag === '1') {
+          this.dataGrid.instance.refresh();
+          this.notificationService.showNotification(
+            data.message || 'Data updated Successfully',
+            'success',
+          );
+        } else {
+          this.notificationService.showNotification(
+            data?.message || 'Your Data Not Saved',
+            'error',
+          );
+        }
+        event.component.cancelEditData();
+        this.dataGrid.instance.refresh();
+      },
+      error: (err: any) => {
+        this.notificationService.showNotification(
+          err?.error?.message ||
+            err?.message ||
+            'An error occurred while updating data.',
+          'error',
+        );
+        event.component.cancelEditData();
+      },
+    });
+  }
+
+  //====================Row Data Deleting========================
+  onRowRemoving(event: any) {
+    event.cancel = true;
+    let SelectedRow = event.key;
+    const id = SelectedRow.ID ? SelectedRow.ID : SelectedRow;
+
+    this.masterService.Remove_ExclusionInclusion_Row_Data(id).subscribe({
+      next: (response: any) => {
+        if (response && response.flag === '1') {
+          this.notificationService.showNotification(
+            response.message || 'Delete operation successful',
+            'success',
+          );
+        } else {
+          this.notificationService.showNotification(
+            response?.message || 'Delete operation failed',
+            'error',
+          );
+        }
+        event.component.refresh();
+        this.dataGrid.instance.refresh();
+      },
+      error: (err: any) => {
+        this.notificationService.showNotification(
+          err?.error?.message ||
+            err?.message ||
+            'An error occurred while deleting data.',
+          'error',
+        );
+      },
+    });
+  }
+
+  toggleFilterRow = () => {
+    this.isFilterRowVisible = !this.isFilterRowVisible;
+  };
+
+  onGridOptionChanged(e: any) {
+    if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+      setTimeout(() => {
+        if (this.dataGrid && this.dataGrid.instance) {
+          this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+        }
+      });
+    }
+  }
+
+  refresh = () => {
+    if (this.dataGrid && this.dataGrid.instance) {
+      this.dataGrid.instance.clearFilter();
+      this.dataGrid.instance.refresh();
+    }
+  };
+}

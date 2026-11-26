@@ -1,0 +1,112 @@
+import { CommonModule } from '@angular/common';
+import { Component, NgModule, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import {
+  DxDataGridModule,
+  DxButtonModule,
+  DxDropDownButtonModule,
+  DxSelectBoxModule,
+  DxTextBoxModule,
+  DxLookupModule,
+  DxPopupModule,
+  DxCheckBoxModule,
+  DxDataGridComponent,
+  DxFormModule,
+} from 'devextreme-angular';
+import { DataSource } from 'devextreme/common/data';
+import { DataService } from 'src/app/services';
+import { ReportService } from 'src/app/services/Report-data.service';
+import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
+import {
+  DxValidatorModule,
+  DxValidationSummaryModule,
+} from 'devextreme-angular';
+
+@Component({
+  selector: 'app-adoc-counting-rules',
+  templateUrl: './adoc-counting-rules.component.html',
+  styleUrl: './adoc-counting-rules.component.scss',
+  providers: [ReportService, DataService],
+})
+export class AdocCountingRulesComponent {
+  @ViewChild(DxDataGridComponent, { static: false })
+  dataGrid!: DxDataGridComponent;
+
+  readonly allowedPageSizes: any = [5, 10, 'all'];
+  displayMode: any = 'full';
+  showPageSizeSelector = true;
+  showInfo = true;
+  showNavButtons = true;
+
+  isFilterRowVisible = false;
+  isAddPopupVisible = false;
+  menuPrevilage: any;
+
+  dataSource = new DataSource<any>({
+    load: () =>
+      new Promise((resolve, reject) => {
+        this.masterService.get_ADOC_CountingRule_List().subscribe({
+          next: (response: any) => resolve(response.data),
+          error: (error: any) => reject(error.message),
+        });
+      }),
+  });
+
+  constructor(
+    private service: ReportService,
+    private masterService: MasterReportService,
+    private route: ActivatedRoute,
+    private dataService: DataService,
+  ) {
+    this.route.url.subscribe((segments) => {
+      const fullUrl = segments.map((s) => s.path).join('/');
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+    });
+  }
+
+  toggleFilterRow = () => {
+    this.isFilterRowVisible = !this.isFilterRowVisible;
+  };
+
+  refresh = () => {
+    this.dataGrid.instance.refresh();
+  };
+
+  //========================Export data ==========================
+  onExporting(event: any) {
+    const fileName = 'ADOC-counting-rules';
+    this.service.exportDataGrid(event, fileName);
+  }
+
+    isFilterApplied: boolean = false;
+
+    onGridOptionChanged(e: any) {
+
+            if (e.fullName && e.fullName.toLowerCase().includes('filter')) {
+              setTimeout(() => {
+                if (this.dataGrid && this.dataGrid.instance) {
+                  this.isFilterApplied = !!this.dataGrid.instance.getCombinedFilter();
+                }
+              });
+            }
+                    
+    }
+}
+@NgModule({
+  imports: [
+    CommonModule,
+    DxDataGridModule,
+    DxButtonModule,
+    DxDropDownButtonModule,
+    DxSelectBoxModule,
+    DxTextBoxModule,
+    DxLookupModule,
+    DxPopupModule,
+    DxCheckBoxModule,
+    DxFormModule,
+    DxValidatorModule,
+    DxValidationSummaryModule,
+  ],
+  declarations: [AdocCountingRulesComponent],
+})
+export class AdocCountingRulesModule {}

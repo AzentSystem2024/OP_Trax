@@ -49,7 +49,7 @@ import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import { FormTextboxModule } from 'src/app/components';
 import { BrowserModule } from '@angular/platform-browser';
 import CountryList from 'country-list-with-dial-code-and-flag';
-import { UserComponent } from '../../MASTER PAGES/user/user.component';
+import { UserComponent } from '../../../features/masters/pages/user/user.component';
 import {
   ResetPasswordComponent,
   ResetPasswordModule,

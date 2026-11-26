@@ -21,21 +21,21 @@ import { ThemeService } from './services';
 import { DxFormModule } from 'devextreme-angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TaskListModule } from 'src/app/components/library/task-list-grid/task-list-grid.component';
-import { UserModule } from './pages/MASTER PAGES/user/user.component';
+import { UserModule } from './features/masters/pages/user/user.component';
 import { UserNewFormModule } from './pages/POP-UP_PAGES/user-new-form/user-new-form.component';
 import { UserEditFormModule } from './pages/POP-UP_PAGES/user-edit-form/user-edit-form.component';
 import { ResetPasswordModule } from './pages/POP-UP_PAGES/reset-password/reset-password.component';
 import { ChangePasswordModule } from './pages/PROFILE PAGES/change-password/change-password.component';
-import { ImportMasterDataModule } from './pages/MASTER PAGES/import-master-data/import-master-data.component';
+import { ImportMasterDataModule } from './features/masters/pages/import-master-data/import-master-data.component';
 import { ImportMasterDataFormModule } from './pages/POP-UP_PAGES/import-master-data-form/import-master-data-form.component';
 import { ViewImportedMasterDataFormModule } from './pages/POP-UP_PAGES/view-imported-master-data-form/view-imported-master-data-form.component';
 import { RouteReuseStrategy } from '@angular/router';
 import { CustomReuseStrategy } from './custom-reuse-strategy';
 import { AuthInterceptor } from './services/auth.interceptor';
-import { DepartmentListModule } from './pages/MASTER PAGES/department/department-list.component';
+import { DepartmentListModule } from './features/masters/pages/department/department-list.component';
 import { ConfigService } from './services/config.service';
-import { AdocCountingRulesModule } from './pages/MASTER PAGES/adoc-counting-rules/adoc-counting-rules.component';
-import { InsuranceMasterModule } from './pages/MASTER PAGES/insurance-master/insurance-master.component';
+import { AdocCountingRulesModule } from './features/masters/pages/adoc-counting-rules/adoc-counting-rules.component';
+import { InsuranceMasterModule } from './features/masters/pages/insurance-master/insurance-master.component';
 
 export function initializeApp(configService: ConfigService) {
   return () => configService.load(); // Angular waits for this before bootstrapping
