@@ -27,20 +27,20 @@ import { FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services';
-import { OperationReportService } from '../operation-report.service';
-import { ClinicalDataImportFormModule } from '../../POP-UP_PAGES/clinical-data-import-form/clinical-data-import-form.component';
+import { OperationReportService } from '../../../../pages/OPERATION PAGES/operation-report.service';
+import { ClinicalDataImportFormModule } from '../../../../pages/POP-UP_PAGES/clinical-data-import-form/clinical-data-import-form.component';
 import { DatePipe } from '@angular/common';
 import { firstValueFrom, Subscription } from 'rxjs';
 import {
   CptMasterEditFormComponent,
   CptMasterEditFormModule,
-} from '../../POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
-import { MasterReportService } from '../../MASTER PAGES/master-report.service';
+} from '../../../../pages/POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
+import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { InactivityService } from 'src/app/services/inactivity.service';
-import { ReportEngineService } from '../../REPORT PAGES/report-engine.service';
+import { ReportEngineService } from '../../../../pages/REPORT PAGES/report-engine.service';
 import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
-import { AdocDetailPopupModule } from '../../POP-UP_PAGES/adoc-detail-popup/adoc-detail-popup.component';
+import { AdocDetailPopupModule } from '../../../../pages/POP-UP_PAGES/adoc-detail-popup/adoc-detail-popup.component';
 
 @Component({
   selector: 'app-clinical-data',

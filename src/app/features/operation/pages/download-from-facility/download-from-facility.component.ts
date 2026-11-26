@@ -24,7 +24,7 @@ import { DataService } from 'src/app/services';
 import { DxToastModule } from 'devextreme-angular';
 import { Subscription, forkJoin } from 'rxjs';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
-import { SystemServicesService } from '../../SYSTEM PAGES/system-services.service';
+import { SystemServicesService } from '../../../../pages/SYSTEM PAGES/system-services.service';
 import { FormPopupModule } from 'src/app/components';
 import { InactivityService } from 'src/app/services/inactivity.service';
 import { NotificationService } from 'src/app/services/notification.service';

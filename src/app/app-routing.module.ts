@@ -46,7 +46,7 @@ import { TwoStepVerificationComponent } from './components/library/two-step-veri
 import { AboutPageComponent } from './pages/about-page/about-page.component';
 import { CPTCostingDepartmentAllocationComponent } from './features/masters/pages/cpt-costing-department-allocation/cpt-costing-department-allocation.component';
 import { LedgerGroupComponent } from './pages/ACCOUNTS/ledger-group/ledger-group.component';
-import { ClinicalDataComponent } from './pages/OPERATION PAGES/Billing-info/clinical-data.component';
+import { ClinicalDataComponent } from './features/operation/pages/Billing-info/clinical-data.component';
 import { ADOCClassComponent } from './features/masters/pages/adoc-class/adoc-class.component';
 import { AdocPriceMasterComponent } from './features/masters/pages/adoc-price-master/price-master.component';
 import { ADOCGroupComponent } from './features/masters/pages/adoc-category/adoc-group.component';
@@ -55,12 +55,12 @@ import { AdocCountingRulesComponent } from './features/masters/pages/adoc-counti
 import { GroupingDetailsReportComponent } from './pages/REPORT PAGES/grouping-details-report/grouping-details-report.component';
 import { FacilityMultiplierMasterComponent } from './features/masters/pages/facility-multiplier-master/facility-multiplier-master.component';
 import { InsuranceMasterComponent } from './features/masters/pages/insurance-master/insurance-master.component';
-import { DownloadFromFacilityComponent } from './pages/OPERATION PAGES/download-from-facility/download-from-facility.component';
+import { DownloadFromFacilityComponent } from './features/operation/pages/download-from-facility/download-from-facility.component';
 import { IcdAdocMappingComponent } from './features/masters/pages/icd-adoc-mapping/icd-adoc-mapping.component';
 import { IcdMasterComponent } from './features/masters/pages/icd-master/icd-master.component';
 import { CustomRulesComponent } from './features/masters/pages/custom-rules/custom-rules.component';
 import { ExclusionInclusionComponent } from './features/masters/pages/exclusion-inclusion/exclusion-inclusion.component';
-import { XmlUploadComponent } from './pages/OPERATION PAGES/xml-batch-upload/xml-upload.component';
+import { XmlUploadComponent } from './features/operation/pages/xml-batch-upload/xml-upload.component';
 import { SpecialtyAdocMappingComponent } from './features/masters/pages/specialty-adoc-mapping/specialty-adoc-mapping.component';
 
 const routes: Routes = [
