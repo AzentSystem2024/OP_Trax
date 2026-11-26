@@ -13,7 +13,7 @@ import {
   UnauthenticatedContentComponent,
 } from './layouts';
 import { AnalyticsDashboardComponent } from './features/home/pages/analytics-dashboard/analytics-dashboard.component';
-import { HomeComponent } from './features/home/home/home.component';
+import { HomeComponent } from './features/home/pages/home/home.component';
 import { AppSignInComponent } from './pages/sign-in-form/sign-in-form.component';
 import { AppSignUpComponent } from './pages/sign-up-form/sign-up-form.component';
 import { AppResetPasswordComponent } from './pages/reset-password-form/reset-password-form.component';
