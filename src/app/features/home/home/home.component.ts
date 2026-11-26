@@ -8,9 +8,3 @@ import { CommonModule } from '@angular/common';
 })
 export class HomeComponent {}
 
-@NgModule({
-  imports: [CommonModule],
-  declarations: [HomeComponent],
-  exports: [HomeComponent]
-})
-export class HomeModule {}

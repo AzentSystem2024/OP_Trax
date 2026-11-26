@@ -15,8 +15,6 @@ import { AuthService, ScreenService, AppInfoService } from './services';
 import { UnauthenticatedContentModule } from './layouts/unauthenticated-content/unauthenticated-content';
 import { AppRoutingModule } from './app-routing.module';
 
-import { AnalyticsDashboardModule } from './features/home/pages/analytics-dashboard/analytics-dashboard.component';
-import { HomeModule } from './pages/HOME/home/home.component';
 import { ThemeService } from './services';
 import { DxFormModule } from 'devextreme-angular';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -36,6 +34,7 @@ import { DepartmentListModule } from './features/masters/pages/department/depart
 import { ConfigService } from './services/config.service';
 import { AdocCountingRulesModule } from './features/masters/pages/adoc-counting-rules/adoc-counting-rules.component';
 import { InsuranceMasterModule } from './features/masters/pages/insurance-master/insurance-master.component';
+import { HomeModule } from './features/home/home.module';
 
 export function initializeApp(configService: ConfigService) {
   return () => configService.load(); // Angular waits for this before bootstrapping
@@ -54,7 +53,6 @@ export function initializeApp(configService: ConfigService) {
     LoginFormModule,
     UnauthenticatedContentModule,
     DxSelectBoxModule,
-    AnalyticsDashboardModule,
     HomeModule,
     DxFormModule,
     ReactiveFormsModule,

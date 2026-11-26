@@ -486,22 +486,3 @@ export class AnalyticsDashboardComponent {
   }
 }
 
-@NgModule({
-  imports: [
-    CommonModule,
-    DxChartModule,
-    DxDateBoxModule,
-    DxButtonModule,
-    DxDropDownBoxModule,
-    DxLoadPanelModule,
-    DxSelectBoxModule,
-    DxPieChartModule,
-    DxDataGridModule,
-    DxToolbarModule,
-    DxTagBoxModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [AnalyticsDashboardComponent],
-})
-export class AnalyticsDashboardModule {}
