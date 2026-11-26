@@ -52,7 +52,7 @@ import { AdocPriceMasterComponent } from './features/masters/pages/adoc-price-ma
 import { ADOCGroupComponent } from './features/masters/pages/adoc-category/adoc-group.component';
 import { CPTWeightageComponent } from './features/masters/pages/cpt-weightage/cpt-weightage.component';
 import { AdocCountingRulesComponent } from './features/masters/pages/adoc-counting-rules/adoc-counting-rules.component';
-import { GroupingDetailsReportComponent } from './pages/REPORT PAGES/grouping-details-report/grouping-details-report.component';
+import { GroupingDetailsReportComponent } from './features/reports/pages/grouping-details-report/grouping-details-report.component';
 import { FacilityMultiplierMasterComponent } from './features/masters/pages/facility-multiplier-master/facility-multiplier-master.component';
 import { InsuranceMasterComponent } from './features/masters/pages/insurance-master/insurance-master.component';
 import { DownloadFromFacilityComponent } from './features/operation/pages/download-from-facility/download-from-facility.component';

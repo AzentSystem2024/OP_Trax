@@ -38,20 +38,20 @@ import {
 } from 'devextreme-angular';
 import { FormPopupModule } from 'src/app/components';
 import { ReportService } from 'src/app/services/Report-data.service';
-import { ReportEngineService } from '../report-engine.service';
+import { ReportEngineService } from '../../../../pages/REPORT PAGES/report-engine.service';
 import DataSource from 'devextreme/data/data_source';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NotificationService } from 'src/app/services/notification.service';
 import { AuthService, DataService } from 'src/app/services';
 import { PopupStateService } from 'src/app/popupStateService.service';
 import validationEngine from 'devextreme/ui/validation_engine';
-import { OperationReportService } from '../../OPERATION PAGES/operation-report.service';
+import { OperationReportService } from '../../services/operation-report.service';
 import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
 import {
   CptMasterEditFormComponent,
   CptMasterEditFormModule,
-} from '../../POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
-import { AdocDetailPopupModule } from '../../POP-UP_PAGES/adoc-detail-popup/adoc-detail-popup.component';
+} from '../../../../pages/POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
+import { AdocDetailPopupModule } from '../../../../pages/POP-UP_PAGES/adoc-detail-popup/adoc-detail-popup.component';
 import { Subscription } from 'rxjs';
 
 @Component({

@@ -20,7 +20,7 @@ import {
 } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { DataService } from 'src/app/services';
-import { OperationReportService } from '../../../../pages/OPERATION PAGES/operation-report.service';
+import { OperationReportService } from '../../../reports/services/operation-report.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { InactivityService } from 'src/app/services/inactivity.service';
 

@@ -23,7 +23,7 @@ import {
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
-import { OperationReportService } from 'src/app/pages/OPERATION PAGES/operation-report.service';
+import { OperationReportService } from 'src/app/features/reports/services/operation-report.service';
 import validationEngine from 'devextreme/ui/validation_engine';
 import { NotificationService } from 'src/app/services/notification.service';
 

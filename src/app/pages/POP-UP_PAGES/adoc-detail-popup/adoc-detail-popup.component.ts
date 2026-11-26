@@ -19,7 +19,7 @@ import {
   DxPopupModule,
 } from 'devextreme-angular';
 import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
-import { OperationReportService } from 'src/app/pages/OPERATION PAGES/operation-report.service';
+import { OperationReportService } from 'src/app/features/reports/services/operation-report.service';
 import { Workbook } from 'exceljs';
 import { exportDataGrid } from 'devextreme/excel_exporter';
 import { saveAs } from 'file-saver';

@@ -32,7 +32,7 @@ import {
 import { FormTextboxModule, FormPhotoUploaderModule } from 'src/app/components';
 import { MasterReportService } from '../../MASTER PAGES/master-report.service';
 import * as XLSX from 'xlsx';
-import { OperationReportService } from '../../OPERATION PAGES/operation-report.service';
+import { OperationReportService } from '../../../features/reports/services/operation-report.service';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { firstValueFrom } from 'rxjs';
 import { InactivityService } from 'src/app/services/inactivity.service';

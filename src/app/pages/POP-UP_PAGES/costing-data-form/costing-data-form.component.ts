@@ -25,7 +25,7 @@ import {
   FormPhotoUploaderModule,
   FormPopupModule,
 } from 'src/app/components';
-import { OperationReportService } from '../../OPERATION PAGES/operation-report.service';
+import { OperationReportService } from '../../../features/reports/services/operation-report.service';
 import { DataSource } from 'devextreme/common/data';
 import { switchMap, tap } from 'rxjs/operators';
 import { EMPTY, Subscription } from 'rxjs';

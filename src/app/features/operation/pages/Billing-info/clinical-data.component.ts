@@ -27,7 +27,7 @@ import { FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services';
-import { OperationReportService } from '../../../../pages/OPERATION PAGES/operation-report.service';
+import { OperationReportService } from '../../../reports/services/operation-report.service';
 import { ClinicalDataImportFormModule } from '../../../../pages/POP-UP_PAGES/clinical-data-import-form/clinical-data-import-form.component';
 import { DatePipe } from '@angular/common';
 import { firstValueFrom, Subscription } from 'rxjs';
