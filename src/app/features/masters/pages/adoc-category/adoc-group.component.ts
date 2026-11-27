@@ -1,18 +1,6 @@
-import { CommonModule } from '@angular/common';
-import { Component, ViewChild, NgModule } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import {
-  DxDataGridModule,
-  DxButtonModule,
-  DxDropDownButtonModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxLookupModule,
-  DxPopupModule,
   DxDataGridComponent,
-  DxCheckBoxModule,
-  DxFormModule,
-  DxValidationSummaryModule,
-  DxValidatorModule,
   DxFormComponent,
 } from 'devextreme-angular';
 import DataSource from 'devextreme/data/data_source';
@@ -270,21 +258,4 @@ export class ADOCGroupComponent {
   }
 }
 
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    DxPopupModule,
-    DxCheckBoxModule,
-    DxFormModule,
-    DxValidatorModule,
-    DxValidationSummaryModule,
-  ],
-  declarations: [ADOCGroupComponent],
-})
-export class ADOCGroupModule {}
+

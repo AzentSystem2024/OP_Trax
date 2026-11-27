@@ -1,24 +1,6 @@
-import { CommonModule } from '@angular/common';
-import {
-  AfterViewInit,
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  DxDataGridModule,
-  DxButtonModule,
-  DxDropDownButtonModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxLookupModule,
-  DxDataGridComponent,
-} from 'devextreme-angular';
-import { FormPopupModule } from 'src/app/components';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { InsuranceNewFormComponent } from '../../../../pages/POP-UP_PAGES/insurance-new-form/insurance-new-form.component';
-import { InsuranceNewFormModule } from '../../../../pages/POP-UP_PAGES/insurance-new-form/insurance-new-form.component';
 import DataSource from 'devextreme/data/data_source';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -307,21 +289,3 @@ export class InsuranceMasterComponent {
   };
 
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    InsuranceNewFormModule,
-  ],
-  providers: [ReportService],
-  exports: [],
-  declarations: [InsuranceMasterComponent],
-})
-export class InsuranceMasterModule { }

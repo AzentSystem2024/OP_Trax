@@ -1,27 +1,6 @@
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDateBoxModule,
-  DxFormModule,
-  DxNumberBoxModule,
-  DxPopupModule,
-  DxSelectBoxModule,
-  DxCheckBoxModule,
-  DxLoadPanelModule,
-  DxTextBoxModule,
-  DxTooltipModule,
-  DxRadioGroupModule,
-} from 'devextreme-angular';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
@@ -1831,22 +1810,3 @@ export class FacilityMultiplierMasterComponent implements AfterViewInit {
   };
 }
 
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxPopupModule,
-    DxFormModule,
-    DxSelectBoxModule,
-    DxNumberBoxModule,
-    DxDateBoxModule,
-    DxCheckBoxModule,
-    DxLoadPanelModule,
-    DxTextBoxModule,
-    DxTooltipModule,
-    DxRadioGroupModule,
-  ],
-  declarations: [FacilityMultiplierMasterComponent],
-})
-export class FacilityMultiplierMasterModule {}

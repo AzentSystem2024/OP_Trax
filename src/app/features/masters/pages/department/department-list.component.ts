@@ -1,38 +1,21 @@
-import {
-  Component,
-  ViewChild,
-  NgModule,
-  OnInit,
-  OnDestroy,
-} from '@angular/core';
-import {
-  DxButtonModule,
-  DxDataGridModule,
-  DxDataGridComponent,
-  DxDropDownButtonModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxPopupModule,
-} from 'devextreme-angular';
+import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { exportDataGrid as exportDataGridToPdf } from 'devextreme/pdf_exporter';
 import { exportDataGrid as exportDataGridToXLSX } from 'devextreme/excel_exporter';
 // import { CardActivitiesModule, ContactStatusModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
-import { CommonModule } from '@angular/common';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver-es';
 import { jsPDF } from 'jspdf';
-import { FormPopupModule } from 'src/app/components';
-import { ContactPanelModule } from 'src/app/components/library/contact-panel/contact-panel.component';
+import { ContactPanelComponent } from 'src/app/components/library/contact-panel/contact-panel.component';
 // import {
 //   DenialNewFormComponent,
 //   DenialNewFormModule,
 // } from 'src/app/pages/POP-UP_PAGES/denial-new-form/denial-new-form.component';
-import { DepartmentNewFormComponent,DepartmentNewFormModule } from '../../../../pages/POP-UP_PAGES/department-new-form/department-new-form.component';
-import { DepartmentEditFormComponent,DepartmentEditFormModule } from '../../../../pages/POP-UP_PAGES/department-edit-form/department-edit-form.component';
-import { DxLookupModule } from 'devextreme-angular';
+import { DepartmentNewFormComponent } from '../../../../pages/POP-UP_PAGES/department-new-form/department-new-form.component';
+import { DepartmentEditFormComponent } from '../../../../pages/POP-UP_PAGES/department-edit-form/department-edit-form.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
@@ -44,10 +27,10 @@ import { MasterReportService } from '../../../../pages/MASTER PAGES/master-repor
 })
 export class DepartmentListComponent  {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   @ViewChild(DepartmentNewFormComponent, { static: false })
-  departmentComponent: DepartmentNewFormComponent;
+  departmentComponent!: DepartmentNewFormComponent;
 
   isPanelOpened = false;
 
@@ -80,10 +63,15 @@ export class DepartmentListComponent  {
   isFilterRowVisible: boolean = false;
 
   GridSource: any;
-  currentPathName: string;
-  initialized: boolean;
+  currentPathName = '';
+  initialized = false;
   selectedDepartment: any;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean; };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
 
   constructor(
     private service: MasterReportService,
@@ -96,7 +84,7 @@ export class DepartmentListComponent  {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.addButtonOptions = {
       text: 'New',
@@ -188,23 +176,3 @@ export class DepartmentListComponent  {
   }
 }
 
-@NgModule({
-  imports: [
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    ContactPanelModule,
-    FormPopupModule,
-    CommonModule,
-    DxPopupModule,
-    DepartmentNewFormModule,
-    DepartmentEditFormModule
-  ],
-  providers: [],
-  exports: [],
-  declarations: [DepartmentListComponent],
-})
-export class DepartmentListModule {}

@@ -1,22 +1,5 @@
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDropDownButtonModule,
-  DxLookupModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-} from 'devextreme-angular';
-import { FormPopupModule } from 'src/app/components';
-import { CptTypeNewFormModule } from '../../../../pages/POP-UP_PAGES/cpt-type-new-form/cpt-type-new-form.component';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { CptTypeNewFormComponent } from '../../../../pages/POP-UP_PAGES/cpt-type-new-form/cpt-type-new-form.component';
@@ -32,9 +15,9 @@ import { DataService } from 'src/app/services';
 })
 export class CPTTypeComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
   @ViewChild(CptTypeNewFormComponent, { static: false })
-  CptTypeComponent: CptTypeNewFormComponent;
+  CptTypeComponent!: CptTypeNewFormComponent;
 
   //========Variables for Pagination ====================
   readonly allowedPageSizes: any = [5, 10, 'all'];
@@ -58,9 +41,14 @@ export class CPTTypeComponent {
   addButtonOptions: any;
 
   isFilterRowVisible: boolean = false;
-  currentPathName: string;
-  initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  currentPathName = '';
+  initialized = false;
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
 
   constructor(
     private service: ReportService,
@@ -72,7 +60,7 @@ export class CPTTypeComponent {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.addButtonOptions = {
       text: 'New',
@@ -205,21 +193,3 @@ export class CPTTypeComponent {
                     
     }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    CptTypeNewFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [CPTTypeComponent],
-})
-export class CPTTypeModule {}

@@ -1,32 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, NgModule, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  DxDataGridModule,
-  DxButtonModule,
-  DxDropDownButtonModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxLookupModule,
-  DxPopupModule,
-  DxCheckBoxModule,
-  DxDataGridComponent,
-  DxFormModule,
-  DxFormComponent,
-  DxLoadPanelModule,
-} from 'devextreme-angular';
+import { DxDataGridComponent, DxFormComponent } from 'devextreme-angular';
 import { DataSource } from 'devextreme/common/data';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { firstValueFrom } from 'rxjs';
-import {
-  DxValidatorModule,
-  DxValidationSummaryModule,
-} from 'devextreme-angular';
 import validationEngine from 'devextreme/ui/validation_engine';
-import { AdocClassEditFormModule } from '../../../../pages/POP-UP_PAGES/adoc-class-edit-form/adoc-class-edit-form.component';
 @Component({
   selector: 'app-adoc-class',
   templateUrl: './adoc-class.component.html',
@@ -348,23 +329,3 @@ export class ADOCClassComponent {
   }
 }
 
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    DxPopupModule,
-    DxCheckBoxModule,
-    DxFormModule,
-    DxValidatorModule,
-    DxValidationSummaryModule,
-    DxLoadPanelModule,
-    AdocClassEditFormModule,
-  ],
-  declarations: [ADOCClassComponent],
-})
-export class ADOCClassListModule {}

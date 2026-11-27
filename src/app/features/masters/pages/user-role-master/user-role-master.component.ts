@@ -1,22 +1,6 @@
-import { CommonModule } from '@angular/common';
-import { Component, NgModule, ViewChild } from '@angular/core';
-import {
-  DxTabPanelModule,
-  DxCheckBoxModule,
-  DxSelectBoxModule,
-  DxTemplateModule,
-  DxButtonModule,
-  DxDataGridModule,
-  DxDataGridComponent,
-  DxPopupModule,
-} from 'devextreme-angular';
-import { DxTabsModule } from 'devextreme-angular/ui/tabs';
-import { DxTextBoxModule } from 'devextreme-angular/ui/text-box';
-import { DxTreeViewModule } from 'devextreme-angular';
-import { UserLevelNewFormModule } from '../../../../pages/POP-UP_PAGES/user-level-new-form/user-level-new-form.component';
+import { Component, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { UserLevelNewFormComponent } from '../../../../pages/POP-UP_PAGES/user-level-new-form/user-level-new-form.component';
-
-import { FormPopupModule } from 'src/app/components';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { ReportService } from 'src/app/services/Report-data.service';
 import DataSource from 'devextreme/data/data_source';
@@ -252,24 +236,3 @@ export class UserLevelMasterComponent {
     }
   }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxTabPanelModule,
-    DxCheckBoxModule,
-    DxSelectBoxModule,
-    DxTemplateModule,
-    DxTabsModule,
-    DxTextBoxModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxTreeViewModule,
-    DxPopupModule,
-    FormPopupModule,
-    UserLevelNewFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [UserLevelMasterComponent],
-})
-export class UserLevelMasterModule {}

@@ -1,14 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDropDownButtonModule,
-  DxLookupModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-} from 'devextreme-angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
@@ -201,19 +192,4 @@ export class FacilityListComponent implements OnInit {
     }
 }
 
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [FacilityListComponent],
-})
-export class FacilityListModule {}
+

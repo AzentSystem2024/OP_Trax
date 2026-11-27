@@ -1,27 +1,11 @@
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxPopupModule,
-  DxValidationGroupComponent,
-} from 'devextreme-angular';
-import { FormPopupModule } from 'src/app/components';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent, DxValidationGroupComponent } from 'devextreme-angular';
 import {
   ImportMasterDataFormComponent,
-  ImportMasterDataFormModule,
 } from '../../../../pages/POP-UP_PAGES/import-master-data-form/import-master-data-form.component';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import {
   ViewImportedMasterDataFormComponent,
-  ViewImportedMasterDataFormModule,
 } from '../../../../pages/POP-UP_PAGES/view-imported-master-data-form/view-imported-master-data-form.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -36,13 +20,13 @@ import { DataSource } from 'devextreme/common/data';
 })
 export class ImportMasterDataComponent implements OnInit {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
   @ViewChild(ImportMasterDataFormComponent, { static: false })
-  importMasterDataForm: ImportMasterDataFormComponent;
+  importMasterDataForm!: ImportMasterDataFormComponent;
   @ViewChild(ViewImportedMasterDataFormComponent, { static: false })
-  viewImportedMasterDataForm: ViewImportedMasterDataFormComponent;
+  viewImportedMasterDataForm!: ViewImportedMasterDataFormComponent;
   @ViewChild('validationGroup', { static: true })
-  validationGroup: DxValidationGroupComponent;
+  validationGroup!: DxValidationGroupComponent;
   isNewFormPopupOpened: boolean = false;
   readonly allowedPageSizes: any = [5, 10, 'all'];
   displayMode: any = 'full';
@@ -54,8 +38,8 @@ export class ImportMasterDataComponent implements OnInit {
 
   selectedData: any;
   ViewImportDataPopup: any;
-  currentPathName: string;
-  initialized: boolean;
+  currentPathName = '';
+  initialized = false;
 
 
   dataSource = new DataSource<any>({
@@ -70,7 +54,12 @@ export class ImportMasterDataComponent implements OnInit {
 
   addButtonOptions: any;
   isFilterRowVisible: boolean = false;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
   constructor(
     private service: MasterReportService,
     private router: Router,
@@ -84,7 +73,7 @@ export class ImportMasterDataComponent implements OnInit {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.addButtonOptions = {
       text: 'New',
@@ -113,7 +102,7 @@ export class ImportMasterDataComponent implements OnInit {
     this.isNewFormPopupOpened = true;
   }
 
-  viewDetails = (e) => {
+  viewDetails = (e: any) => {
     this.selectedData = e.row.key;
     this.ViewImportDataPopup = true;
   };
@@ -164,18 +153,4 @@ export class ImportMasterDataComponent implements OnInit {
     }
 }
 
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    FormPopupModule,
-    DxPopupModule,
-    ImportMasterDataFormModule,
-    ViewImportedMasterDataFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [ImportMasterDataComponent],
-})
-export class ImportMasterDataModule {}
+

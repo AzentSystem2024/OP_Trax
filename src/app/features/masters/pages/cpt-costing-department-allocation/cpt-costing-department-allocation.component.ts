@@ -1,17 +1,6 @@
-import { CommonModule } from '@angular/common';
-import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  DxDataGridModule,
-  DxButtonModule,
-  DxDropDownButtonModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxLookupModule,
-  DxDataGridComponent,
-  DxTagBoxModule,
-  DxLoadPanelModule,
-} from 'devextreme-angular';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
@@ -24,14 +13,19 @@ import { forkJoin } from 'rxjs';
 })
 export class CPTCostingDepartmentAllocationComponent implements OnInit {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   readonly allowedPageSizes: any = [10, 20, 'all'];
   displayMode: any = 'full';
   showPageSizeSelector = true;
   showInfo = true;
   showNavButtons = true;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
 
   dataSource: any[] = [];
 
@@ -57,7 +51,7 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
   ngOnInit() {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.initializeData();
   }
@@ -133,19 +127,19 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
   };
 
   // ===== bind value to Search CPT (show part before '-') =====
-  searchCptCellTemplate = (cellElement, cellInfo) => {
+  searchCptCellTemplate = (cellElement: HTMLElement, cellInfo: any) => {
     const selectedIds = cellInfo.value || [];
     const displayText = this.cptToSearchDataSource
-      .filter((item) => selectedIds.includes(item.ID))
-      .map((item) => item.DESCRIPTION.split('-')[0].trim())
+      .filter((item: any) => selectedIds.includes(item.ID))
+      .map((item: any) => item.DESCRIPTION.split('-')[0].trim())
       .join(', ');
 
     const fullDescriptions = this.cptToSearchDataSource
-      .filter((item) => selectedIds.includes(item.ID))
-      .map((item) => item.DESCRIPTION);
+      .filter((item: any) => selectedIds.includes(item.ID))
+      .map((item: any) => item.DESCRIPTION);
 
     const tooltipText = fullDescriptions
-      .reduce((acc: string[], curr, idx) => {
+      .reduce((acc: string[], curr: string, idx: number) => {
         const lineIndex = Math.floor(idx / 2);
         acc[lineIndex] = acc[lineIndex] ? acc[lineIndex] + ', ' + curr : curr;
         return acc;
@@ -157,17 +151,17 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
   };
 
   // ===== bind value to Effective CPT (show part before '-') =====
-  effectiveCptCellTemplate = (cellElement, cellInfo) => {
+  effectiveCptCellTemplate = (cellElement: HTMLElement, cellInfo: any) => {
     const selectedIds = cellInfo.value || [];
     const displayText = this.effectiveCPTDataSource
-      .filter((item) => selectedIds.includes(item.ID))
-      .map((item) => item.DESCRIPTION.split('-')[0].trim())
+      .filter((item: any) => selectedIds.includes(item.ID))
+      .map((item: any) => item.DESCRIPTION.split('-')[0].trim())
       .join(', ');
     const fullDescriptions = this.effectiveCPTDataSource
-      .filter((item) => selectedIds.includes(item.ID))
-      .map((item) => item.DESCRIPTION);
+      .filter((item: any) => selectedIds.includes(item.ID))
+      .map((item: any) => item.DESCRIPTION);
     const tooltipText = fullDescriptions
-      .reduce((acc: string[], curr, idx) => {
+      .reduce((acc: string[], curr: string, idx: number) => {
         const lineIndex = Math.floor(idx / 2);
         acc[lineIndex] = acc[lineIndex] ? acc[lineIndex] + ', ' + curr : curr;
         return acc;
@@ -198,7 +192,7 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
             const rSearch = Array.isArray(r.SearchCPTID)
               ? r.SearchCPTID
               : [r.SearchCPTID];
-            return rSearch.some((s) => searchCpts.includes(s));
+            return rSearch.some((s: any) => searchCpts.includes(s));
           })
           .map((r) => r.EncounterType)
           .filter((x) => !!x);
@@ -445,21 +439,4 @@ export class CPTCostingDepartmentAllocationComponent implements OnInit {
     this.getDataSource();
   };
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    DxTagBoxModule,
-    DxLoadPanelModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [CPTCostingDepartmentAllocationComponent],
-})
-export class CPTCostingDepartmentAllocationModule {}
+

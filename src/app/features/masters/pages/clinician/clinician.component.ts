@@ -1,28 +1,15 @@
-import { CommonModule } from '@angular/common';
-import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDropDownButtonModule,
-  DxLookupModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxPopupModule,
-} from 'devextreme-angular';
-import { FormPopupModule } from 'src/app/components';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
-import { ClinicianNewFormModule } from '../../../../pages/POP-UP_PAGES/clinician-new-form/clinician-new-form.component';
 import { ClinicianNewFormComponent } from '../../../../pages/POP-UP_PAGES/clinician-new-form/clinician-new-form.component';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PopupStateService } from 'src/app/popupStateService.service';
 import {
   ClinicianEditFormComponent,
-  ClinicianEditFormModule,
 } from '../../../../pages/POP-UP_PAGES/clinician-edit-form/clinician-edit-form.component';
 @Component({
   selector: 'app-clinician',
@@ -354,23 +341,3 @@ export class ClinicianComponent implements OnInit {
   }
 }
 
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    DxPopupModule,
-    FormPopupModule,
-    ClinicianNewFormModule,
-    ClinicianEditFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [ClinicianComponent],
-})
-export class ClinicianListModule {}

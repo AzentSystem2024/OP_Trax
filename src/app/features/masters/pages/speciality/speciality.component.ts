@@ -1,27 +1,8 @@
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  DxDataGridModule,
-  DxButtonModule,
-  DxDropDownButtonModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxLookupModule,
-  DxDataGridComponent,
-  DxCheckBoxModule,
-} from 'devextreme-angular';
-import { FormPopupModule } from 'src/app/components';
-import { InsuranceNewFormModule } from '../../../../pages/POP-UP_PAGES/insurance-new-form/insurance-new-form.component';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { SpecialityNewFormComponent } from '../../../../pages/POP-UP_PAGES/speciality-new-form/speciality-new-form.component';
-import { SpecialityNewFormModule } from '../../../../pages/POP-UP_PAGES/speciality-new-form/speciality-new-form.component';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -262,22 +243,3 @@ export class SpecialityComponent {
                     
     }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    SpecialityNewFormModule,
-    DxCheckBoxModule
-  ],
-  providers: [],
-  exports: [],
-  declarations: [SpecialityComponent],
-})
-export class SpecialityModule { }

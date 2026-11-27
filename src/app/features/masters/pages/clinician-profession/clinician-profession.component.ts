@@ -1,23 +1,5 @@
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDropDownButtonModule,
-  DxLookupModule,
-  DxPopupModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-} from 'devextreme-angular';
-import { ClinicianProfessionNewFormModule } from '../../../../pages/POP-UP_PAGES/clinician-profession-new-form/clinician-profession-new-form.component';
-import { CommonModule } from '@angular/common';
-import { FormPopupModule } from 'src/app/components';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { ClinicianProfessionNewFormComponent } from '../../../../pages/POP-UP_PAGES/clinician-profession-new-form/clinician-profession-new-form.component';
@@ -34,9 +16,9 @@ import { DataService } from 'src/app/services';
 })
 export class ClinicianProfessionComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
   @ViewChild(ClinicianProfessionNewFormComponent, { static: false })
-  ClinicianProfession: ClinicianProfessionNewFormComponent;
+  ClinicianProfession!: ClinicianProfessionNewFormComponent;
 
   isAddFormPopupOpened: any = false;
   //========Variables for Pagination ====================
@@ -60,9 +42,14 @@ export class ClinicianProfessionComponent {
   addButtonOptions: any;
 
   isFilterRowVisible: boolean = false;
-  currentPathName: string;
-  initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  currentPathName = '';
+  initialized = false;
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
 
   constructor(
     private service: ReportService,
@@ -74,7 +61,7 @@ export class ClinicianProfessionComponent {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.addButtonOptions = {
       text: 'New',
@@ -220,22 +207,3 @@ export class ClinicianProfessionComponent {
                     
     }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    ClinicianProfessionNewFormModule,
-    DxPopupModule
-  ],
-  providers: [],
-  exports: [],
-  declarations: [ClinicianProfessionComponent],
-})
-export class ClinicianProfessionModule {}

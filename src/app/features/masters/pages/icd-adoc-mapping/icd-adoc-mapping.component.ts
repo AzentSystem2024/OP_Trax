@@ -1,21 +1,6 @@
-import { CommonModule } from '@angular/common';
-import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  DxDataGridModule,
-  DxButtonModule,
-  DxDataGridComponent, DxCheckBoxModule,
-  DxDropDownButtonModule,
-  DxFormComponent,
-  DxFormModule,
-  DxLookupModule,
-  DxPopupModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxValidationSummaryModule,
-  DxValidatorModule,
-  DxDateBoxModule
-} from 'devextreme-angular';
+import { DxDataGridComponent, DxFormComponent } from 'devextreme-angular';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
@@ -446,23 +431,3 @@ export class IcdAdocMappingComponent implements OnInit {
   }
 }
 
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    DxPopupModule,
-    DxCheckBoxModule,
-    DxFormModule,
-    DxValidatorModule,
-    DxValidationSummaryModule,
-    DxDateBoxModule,
-  ],
-  declarations: [IcdAdocMappingComponent],
-  exports: [IcdAdocMappingComponent],
-})
-export class IcdAdocMappingModule {}

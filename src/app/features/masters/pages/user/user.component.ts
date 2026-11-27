@@ -1,32 +1,12 @@
-import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectorRef,
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  DxDataGridModule,
-  DxButtonModule,
-  DxDropDownButtonModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxLookupModule,
-  DxDataGridComponent,
-  DxPopupModule,
-} from 'devextreme-angular';
-import { FormPopupModule } from 'src/app/components';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import {
   UserNewFormComponent,
-  UserNewFormModule,
 } from '../../../../pages/POP-UP_PAGES/user-new-form/user-new-form.component';
 import {
   UserEditFormComponent,
-  UserEditFormModule,
 } from '../../../../pages/POP-UP_PAGES/user-edit-form/user-edit-form.component';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -41,10 +21,10 @@ import { DataService } from 'src/app/services';
 })
 export class UserComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   @ViewChild(UserNewFormComponent, { static: false })
-  userNewForm: UserNewFormComponent;
+  userNewForm!: UserNewFormComponent;
 
   popupwidth: any = '65%';
 
@@ -71,9 +51,14 @@ export class UserComponent {
   addButtonOptions: any;
 
   isFilterRowVisible: boolean = false;
-  currentPathName: string;
-  initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  currentPathName = '';
+  initialized = false;
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
 
   constructor(
     private service: MasterReportService,
@@ -86,7 +71,7 @@ export class UserComponent {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.addButtonOptions = {
       text: 'New',
@@ -104,7 +89,7 @@ export class UserComponent {
     this.isFilterRowVisible = !this.isFilterRowVisible;
   };
 
-  onEditingRow(event): void {
+  onEditingRow(event: any): void {
     event.cancel = true;
     const Id = event.data.UserID;
     this.isEditPopupOpened = true;
@@ -189,23 +174,3 @@ export class UserComponent {
                     
     }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    UserNewFormModule,
-    DxPopupModule,
-    UserEditFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [UserComponent],
-})
-export class UserModule {}

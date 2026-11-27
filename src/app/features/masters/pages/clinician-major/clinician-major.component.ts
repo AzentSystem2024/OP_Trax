@@ -1,25 +1,8 @@
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import { ClinicianMajorNewFormModule } from '../../../../pages/POP-UP_PAGES/clinician-major-new-form/clinician-major-new-form.component';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDropDownButtonModule,
-  DxLookupModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-} from 'devextreme-angular';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { ClinicianMajorNewFormComponent } from '../../../../pages/POP-UP_PAGES/clinician-major-new-form/clinician-major-new-form.component';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
-import { CommonModule } from '@angular/common';
-import { FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -32,10 +15,10 @@ import { DataService } from 'src/app/services';
 })
 export class ClinicianMajorComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   @ViewChild(ClinicianMajorNewFormComponent, { static: false })
-  ClinicianMajor: ClinicianMajorNewFormComponent;
+  ClinicianMajor!: ClinicianMajorNewFormComponent;
 
   isAddFormPopupOpened: any = false;
   //========Variables for Pagination ====================
@@ -58,9 +41,14 @@ export class ClinicianMajorComponent {
   });
 
 
-  currentPathName: any;
-  initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  currentPathName: any = '';
+  initialized = false;
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
   addButtonOptions: any;
 
   constructor(
@@ -73,7 +61,7 @@ export class ClinicianMajorComponent {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.addButtonOptions = {
       text: 'New',
@@ -175,21 +163,3 @@ export class ClinicianMajorComponent {
                     
     }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    ClinicianMajorNewFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [ClinicianMajorComponent],
-})
-export class ClinicianMajorModule {}

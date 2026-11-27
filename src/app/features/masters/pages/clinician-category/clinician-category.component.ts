@@ -1,25 +1,8 @@
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDropDownButtonModule,
-  DxLookupModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-} from 'devextreme-angular';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
-import { ClinicianCategoryNewFormModule } from '../../../../pages/POP-UP_PAGES/clinician-category-new-form/clinician-category-new-form.component';
-import { CommonModule } from '@angular/common';
 import { ClinicianCategoryNewFormComponent } from '../../../../pages/POP-UP_PAGES/clinician-category-new-form/clinician-category-new-form.component';
-import { FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -32,9 +15,9 @@ import { DataService } from 'src/app/services';
 })
 export class ClinicianCategoryComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
   @ViewChild(ClinicianCategoryNewFormComponent, { static: false })
-  ClinicianCategory: ClinicianCategoryNewFormComponent;
+  ClinicianCategory!: ClinicianCategoryNewFormComponent;
 
   isAddFormPopupOpened: any = false;
   // dataSource: any;
@@ -58,9 +41,14 @@ export class ClinicianCategoryComponent {
 
   addButtonOptions: any;
   currentPathName: any;
-  initialized: boolean;
+  initialized = false;
   isFilterRowVisible: boolean = false;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
 
   constructor(
     private service: ReportService,
@@ -72,7 +60,7 @@ export class ClinicianCategoryComponent {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.addButtonOptions = {
       text: 'New',
@@ -179,21 +167,4 @@ export class ClinicianCategoryComponent {
                     
     }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    ClinicianCategoryNewFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [ClinicianCategoryComponent],
-})
-export class ClinicianCategoryModule {}
+

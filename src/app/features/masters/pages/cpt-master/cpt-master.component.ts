@@ -1,17 +1,6 @@
-import { CommonModule } from '@angular/common';
-import { Component, NgModule, ViewChild } from '@angular/core';
-import {
-  DxDataGridModule,
-  DxButtonModule,
-  DxDropDownButtonModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxLookupModule,
-  DxDataGridComponent,
-} from 'devextreme-angular';
-import { FormPopupModule } from 'src/app/components';
+import { Component, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { CptMasterNewFormComponent } from '../../../../pages/POP-UP_PAGES/cpt-master-new-form/cpt-master-new-form.component';
-import { CptMasterNewFormModule } from '../../../../pages/POP-UP_PAGES/cpt-master-new-form/cpt-master-new-form.component';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import DataSource from 'devextreme/data/data_source';
@@ -20,7 +9,6 @@ import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import {
   CptMasterEditFormComponent,
-  CptMasterEditFormModule,
 } from '../../../../pages/POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
 
 @Component({
@@ -273,22 +261,3 @@ export class CPTMasterComponent {
     }
   }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    CptMasterNewFormModule,
-    CptMasterEditFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [CPTMasterComponent],
-})
-export class CPTMasterModule {}

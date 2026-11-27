@@ -1,28 +1,11 @@
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDropDownButtonModule,
-  DxLookupModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-} from 'devextreme-angular';
-import { FormPopupModule } from 'src/app/components';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import {
   FacilityTypeNewFormComponent,
-  FacilityTypeNewFormModule,
 } from '../../../../pages/POP-UP_PAGES/facility-type-new-form/facility-type-new-form.component';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -34,9 +17,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class FacilityTypeComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
   @ViewChild(FacilityTypeNewFormComponent, { static: false })
-  facilityTypeComponent: FacilityTypeNewFormComponent;
+  facilityTypeComponent!: FacilityTypeNewFormComponent;
 
   //========Variables for Pagination ====================
   readonly allowedPageSizes: any = [5, 10, 'all'];
@@ -59,9 +42,14 @@ export class FacilityTypeComponent {
 
   addButtonOptions: any;
   isFilterRowVisible: boolean = false;
-  currentPathName: string;
-  initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  currentPathName = '';
+  initialized = false;
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
 
   constructor(
     private service: ReportService,
@@ -73,7 +61,7 @@ export class FacilityTypeComponent {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.addButtonOptions = {
       text: 'New',
@@ -181,21 +169,3 @@ export class FacilityTypeComponent {
                     
     }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    FacilityTypeNewFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [FacilityTypeComponent],
-})
-export class FacilityTypeModule {}

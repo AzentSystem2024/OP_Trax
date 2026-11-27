@@ -1,26 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { Component, NgModule, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  DxDataGridModule,
-  DxButtonModule,
-  DxDropDownButtonModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxLookupModule,
-  DxPopupModule,
-  DxCheckBoxModule,
-  DxDataGridComponent,
-  DxFormModule,
-} from 'devextreme-angular';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { DataSource } from 'devextreme/common/data';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
-import {
-  DxValidatorModule,
-  DxValidationSummaryModule,
-} from 'devextreme-angular';
 
 @Component({
   selector: 'app-adoc-counting-rules',
@@ -92,21 +76,4 @@ export class AdocCountingRulesComponent {
                     
     }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    DxPopupModule,
-    DxCheckBoxModule,
-    DxFormModule,
-    DxValidatorModule,
-    DxValidationSummaryModule,
-  ],
-  declarations: [AdocCountingRulesComponent],
-})
-export class AdocCountingRulesModule {}
+

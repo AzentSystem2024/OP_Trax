@@ -1,30 +1,13 @@
 import { Message } from 'src/app/types/messages';
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDropDownButtonModule,
-  DxLookupModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-} from 'devextreme-angular';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import {
   FacilityGroupNewFormComponent,
-  FacilityGroupNewFormModule,
 } from '../../../../pages/POP-UP_PAGES/facility-group-new-form/facility-group-new-form.component';
-import { FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -36,9 +19,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class FacilityGroupListComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
   @ViewChild(FacilityGroupNewFormComponent, { static: false })
-  facilityGroupComponent: FacilityGroupNewFormComponent;
+  facilityGroupComponent!: FacilityGroupNewFormComponent;
 
   isAddFormPopupOpened: any = false;
 
@@ -61,13 +44,18 @@ export class FacilityGroupListComponent {
         });
       }),
   });
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
   addButtonOptions: any;
 
   isFilterRowVisible: boolean = false;
-  currentPathName: string;
-  initialized: boolean;
-  GroupNameCaption: string;
+  currentPathName = '';
+  initialized = false;
+  GroupNameCaption = '';
 
   constructor(
     private service: ReportService,
@@ -79,7 +67,7 @@ export class FacilityGroupListComponent {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataservice.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataservice.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.addButtonOptions = {
       text: 'New',
@@ -201,21 +189,3 @@ export class FacilityGroupListComponent {
                     
     }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    FacilityGroupNewFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [FacilityGroupListComponent],
-})
-export class FacilityGroupListModule {}

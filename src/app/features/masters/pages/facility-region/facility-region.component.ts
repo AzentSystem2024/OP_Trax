@@ -1,20 +1,6 @@
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  NgModule, ViewChild
-} from '@angular/core';
-import {
-  DxDataGridModule,
-  DxButtonModule,
-  DxDropDownButtonModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxLookupModule,
-  DxDataGridComponent,
-} from 'devextreme-angular';
-import { FormPopupModule } from 'src/app/components';
+import { Component, ViewChild } from '@angular/core';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { FacilityRegionNewFormComponent } from '../../../../pages/POP-UP_PAGES/facility-region-new-form/facility-region-new-form.component';
-import { FacilityRegionNewFormModule } from '../../../../pages/POP-UP_PAGES/facility-region-new-form/facility-region-new-form.component';
 import { ReportService } from 'src/app/services/Report-data.service';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import DataSource from 'devextreme/data/data_source';
@@ -30,9 +16,9 @@ import { DataService } from 'src/app/services';
 })
 export class FacilityRegionComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
   @ViewChild(FacilityRegionNewFormComponent, { static: false })
-  facilityRegionComponent: FacilityRegionNewFormComponent;
+  facilityRegionComponent!: FacilityRegionNewFormComponent;
 
   //========Variables for Pagination ====================
   readonly allowedPageSizes: any = [5, 10, 'all'];
@@ -57,9 +43,14 @@ export class FacilityRegionComponent {
 
   isFilterRowVisible: boolean = false;
 
-  currentPathName: string;
-  initialized: boolean;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  currentPathName = '';
+  initialized = false;
+  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean } = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
 
   constructor(
     private service: ReportService,
@@ -71,7 +62,7 @@ export class FacilityRegionComponent {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? this.menuPrevilage;
     });
     this.addButtonOptions = {
       text: 'New',
@@ -177,21 +168,3 @@ export class FacilityRegionComponent {
                     
     }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    FacilityRegionNewFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [FacilityRegionComponent],
-})
-export class FacilityRegionModule {}
