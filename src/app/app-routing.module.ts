@@ -41,11 +41,9 @@ import { LicenseInfoComponent } from './features/system/pages/license-info/licen
 import { NotificationSettingsComponent } from './features/system/pages/notificarion-settings/notificarion-settings.component';
 import { EmailLogDataComponent } from './features/system/pages/Report-Email-Schedule/email-log-data.component';
 import { SubDepartmentListComponent } from './features/masters/pages/Sub-department/sub-department-list.component';
-import { AccountsListComponent } from './pages/ACCOUNTS/accounts-list/accounts-list.component';
 import { TwoStepVerificationComponent } from './components/library/two-step-verification/two-step-verification.component';
 import { AboutPageComponent } from './pages/about-page/about-page.component';
 import { CPTCostingDepartmentAllocationComponent } from './features/masters/pages/cpt-costing-department-allocation/cpt-costing-department-allocation.component';
-import { LedgerGroupComponent } from './pages/ACCOUNTS/ledger-group/ledger-group.component';
 import { ClinicalDataComponent } from './features/operation/pages/Billing-info/clinical-data.component';
 import { ADOCClassComponent } from './features/masters/pages/adoc-class/adoc-class.component';
 import { AdocPriceMasterComponent } from './features/masters/pages/adoc-price-master/price-master.component';
@@ -76,7 +74,6 @@ const routes: Routes = [
       {
         path: 'login',
         component: LoginFormComponent,
-        canActivate: [AuthGuardService],
       },
       {
         path: 'reset-password',
@@ -189,16 +186,7 @@ const routes: Routes = [
         component: SpecialityComponent,
         canActivate: [AuthGuardService],
       },
-      {
-        path: 'accounts',
-        component: AccountsListComponent,
-        canActivate: [AuthGuardService],
-      },
-      {
-        path: 'ledger-group',
-        component: LedgerGroupComponent,
-        canActivate: [AuthGuardService],
-      },
+      
 
       {
         path: 'facility-page',

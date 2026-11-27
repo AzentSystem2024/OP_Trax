@@ -35,6 +35,8 @@ import { ConfigService } from './services/config.service';
 import { AdocCountingRulesModule } from './features/masters/pages/adoc-counting-rules/adoc-counting-rules.component';
 import { InsuranceMasterModule } from './features/masters/pages/insurance-master/insurance-master.component';
 import { HomeModule } from './features/home/home.module';
+import { OperationModule } from './features/operation/operation.module';
+import { DownloadFromFacilityModule } from './features/operation/pages/download-from-facility/download-from-facility.component';
 
 export function initializeApp(configService: ConfigService) {
   return () => configService.load(); // Angular waits for this before bootstrapping
@@ -54,10 +56,11 @@ export function initializeApp(configService: ConfigService) {
     UnauthenticatedContentModule,
     DxSelectBoxModule,
     HomeModule,
+    OperationModule,
+    DownloadFromFacilityModule,
     DxFormModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    HttpClientModule,
     UserModule,
     UserNewFormModule,
     UserEditFormModule,

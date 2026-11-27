@@ -91,7 +91,13 @@ export class SideNavOuterToolbarComponent implements OnInit, OnDestroy {
       visible: title && title.trim() !== '' ? true : false,
     });
     this.selectedIndex = this.tabs.findIndex((tab) => tab.path === path);
-    this.router.navigate([path], { replaceUrl: true });
+
+    // Do not overwrite the route selected by the router during startup.
+    // Only use Home when this layout was opened without a child route.
+    const currentUrl = this.router.url.split('?')[0].replace(/^\/+/, '');
+    if (!currentUrl) {
+      this.router.navigate([path], { replaceUrl: true });
+    }
 
     this.menuOpened = this.screen.sizes['screen-large'];
     this.screenSubscription = this.screen.changed.subscribe(() =>

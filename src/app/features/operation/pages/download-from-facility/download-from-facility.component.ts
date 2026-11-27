@@ -53,15 +53,15 @@ export class DownloadFromFacilityComponent implements OnInit, OnDestroy {
 
   facilityDownloadedCount: number = 0;
 
-  monthDataSource: { name: string; value: any }[];
+  monthDataSource!: { name: string; value: any }[];
   years: number[] = [];
   selectedmonth: any = '';
   selectedYear: number | null = null;
 
   startDate: Date = new Date();
   endDate: Date = new Date();
-  minDate: Date;
-  maxDate: Date;
+  minDate!: Date;
+  maxDate!: Date;
 
   isLoading: boolean = false;
   showProgressBar: boolean = false;
@@ -212,7 +212,8 @@ export class DownloadFromFacilityComponent implements OnInit, OnDestroy {
   //============ facility drop down value change event =============
   onFacilityExpiryCheck = (): boolean => {
     let isFacilityExists = this.facility_Liecence_Info_Data.find(
-      (facility) => facility.ID === this.FacilityValue,
+      (facility: { ID: any; Expiry_Date: string }) =>
+        facility.ID === this.FacilityValue,
     );
     if (isFacilityExists) {
       let currentDate = new Date();
@@ -483,22 +484,22 @@ export class DownloadFromFacilityComponent implements OnInit, OnDestroy {
 }
 
 @NgModule({
+  declarations: [DownloadFromFacilityComponent],
   imports: [
     CommonModule,
-    DxToolbarModule,
-    DxSelectBoxModule,
-    DxDateBoxModule,
-    DxNumberBoxModule,
-    DxButtonModule,
-    DxProgressBarModule,
-    DxLoadPanelModule,
-    DxValidatorModule,
-    DxToastModule,
     FormPopupModule,
+    DxButtonModule,
     DxDataGridModule,
+    DxDateBoxModule,
+    DxLoadPanelModule,
+    DxNumberBoxModule,
+    DxProgressBarModule,
+    DxSelectBoxModule,
+    DxToastModule,
+    DxToolbarModule,
+    DxValidatorModule,
   ],
-  providers: [],
-  exports: [],
-  declarations: [DownloadFromFacilityComponent],
+  exports: [DownloadFromFacilityComponent],
 })
 export class DownloadFromFacilityModule {}
+

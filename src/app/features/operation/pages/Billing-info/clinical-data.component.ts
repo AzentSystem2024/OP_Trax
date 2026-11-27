@@ -1,46 +1,24 @@
 import {
   Component,
-  NgModule,
   OnInit,
   OnDestroy,
   ViewChild,
 } from '@angular/core';
 import { confirm } from 'devextreme/ui/dialog';
-import {
-  DxButtonModule,
-  DxDataGridComponent,
-  DxDataGridModule,
-  DxDateBoxModule,
-  DxDropDownBoxModule,
-  DxDropDownButtonModule,
-  DxFormModule,
-  DxLoadPanelModule,
-  DxLookupModule,
-  DxPopupModule,
-  DxSelectBoxModule,
-  DxTextBoxModule,
-  DxLoadIndicatorModule,
-} from 'devextreme-angular';
+import { DxDataGridComponent } from 'devextreme-angular';
 import { ReportService } from 'src/app/services/Report-data.service';
-import { CommonModule } from '@angular/common';
-import { FormPopupModule } from 'src/app/components';
 import DataSource from 'devextreme/data/data_source';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services';
 import { OperationReportService } from '../../../reports/services/operation-report.service';
-import { ClinicalDataImportFormModule } from '../../../../pages/POP-UP_PAGES/clinical-data-import-form/clinical-data-import-form.component';
 import { DatePipe } from '@angular/common';
 import { firstValueFrom, Subscription } from 'rxjs';
 import {
   CptMasterEditFormComponent,
-  CptMasterEditFormModule,
 } from '../../../../pages/POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
 import { MasterReportService } from '../../../../pages/MASTER PAGES/master-report.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { InactivityService } from 'src/app/services/inactivity.service';
-import { ReportEngineService } from '../../../../pages/REPORT PAGES/report-engine.service';
-import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
-import { AdocDetailPopupModule } from '../../../../pages/POP-UP_PAGES/adoc-detail-popup/adoc-detail-popup.component';
 
 @Component({
   selector: 'app-clinical-data',
@@ -643,30 +621,5 @@ export class ClinicalDataComponent implements OnInit, OnDestroy {
   }
 }
 
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    FormPopupModule,
-    AdocDetailPopupModule,
-    ClinicalDataImportFormModule,
-    DxPopupModule,
-    DxDateBoxModule,
-    DxDropDownBoxModule,
-    CptMasterEditFormModule,
-    DxLoadPanelModule,
-    DxLoadIndicatorModule,
-    DxoSummaryModule,
-    DxFormModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [ClinicalDataComponent],
-})
-export class ClinicianMajorModule {}
+
+
