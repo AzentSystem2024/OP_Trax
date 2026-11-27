@@ -1,34 +1,14 @@
 import { Message } from 'src/app/types/messages';
-import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
-  Component,
-  NgModule,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import { DxTabsModule } from 'devextreme-angular/ui/tabs';
-import {
-  DxFormModule,
-  DxTextBoxModule,
-  DxTextAreaModule,
-  DxButtonModule,
   DxFormComponent,
-  DxCheckBoxModule,
-  DxValidatorModule,
   DxValidatorComponent,
-  DxPopupModule,
-  DxDataGridModule,
   DxDataGridComponent,
-  DxValidationGroupModule,
 } from 'devextreme-angular';
 import {
   DxHtmlEditorComponent,
-  DxHtmlEditorModule,
   DxHtmlEditorTypes,
 } from 'devextreme-angular/ui/html-editor';
-
-import { DxTabPanelModule } from 'devextreme-angular';
 import { SystemServicesService } from '../../../../pages/SYSTEM PAGES/system-services.service';
 import { DxTextBoxTypes } from 'devextreme-angular/ui/text-box';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -45,12 +25,12 @@ export class NotificationSettingsComponent implements OnInit {
   @ViewChild(DxFormComponent, { static: false }) form!: DxFormComponent;
 
   @ViewChild(DxValidatorComponent, { static: false })
-  validator: DxValidatorComponent;
+  validator!: DxValidatorComponent;
 
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
-  @ViewChild('editor') editor: DxHtmlEditorComponent;
+  @ViewChild('editor') editor!: DxHtmlEditorComponent;
 
   //========Variables for Pagination ====================
   readonly allowedPageSizes: any = [5, 10, 'all'];
@@ -145,7 +125,7 @@ export class NotificationSettingsComponent implements OnInit {
   };
   htmlEditorInstance: any;
   currentPathName: any;
-  initialized: boolean;
+  initialized = false;
   menuPrevilage: any;
 
   saveButtonText: string = 'Save';
@@ -234,7 +214,7 @@ export class NotificationSettingsComponent implements OnInit {
               options: {
                 items: this.templateKeyWords,
                 placeholder: 'Key Words',
-                onValueChanged: (e) => this.addToEmailMessage(e.value),
+                onValueChanged: (e: any) => this.addToEmailMessage(e.value),
               },
               location: 'before',
             },
@@ -268,8 +248,8 @@ export class NotificationSettingsComponent implements OnInit {
     //   return;
     // }
 
-    const userID: any = JSON.parse(localStorage.getItem('logData')).UserID;
-    const receiverid = this.TestMailReceiverID;
+    const userID: any = JSON.parse(localStorage.getItem('logData') ?? '{}').UserID;
+    const receiverid = this.TestMailReceiverID ?? '';
     const subject = this.TestMailSubject;
     const Message = this.TestMailMessageBody;
 
@@ -377,25 +357,4 @@ export class NotificationSettingsComponent implements OnInit {
     this.dataGrid.instance.refresh();
   };
 }
-
-@NgModule({
-  declarations: [NotificationSettingsComponent],
-  imports: [
-    CommonModule,
-    DxTabsModule,
-    DxTabPanelModule,
-    DxFormModule,
-    DxTextBoxModule,
-    DxTextAreaModule,
-    DxButtonModule,
-    DxCheckBoxModule,
-    DxPopupModule,
-    DxValidatorModule,
-    DxHtmlEditorModule,
-    DxDataGridModule,
-    DxValidationGroupModule,
-  ],
-  exports: [NotificationSettingsComponent],
-})
-export class NotificationSettingsModule {}
 

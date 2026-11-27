@@ -16,10 +16,17 @@ import {
   DxSwitchModule,
   DxTextBoxModule,
   DxTemplateModule,
+  DxTextAreaModule,
+  DxValidatorModule,
+  DxValidationGroupModule,
+  DxTabPanelModule,
 } from 'devextreme-angular';
+import { DxTabsModule } from 'devextreme-angular/ui/tabs';
+import { DxHtmlEditorModule } from 'devextreme-angular/ui/html-editor';
 import { LicenseInfoComponent } from './pages/license-info/license-info.component';
 import { PostOfficeCredentialsComponent } from './pages/post-office-credentials/post-office-credentials.component';
 import { SecurityPolicyComponent } from './pages/security-policy/security-policy.component';
+import { NotificationSettingsComponent } from './pages/notificarion-settings/notificarion-settings.component';
 
 
 @NgModule({
@@ -27,6 +34,7 @@ import { SecurityPolicyComponent } from './pages/security-policy/security-policy
     LicenseInfoComponent,
     PostOfficeCredentialsComponent,
     SecurityPolicyComponent,
+    NotificationSettingsComponent,
   ],
   imports: [
     CommonModule,
@@ -45,11 +53,18 @@ import { SecurityPolicyComponent } from './pages/security-policy/security-policy
     DxNumberBoxModule,
     DxRadioGroupModule,
     DxTemplateModule,
+    DxTextAreaModule,
+    DxValidatorModule,
+    DxValidationGroupModule,
+    DxTabPanelModule,
+    DxTabsModule,
+    DxHtmlEditorModule,
   ],
   exports: [
     LicenseInfoComponent,
     PostOfficeCredentialsComponent,
     SecurityPolicyComponent,
+    NotificationSettingsComponent,
   ],
 })
 export class SystemModule { }
