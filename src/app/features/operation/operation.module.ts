@@ -11,9 +11,14 @@ import {
   DxLoadIndicatorModule,
   DxLoadPanelModule,
   DxLookupModule,
+  DxNumberBoxModule,
+  DxProgressBarModule,
   DxPopupModule,
   DxSelectBoxModule,
+  DxToastModule,
+  DxToolbarModule,
   DxTextBoxModule,
+  DxValidatorModule,
 } from 'devextreme-angular';
 import { DxoSummaryModule } from 'devextreme-angular/ui/nested';
 import { FormPopupModule } from 'src/app/components';
@@ -21,9 +26,10 @@ import { AdocDetailPopupModule } from '../../pages/POP-UP_PAGES/adoc-detail-popu
 import { ClinicalDataImportFormModule } from '../../pages/POP-UP_PAGES/clinical-data-import-form/clinical-data-import-form.component';
 import { CptMasterEditFormModule } from '../../pages/POP-UP_PAGES/cpt-master-edit-form/cpt-master-edit-form.component';
 import { ClinicalDataComponent } from './pages/Billing-info/clinical-data.component';
+import { DownloadFromFacilityComponent } from './pages/download-from-facility/download-from-facility.component';
 
 @NgModule({
-  declarations: [ClinicalDataComponent],
+  declarations: [ClinicalDataComponent, DownloadFromFacilityComponent],
   imports: [
     CommonModule,
     OperationRoutingModule,
@@ -36,9 +42,14 @@ import { ClinicalDataComponent } from './pages/Billing-info/clinical-data.compon
     DxLoadIndicatorModule,
     DxLoadPanelModule,
     DxLookupModule,
+    DxNumberBoxModule,
+    DxProgressBarModule,
     DxPopupModule,
     DxSelectBoxModule,
+    DxToastModule,
+    DxToolbarModule,
     DxTextBoxModule,
+    DxValidatorModule,
     DxoSummaryModule,
     FormPopupModule,
     AdocDetailPopupModule,

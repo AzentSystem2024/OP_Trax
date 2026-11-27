@@ -14,7 +14,6 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthService, ScreenService, AppInfoService } from './services';
 import { UnauthenticatedContentModule } from './layouts/unauthenticated-content/unauthenticated-content';
 import { AppRoutingModule } from './app-routing.module';
-
 import { ThemeService } from './services';
 import { DxFormModule } from 'devextreme-angular';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -36,7 +35,7 @@ import { AdocCountingRulesModule } from './features/masters/pages/adoc-counting-
 import { InsuranceMasterModule } from './features/masters/pages/insurance-master/insurance-master.component';
 import { HomeModule } from './features/home/home.module';
 import { OperationModule } from './features/operation/operation.module';
-import { DownloadFromFacilityModule } from './features/operation/pages/download-from-facility/download-from-facility.component';
+import{ ReportsModule } from './features/reports/reports.module';
 
 export function initializeApp(configService: ConfigService) {
   return () => configService.load(); // Angular waits for this before bootstrapping
@@ -57,7 +56,6 @@ export function initializeApp(configService: ConfigService) {
     DxSelectBoxModule,
     HomeModule,
     OperationModule,
-    DownloadFromFacilityModule,
     DxFormModule,
     ReactiveFormsModule,
     AppRoutingModule,
@@ -72,7 +70,7 @@ export function initializeApp(configService: ConfigService) {
     DepartmentListModule,
     AdocCountingRulesModule,
     InsuranceMasterModule,
-    
+    ReportsModule
   ],
   providers: [
     AuthService,

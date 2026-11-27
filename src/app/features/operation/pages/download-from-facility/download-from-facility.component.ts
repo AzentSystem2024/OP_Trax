@@ -483,23 +483,3 @@ export class DownloadFromFacilityComponent implements OnInit, OnDestroy {
   }
 }
 
-@NgModule({
-  declarations: [DownloadFromFacilityComponent],
-  imports: [
-    CommonModule,
-    FormPopupModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDateBoxModule,
-    DxLoadPanelModule,
-    DxNumberBoxModule,
-    DxProgressBarModule,
-    DxSelectBoxModule,
-    DxToastModule,
-    DxToolbarModule,
-    DxValidatorModule,
-  ],
-  exports: [DownloadFromFacilityComponent],
-})
-export class DownloadFromFacilityModule {}
-
