@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   DxCheckBoxModule,
   DxLoadPanelModule,
@@ -264,21 +264,3 @@ export class SecurityPolicyComponent implements OnInit {
     return `${value} minutes`;
   }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxCheckBoxModule,
-    DxTextBoxModule,
-    DxNumberBoxModule,
-    DxRadioGroupModule,
-    DxTemplateModule,
-    DxFormModule,
-    DxButtonModule,
-    DxSwitchModule,
-    DxLoadPanelModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [SecurityPolicyComponent],
-})
-export class SecurityPolicyModule {}

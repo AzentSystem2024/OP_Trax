@@ -20,6 +20,7 @@ import DataSource from 'devextreme/data/data_source';
 import { NotificationService } from 'src/app/services/notification.service';
 import { DataService } from 'src/app/services';
 import CustomStore from 'devextreme/data/custom_store';
+import { DxDataGridTypes } from 'devextreme-angular/ui/data-grid';
 
 @Component({
   selector: 'app-email-log-data',
@@ -29,7 +30,7 @@ import CustomStore from 'devextreme/data/custom_store';
 })
 export class EmailLogDataComponent {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   dataSource = new DataSource<any>({
     load: () =>
@@ -65,7 +66,7 @@ export class EmailLogDataComponent {
   timePeriodDataSource: any;
   reportNameDatasource: any;
   userListDataSource: any;
-  columns: any[];
+  columns: any[] = [];
 
   is_EditFormVisible: boolean = false;
   is_addFormVisible: boolean = false;
@@ -76,9 +77,9 @@ export class EmailLogDataComponent {
   Facility_DataSource: any;
 
   formData: any;
-  newReportIDValue: any[];
+  newReportIDValue: any[] = [];
   newSearchOnValue: any;
-  Facility_Value: any[];
+  Facility_Value: any[] = [];
   newEncounterTypeValue: any;
   newDatePeriodValue: any;
   newUserIDValue: any = [];
@@ -94,7 +95,7 @@ export class EmailLogDataComponent {
   }
 
   //===================on editing start event of datagrid===================
-  onEditingStart(event) {
+  onEditingStart(event: DxDataGridTypes.EditingStartEvent) {
     const rowData = event.data;
     event.cancel = true;
     this.selectedRowData = {
@@ -238,7 +239,7 @@ export class EmailLogDataComponent {
   };
   //=================Reset add new form============
   resert_addNew_Form() {
-    this.newReportIDValue = null;
+    this.newReportIDValue = [];
     this.Facility_Value = [];
     this.newSearchOnValue = null;
     this.newEncounterTypeValue = null;
@@ -299,6 +300,7 @@ export class EmailLogDataComponent {
     this.isFilterRowVisible = !this.isFilterRowVisible;
   };
 }
+
 @NgModule({
   imports: [
     CommonModule,
@@ -314,8 +316,7 @@ export class EmailLogDataComponent {
     DxFormModule,
     DxDropDownBoxModule,
   ],
-  providers: [],
-  exports: [],
   declarations: [EmailLogDataComponent],
+  exports: [EmailLogDataComponent],
 })
 export class EmailLogDataModule {}

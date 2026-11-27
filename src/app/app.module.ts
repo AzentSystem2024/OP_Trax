@@ -36,6 +36,9 @@ import { InsuranceMasterModule } from './features/masters/pages/insurance-master
 import { HomeModule } from './features/home/home.module';
 import { OperationModule } from './features/operation/operation.module';
 import{ ReportsModule } from './features/reports/reports.module';
+import { SystemModule } from './features/system/system.module';
+import { EmailLogDataModule } from './features/system/pages/Report-Email-Schedule/email-log-data.component';
+
 
 export function initializeApp(configService: ConfigService) {
   return () => configService.load(); // Angular waits for this before bootstrapping
@@ -70,7 +73,9 @@ export function initializeApp(configService: ConfigService) {
     DepartmentListModule,
     AdocCountingRulesModule,
     InsuranceMasterModule,
-    ReportsModule
+    ReportsModule,
+    SystemModule,
+    EmailLogDataModule,
   ],
   providers: [
     AuthService,

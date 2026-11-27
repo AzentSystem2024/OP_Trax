@@ -2,7 +2,6 @@ import { MasterReportService } from '../../../../pages/MASTER PAGES/master-repor
 import { CommonModule, formatDate } from '@angular/common';
 import {
   Component,
-  NgModule,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -36,7 +35,7 @@ import { delay } from 'rxjs/operators';
 })
 export class PostOfficeCredentialsComponent implements OnInit {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
 
   //========Variables for Pagination ====================
   readonly allowedPageSizes: any = [5, 10, 'all'];
@@ -70,7 +69,7 @@ export class PostOfficeCredentialsComponent implements OnInit {
       }),
   });
   currentPathName: any;
-  initialized: boolean;
+  initialized = false;
 
   columns: any;
 
@@ -78,7 +77,12 @@ export class PostOfficeCredentialsComponent implements OnInit {
   showPassword = false;
   loginEditorOptions: any;
   passwordEditorOptions: any;
-  menuPrevilage: { CanAdd: boolean; CanEdit: boolean; CanDelete: boolean; CanExport: boolean };
+  menuPrevilage = {
+    CanAdd: false,
+    CanEdit: false,
+    CanDelete: false,
+    CanExport: false,
+  };
 
   loadingMessage: string = 'Processing...';
   loadingVisible: boolean = false;
@@ -99,7 +103,12 @@ export class PostOfficeCredentialsComponent implements OnInit {
     this.route.url.subscribe((segments) => {
       const fullUrl = segments.map((s) => s.path).join('/');
       console.log(fullUrl);
-      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl);
+      this.menuPrevilage = this.dataService.getMenuPrevilages(fullUrl) ?? {
+        CanAdd: false,
+        CanEdit: false,
+        CanDelete: false,
+        CanExport: false,
+      };
     });
     this.get_PostOffice_DropDown();
     this.setLoginEditorOptions();
@@ -213,11 +222,14 @@ export class PostOfficeCredentialsComponent implements OnInit {
           dataField: 'IsVerified',
           allowEditing: false,
           alignment: 'center',
-          cellTemplate: (container, options) => {
+          cellTemplate: (
+            container: HTMLElement,
+            options: { value: boolean },
+          ) => {
             const icon = document.createElement('i');
             icon.className = options.value ? 'fas fa-flag' : 'fas fa-flag';
             icon.style.color = options.value ? '#4ef748' : 'red';
-            icon.title = options.value;
+            icon.title = String(options.value);
             icon.style.fontSize = '18px';
             icon.style.display = 'inline-block';
             icon.style.width = '100%';
@@ -349,22 +361,8 @@ export class PostOfficeCredentialsComponent implements OnInit {
     this.service.exportDataGrid(event, fileName);
   }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-    DxLoadPanelModule,
-    DxPopupModule,
-    DxFormModule
-  ],
-  providers: [],
-  exports: [],
-  declarations: [PostOfficeCredentialsComponent],
-})
-export class PostOfficeCredentialsModule {}
+
+
+
+
+

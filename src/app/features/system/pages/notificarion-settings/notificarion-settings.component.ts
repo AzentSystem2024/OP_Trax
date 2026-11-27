@@ -42,7 +42,7 @@ type EditorOptions = DxTextBoxTypes.Properties;
   providers: [DataService],
 })
 export class NotificationSettingsComponent implements OnInit {
-  @ViewChild(DxFormComponent, { static: false }) form: DxFormComponent;
+  @ViewChild(DxFormComponent, { static: false }) form!: DxFormComponent;
 
   @ViewChild(DxValidatorComponent, { static: false })
   validator: DxValidatorComponent;
@@ -60,7 +60,7 @@ export class NotificationSettingsComponent implements OnInit {
   showNavButtons = true;
   dataSource: any;
 
-  valueContent: string;
+  valueContent = '';
 
   editorValueType: string = 'html';
 
@@ -79,9 +79,9 @@ export class NotificationSettingsComponent implements OnInit {
   whatsappFormData: any;
 
   isPasswordVisible: boolean = false;
-  isEmailVisible: boolean;
-  isSMSVisible: boolean;
-  iswhatsAppVisible: boolean;
+  isEmailVisible = true;
+  isSMSVisible = false;
+  iswhatsAppVisible = false;
 
   testMailpopupVisible: boolean = false;
   TestMailReceiverID: any = '';
@@ -377,7 +377,9 @@ export class NotificationSettingsComponent implements OnInit {
     this.dataGrid.instance.refresh();
   };
 }
+
 @NgModule({
+  declarations: [NotificationSettingsComponent],
   imports: [
     CommonModule,
     DxTabsModule,
@@ -393,8 +395,7 @@ export class NotificationSettingsComponent implements OnInit {
     DxDataGridModule,
     DxValidationGroupModule,
   ],
-  providers: [],
-  exports: [],
-  declarations: [NotificationSettingsComponent],
+  exports: [NotificationSettingsComponent],
 })
 export class NotificationSettingsModule {}
+

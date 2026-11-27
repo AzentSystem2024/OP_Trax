@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   DxDataGridModule,
   DxButtonModule,
@@ -24,7 +24,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class LicenseInfoComponent implements OnInit {
   @ViewChild(DxDataGridComponent, { static: true })
-  dataGrid: DxDataGridComponent;
+  dataGrid!: DxDataGridComponent;
   @ViewChild('fileInput', { static: false }) fileInput: any;
 
   //========Variables for Pagination ====================
@@ -69,7 +69,7 @@ export class LicenseInfoComponent implements OnInit {
       }),
   });
   currentPathName: any;
-  initialized: boolean;
+  initialized = false;
   isRowSearchVisible: boolean = false;
   importButtonVisibility: any;
   menuPrevilage: any;
@@ -212,19 +212,6 @@ export class LicenseInfoComponent implements OnInit {
     }
   }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    DxDataGridModule,
-    DxButtonModule,
-    DxDataGridModule,
-    DxDropDownButtonModule,
-    DxSelectBoxModule,
-    DxTextBoxModule,
-    DxLookupModule,
-  ],
-  providers: [],
-  exports: [],
-  declarations: [LicenseInfoComponent],
-})
-export class LicenseInfoModule {}
+
+
+
